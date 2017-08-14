@@ -7,13 +7,8 @@
 
 namespace yiiunit\framework\web\stubs;
 
-use yii\base\Object;
+use yii\web\UploadedFile;
 
-/**
- * @author Misbahul D Munir <misbahuldmunir@gmail.com>
- * @since 2.0
- */
-class Bar extends Object
+class VendorImage extends UploadedFile
 {
-    public $foo;
 }
