@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<phpunit bootstrap="./vendor/yiisoft/yii-core/tests/bootstrap.php"
+    backupGlobals="true"
+    colors="true"
+    verbose="true"
+    convertErrorsToExceptions="true"
+    convertNoticesToExceptions="true"
+    convertWarningsToExceptions="true"
+    stopOnFailure="false"
+    printerClass="yii\tests\ResultPrinter">
+
+    <testsuites>
+        <testsuite name="Yii Web Extension Test Suite">
+            <directory>./tests</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>
