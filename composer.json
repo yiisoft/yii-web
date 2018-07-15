@@ -1,8 +1,8 @@
 {
     "name": "yiisoft/web",
-    "description": "Yii Web",
+    "description": "Yii Framework 3.0 web components",
     "keywords": [
-        "yii2",
+        "yii",
         "framework"
     ],
     "homepage": "http://www.yiiframework.com/",
