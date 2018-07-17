@@ -1,5 +1,5 @@
 {
-    "name": "yiisoft/web",
+    "name": "yiisoft/yii-web",
     "description": "Yii Framework 3.0 web components",
     "keywords": [
         "yii",
@@ -56,18 +56,19 @@
         }
     ],
     "support": {
-        "issues": "https://github.com/yiisoft/web",
+        "issues": "https://github.com/yiisoft/yii-web",
         "forum": "http://www.yiiframework.com/forum/",
         "wiki": "http://www.yiiframework.com/wiki/",
         "irc": "irc://irc.freenode.net/yii",
-        "source": "https://github.com/yiisoft/web"
+        "source": "https://github.com/yiisoft/yii-web"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "yiisoft/yii2": "^3.0"
+        "yiisoft/core": "^3.0 || dev-master"
     },
     "require-dev": {
+        "yiisoft/di": "*@dev",
         "ezyang/htmlpurifier": "~4.6",
         "phpunit/phpunit": "~6.2.3",
         "cebe/indent": "~1.0.2",
