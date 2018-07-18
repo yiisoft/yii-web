@@ -88,7 +88,10 @@
     "extra": {
         "config-plugin": {
             "params": "config/params.php",
-            "web": "config/web.php"
+            "web": [
+                "$common",
+                "config/web.php"
+            ]
         }
     },
     "autoload": {
