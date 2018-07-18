@@ -65,9 +65,12 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "yiisoft/core": "^3.0 || dev-master"
+        "yiisoft/core": "^3.0 || dev-master",
+        "psr/http-message": "^1.0"
     },
     "require-dev": {
+        "hiqdev/composer-config-plugin": "3.0.x-dev",
+        "yiisoft/core": "dev-master",
         "yiisoft/di": "dev-master",
         "yiisoft/log": "dev-master",
         "yiisoft/cache": "dev-master",
@@ -78,6 +81,9 @@
     },
     "suggest": {
         "yiisoft/yii2-coding-standards": "you can use this package to check for code style issues when contributing to yii"
+    },
+    "provide": {
+        "psr/http-message-implementation": "1.0"
     },
     "extra": {
         "config-plugin": {
