@@ -7,11 +7,11 @@
 
 namespace yii\web;
 
-use Yii;
 use yii\base\ErrorException;
 use yii\base\Exception;
 use yii\base\UserException;
 use yii\helpers\VarDumper;
+use yii\helpers\Yii;
 
 /**
  * ErrorHandler handles uncaught PHP errors and exceptions.
@@ -48,19 +48,19 @@ class ErrorHandler extends \yii\base\ErrorHandler
     /**
      * @var string the path of the view file for rendering exceptions without call stack information.
      */
-    public $errorView = '@yii/views/errorHandler/error.php';
+    public $errorView = '@yii/web/views/errorHandler/error.php';
     /**
      * @var string the path of the view file for rendering exceptions.
      */
-    public $exceptionView = '@yii/views/errorHandler/exception.php';
+    public $exceptionView = '@yii/web/views/errorHandler/exception.php';
     /**
      * @var string the path of the view file for rendering exceptions and errors call stack element.
      */
-    public $callStackItemView = '@yii/views/errorHandler/callStackItem.php';
+    public $callStackItemView = '@yii/web/views/errorHandler/callStackItem.php';
     /**
      * @var string the path of the view file for rendering previous exceptions.
      */
-    public $previousExceptionView = '@yii/views/errorHandler/previousException.php';
+    public $previousExceptionView = '@yii/web/views/errorHandler/previousException.php';
     /**
      * @var array list of the PHP predefined variables that should be displayed on the error page.
      * Note that a variable must be accessible via `$GLOBALS`. Otherwise it won't be displayed.
@@ -88,8 +88,8 @@ class ErrorHandler extends \yii\base\ErrorHandler
      */
     protected function renderException($exception)
     {
-        if (Yii::$app->has('response')) {
-            $response = Yii::$app->getResponse();
+        if ($this->app->hasResponse()) {
+            $response = $this->app->getResponse();
             // reset parameters of response to avoid interference with partially created response data
             // in case the error occurred while sending the response.
             $response->isSent = false;
@@ -104,7 +104,7 @@ class ErrorHandler extends \yii\base\ErrorHandler
         $response->setStatusCodeByException($exception);
 
         if ($useCustomErrorAction) {
-            $result = Yii::$app->runAction($this->errorAction);
+            $result = $this->app->runAction($this->errorAction);
             if ($result instanceof Response) {
                 $response = $result;
             } else {
@@ -254,16 +254,16 @@ class ErrorHandler extends \yii\base\ErrorHandler
     public function renderFile($_file_, $_params_)
     {
         $_params_['handler'] = $this;
-        if ($this->exception instanceof ErrorException || !Yii::$app->has('view')) {
+        if ($this->exception instanceof ErrorException) {
             ob_start();
             ob_implicit_flush(false);
             extract($_params_, EXTR_OVERWRITE);
-            require Yii::getAlias($_file_);
+            require $this->app->getAlias($_file_);
 
             return ob_get_clean();
         }
 
-        return Yii::$app->getView()->renderFile($_file_, $_params_, $this);
+        return $this->app->getView()->renderFile($_file_, $_params_, $this);
     }
 
     /**
@@ -498,6 +498,6 @@ class ErrorHandler extends \yii\base\ErrorHandler
      */
     protected function shouldRenderSimpleHtml()
     {
-        return YII_ENV_TEST || Yii::$app->getRequest()->getHeaderLine('x-requested-with') === 'XMLHttpRequest';
+        return YII_ENV_TEST || $this->app->getRequest()->getHeaderLine('x-requested-with') === 'XMLHttpRequest';
     }
 }
