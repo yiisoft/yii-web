@@ -7,7 +7,7 @@
 
 namespace yii\web;
 
-use yii\base\Exception;
+use yii\exceptions\Exception;
 
 /**
  * HeadersAlreadySentException represents an exception caused by

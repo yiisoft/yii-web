@@ -9,8 +9,8 @@ namespace yii\web;
 
 use Psr\Http\Message\ResponseInterface;
 use Yii;
-use yii\base\InvalidArgumentException;
-use yii\base\InvalidConfigException;
+use yii\exceptions\InvalidArgumentException;
+use yii\exceptions\InvalidConfigException;
 use yii\helpers\FileHelper;
 use yii\helpers\Inflector;
 use yii\helpers\StringHelper;

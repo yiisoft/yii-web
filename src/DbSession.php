@@ -8,7 +8,7 @@
 namespace yii\web;
 
 use Yii;
-use yii\base\InvalidConfigException;
+use yii\exceptions\InvalidConfigException;
 use yii\db\Connection;
 use yii\db\PdoValue;
 use yii\db\Query;

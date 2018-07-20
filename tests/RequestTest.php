@@ -374,7 +374,7 @@ class RequestTest extends TestCase
     }
 
     /**
-     * @expectedException \yii\base\InvalidConfigException
+     * @expectedException \yii\exceptions\InvalidConfigException
      */
     public function testGetScriptFileWithEmptyServer()
     {
@@ -385,7 +385,7 @@ class RequestTest extends TestCase
     }
 
     /**
-     * @expectedException \yii\base\InvalidConfigException
+     * @expectedException \yii\exceptions\InvalidConfigException
      */
     public function testGetScriptUrlWithEmptyServer()
     {

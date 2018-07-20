@@ -8,8 +8,8 @@
 namespace yii\web;
 
 use yii\base\Action;
-use yii\base\Exception;
-use yii\base\UserException;
+use yii\exceptions\Exception;
+use yii\exceptions\UserException;
 use yii\helpers\Yii;
 
 /**
@@ -212,7 +212,7 @@ class ErrorAction extends Action
     }
 
     /**
-     * Returns the [[exception]] message for [[yii\base\UserException]] only.
+     * Returns the [[exception]] message for [[yii\exceptions\UserException]] only.
      * For other cases [[defaultMessage]] will be returned.
      * @return string
      * @since 2.0.11

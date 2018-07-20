@@ -9,7 +9,7 @@ namespace yiiunit\framework\filters;
 
 use Yii;
 use yii\base\Action;
-use yii\base\ExitException;
+use yii\exceptions\ExitException;
 use yii\filters\HostControl;
 use yii\web\Controller;
 use yiiunit\TestCase;

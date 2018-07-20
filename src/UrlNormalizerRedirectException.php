@@ -14,7 +14,7 @@ namespace yii\web;
  * @author Robert Korulczyk <robert@korulczyk.pl>
  * @since 2.0.10
  */
-class UrlNormalizerRedirectException extends \yii\base\Exception
+class UrlNormalizerRedirectException extends \yii\exceptions\Exception
 {
     /**
      * @var array|string the parameter to be used to generate a valid URL for redirection

@@ -9,7 +9,7 @@ namespace yii\web;
 
 use Yii;
 use yii\base\Action;
-use yii\base\ViewNotFoundException;
+use yii\exceptions\ViewNotFoundException;
 
 /**
  * ViewAction represents an action that displays a view according to a user-specified parameter.

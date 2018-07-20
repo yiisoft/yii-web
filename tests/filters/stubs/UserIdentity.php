@@ -8,7 +8,7 @@
 namespace yiiunit\framework\filters\stubs;
 
 use yii\base\Component;
-use yii\base\NotSupportedException;
+use yii\exceptions\NotSupportedException;
 use yii\web\IdentityInterface;
 
 /**

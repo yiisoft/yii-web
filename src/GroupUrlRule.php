@@ -8,7 +8,7 @@
 namespace yii\web;
 
 use Yii;
-use yii\base\InvalidConfigException;
+use yii\exceptions\InvalidConfigException;
 
 /**
  * GroupUrlRule represents a collection of URL rules sharing the same prefix in their patterns and routes.

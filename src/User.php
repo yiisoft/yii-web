@@ -9,8 +9,8 @@ namespace yii\web;
 
 use yii\base\Application;
 use yii\base\Component;
-use yii\base\InvalidConfigException;
-use yii\base\InvalidValueException;
+use yii\exceptions\InvalidConfigException;
+use yii\exceptions\InvalidValueException;
 use yii\http\Cookie;
 use yii\rbac\CheckAccessInterface;
 use yii\helpers\Yii;

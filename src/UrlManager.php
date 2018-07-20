@@ -9,7 +9,7 @@ namespace yii\web;
 
 use yii\base\Application;
 use yii\base\Component;
-use yii\base\InvalidConfigException;
+use yii\exceptions\InvalidConfigException;
 use yii\caching\CacheInterface;
 use yii\helpers\Url;
 use yii\helpers\Yii;

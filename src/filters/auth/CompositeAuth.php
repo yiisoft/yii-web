@@ -8,7 +8,7 @@
 namespace yii\web\filters\auth;
 
 use Yii;
-use yii\base\InvalidConfigException;
+use yii\exceptions\InvalidConfigException;
 
 /**
  * CompositeAuth is an action filter that supports multiple authentication methods at the same time.

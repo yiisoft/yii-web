@@ -7,7 +7,7 @@
 
 namespace yii\web;
 
-use yii\base\InvalidArgumentException;
+use yii\exceptions\InvalidArgumentException;
 use yii\helpers\Json;
 
 /**

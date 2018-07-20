@@ -7,9 +7,9 @@
 
 namespace yii\web;
 
-use yii\base\ErrorException;
-use yii\base\Exception;
-use yii\base\UserException;
+use yii\exceptions\ErrorException;
+use yii\exceptions\Exception;
+use yii\exceptions\UserException;
 use yii\helpers\VarDumper;
 use yii\helpers\Yii;
 
@@ -483,9 +483,9 @@ class ErrorHandler extends \yii\base\ErrorHandler
      */
     public function getExceptionName($exception)
     {
-        if ($exception instanceof \yii\base\Exception || $exception instanceof \yii\base\InvalidCallException ||
-            $exception instanceof \yii\base\InvalidArgumentException ||
-            $exception instanceof \yii\base\UnknownMethodException) {
+        if ($exception instanceof \yii\exceptions\Exception || $exception instanceof \yii\exceptions\InvalidCallException ||
+            $exception instanceof \yii\exceptions\InvalidArgumentException ||
+            $exception instanceof \yii\exceptions\UnknownMethodException) {
             return $exception->getName();
         }
 

@@ -9,7 +9,7 @@ namespace yii\web;
 
 use Yii;
 use yii\base\BaseObject;
-use yii\base\InvalidConfigException;
+use yii\exceptions\InvalidConfigException;
 
 /**
  * UrlNormalizer normalizes URLs for [[UrlManager]] and [[UrlRule]].

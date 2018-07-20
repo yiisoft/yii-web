@@ -11,7 +11,7 @@ use Closure;
 use yii\base\Action;
 use yii\base\Component;
 use yii\base\Controller;
-use yii\base\InvalidConfigException;
+use yii\exceptions\InvalidConfigException;
 use yii\helpers\StringHelper;
 use yii\web\Request;
 use yii\web\User;

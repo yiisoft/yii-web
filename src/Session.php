@@ -9,8 +9,8 @@ namespace yii\web;
 
 use yii\base\Application;
 use yii\base\Component;
-use yii\base\InvalidArgumentException;
-use yii\base\InvalidConfigException;
+use yii\exceptions\InvalidArgumentException;
+use yii\exceptions\InvalidConfigException;
 use yii\helpers\Yii;
 
 /**
@@ -149,7 +149,7 @@ class Session extends Component implements \IteratorAggregate, \ArrayAccess, \Co
 
     /**
      * Registers session handler.
-     * @throws \yii\base\InvalidConfigException
+     * @throws \yii\exceptions\InvalidConfigException
      */
     protected function registerSessionHandler()
     {

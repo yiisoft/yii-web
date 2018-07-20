@@ -2,7 +2,7 @@
 namespace yiiunit\framework\web;
 
 use yii\base\Component;
-use yii\base\NotSupportedException;
+use yii\exceptions\NotSupportedException;
 use yii\web\IdentityInterface;
 
 class UserIdentity extends Component implements IdentityInterface

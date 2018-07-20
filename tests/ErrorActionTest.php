@@ -8,8 +8,8 @@
 namespace yiiunit\framework\web;
 
 use Yii;
-use yii\base\InvalidConfigException;
-use yii\base\UserException;
+use yii\exceptions\InvalidConfigException;
+use yii\exceptions\UserException;
 use yii\web\Controller;
 use yii\web\ErrorAction;
 use yiiunit\TestCase;
@@ -43,7 +43,7 @@ class ErrorActionTest extends TestCase
         $this->assertEquals('Name: Invalid Configuration
 Code: 500
 Message: An internal server error occurred.
-Exception: yii\base\InvalidConfigException', $this->getController()->runAction('error'));
+Exception: yii\exceptions\InvalidConfigException', $this->getController()->runAction('error'));
     }
 
     public function testUserException()
@@ -53,7 +53,7 @@ Exception: yii\base\InvalidConfigException', $this->getController()->runAction('
         $this->assertEquals('Name: Exception
 Code: 500
 Message: User can see this error message
-Exception: yii\base\UserException', $this->getController()->runAction('error'));
+Exception: yii\exceptions\UserException', $this->getController()->runAction('error'));
     }
 
     public function testAjaxRequest()
@@ -104,14 +104,14 @@ Exception: yii\web\NotFoundHttpException', $this->getController()->runAction('er
         // Unset view name. Class should try to load view that matches action name by default
         $action->view = null;
         $ds = preg_quote(DIRECTORY_SEPARATOR, '\\');
-        $this->expectException('yii\base\ViewNotFoundException');
+        $this->expectException('yii\exceptions\ViewNotFoundException');
         $this->expectExceptionMessageRegExp('#The view file does not exist: .*?views' . $ds . 'test' . $ds . 'error.php#');
         $this->invokeMethod($action, 'renderHtmlResponse');
     }
 
     public function testLayout()
     {
-        $this->expectException('yii\base\ViewNotFoundException');
+        $this->expectException('yii\exceptions\ViewNotFoundException');
 
         $this->getController([
             'layout' => 'non-existing',
