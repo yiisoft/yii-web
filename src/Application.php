@@ -56,19 +56,6 @@ class Application extends \yii\base\Application
      */
     public $controller;
 
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function bootstrap()
-    {
-        $request = $this->getRequest();
-        Yii::setAlias('@webroot', dirname($request->getScriptFile()));
-        Yii::setAlias('@web', $request->getBaseUrl());
-
-        parent::bootstrap();
-    }
-
     /**
      * Handles the specified request.
      * @param Request $request the request to be handled
