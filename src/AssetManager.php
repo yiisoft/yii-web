@@ -7,12 +7,13 @@
 
 namespace yii\web;
 
-use Yii;
+use yii\base\Application;
 use yii\base\Component;
-use yii\base\InvalidArgumentException;
-use yii\base\InvalidConfigException;
+use yii\exceptions\InvalidArgumentException;
+use yii\exceptions\InvalidConfigException;
 use yii\helpers\FileHelper;
 use yii\helpers\Url;
+use yii\helpers\Yii;
 
 /**
  * AssetManager manages asset bundle configuration and loading.
@@ -68,7 +69,7 @@ class AssetManager extends Component
     /**
      * @var string the root directory storing the published asset files.
      */
-    public $basePath = '@webroot/assets';
+    public $basePath = '@public/assets';
     /**
      * @var string the base URL through which the published asset files can be accessed.
      */
@@ -200,23 +201,34 @@ class AssetManager extends Component
 
     private $_dummyBundles = [];
 
+    protected $app;
 
-    /**
-     * Initializes the component.
-     * @throws InvalidConfigException if [[basePath]] is invalid
-     */
-    public function init()
+    public function __construct(Application $app)
     {
-        parent::init();
-        $this->basePath = Yii::getAlias($this->basePath);
-        if (!is_dir($this->basePath)) {
-            throw new InvalidConfigException("The directory does not exist: {$this->basePath}");
-        } elseif (!is_writable($this->basePath)) {
-            throw new InvalidConfigException("The directory is not writable by the Web process: {$this->basePath}");
+        $this->app = $app;
+    }
+
+    protected $realBasePath;
+
+    public function getRealBasePath()
+    {
+        if ($this->realBasePath === null) {
+            $this->realBasePath = $this->prepareBasePath($this->basePath);
         }
 
-        $this->basePath = realpath($this->basePath);
-        $this->baseUrl = rtrim(Yii::getAlias($this->baseUrl), '/');
+        return $this->realBasePath;
+    }
+
+    public function prepareBasePath($basePath)
+    {
+        $basePath = $this->app->getAlias($basePath);
+        if (!is_dir($basePath)) {
+            throw new InvalidConfigException("The directory does not exist: {$basePath}");
+        } elseif (!is_writable($basePath)) {
+            throw new InvalidConfigException("The directory is not writable by the Web process: {$basePath}");
+        }
+
+        return realpath($basePath);
     }
 
     /**
@@ -303,11 +315,11 @@ class AssetManager extends Component
         if (($actualAsset = $this->resolveAsset($bundle, $asset)) !== false) {
             if (strncmp($actualAsset, '@web/', 5) === 0) {
                 $asset = substr($actualAsset, 5);
-                $basePath = Yii::getAlias('@webroot');
-                $baseUrl = Yii::getAlias('@web');
+                $basePath = $this->app->getAlias('@public');
+                $baseUrl = $this->app->getAlias('@web');
             } else {
-                $asset = Yii::getAlias($actualAsset);
-                $basePath = $this->basePath;
+                $asset = $this->app->getAlias($actualAsset);
+                $basePath = $this->getRealBasePath();
                 $baseUrl = $this->baseUrl;
             }
         } else {
@@ -335,7 +347,7 @@ class AssetManager extends Component
     public function getAssetPath($bundle, $asset)
     {
         if (($actualAsset = $this->resolveAsset($bundle, $asset)) !== false) {
-            return Url::isRelative($actualAsset) ? $this->basePath . '/' . $actualAsset : false;
+            return Url::isRelative($actualAsset) ? $this->getRealBasePath() . '/' . $actualAsset : false;
         }
 
         return Url::isRelative($asset) ? $bundle->basePath . '/' . $asset : false;
@@ -355,9 +367,9 @@ class AssetManager extends Component
             $asset = $bundle->sourcePath . '/' . $asset;
         }
 
-        $n = mb_strlen($asset, Yii::$app->charset);
+        $n = mb_strlen($asset, $this->app->charset);
         foreach ($this->assetMap as $from => $to) {
-            $n2 = mb_strlen($from, Yii::$app->charset);
+            $n2 = mb_strlen($from, $this->app->charset);
             if ($n2 <= $n && substr_compare($asset, $from, $n - $n2, $n2) === 0) {
                 return $to;
             }
@@ -446,7 +458,7 @@ class AssetManager extends Component
      */
     public function publish($path, $options = [])
     {
-        $path = Yii::getAlias($path);
+        $path = $this->app->getAlias($path);
 
         if (isset($this->_published[$path])) {
             return $this->_published[$path];
@@ -473,7 +485,7 @@ class AssetManager extends Component
     {
         $dir = $this->hash($src);
         $fileName = basename($src);
-        $dstDir = $this->basePath . DIRECTORY_SEPARATOR . $dir;
+        $dstDir = $this->getRealBasePath() . DIRECTORY_SEPARATOR . $dir;
         $dstFile = $dstDir . DIRECTORY_SEPARATOR . $fileName;
 
         if (!is_dir($dstDir)) {
@@ -523,7 +535,7 @@ class AssetManager extends Component
     protected function publishDirectory($src, $options)
     {
         $dir = $this->hash($src);
-        $dstDir = $this->basePath . DIRECTORY_SEPARATOR . $dir;
+        $dstDir = $this->getRealBasePath() . DIRECTORY_SEPARATOR . $dir;
         if ($this->linkAssets) {
             if (!is_dir($dstDir)) {
                 FileHelper::createDirectory(dirname($dstDir), $this->dirMode, true);
@@ -571,13 +583,13 @@ class AssetManager extends Component
      */
     public function getPublishedPath($path)
     {
-        $path = Yii::getAlias($path);
+        $path = $this->app->getAlias($path);
 
         if (isset($this->_published[$path])) {
             return $this->_published[$path][0];
         }
         if (is_string($path) && ($path = realpath($path)) !== false) {
-            return $this->basePath . DIRECTORY_SEPARATOR . $this->hash($path) . (is_file($path) ? DIRECTORY_SEPARATOR . basename($path) : '');
+            return $this->getRealBasePath() . DIRECTORY_SEPARATOR . $this->hash($path) . (is_file($path) ? DIRECTORY_SEPARATOR . basename($path) : '');
         }
 
         return false;
@@ -592,7 +604,7 @@ class AssetManager extends Component
      */
     public function getPublishedUrl($path)
     {
-        $path = Yii::getAlias($path);
+        $path = $this->app->getAlias($path);
 
         if (isset($this->_published[$path])) {
             return $this->_published[$path][1];

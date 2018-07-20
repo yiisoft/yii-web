@@ -7,10 +7,10 @@
 
 namespace yii\web;
 
-use Yii;
 use yii\base\Action;
 use yii\base\Exception;
 use yii\base\UserException;
+use yii\helpers\Yii;
 
 /**
  * ErrorAction displays application errors using a specified view.
@@ -79,7 +79,7 @@ class ErrorAction extends Action
      * @see [[findException()]] to know default way of obtaining exception.
      * @since 2.0.11
      */
-    protected $exception;
+    protected $_exception;
 
 
     /**
@@ -87,8 +87,6 @@ class ErrorAction extends Action
      */
     public function init()
     {
-        $this->exception = $this->findException();
-
         if ($this->defaultMessage === null) {
             $this->defaultMessage = Yii::t('yii', 'An internal server error occurred.');
         }
@@ -96,6 +94,15 @@ class ErrorAction extends Action
         if ($this->defaultName === null) {
             $this->defaultName = Yii::t('yii', 'Error');
         }
+    }
+
+    public function getException()
+    {
+        if ($this->_exception === null) {
+            $this->_exception = $this->findException();
+        }
+
+        return $this->_exception;
     }
 
     /**
@@ -109,9 +116,9 @@ class ErrorAction extends Action
             $this->controller->layout = $this->layout;
         }
 
-        Yii::$app->getResponse()->setStatusCodeByException($this->exception);
+        $this->app->getResponse()->setStatusCodeByException($this->exception);
 
-        if (Yii::$app->getRequest()->getIsAjax()) {
+        if ($this->app->getRequest()->getIsAjax()) {
             return $this->renderAjaxResponse();
         }
 
@@ -162,7 +169,7 @@ class ErrorAction extends Action
      */
     protected function findException()
     {
-        if (($exception = Yii::$app->getErrorHandler()->exception) === null) {
+        if (($exception = $this->app->getErrorHandler()->exception) === null) {
             $exception = new NotFoundHttpException(Yii::t('yii', 'Page not found.'));
         }
 

@@ -7,9 +7,9 @@
 
 namespace yii\web;
 
-use Yii;
 use yii\base\InlineAction;
 use yii\helpers\Url;
+use yii\helpers\Yii;
 
 /**
  * Controller is the base class of web controllers.
@@ -70,7 +70,7 @@ class Controller extends \yii\base\Controller
      */
     public function asJson($data)
     {
-        $response = Yii::$app->getResponse();
+        $response = $this->app->getResponse();
         $response->format = Response::FORMAT_JSON;
         $response->data = $data;
         return $response;
@@ -97,7 +97,7 @@ class Controller extends \yii\base\Controller
      */
     public function asXml($data)
     {
-        $response = Yii::$app->getResponse();
+        $response = $this->app->getResponse();
         $response->format = Response::FORMAT_XML;
         $response->data = $data;
         return $response;
@@ -162,7 +162,7 @@ class Controller extends \yii\base\Controller
     public function beforeAction($action)
     {
         if (parent::beforeAction($action)) {
-            if ($this->enableCsrfValidation && Yii::$app->getErrorHandler()->exception === null && !Yii::$app->getRequest()->validateCsrfToken()) {
+            if ($this->enableCsrfValidation && $this->app->getErrorHandler()->exception === null && !$this->app->getRequest()->validateCsrfToken()) {
                 throw new BadRequestHttpException(Yii::t('yii', 'Unable to verify your data submission.'));
             }
 
@@ -206,7 +206,7 @@ class Controller extends \yii\base\Controller
      */
     public function redirect($url, $statusCode = 302, $checkAjax = true)
     {
-        return Yii::$app->getResponse()->redirect(Url::to($url), $statusCode, $checkAjax);
+        return $this->app->getResponse()->redirect(Url::to($url), $statusCode, $checkAjax);
     }
 
     /**
@@ -223,7 +223,7 @@ class Controller extends \yii\base\Controller
      */
     public function goHome()
     {
-        return Yii::$app->getResponse()->redirect(Yii::$app->getHomeUrl());
+        return $this->app->getResponse()->redirect($this->app->getHomeUrl());
     }
 
     /**
@@ -246,7 +246,7 @@ class Controller extends \yii\base\Controller
      */
     public function goBack($defaultUrl = null)
     {
-        return Yii::$app->getResponse()->redirect(Yii::$app->getUser()->getReturnUrl($defaultUrl));
+        return $this->app->getResponse()->redirect($this->app->getUser()->getReturnUrl($defaultUrl));
     }
 
     /**
@@ -266,6 +266,6 @@ class Controller extends \yii\base\Controller
      */
     public function refresh($anchor = '')
     {
-        return Yii::$app->getResponse()->redirect(Yii::$app->getRequest()->getUrl() . $anchor);
+        return $this->app->getResponse()->redirect($this->app->getRequest()->getUrl() . $anchor);
     }
 }

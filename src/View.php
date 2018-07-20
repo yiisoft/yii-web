@@ -7,10 +7,10 @@
 
 namespace yii\web;
 
-use Yii;
 use yii\base\InvalidConfigException;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\helpers\Yii;
 
 /**
  * View represents a view object in the MVC pattern.
@@ -222,7 +222,7 @@ class View extends \yii\base\View
      */
     public function getAssetManager()
     {
-        return $this->_assetManager ?: Yii::$app->getAssetManager();
+        return $this->_assetManager ?: $this->app->getAssetManager();
     }
 
     /**
@@ -424,7 +424,7 @@ class View extends \yii\base\View
      */
     public function registerCssFile($url, $options = [], $key = null)
     {
-        $url = Yii::getAlias($url);
+        $url = $this->app->getAlias($url);
         $key = $key ?: $url;
 
         $depends = ArrayHelper::remove($options, 'depends', []);
@@ -491,7 +491,7 @@ class View extends \yii\base\View
      */
     public function registerJsFile($url, $options = [], $key = null)
     {
-        $url = Yii::getAlias($url);
+        $url = $this->app->getAlias($url);
         $key = $key ?: $url;
 
         $depends = ArrayHelper::remove($options, 'depends', []);

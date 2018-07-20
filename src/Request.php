@@ -1742,7 +1742,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
     public function getPreferredLanguage(array $languages = [])
     {
         if (empty($languages)) {
-            return Yii::$app->language;
+            return $this->app->language;
         }
         foreach ($this->getAcceptableLanguages() as $acceptableLanguage) {
             $acceptableLanguage = str_replace('_', '-', strtolower($acceptableLanguage));
@@ -1820,7 +1820,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
                 if (!is_string($value)) {
                     continue;
                 }
-                $data = Yii::$app->getSecurity()->validateData($value, $this->cookieValidationKey);
+                $data = $this->app->getSecurity()->validateData($value, $this->cookieValidationKey);
                 if ($data === false) {
                     continue;
                 }
@@ -2020,7 +2020,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
             if ($regenerate || empty($token)) {
                 $token = $this->generateCsrfToken();
             }
-            $this->_csrfToken = Yii::$app->security->maskToken($token);
+            $this->_csrfToken = $this->app->security->maskToken($token);
         }
 
         return $this->_csrfToken;
@@ -2037,7 +2037,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
             return $this->getCookies()->getValue($this->csrfParam);
         }
 
-        return Yii::$app->getSession()->get($this->csrfParam);
+        return $this->app->getSession()->get($this->csrfParam);
     }
 
     /**
@@ -2046,12 +2046,12 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      */
     protected function generateCsrfToken()
     {
-        $token = Yii::$app->getSecurity()->generateRandomString();
+        $token = $this->app->getSecurity()->generateRandomString();
         if ($this->enableCsrfCookie) {
             $cookie = $this->createCsrfCookie($token);
-            Yii::$app->getResponse()->getCookies()->add($cookie);
+            $this->app->getResponse()->getCookies()->add($cookie);
         } else {
-            Yii::$app->getSession()->set($this->csrfParam, $token);
+            $this->app->getSession()->set($this->csrfParam, $token);
         }
 
         return $token;
@@ -2127,7 +2127,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
             return false;
         }
 
-        $security = Yii::$app->security;
+        $security = $this->app->security;
 
         return $security->unmaskToken($clientSuppliedToken) === $security->unmaskToken($trueToken);
     }
