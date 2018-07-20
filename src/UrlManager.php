@@ -7,6 +7,7 @@
 
 namespace yii\web;
 
+use yii\base\Application;
 use yii\base\Component;
 use yii\base\InvalidConfigException;
 use yii\caching\CacheInterface;
@@ -153,9 +154,14 @@ class UrlManager extends Component
     private $_hostInfo;
     private $_ruleCache;
 
+    /**
+     * @var Application
+     */
+    protected $app;
 
-    public function __construct(UrlNormalizer $normalizer)
+    public function __construct(Application $app, UrlNormalizer $normalizer)
     {
+        $this->app = $app;
         $this->normalizer = $normalizer;
     }
 
@@ -165,7 +171,7 @@ class UrlManager extends Component
             return;
         }
         if (is_string($this->cache)) {
-            $this->cache = Yii::$app->get($this->cache, false);
+            $this->cache = $this->app->get($this->cache, false);
         }
         if (empty($this->rules)) {
             return;
@@ -548,7 +554,7 @@ class UrlManager extends Component
     public function getBaseUrl()
     {
         if ($this->_baseUrl === null) {
-            $request = Yii::$app->getRequest();
+            $request = $this->app->getRequest();
             if ($request instanceof Request) {
                 $this->_baseUrl = $request->getBaseUrl();
             } else {
@@ -579,7 +585,7 @@ class UrlManager extends Component
     public function getScriptUrl()
     {
         if ($this->_scriptUrl === null) {
-            $request = Yii::$app->getRequest();
+            $request = $this->app->getRequest();
             if ($request instanceof Request) {
                 $this->_scriptUrl = $request->getScriptUrl();
             } else {
@@ -608,7 +614,7 @@ class UrlManager extends Component
     public function getHostInfo()
     {
         if ($this->_hostInfo === null) {
-            $request = Yii::$app->getRequest();
+            $request = $this->app->getRequest();
             if ($request instanceof \yii\web\Request) {
                 $this->_hostInfo = $request->getHostInfo();
             } else {
