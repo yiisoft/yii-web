@@ -138,4 +138,8 @@ class Application extends \yii\base\Application
         return $this->container->get('assetManager');
     }
 
+    public function getUrlManager()
+    {
+        return $this->container->get('urlManager');
+    }
 }

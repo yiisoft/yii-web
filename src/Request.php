@@ -11,10 +11,10 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Psr\Http\Message\UriInterface;
-use Yii;
 use yii\base\InvalidConfigException;
 use yii\di\Instance;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Yii;
 use yii\http\Cookie;
 use yii\http\CookieCollection;
 use yii\http\FileStream;
@@ -308,7 +308,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      */
     public function resolve()
     {
-        $result = Yii::$app->getUrlManager()->parseRequest($this);
+        $result = $this->app->getUrlManager()->parseRequest($this);
         if ($result !== false) {
             [$route, $params] = $result;
             if ($this->_queryParams === null) {
