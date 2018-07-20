@@ -7,10 +7,10 @@
 
 namespace yii\web;
 
-use Yii;
 use yii\base\Component;
 use yii\base\InvalidArgumentException;
 use yii\base\InvalidConfigException;
+use yii\helpers\Yii;
 
 /**
  * Session provides session data management and the related configurations.
@@ -94,14 +94,14 @@ class Session extends Component implements \IteratorAggregate, \ArrayAccess, \Co
      */
     private $frozenSessionData;
 
-
     /**
-     * Initializes the application component.
-     * This method is required by IApplicationComponent and is invoked by application.
+     * @var Application
      */
-    public function init()
+    protected $app;
+
+    public function __construct(Application $app)
     {
-        parent::init();
+        $this->app = $app;
         register_shutdown_function([$this, 'close']);
         if ($this->getIsActive()) {
             Yii::warning('Session is already started', __METHOD__);
@@ -235,7 +235,7 @@ class Session extends Component implements \IteratorAggregate, \ArrayAccess, \Co
     {
         if ($this->_hasSessionId === null) {
             $name = $this->getName();
-            $request = Yii::$app->getRequest();
+            $request = $this->app->getRequest();
             // unable to use `Request::$cookies` since CSRF protection feature exclude the session one from them
             if (!empty($_COOKIE[$name]) && ini_get('session.use_cookies')) {
                 $this->_hasSessionId = true;
@@ -346,7 +346,7 @@ class Session extends Component implements \IteratorAggregate, \ArrayAccess, \Co
      */
     public function setSavePath($value)
     {
-        $path = Yii::getAlias($value);
+        $path = $this->app->getAlias($value);
         if (is_dir($path)) {
             session_save_path($path);
         } else {
@@ -726,7 +726,7 @@ class Session extends Component implements \IteratorAggregate, \ArrayAccess, \Co
      *
      * ```php
      * <?php
-     * foreach (Yii::$app->session->getAllFlashes() as $key => $message) {
+     * foreach ($this->app->session->getAllFlashes() as $key => $message) {
      *     echo '<div class="alert alert-' . $key . '">' . $message . '</div>';
      * } ?>
      * ```
