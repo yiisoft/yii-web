@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\filters\auth;
+namespace yii\web\filters\auth;
 
 /**
  * QueryParamAuth is an action filter that supports the authentication based on the access token passed through a query parameter.

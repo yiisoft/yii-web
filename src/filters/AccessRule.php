@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\filters;
+namespace yii\web\filters;
 
 use Closure;
 use yii\base\Action;

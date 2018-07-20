@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\filters;
+namespace yii\web\filters;
 
 use Yii;
 use yii\base\ActionFilter;
@@ -23,7 +23,7 @@ use yii\web\TooManyRequestsHttpException;
  * {
  *     return [
  *         'rateLimiter' => [
- *             '__class' => \yii\filters\RateLimiter::class,
+ *             '__class' => \yii\web\filters\RateLimiter::class,
  *         ],
  *     ];
  * }

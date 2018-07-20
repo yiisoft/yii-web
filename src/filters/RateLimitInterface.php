@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\filters;
+namespace yii\web\filters;
 
 /**
  * RateLimitInterface is the interface that may be implemented by an identity object to enforce rate limiting.

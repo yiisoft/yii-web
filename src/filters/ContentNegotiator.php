@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\filters;
+namespace yii\web\filters;
 
 use Yii;
 use yii\base\ActionFilter;
@@ -39,7 +39,7 @@ use yii\web\Response;
  * return [
  *     'bootstrap' => [
  *         [
- *             '__class' => \yii\filters\ContentNegotiator::class,
+ *             '__class' => \yii\web\filters\ContentNegotiator::class,
  *             'formats' => [
  *                 'application/json' => Response::FORMAT_JSON,
  *                 'application/xml' => Response::FORMAT_XML,
@@ -64,7 +64,7 @@ use yii\web\Response;
  * {
  *     return [
  *         [
- *             '__class' => \yii\filters\ContentNegotiator::class,
+ *             '__class' => \yii\web\filters\ContentNegotiator::class,
  *             'only' => ['view', 'index'],  // in a controller
  *             // if in a module, use the following IDs for user actions
  *             // 'only' => ['user/view', 'user/index']

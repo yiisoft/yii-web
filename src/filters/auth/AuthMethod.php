@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\filters\auth;
+namespace yii\web\filters\auth;
 
 use Yii;
 use yii\base\Action;

@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\filters;
+namespace yii\web\filters;
 
 use Yii;
 use yii\base\ActionFilter;
@@ -25,7 +25,7 @@ use yii\web\Response;
  * {
  *     return [
  *         'corsFilter' => [
- *             '__class' => \yii\filters\Cors::class,
+ *             '__class' => \yii\web\filters\Cors::class,
  *         ],
  *     ];
  * }
@@ -39,7 +39,7 @@ use yii\web\Response;
  * {
  *     return [
  *         'corsFilter' => [
- *             '__class' => \yii\filters\Cors::class,
+ *             '__class' => \yii\web\filters\Cors::class,
  *             'cors' => [
  *                 // restrict access to
  *                 'Origin' => ['http://www.myserver.com', 'https://www.myserver.com'],

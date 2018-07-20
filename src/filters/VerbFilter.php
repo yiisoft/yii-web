@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\filters;
+namespace yii\web\filters;
 
 use Yii;
 use yii\base\ActionEvent;
@@ -28,7 +28,7 @@ use yii\web\MethodNotAllowedHttpException;
  * {
  *     return [
  *         'verbs' => [
- *             '__class' => \yii\filters\VerbFilter::class,
+ *             '__class' => \yii\web\filters\VerbFilter::class,
  *             'actions' => [
  *                 'index'  => ['GET'],
  *                 'view'   => ['GET'],

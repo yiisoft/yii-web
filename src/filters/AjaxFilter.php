@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\filters;
+namespace yii\web\filters;
 
 use Yii;
 use yii\base\ActionFilter;
@@ -20,7 +20,7 @@ use yii\web\Request;
  * {
  *     return [
  *         [
- *             '__class' => 'yii\filters\AjaxFilter',
+ *             '__class' => 'yii\web\filters\AjaxFilter',
  *             'only' => ['index']
  *         ],
  *     ];

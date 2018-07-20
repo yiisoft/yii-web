@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\filters\auth;
+namespace yii\web\filters\auth;
 
 /**
  * HttpBasicAuth is an action filter that supports the HTTP Basic authentication method.
@@ -17,7 +17,7 @@ namespace yii\filters\auth;
  * {
  *     return [
  *         'basicAuth' => [
- *             '__class' => \yii\filters\auth\HttpBasicAuth::class,
+ *             '__class' => \yii\web\filters\auth\HttpBasicAuth::class,
  *         ],
  *     ];
  * }
@@ -34,7 +34,7 @@ namespace yii\filters\auth;
  * {
  *     return [
  *         'basicAuth' => [
- *             '__class' => \yii\filters\auth\HttpBasicAuth::class,
+ *             '__class' => \yii\web\filters\auth\HttpBasicAuth::class,
  *             'auth' => function ($username, $password) {
  *                 $user = User::find()->where(['username' => $username])->one();
  *                 if ($user->verifyPassword($password)) {

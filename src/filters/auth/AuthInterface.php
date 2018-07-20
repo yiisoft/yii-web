@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\filters\auth;
+namespace yii\web\filters\auth;
 
 use yii\web\IdentityInterface;
 use yii\web\Request;

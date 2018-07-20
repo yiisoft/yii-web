@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\filters\auth;
+namespace yii\web\filters\auth;
 
 /**
  * HttpHeaderAuth is an action filter that supports HTTP authentication through HTTP Headers.
@@ -17,7 +17,7 @@ namespace yii\filters\auth;
  * {
  *     return [
  *         'basicAuth' => [
- *             '__class' => \yii\filters\auth\HttpHeaderAuth::class,
+ *             '__class' => \yii\web\filters\auth\HttpHeaderAuth::class,
  *         ],
  *     ];
  * }

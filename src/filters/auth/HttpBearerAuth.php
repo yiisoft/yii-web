@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\filters\auth;
+namespace yii\web\filters\auth;
 
 /**
  * HttpBearerAuth is an action filter that supports the authentication method based on HTTP Bearer token.
@@ -17,7 +17,7 @@ namespace yii\filters\auth;
  * {
  *     return [
  *         'bearerAuth' => [
- *             '__class' => \yii\filters\auth\HttpBearerAuth::class,
+ *             '__class' => \yii\web\filters\auth\HttpBearerAuth::class,
  *         ],
  *     ];
  * }

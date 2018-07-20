@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\filters;
+namespace yii\web\filters;
 
 use Yii;
 use yii\base\ActionFilter;
@@ -23,7 +23,7 @@ use yii\web\NotFoundHttpException;
  * ```php
  * return [
  *     'as hostControl' => [
- *         '__class' => \yii\filters\HostControl::class,
+ *         '__class' => \yii\web\filters\HostControl::class,
  *         'allowedHosts' => [
  *             'example.com',
  *             '*.example.com',
@@ -37,7 +37,7 @@ use yii\web\NotFoundHttpException;
  *
  * ```php
  * use yii\web\Controller;
- * use yii\filters\HostControl;
+ * use yii\web\filters\HostControl;
  *
  * class SiteController extends Controller
  * {
