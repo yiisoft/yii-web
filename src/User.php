@@ -7,12 +7,13 @@
 
 namespace yii\web;
 
-use Yii;
+use yii\base\Application;
 use yii\base\Component;
 use yii\base\InvalidConfigException;
 use yii\base\InvalidValueException;
 use yii\http\Cookie;
 use yii\rbac\CheckAccessInterface;
+use yii\helpers\Yii;
 
 /**
  * User is the class for the `user` application component that manages the user authentication status.
@@ -152,6 +153,12 @@ class User extends Component
 
     private $_access = [];
 
+    protected $app;
+
+    public function __construct(Application $app)
+    {
+        $this->app = $app;
+    }
 
     /**
      * Initializes the application component.
@@ -252,7 +259,7 @@ class User extends Component
         if ($this->beforeLogin($identity, false, $duration)) {
             $this->switchIdentity($identity, $duration);
             $id = $identity->getId();
-            $ip = Yii::$app->getRequest()->getUserIP();
+            $ip = $this->app->getRequest()->getUserIP();
             if ($this->enableSession) {
                 $log = "User '$id' logged in from $ip with duration $duration.";
             } else {
@@ -275,7 +282,7 @@ class User extends Component
      */
     protected function regenerateCsrfToken()
     {
-        $request = Yii::$app->getRequest();
+        $request = $this->app->getRequest();
         if ($request->enableCsrfCookie || $this->enableSession) {
             $request->getCsrfToken(true);
         }
@@ -319,7 +326,7 @@ class User extends Component
             if ($this->beforeLogin($identity, true, $duration)) {
                 $this->switchIdentity($identity, $this->autoRenewCookie ? $duration : 0);
                 $id = $identity->getId();
-                $ip = Yii::$app->getRequest()->getUserIP();
+                $ip = $this->app->getRequest()->getUserIP();
                 Yii::info("User '$id' logged in from $ip via cookie.", __METHOD__);
                 $this->afterLogin($identity, true, $duration);
             }
@@ -340,10 +347,10 @@ class User extends Component
         if ($identity !== null && $this->beforeLogout($identity)) {
             $this->switchIdentity(null);
             $id = $identity->getId();
-            $ip = Yii::$app->getRequest()->getUserIP();
+            $ip = $this->app->getRequest()->getUserIP();
             Yii::info("User '$id' logged out from $ip.", __METHOD__);
             if ($destroySession && $this->enableSession) {
-                Yii::$app->getSession()->destroy();
+                $this->app->getSession()->destroy();
             }
             $this->afterLogout($identity);
         }
@@ -387,16 +394,16 @@ class User extends Component
      */
     public function getReturnUrl($defaultUrl = null)
     {
-        $url = Yii::$app->getSession()->get($this->returnUrlParam, $defaultUrl);
+        $url = $this->app->getSession()->get($this->returnUrlParam, $defaultUrl);
         if (is_array($url)) {
             if (isset($url[0])) {
-                return Yii::$app->getUrlManager()->createUrl($url);
+                return $this->app->getUrlManager()->createUrl($url);
             }
 
             $url = null;
         }
 
-        return $url === null ? Yii::$app->getHomeUrl() : $url;
+        return $url === null ? $this->app->getHomeUrl() : $url;
     }
 
     /**
@@ -412,7 +419,7 @@ class User extends Component
      */
     public function setReturnUrl($url)
     {
-        Yii::$app->getSession()->set($this->returnUrlParam, $url);
+        $this->app->getSession()->set($this->returnUrlParam, $url);
     }
 
     /**
@@ -437,7 +444,7 @@ class User extends Component
      */
     public function loginRequired($checkAjax = true, $checkAcceptHeader = true)
     {
-        $request = Yii::$app->getRequest();
+        $request = $this->app->getRequest();
         $canRedirect = !$checkAcceptHeader || $this->checkRedirectAcceptable();
         if ($this->enableSession
             && $request->getIsGet()
@@ -448,8 +455,8 @@ class User extends Component
         }
         if ($this->loginUrl !== null && $canRedirect) {
             $loginUrl = (array) $this->loginUrl;
-            if ($loginUrl[0] !== Yii::$app->requestedRoute) {
-                return Yii::$app->getResponse()->redirect($this->loginUrl);
+            if ($loginUrl[0] !== $this->app->requestedRoute) {
+                return $this->app->getResponse()->redirect($this->loginUrl);
             }
         }
         throw new ForbiddenHttpException(Yii::t('yii', 'Login Required'));
@@ -541,7 +548,7 @@ class User extends Component
     protected function renewIdentityCookie()
     {
         $name = $this->identityCookie['name'];
-        $value = Yii::$app->getRequest()->getCookies()->getValue($name);
+        $value = $this->app->getRequest()->getCookies()->getValue($name);
         if ($value !== null) {
             $data = json_decode($value, true);
             if (is_array($data) && isset($data[2])) {
@@ -550,7 +557,7 @@ class User extends Component
                     'value' => $value,
                     'expire' => time() + (int) $data[2],
                 ]));
-                Yii::$app->getResponse()->getCookies()->add($cookie);
+                $this->app->getResponse()->getCookies()->add($cookie);
             }
         }
     }
@@ -575,7 +582,7 @@ class User extends Component
             ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
             'expire' => time() + $duration,
         ]));
-        Yii::$app->getResponse()->getCookies()->add($cookie);
+        $this->app->getResponse()->getCookies()->add($cookie);
     }
 
     /**
@@ -588,7 +595,7 @@ class User extends Component
      */
     protected function getIdentityAndDurationFromCookie()
     {
-        $value = Yii::$app->getRequest()->getCookies()->getValue($this->identityCookie['name']);
+        $value = $this->app->getRequest()->getCookies()->getValue($this->identityCookie['name']);
         if ($value === null) {
             return null;
         }
@@ -619,7 +626,7 @@ class User extends Component
      */
     protected function removeIdentityCookie()
     {
-        Yii::$app->getResponse()->getCookies()->remove(Yii::createObject(array_merge($this->identityCookie, [
+        $this->app->getResponse()->getCookies()->remove(Yii::createObject(array_merge($this->identityCookie, [
             '__class' => \yii\http\Cookie::class,
         ])));
     }
@@ -651,7 +658,7 @@ class User extends Component
             $this->removeIdentityCookie();
         }
 
-        $session = Yii::$app->getSession();
+        $session = $this->app->getSession();
         if (!YII_ENV_TEST) {
             $session->regenerateID(true);
         }
@@ -684,7 +691,7 @@ class User extends Component
      */
     protected function renewAuthStatus()
     {
-        $session = Yii::$app->getSession();
+        $session = $this->app->getSession();
         $id = $session->getHasSessionId() || $session->getIsActive() ? $session->get($this->idParam) : null;
 
         if ($id === null) {
@@ -759,7 +766,7 @@ class User extends Component
      */
     protected function checkRedirectAcceptable()
     {
-        $acceptableTypes = Yii::$app->getRequest()->getAcceptableContentTypes();
+        $acceptableTypes = $this->app->getRequest()->getAcceptableContentTypes();
         if (empty($acceptableTypes) || count($acceptableTypes) === 1 && array_keys($acceptableTypes)[0] === '*/*') {
             return true;
         }
@@ -783,6 +790,6 @@ class User extends Component
      */
     protected function getAccessChecker()
     {
-        return $this->accessChecker !== null ? $this->accessChecker : Yii::$app->getAuthManager();
+        return $this->accessChecker !== null ? $this->accessChecker : $this->app->getAuthManager();
     }
 }
