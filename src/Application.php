@@ -7,9 +7,9 @@
 
 namespace yii\web;
 
-use Yii;
 use yii\base\InvalidRouteException;
 use yii\helpers\Url;
+use yii\helpers\Yii;
 
 /**
  * Application is the base class for all web application classes.
@@ -55,6 +55,10 @@ class Application extends \yii\base\Application
      * @var Controller the currently active controller instance
      */
     public $controller;
+    /**
+     * @var Request the current request
+     */
+    protected $request;
 
     /**
      * Handles the specified request.
@@ -129,62 +133,9 @@ class Application extends \yii\base\Application
         $this->_homeUrl = $value;
     }
 
-    /**
-     * Returns the error handler component.
-     * @return ErrorHandler the error handler application component.
-     */
-    public function getErrorHandler()
+    public function getAssetManager()
     {
-        return $this->get('errorHandler');
+        return $this->container->get('assetManager');
     }
 
-    /**
-     * Returns the request component.
-     * @return Request the request component.
-     */
-    public function getRequest()
-    {
-        return $this->get('request');
-    }
-
-    /**
-     * Returns the response component.
-     * @return Response the response component.
-     */
-    public function getResponse()
-    {
-        return $this->get('response');
-    }
-
-    /**
-     * Returns the session component.
-     * @return Session the session component.
-     */
-    public function getSession()
-    {
-        return $this->get('session');
-    }
-
-    /**
-     * Returns the user component.
-     * @return User the user component.
-     */
-    public function getUser()
-    {
-        return $this->get('user');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function coreComponents()
-    {
-        return array_merge(parent::coreComponents(), [
-            'request' => ['__class' => Request::class],
-            'response' => ['__class' => Response::class],
-            'session' => ['__class' => Session::class],
-            'user' => ['__class' => User::class],
-            'errorHandler' => ['__class' => ErrorHandler::class],
-        ]);
-    }
 }
