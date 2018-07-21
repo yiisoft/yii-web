@@ -8,17 +8,18 @@
 namespace yii\web;
 
 use Psr\Http\Message\ResponseInterface;
-use Yii;
 use yii\exceptions\InvalidArgumentException;
 use yii\exceptions\InvalidConfigException;
 use yii\helpers\FileHelper;
 use yii\helpers\Inflector;
 use yii\helpers\StringHelper;
 use yii\helpers\Url;
+use yii\helpers\Yii;
 use yii\http\CookieCollection;
 use yii\http\MemoryStream;
 use yii\http\MessageTrait;
 use yii\http\ResourceStream;
+use yii\web\formatters\ResponseFormatterInterface;
 
 /**
  * The web Response class represents an HTTP response.
@@ -390,7 +391,7 @@ class Response extends \yii\base\Response implements ResponseInterface
         if ($this->_cookies === null) {
             return;
         }
-        $request = Yii::$app->getRequest();
+        $request = $this->app->getRequest();
         if ($request->enableCookieValidation) {
             if ($request->cookieValidationKey == '') {
                 throw new InvalidConfigException(get_class($request) . '::cookieValidationKey must be configured with a secret key.');
@@ -400,7 +401,7 @@ class Response extends \yii\base\Response implements ResponseInterface
         foreach ($this->getCookies() as $cookie) {
             $value = $cookie->value;
             if ($cookie->expire != 1 && isset($validationKey)) {
-                $value = Yii::$app->getSecurity()->hashData(serialize([$cookie->name, $value]), $validationKey);
+                $value = $this->app->getSecurity()->hashData(serialize([$cookie->name, $value]), $validationKey);
             }
             setcookie($cookie->name, $value, $cookie->expire, $cookie->path, $cookie->domain, $cookie->secure, $cookie->httpOnly);
         }
@@ -466,7 +467,7 @@ class Response extends \yii\base\Response implements ResponseInterface
      *     if (!preg_match('/^[a-z0-9]+\.[a-z0-9]+$/i', $filename) || !is_file("$storagePath/$filename")) {
      *         throw new \yii\web\NotFoundHttpException('The file does not exists.');
      *     }
-     *     return Yii::$app->response->sendFile("$storagePath/$filename", $filename);
+     *     return $this->app->response->sendFile("$storagePath/$filename", $filename);
      * }
      * ```
      *
@@ -646,7 +647,7 @@ class Response extends \yii\base\Response implements ResponseInterface
      */
     protected function getHttpRange($fileSize)
     {
-        $rangeHeader = Yii::$app->getRequest()->getHeaderLine('Range');
+        $rangeHeader = $this->app->getRequest()->getHeaderLine('Range');
 
         if (empty($rangeHeader) || $rangeHeader === '-') {
             return [0, $fileSize - 1];
@@ -717,7 +718,7 @@ class Response extends \yii\base\Response implements ResponseInterface
      * **Example**
      *
      * ```php
-     * Yii::$app->response->xSendFile('/home/user/Pictures/picture1.jpg');
+     * $this->app->response->xSendFile('/home/user/Pictures/picture1.jpg');
      * ```
      *
      * @param string $filePath file name with full path
@@ -815,14 +816,14 @@ class Response extends \yii\base\Response implements ResponseInterface
      * the header until [[send()]] is called. In a controller action you may use this method as follows:
      *
      * ```php
-     * return Yii::$app->getResponse()->redirect($url);
+     * return $this->app->getResponse()->redirect($url);
      * ```
      *
      * In other places, if you want to send out the "Location" header immediately, you should use
      * the following code:
      *
      * ```php
-     * Yii::$app->getResponse()->redirect($url)->send();
+     * $this->app->getResponse()->redirect($url)->send();
      * return;
      * ```
      *
@@ -872,12 +873,12 @@ class Response extends \yii\base\Response implements ResponseInterface
         }
         $url = Url::to($url);
         if (strncmp($url, '/', 1) === 0 && strncmp($url, '//', 2) !== 0) {
-            $url = Yii::$app->getRequest()->getHostInfo() . $url;
+            $url = $this->app->getRequest()->getHostInfo() . $url;
         }
 
         if ($checkAjax) {
-            if (Yii::$app->getRequest()->getIsAjax()) {
-                if (Yii::$app->getRequest()->hasHeader('X-Ie-Redirect-Compatibility') && $statusCode === 302) {
+            if ($this->app->getRequest()->getIsAjax()) {
+                if ($this->app->getRequest()->hasHeader('X-Ie-Redirect-Compatibility') && $statusCode === 302) {
                     // Ajax 302 redirect in IE does not work. Change status code to 200. See https://github.com/yiisoft/yii2/issues/9670
                     $statusCode = 200;
                 }
@@ -902,7 +903,7 @@ class Response extends \yii\base\Response implements ResponseInterface
      * In a controller action you may use this method like this:
      *
      * ```php
-     * return Yii::$app->getResponse()->refresh();
+     * return $this->app->getResponse()->refresh();
      * ```
      *
      * @param string $anchor the anchor that should be appended to the redirection URL.
@@ -911,7 +912,7 @@ class Response extends \yii\base\Response implements ResponseInterface
      */
     public function refresh($anchor = '')
     {
-        return $this->redirect(Yii::$app->getRequest()->getUrl() . $anchor);
+        return $this->redirect($this->app->getRequest()->getUrl() . $anchor);
     }
 
     private $_cookies;
