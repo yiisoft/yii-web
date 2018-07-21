@@ -1038,28 +1038,6 @@ class Response extends \yii\base\Response implements ResponseInterface
     }
 
     /**
-     * @return array the formatters that are supported by default
-     */
-    protected function defaultFormatters()
-    {
-        return [
-            self::FORMAT_HTML => [
-                '__class' => HtmlResponseFormatter::class,
-            ],
-            self::FORMAT_XML => [
-                '__class' => XmlResponseFormatter::class,
-            ],
-            self::FORMAT_JSON => [
-                '__class' => JsonResponseFormatter::class,
-            ],
-            self::FORMAT_JSONP => [
-                '__class' => JsonResponseFormatter::class,
-                'useJsonp' => true,
-            ],
-        ];
-    }
-
-    /**
      * Prepares for sending the response.
      * The default implementation will convert [[data]] into [[content]] and set headers accordingly.
      * @throws InvalidConfigException if the formatter for the specified format is invalid or [[format]] is not supported
