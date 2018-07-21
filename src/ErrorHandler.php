@@ -88,17 +88,13 @@ class ErrorHandler extends \yii\base\ErrorHandler
      */
     protected function renderException($exception)
     {
-        if ($this->app->hasResponse()) {
-            $response = $this->app->getResponse();
-            // reset parameters of response to avoid interference with partially created response data
-            // in case the error occurred while sending the response.
-            $response->isSent = false;
-            $response->bodyRange = null;
-            $response->data = null;
-            $response->setBody(null);
-        } else {
-            $response = new Response();
-        }
+        $response = $this->app->getResponse();
+        // reset parameters of response to avoid interference with partially created response data
+        // in case the error occurred while sending the response.
+        $response->isSent = false;
+        $response->bodyRange = null;
+        $response->data = null;
+        $response->setBody(null);
 
         $useCustomErrorAction = $this->errorAction !== null && (!YII_DEBUG || $exception instanceof UserException);
         $response->setStatusCodeByException($exception);
