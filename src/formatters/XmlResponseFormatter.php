@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web;
+namespace yii\web\formatters;
 
 use DOMDocument;
 use DOMElement;

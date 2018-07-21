@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web;
+namespace yii\web\formatters;
 
 use Yii;
 use yii\base\Component;
@@ -24,7 +24,7 @@ use yii\helpers\Json;
  *     // ...
  *     'formatters' => [
  *         \yii\web\Response::FORMAT_JSON => [
- *              '__class' => \yii\web\JsonResponseFormatter::class,
+ *              '__class' => \yii\web\formatters\JsonResponseFormatter::class,
  *              'prettyPrint' => YII_DEBUG, // use "pretty" output in debug mode
  *              // ...
  *         ],
