@@ -231,18 +231,6 @@ class Response extends \yii\base\Response implements ResponseInterface
      */
     private $_statusCode = 200;
 
-
-    /**
-     * Initializes this component.
-     */
-    public function init()
-    {
-        if ($this->charset === null) {
-            $this->charset = Yii::$app->charset;
-        }
-        $this->formatters = array_merge($this->defaultFormatters(), $this->formatters);
-    }
-
     /**
      * {@inheritdoc}
      */
