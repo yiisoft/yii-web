@@ -621,7 +621,8 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      */
     protected function defaultBody()
     {
-        return new FileStream([
+        return Yii::createObject([
+            '__class' => FileStream::class,
             'filename' => 'php://input',
             'mode' => 'r',
         ]);
