@@ -7,6 +7,7 @@
 
 namespace yii\web;
 
+use yii\base\ViewEvent;
 use yii\exceptions\InvalidConfigException;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -43,14 +44,6 @@ use yii\helpers\Yii;
  */
 class View extends \yii\base\View
 {
-    /**
-     * @event Event an event that is triggered by [[beginBody()]].
-     */
-    const EVENT_BEGIN_BODY = 'beginBody';
-    /**
-     * @event Event an event that is triggered by [[endBody()]].
-     */
-    const EVENT_END_BODY = 'endBody';
     /**
      * The location of registered JavaScript code block or files.
      * This means the location is in the head section.
@@ -147,7 +140,7 @@ class View extends \yii\base\View
     public function beginBody()
     {
         echo self::PH_BODY_BEGIN;
-        $this->trigger(self::EVENT_BEGIN_BODY);
+        $this->trigger(ViewEvent::BEGIN_BODY);
     }
 
     /**
@@ -155,7 +148,7 @@ class View extends \yii\base\View
      */
     public function endBody()
     {
-        $this->trigger(self::EVENT_END_BODY);
+        $this->trigger(ViewEvent::END_BODY);
         echo self::PH_BODY_END;
 
         foreach (array_keys($this->assetBundles) as $bundle) {
@@ -171,7 +164,7 @@ class View extends \yii\base\View
      */
     public function endPage($ajaxMode = false)
     {
-        $this->trigger(self::EVENT_END_PAGE);
+        $this->trigger(ViewEvent::END_PAGE);
 
         $content = ob_get_clean();
 

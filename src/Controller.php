@@ -7,6 +7,7 @@
 
 namespace yii\web;
 
+use yii\base\Action;
 use yii\base\InlineAction;
 use yii\helpers\Url;
 use yii\helpers\Yii;
@@ -109,7 +110,7 @@ class Controller extends \yii\base\Controller
      * This method will check the parameter names that the action requires and return
      * the provided parameters according to the requirement. If there is any missing parameter,
      * an exception will be thrown.
-     * @param \yii\base\Action $action the action to be bound with parameters
+     * @param Action $action the action to be bound with parameters
      * @param array $params the parameters to be bound to the action
      * @return array the valid parameters that the action can run with.
      * @throws BadRequestHttpException if there are missing or invalid parameters.
@@ -159,7 +160,7 @@ class Controller extends \yii\base\Controller
     /**
      * {@inheritdoc}
      */
-    public function beforeAction($action)
+    public function beforeAction(Action $action): bool
     {
         if (parent::beforeAction($action)) {
             if ($this->enableCsrfValidation && $this->app->getErrorHandler()->exception === null && !$this->app->getRequest()->validateCsrfToken()) {
