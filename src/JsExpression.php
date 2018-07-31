@@ -34,7 +34,6 @@ class JsExpression extends BaseObject
     public function __construct($expression, $config = [])
     {
         $this->expression = $expression;
-        parent::__construct($config);
     }
 
     /**
