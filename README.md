@@ -2,19 +2,22 @@
     <a href="http://www.yiiframework.com/" target="_blank">
         <img src="https://www.yiiframework.com/files/logo/yii.png" width="400" alt="Yii Framework" />
     </a>
+    <h1 align="center">Yii Framework Web Extension</h1>
+    <br>
 </p>
 
-Yii 2 is a modern framework designed to be a solid foundation for your PHP application.
+[Yii Framework] is a modern framework designed to be a solid foundation for your PHP application.
 
-It is fast, secure and efficient and works right out of the box pre-configured with reasonable defaults.
-The framework is easy to adjust to meet your needs, because Yii has been designed to be flexible.
+This [Yii Framework] extension allows easy creation of web applications.
 
-[![Latest Stable Version](https://img.shields.io/packagist/v/yiisoft/yii2.svg)](https://packagist.org/packages/yiisoft/yii2)
-[![Total Downloads](https://img.shields.io/packagist/dt/yiisoft/yii2.svg)](https://packagist.org/packages/yiisoft/yii2)
-[![Build Status](https://img.shields.io/travis/yiisoft/yii2.svg)](http://travis-ci.org/yiisoft/yii2)
-[![Code Coverage](https://scrutinizer-ci.com/g/yiisoft/yii2/badges/coverage.png?s=31d80f1036099e9d6a3e4d7738f6b000b3c3d10e)](https://scrutinizer-ci.com/g/yiisoft/yii2/)
-[![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/yiisoft/yii2/badges/quality-score.png?s=b1074a1ff6d0b214d54fa5ab7abbb90fc092471d)](https://scrutinizer-ci.com/g/yiisoft/yii2/)
-[![Code Climate](https://img.shields.io/codeclimate/github/yiisoft/yii2.svg)](https://codeclimate.com/github/yiisoft/yii2)
+[Yii Framework]: https://github.com/yiisoft/core
+
+[![Latest Stable Version](https://img.shields.io/packagist/v/yiisoft/yii-web.svg)](https://packagist.org/packages/yiisoft/yii-web)
+[![Total Downloads](https://img.shields.io/packagist/dt/yiisoft/yii-web.svg)](https://packagist.org/packages/yiisoft/yii-web)
+[![Build Status](https://img.shields.io/travis/yiisoft/yii-web.svg)](http://travis-ci.org/yiisoft/yii-web)
+[![Code Coverage](https://scrutinizer-ci.com/g/yiisoft/yii-web/badges/coverage.png?s=31d80f1036099e9d6a3e4d7738f6b000b3c3d10e)](https://scrutinizer-ci.com/g/yiisoft/yii-web/)
+[![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/yiisoft/yii-web/badges/quality-score.png?s=b1074a1ff6d0b214d54fa5ab7abbb90fc092471d)](https://scrutinizer-ci.com/g/yiisoft/yii-web/)
+[![Code Climate](https://img.shields.io/codeclimate/github/yiisoft/yii-web.svg)](https://codeclimate.com/github/yiisoft/yii-web)
 
 Installation
 ------------
