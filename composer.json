@@ -1,6 +1,6 @@
 {
     "name": "yiisoft/yii-web",
-    "description": "Yii Framework 3.0 web components",
+    "description": "Yii Framework web components",
     "keywords": [
         "yii",
         "framework"
@@ -65,17 +65,16 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "yiisoft/core": "^3.0 || dev-master",
+        "yiisoft/core": "^3.0@dev",
         "psr/http-message": "^1.0"
     },
     "require-dev": {
         "hiqdev/composer-config-plugin": "3.0.x-dev",
-        "yiisoft/core": "dev-master",
         "yiisoft/di": "dev-master",
         "yiisoft/log": "dev-master",
         "yiisoft/cache": "dev-master",
         "ezyang/htmlpurifier": "~4.6",
-        "phpunit/phpunit": "~6.2.3",
+        "phpunit/phpunit": "^7.3",
         "cebe/indent": "~1.0.2",
         "friendsofphp/php-cs-fixer": "~2.2.3"
     },
