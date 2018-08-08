@@ -1,12 +1,12 @@
 {
     "name": "yiisoft/yii-web",
-    "description": "Yii Framework web components",
+    "type": "library",
+    "description": "Yii Framework Web Extension",
     "keywords": [
         "yii",
         "framework"
     ],
     "homepage": "http://www.yiiframework.com/",
-    "type": "yii2-extension",
     "license": "BSD-3-Clause",
     "authors": [
         {
@@ -62,21 +62,20 @@
         "irc": "irc://irc.freenode.net/yii",
         "source": "https://github.com/yiisoft/yii-web"
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
     "require": {
         "yiisoft/core": "^3.0@dev",
+        "yiisoft/view": "^1.0@dev",
         "psr/http-message": "^1.0"
     },
     "require-dev": {
-        "hiqdev/composer-config-plugin": "3.0.x-dev",
-        "yiisoft/di": "dev-master",
-        "yiisoft/log": "dev-master",
-        "yiisoft/cache": "dev-master",
+        "hiqdev/composer-config-plugin": "^1.0@dev",
+        "yiisoft/di": "^1.0@dev",
+        "yiisoft/log": "^1.0@dev",
+        "yiisoft/cache": "^1.0@dev",
         "ezyang/htmlpurifier": "~4.6",
         "phpunit/phpunit": "^7.3",
         "cebe/indent": "~1.0.2",
-        "friendsofphp/php-cs-fixer": "~2.2.3"
+        "friendsofphp/php-cs-fixer": "^2.2"
     },
     "suggest": {
         "yiisoft/yii2-coding-standards": "you can use this package to check for code style issues when contributing to yii"
