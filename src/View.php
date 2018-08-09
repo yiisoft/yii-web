@@ -11,8 +11,8 @@ use yii\exceptions\InvalidConfigException;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Yii;
-use yii\view\events\BodyEvent;
-use yii\view\events\PageEvent;
+use yii\view\BodyEvent;
+use yii\view\PageEvent;
 
 /**
  * View represents a view object in the MVC pattern.
