@@ -5,11 +5,11 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\framework\web;
+namespace yii\tests\web;
 
 use yii\caching\FileCache;
 use yii\web\View;
-use yiiunit\TestCase;
+use yii\tests\TestCase;
 
 /**
  * @group web
@@ -34,7 +34,7 @@ class ViewTest extends TestCase
 
         $view = new View();
         $view->registerJsVar('username', 'samdark');
-        $html = $view->render('@yiiunit/data/views/layout.php', ['content' => 'content']);
+        $html = $view->render('@yii/tests/data/views/layout.php', ['content' => 'content']);
         $this->assertContains('<script>var username = "samdark";</script></head>', $html);
         
         $view = new View();
@@ -42,7 +42,7 @@ class ViewTest extends TestCase
             'number' => 42,
             'question' => 'Unknown',
         ]);
-        $html = $view->render('@yiiunit/data/views/layout.php', ['content' => 'content']);
+        $html = $view->render('@yii/tests/data/views/layout.php', ['content' => 'content']);
         $this->assertContains('<script>var objectTest = {"number":42,"question":"Unknown"};</script></head>', $html);
     }
 
@@ -59,17 +59,17 @@ class ViewTest extends TestCase
 
         $view = new View();
         $view->registerJsFile('@web/js/somefile.js', ['position' => View::POS_HEAD]);
-        $html = $view->render('@yiiunit/data/views/layout.php', ['content' => 'content']);
+        $html = $view->render('@yii/tests/data/views/layout.php', ['content' => 'content']);
         $this->assertContains('<script src="/baseUrl/js/somefile.js"></script></head>', $html);
 
         $view = new View();
         $view->registerJsFile('@web/js/somefile.js', ['position' => View::POS_BEGIN]);
-        $html = $view->render('@yiiunit/data/views/layout.php', ['content' => 'content']);
+        $html = $view->render('@yii/tests/data/views/layout.php', ['content' => 'content']);
         $this->assertContains('<body>' . PHP_EOL . '<script src="/baseUrl/js/somefile.js"></script>', $html);
 
         $view = new View();
         $view->registerJsFile('@web/js/somefile.js', ['position' => View::POS_END]);
-        $html = $view->render('@yiiunit/data/views/layout.php', ['content' => 'content']);
+        $html = $view->render('@yii/tests/data/views/layout.php', ['content' => 'content']);
         $this->assertContains('<script src="/baseUrl/js/somefile.js"></script></body>', $html);
     }
 
@@ -86,7 +86,7 @@ class ViewTest extends TestCase
 
         $view = new View();
         $view->registerCssFile('@web/css/somefile.css');
-        $html = $view->render('@yiiunit/data/views/layout.php', ['content' => 'content']);
+        $html = $view->render('@yii/tests/data/views/layout.php', ['content' => 'content']);
         $this->assertContains('<link href="/baseUrl/css/somefile.css" rel="stylesheet"></head>', $html);
     }
 
@@ -107,7 +107,7 @@ class ViewTest extends TestCase
         $view = new View();
 
         $view->registerCsrfMetaTags();
-        $html = $view->render('@yiiunit/data/views/layout.php', ['content' => 'content']);
+        $html = $view->render('@yii/tests/data/views/layout.php', ['content' => 'content']);
         $this->assertContains('<meta name="csrf-param" content="_csrf">', $html);
         $this->assertContains('<meta name="csrf-token" content="', $html);
         $csrfToken1 = $this->getCSRFTokenValue($html);
@@ -115,7 +115,7 @@ class ViewTest extends TestCase
         // regenerate token
         \Yii::$app->request->getCsrfToken(true);
         $view->registerCsrfMetaTags();
-        $html = $view->render('@yiiunit/data/views/layout.php', ['content' => 'content']);
+        $html = $view->render('@yii/tests/data/views/layout.php', ['content' => 'content']);
         $this->assertContains('<meta name="csrf-param" content="_csrf">', $html);
         $this->assertContains('<meta name="csrf-token" content="', $html);
         $csrfToken2 = $this->getCSRFTokenValue($html);

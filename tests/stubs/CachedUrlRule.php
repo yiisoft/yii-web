@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\framework\web\stubs;
+namespace yii\tests\web\stubs;
 
 use yii\web\UrlRule;
 

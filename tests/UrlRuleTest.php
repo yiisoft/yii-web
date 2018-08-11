@@ -5,9 +5,9 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\framework\web;
+namespace yii\tests\web;
 
-use Yii;
+use yii\helpers\Yii;
 use yii\helpers\VarDumper;
 use yii\web\NotFoundHttpException;
 use yii\web\Request;
@@ -15,7 +15,7 @@ use yii\web\UrlManager;
 use yii\web\UrlNormalizer;
 use yii\web\UrlNormalizerRedirectException;
 use yii\web\UrlRule;
-use yiiunit\TestCase;
+use yii\tests\TestCase;
 
 /**
  * @group web

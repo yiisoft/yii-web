@@ -1,5 +1,5 @@
 <?php
-namespace yiiunit\framework\web;
+namespace yii\tests\web;
 
 use yii\base\Component;
 use yii\exceptions\NotSupportedException;

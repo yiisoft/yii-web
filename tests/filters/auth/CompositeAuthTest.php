@@ -5,14 +5,14 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\framework\filters\auth;
+namespace yii\web\tests\filters\auth;
 
-use Yii;
-use yii\filters\auth\AuthMethod;
-use yii\filters\auth\CompositeAuth;
-use yii\filters\auth\HttpBearerAuth;
+use yii\helpers\Yii;
+use yii\web\filters\auth\AuthMethod;
+use yii\web\filters\auth\CompositeAuth;
+use yii\web\filters\auth\HttpBearerAuth;
 use yii\web\Controller;
-use yiiunit\framework\web\UserIdentity;
+use yii\tests\web\UserIdentity;
 
 /**
  * @author Ezekiel Fernandez <ezekiel_p_fernandez@yahoo.com>
@@ -80,7 +80,7 @@ class TestController extends Controller
 /**
  * @group filters
  */
-class CompositeAuthTest extends \yiiunit\TestCase
+class CompositeAuthTest extends \yii\tests\TestCase
 {
     protected function setUp()
     {

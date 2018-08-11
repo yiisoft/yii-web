@@ -5,26 +5,26 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\framework\filters\auth;
+namespace yii\web\tests\filters\auth;
 
-use Yii;
+use yii\helpers\Yii;
 use yii\base\Action;
-use yii\filters\auth\AuthMethod;
-use yii\filters\auth\HttpBasicAuth;
-use yii\filters\auth\HttpBearerAuth;
-use yii\filters\auth\QueryParamAuth;
-use yii\filters\auth\HttpHeaderAuth;
+use yii\web\filters\auth\AuthMethod;
+use yii\web\filters\auth\HttpBasicAuth;
+use yii\web\filters\auth\HttpBearerAuth;
+use yii\web\filters\auth\QueryParamAuth;
+use yii\web\filters\auth\HttpHeaderAuth;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\UnauthorizedHttpException;
-use yiiunit\framework\filters\stubs\UserIdentity;
+use yii\web\tests\filters\stubs\UserIdentity;
 
 /**
  * @group filters
  * @author Dmitry Naumenko <d.naumenko.a@gmail.com>
  * @since 2.0.7
  */
-class AuthTest extends \yiiunit\TestCase
+class AuthTest extends \yii\tests\TestCase
 {
     protected function setUp()
     {
@@ -180,10 +180,10 @@ class AuthTest extends \yiiunit\TestCase
     public function authMethodProvider()
     {
         return [
-            [\yii\filters\auth\CompositeAuth::class],
-            [\yii\filters\auth\HttpBearerAuth::class],
-            [\yii\filters\auth\QueryParamAuth::class],
-            [\yii\filters\auth\HttpHeaderAuth::class],
+            [\yii\web\filters\auth\CompositeAuth::class],
+            [\yii\web\filters\auth\HttpBearerAuth::class],
+            [\yii\web\filters\auth\QueryParamAuth::class],
+            [\yii\web\filters\auth\HttpHeaderAuth::class],
         ];
     }
 

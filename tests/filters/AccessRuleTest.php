@@ -5,23 +5,23 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\framework\filters;
+namespace yii\web\tests\filters;
 
 use Closure;
-use Yii;
+use yii\helpers\Yii;
 use yii\base\Action;
-use yii\filters\AccessRule;
+use yii\web\filters\AccessRule;
 use yii\web\Controller;
 use yii\web\Request;
 use yii\web\User;
-use yiiunit\framework\filters\stubs\MockAuthManager;
-use yiiunit\framework\filters\stubs\UserIdentity;
-use yiiunit\framework\rbac\AuthorRule;
+use yii\web\tests\filters\stubs\MockAuthManager;
+use yii\web\tests\filters\stubs\UserIdentity;
+use yii\tests\framework\rbac\AuthorRule;
 
 /**
  * @group filters
  */
-class AccessRuleTest extends \yiiunit\TestCase
+class AccessRuleTest extends \yii\tests\TestCase
 {
     protected function setUp()
     {

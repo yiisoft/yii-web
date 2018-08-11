@@ -5,11 +5,11 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\framework\web;
+namespace yii\tests\web;
 
-use Yii;
+use yii\helpers\Yii;
 use yii\web\NotFoundHttpException;
-use yiiunit\TestCase;
+use yii\tests\TestCase;
 
 class ErrorHandlerTest extends TestCase
 {
@@ -19,8 +19,8 @@ class ErrorHandlerTest extends TestCase
         $this->mockWebApplication([
             'components' => [
                 'errorHandler' => [
-                    '__class' => \yiiunit\framework\web\ErrorHandler::class,
-                    'errorView' => '@yiiunit/data/views/errorHandler.php',
+                    '__class' => \yii\tests\web\ErrorHandler::class,
+                    'errorView' => '@yii/tests/data/views/errorHandler.php',
                 ],
             ],
         ]);

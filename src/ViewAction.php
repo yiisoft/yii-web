@@ -7,7 +7,7 @@
 
 namespace yii\web;
 
-use Yii;
+use yii\helpers\Yii;
 use yii\base\Action;
 use yii\exceptions\ViewNotFoundException;
 

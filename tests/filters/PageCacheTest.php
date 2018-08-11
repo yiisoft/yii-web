@@ -5,21 +5,21 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\framework\filters;
+namespace yii\web\tests\filters;
 
-use Yii;
+use yii\helpers\Yii;
 use yii\base\Action;
 use yii\caching\ArrayCache;
 use yii\caching\Cache;
 use yii\caching\ExpressionDependency;
-use yii\filters\PageCache;
+use yii\web\filters\PageCache;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
 use yii\web\Controller;
 use yii\http\Cookie;
 use yii\web\View;
-use yiiunit\framework\caching\CacheTestCase;
-use yiiunit\TestCase;
+use yii\tests\framework\caching\CacheTestCase;
+use yii\tests\TestCase;
 
 /**
  * @group filters
@@ -184,7 +184,7 @@ class PageCacheTest extends TestCase
         // Content
         $static = Yii::$app->security->generateRandomString();
         Yii::$app->params['dynamic'] = $dynamic = Yii::$app->security->generateRandomString();
-        $content = $filter->view->render('@yiiunit/data/views/pageCacheLayout.php', ['static' => $static]);
+        $content = $filter->view->render('@yii/tests/data/views/pageCacheLayout.php', ['static' => $static]);
         Yii::$app->response->content = $content;
         ob_start();
         Yii::$app->response->send();
@@ -260,7 +260,7 @@ class PageCacheTest extends TestCase
         $this->assertTrue($filter->beforeAction($action));
         $static = Yii::$app->security->generateRandomString();
         Yii::$app->params['dynamic'] = $dynamic = Yii::$app->security->generateRandomString();
-        $content = $filter->view->render('@yiiunit/data/views/pageCacheLayout.php', ['static' => $static]);
+        $content = $filter->view->render('@yii/tests/data/views/pageCacheLayout.php', ['static' => $static]);
         Yii::$app->response->content = $content;
         ob_start();
         Yii::$app->response->send();
@@ -312,7 +312,7 @@ class PageCacheTest extends TestCase
             $this->assertTrue($filter->beforeAction($action));
             $static = Yii::$app->security->generateRandomString();
             Yii::$app->params['dynamic'] = $dynamic = Yii::$app->security->generateRandomString();
-            $content = $filter->view->render('@yiiunit/data/views/pageCacheLayout.php', ['static' => $static]);
+            $content = $filter->view->render('@yii/tests/data/views/pageCacheLayout.php', ['static' => $static]);
             Yii::$app->response->content = $content;
             ob_start();
             Yii::$app->response->send();
@@ -365,7 +365,7 @@ class PageCacheTest extends TestCase
             $this->assertTrue($filter->beforeAction($action));
             $static = Yii::$app->security->generateRandomString();
             Yii::$app->params['dynamic'] = $dynamic = Yii::$app->security->generateRandomString();
-            $content = $filter->view->render('@yiiunit/data/views/pageCacheLayout.php', ['static' => $static]);
+            $content = $filter->view->render('@yii/tests/data/views/pageCacheLayout.php', ['static' => $static]);
             Yii::$app->response->content = $content;
             ob_start();
             Yii::$app->response->send();
@@ -418,7 +418,7 @@ class PageCacheTest extends TestCase
             $static = Yii::$app->security->generateRandomString();
             Yii::$app->params['dynamic'] = $dynamic = Yii::$app->security->generateRandomString();
             Yii::$app->params['dependency'] = $dependency = Yii::$app->security->generateRandomString();
-            $content = $filter->view->render('@yiiunit/data/views/pageCacheLayout.php', ['static' => $static]);
+            $content = $filter->view->render('@yii/tests/data/views/pageCacheLayout.php', ['static' => $static]);
             Yii::$app->response->content = $content;
             ob_start();
             Yii::$app->response->send();
@@ -450,7 +450,7 @@ class PageCacheTest extends TestCase
 
     public function testCalculateCacheKey()
     {
-        $expected = ['yii\filters\PageCache', 'test', 'ru'];
+        $expected = ['yii\web\filters\PageCache', 'test', 'ru'];
         Yii::$app->requestedRoute = 'test';
         $keys = $this->invokeMethod(new PageCache(['variations' => ['ru']]), 'calculateCacheKey');
         $this->assertEquals($expected, $keys);
@@ -459,6 +459,6 @@ class PageCacheTest extends TestCase
         $this->assertEquals($expected, $keys);
 
         $keys = $this->invokeMethod(new PageCache(), 'calculateCacheKey');
-        $this->assertEquals(['yii\filters\PageCache', 'test'], $keys);
+        $this->assertEquals(['yii\web\filters\PageCache', 'test'], $keys);
     }
 }

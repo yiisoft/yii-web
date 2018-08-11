@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\framework\web;
+namespace yii\tests\web;
 
 use yii\helpers\FileHelper;
 use yii\web\AssetConverter;
@@ -13,7 +13,7 @@ use yii\web\AssetConverter;
 /**
  * @group web
  */
-class AssetConverterTest extends \yiiunit\TestCase
+class AssetConverterTest extends \yii\tests\TestCase
 {
     /**
      * @var string temporary files path

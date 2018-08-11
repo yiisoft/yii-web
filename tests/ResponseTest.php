@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\framework\web;
+namespace yii\tests\web;
 
 use Error;
 use Exception;
@@ -16,7 +16,7 @@ use yii\web\HttpException;
 /**
  * @group web
  */
-class ResponseTest extends \yiiunit\TestCase
+class ResponseTest extends \yii\tests\TestCase
 {
     /**
      * @var \yii\web\Response
@@ -50,7 +50,7 @@ class ResponseTest extends \yiiunit\TestCase
      */
     public function testSendFileRanges($rangeHeader, $expectedHeader, $length, $expectedContent)
     {
-        $dataFile = \Yii::getAlias('@yiiunit/data/web/data.txt');
+        $dataFile = \Yii::getAlias('@yii/tests/data/web/data.txt');
         $fullContent = file_get_contents($dataFile);
         $_SERVER['HTTP_RANGE'] = 'bytes=' . $rangeHeader;
         ob_start();
@@ -85,7 +85,7 @@ class ResponseTest extends \yiiunit\TestCase
     {
         $this->expectException('yii\web\RangeNotSatisfiableHttpException');
 
-        $dataFile = \Yii::getAlias('@yiiunit/data/web/data.txt');
+        $dataFile = \Yii::getAlias('@yii/tests/data/web/data.txt');
         $_SERVER['HTTP_RANGE'] = 'bytes=' . $rangeHeader;
         $this->response->sendFile($dataFile);
     }

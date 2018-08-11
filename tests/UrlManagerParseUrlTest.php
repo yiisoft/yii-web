@@ -5,13 +5,13 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\framework\web;
+namespace yii\tests\web;
 
 use yii\caching\ArrayCache;
 use yii\caching\Cache;
 use yii\web\Request;
 use yii\web\UrlManager;
-use yiiunit\TestCase;
+use yii\tests\TestCase;
 
 /**
  * This class implements the tests for URL parsing with "pretty" url format.

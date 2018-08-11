@@ -5,12 +5,12 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\framework\web;
+namespace yii\tests\web;
 
-use Yii;
+use yii\helpers\Yii;
 use yii\base\InlineAction;
 use yii\web\Response;
-use yiiunit\TestCase;
+use yii\tests\TestCase;
 
 /**
  * @group web

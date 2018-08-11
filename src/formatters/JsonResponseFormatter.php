@@ -7,7 +7,7 @@
 
 namespace yii\web\formatters;
 
-use Yii;
+use yii\helpers\Yii;
 use yii\base\Component;
 use yii\helpers\Json;
 

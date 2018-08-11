@@ -5,13 +5,13 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\framework\web;
+namespace yii\tests\web;
 
 use yii\web\GroupUrlRule;
 use yii\web\Request;
 use yii\web\UrlManager;
 use yii\web\UrlRule;
-use yiiunit\TestCase;
+use yii\tests\TestCase;
 
 /**
  * @group web

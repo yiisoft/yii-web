@@ -5,10 +5,10 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\framework\web\session;
+namespace yii\tests\web\session;
 
 use yii\web\Session;
-use yiiunit\TestCase;
+use yii\tests\TestCase;
 
 /**
  * @group web

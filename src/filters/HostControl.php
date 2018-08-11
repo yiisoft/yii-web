@@ -7,7 +7,7 @@
 
 namespace yii\web\filters;
 
-use Yii;
+use yii\helpers\Yii;
 use yii\base\ActionFilter;
 use yii\helpers\StringHelper;
 use yii\web\NotFoundHttpException;

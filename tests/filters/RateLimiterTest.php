@@ -5,18 +5,18 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\framework\filters;
+namespace yii\web\tests\filters;
 
 use Prophecy\Argument;
-use Yii;
-use yii\filters\RateLimiter;
+use yii\helpers\Yii;
+use yii\web\filters\RateLimiter;
 use yii\log\Logger;
 use yii\web\Request;
 use yii\web\Response;
 use yii\web\User;
-use yiiunit\framework\filters\stubs\RateLimit;
-use yiiunit\framework\filters\stubs\UserIdentity;
-use yiiunit\TestCase;
+use yii\web\tests\filters\stubs\RateLimit;
+use yii\web\tests\filters\stubs\UserIdentity;
+use yii\tests\TestCase;
 
 /**
  *  @group filters

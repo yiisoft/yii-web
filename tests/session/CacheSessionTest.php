@@ -5,9 +5,9 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\framework\web\session;
+namespace yii\tests\web\session;
 
-use Yii;
+use yii\helpers\Yii;
 use yii\caching\ArrayCache;
 use yii\caching\Cache;
 use yii\web\CacheSession;
@@ -15,7 +15,7 @@ use yii\web\CacheSession;
 /**
  * @group web
  */
-class CacheSessionTest extends \yiiunit\TestCase
+class CacheSessionTest extends \yii\tests\TestCase
 {
     protected function setUp()
     {

@@ -7,7 +7,7 @@
 
 namespace yii\web\filters;
 
-use Yii;
+use yii\helpers\Yii;
 use yii\base\ActionEvent;
 use yii\base\Behavior;
 use yii\web\Controller;

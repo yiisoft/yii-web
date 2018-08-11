@@ -5,14 +5,14 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\framework\web;
+namespace yii\tests\web;
 
-use Yii;
+use yii\helpers\Yii;
 use yii\caching\ArrayCache;
 use yii\web\UrlManager;
 use yii\web\UrlRule;
-use yiiunit\framework\web\stubs\CachedUrlRule;
-use yiiunit\TestCase;
+use yii\tests\web\stubs\CachedUrlRule;
+use yii\tests\TestCase;
 
 /**
  * This class implements the tests for URL creation with "pretty" url format.

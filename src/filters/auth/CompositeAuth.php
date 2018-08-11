@@ -7,7 +7,7 @@
 
 namespace yii\web\filters\auth;
 
-use Yii;
+use yii\helpers\Yii;
 use yii\exceptions\InvalidConfigException;
 
 /**

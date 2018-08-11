@@ -13,19 +13,19 @@ namespace yii\web;
  */
 function time()
 {
-    return \yiiunit\framework\web\UserTest::$time ?: \time();
+    return \yii\tests\web\UserTest::$time ?: \time();
 }
 
-namespace yiiunit\framework\web;
+namespace yii\tests\web;
 
-use Yii;
+use yii\helpers\Yii;
 use yii\base\BaseObject;
 use yii\rbac\CheckAccessInterface;
 use yii\rbac\PhpManager;
 use yii\http\Cookie;
 use yii\http\CookieCollection;
 use yii\web\ForbiddenHttpException;
-use yiiunit\TestCase;
+use yii\tests\TestCase;
 
 /**
  * @group web
@@ -429,7 +429,7 @@ class AccessChecker extends BaseObject implements CheckAccessInterface
     }
 }
 
-class ExceptionIdentity extends \yiiunit\framework\filters\stubs\UserIdentity
+class ExceptionIdentity extends \yii\web\tests\filters\stubs\UserIdentity
 {
     public static function findIdentity($id)
     {

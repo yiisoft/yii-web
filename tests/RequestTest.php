@@ -5,13 +5,13 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\framework\web;
+namespace yii\tests\web;
 
 use yii\http\MemoryStream;
 use yii\http\UploadedFile;
 use yii\web\Request;
 use yii\web\UnsupportedMediaTypeHttpException;
-use yiiunit\TestCase;
+use yii\tests\TestCase;
 
 /**
  * @group web

@@ -951,7 +951,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * > If the webserver is configured to serve the same site independent of the value of
      * > the `Host` header, this value is not reliable. In such situations you should either
      * > fix your webserver configuration or explicitly set the value by setting the [[setHostInfo()|hostInfo]] property.
-     * > If you don't have access to the server configuration, you can setup [[\yii\filters\HostControl]] filter at
+     * > If you don't have access to the server configuration, you can setup [[\yii\web\filters\HostControl]] filter at
      * > application level in order to protect against such kind of attack.
      *
      * @property string|null schema and hostname part (with port number if needed) of the request URL

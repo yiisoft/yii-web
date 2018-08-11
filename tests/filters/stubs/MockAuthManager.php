@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\framework\filters\stubs;
+namespace yii\web\tests\filters\stubs;
 
 use yii\rbac\PhpManager;
 

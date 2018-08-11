@@ -5,14 +5,14 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\framework\web\session;
+namespace yii\tests\web\session;
 
-use Yii;
+use yii\helpers\Yii;
 use yii\db\Connection;
 use yii\db\Query;
 use yii\web\DbSession;
-use yiiunit\framework\console\controllers\EchoMigrateController;
-use yiiunit\TestCase;
+use yii\tests\framework\console\controllers\EchoMigrateController;
+use yii\tests\TestCase;
 
 /**
  * @group db

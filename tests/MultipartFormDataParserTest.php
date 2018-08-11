@@ -5,13 +5,13 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\framework\web;
+namespace yii\tests\web;
 
 use Psr\Http\Message\UploadedFileInterface;
 use yii\http\UploadedFile;
 use yii\web\MultipartFormDataParser;
 use yii\web\Request;
-use yiiunit\TestCase;
+use yii\tests\TestCase;
 
 class MultipartFormDataParserTest extends TestCase
 {

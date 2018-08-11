@@ -257,7 +257,7 @@ Please update yiisite/common/data/versions.php file with the following code:
   <target name="help">
     <echo>
 
-    Welcome to use Yii build script!
+    Welcome to use yii\helpers\Yii build script!
     --------------------------------
     You may use the following command format to build a target:
 

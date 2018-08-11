@@ -5,14 +5,14 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\framework\web;
+namespace yii\tests\web;
 
-use Yii;
+use yii\helpers\Yii;
 use yii\exceptions\InvalidConfigException;
 use yii\exceptions\UserException;
 use yii\web\Controller;
 use yii\web\ErrorAction;
-use yiiunit\TestCase;
+use yii\tests\TestCase;
 
 /**
  * @group web
@@ -136,7 +136,7 @@ class TestController extends Controller
         return [
             'error' => array_merge([
                 '__class' => ErrorAction::class,
-                'view' => '@yiiunit/data/views/error.php',
+                'view' => '@yii/tests/data/views/error.php',
             ], $this->actionConfig),
         ];
     }

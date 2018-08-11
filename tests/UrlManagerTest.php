@@ -5,12 +5,12 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\framework\web;
+namespace yii\tests\web;
 
-use Yii;
+use yii\helpers\Yii;
 use yii\web\Request;
 use yii\web\UrlManager;
-use yiiunit\TestCase;
+use yii\tests\TestCase;
 
 /**
  * This tests verifies all features provided by UrlManager according to the documentation.
