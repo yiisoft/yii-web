@@ -7,11 +7,6 @@ return [
         '__class' => yii\web\Application::class,
         'aliases' => [
             '@web' => '/',
-            '@public' => '@root/public',
-            '@bower' => '@vendor/bower-asset',
-            '@npm' => '@vendor/npm-asset',
-            '@vendor/bower' => '@vendor/bower-asset',
-            '@vendor/npm' => '@vendor/npm-asset',
         ],
     ],
 
