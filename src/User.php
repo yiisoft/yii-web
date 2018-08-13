@@ -61,11 +61,6 @@ use yii\helpers\Yii;
  */
 class User extends Component
 {
-    const EVENT_BEFORE_LOGIN = 'beforeLogin';
-    const EVENT_AFTER_LOGIN = 'afterLogin';
-    const EVENT_BEFORE_LOGOUT = 'beforeLogout';
-    const EVENT_AFTER_LOGOUT = 'afterLogout';
-
     /**
      * @var string the class name of the [[identity]] object.
      */
@@ -464,7 +459,7 @@ class User extends Component
 
     /**
      * This method is called before logging in a user.
-     * The default implementation will trigger the [[EVENT_BEFORE_LOGIN]] event.
+     * The default implementation will trigger the [[LoginEvent::BEFORE]] event.
      * If you override this method, make sure you call the parent implementation
      * so that the event is triggered.
      * @param IdentityInterface $identity the user identity information
@@ -473,22 +468,14 @@ class User extends Component
      * If 0, it means login till the user closes the browser or the session is manually destroyed.
      * @return bool whether the user should continue to be logged in
      */
-    protected function beforeLogin($identity, $cookieBased, $duration)
+    protected function beforeLogin($identity, $cookieBased, $duration): bool
     {
-        $event = new UserEvent([
-            'name' => self::EVENT_BEFORE_LOGIN,
-            'identity' => $identity,
-            'cookieBased' => $cookieBased,
-            'duration' => $duration,
-        ]);
-        $this->trigger($event);
-
-        return $event->isValid;
+        return $this->trigger(LoginEvent::before($identity, $cookieBased, $duration));
     }
 
     /**
      * This method is called after the user is successfully logged in.
-     * The default implementation will trigger the [[EVENT_AFTER_LOGIN]] event.
+     * The default implementation will trigger the [[LoginEvent::AFTER]] event.
      * If you override this method, make sure you call the parent implementation
      * so that the event is triggered.
      * @param IdentityInterface $identity the user identity information
@@ -498,46 +485,32 @@ class User extends Component
      */
     protected function afterLogin($identity, $cookieBased, $duration)
     {
-        $this->trigger(new UserEvent([
-            'name' => self::EVENT_AFTER_LOGIN,
-            'identity' => $identity,
-            'cookieBased' => $cookieBased,
-            'duration' => $duration,
-        ]));
+        $this->trigger(LoginEvent::after($identity, $cookieBased, $duration));
     }
 
     /**
      * This method is invoked when calling [[logout()]] to log out a user.
-     * The default implementation will trigger the [[EVENT_BEFORE_LOGOUT]] event.
+     * The default implementation will trigger the [[LogoutEvent::AFTER]] event.
      * If you override this method, make sure you call the parent implementation
      * so that the event is triggered.
      * @param IdentityInterface $identity the user identity information
      * @return bool whether the user should continue to be logged out
      */
-    protected function beforeLogout($identity)
+    protected function beforeLogout($identity): bool
     {
-        $event = new UserEvent([
-            'name' => self::EVENT_BEFORE_LOGOUT,
-            'identity' => $identity,
-        ]);
-        $this->trigger($event);
-
-        return $event->isValid;
+        return $this->trigger(LogoutEvent::before($identity));
     }
 
     /**
      * This method is invoked right after a user is logged out via [[logout()]].
-     * The default implementation will trigger the [[EVENT_AFTER_LOGOUT]] event.
+     * The default implementation will trigger the [[LogoutEvent::AFTER]] event.
      * If you override this method, make sure you call the parent implementation
      * so that the event is triggered.
      * @param IdentityInterface $identity the user identity information
      */
     protected function afterLogout($identity)
     {
-        $this->trigger(new UserEvent([
-            'name' => self::EVENT_AFTER_LOGOUT,
-            'identity' => $identity,
-        ]));
+        $this->trigger(LogoutEvent::before($identity));
     }
 
     /**
