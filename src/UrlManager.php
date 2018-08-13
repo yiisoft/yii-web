@@ -9,6 +9,7 @@ namespace yii\web;
 
 use yii\base\Application;
 use yii\base\Component;
+use yii\di\Initiable;
 use yii\exceptions\InvalidConfigException;
 use yii\caching\CacheInterface;
 use yii\helpers\Url;
@@ -47,7 +48,7 @@ use yii\helpers\Yii;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class UrlManager extends Component
+class UrlManager extends Component implements Initiable
 {
     /**
      * @var bool whether to enable pretty URLs. Instead of putting all parameters in the query
@@ -165,7 +166,7 @@ class UrlManager extends Component
         $this->normalizer = $normalizer;
     }
 
-    public function init()
+    public function init(): void
     {
         if (!$this->enablePrettyUrl) {
             return;
