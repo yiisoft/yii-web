@@ -10,7 +10,6 @@ namespace yii\web\filters;
 use yii\helpers\Yii;
 use yii\base\ActionEvent;
 use yii\base\Behavior;
-use yii\web\Controller;
 use yii\web\MethodNotAllowedHttpException;
 
 /**
@@ -77,7 +76,7 @@ class VerbFilter extends Behavior
      */
     public function events()
     {
-        return [Controller::EVENT_BEFORE_ACTION => 'beforeAction'];
+        return [ActionEvent::BEFORE => 'beforeAction'];
     }
 
     /**
