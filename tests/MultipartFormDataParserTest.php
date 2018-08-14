@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\tests\web;
+namespace yii\web\tests;
 
 use Psr\Http\Message\UploadedFileInterface;
 use yii\http\UploadedFile;
@@ -27,11 +27,12 @@ class MultipartFormDataParserTest extends TestCase
         $rawBody .= "\r\n--{$boundary}\nContent-Disposition: form-data; name=\"Item[file]\"; filename=\"item-file.txt\"\nContent-Type: text/plain\r\n\r\nitem file content";
         $rawBody .= "\r\n--{$boundary}--";
 
-        $request = new Request([
+        $request = $this->factory->create([
+            '__class' => Request::class,
             'rawBody' => $rawBody,
             'headers' => [
-                'content-type' => [$contentType]
-            ]
+                'content-type' => [$contentType],
+            ],
         ]);
 
         $bodyParams = $parser->parse($request);

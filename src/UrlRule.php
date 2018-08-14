@@ -7,9 +7,10 @@
 
 namespace yii\web;
 
-use yii\helpers\Yii;
 use yii\base\BaseObject;
+use yii\di\Initiable;
 use yii\exceptions\InvalidConfigException;
+use yii\helpers\Yii;
 
 /**
  * UrlRule represents a rule used by [[UrlManager]] for parsing and generating URLs.
@@ -30,7 +31,7 @@ use yii\exceptions\InvalidConfigException;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class UrlRule extends BaseObject implements UrlRuleInterface
+class UrlRule extends BaseObject implements UrlRuleInterface, Initiable
 {
     /**
      * Set [[mode]] with this value to mark that this rule is for URL parsing only.
@@ -186,7 +187,7 @@ class UrlRule extends BaseObject implements UrlRuleInterface
     /**
      * Initializes this rule.
      */
-    public function init()
+    public function init(): void
     {
         if ($this->pattern === null) {
             throw new InvalidConfigException('UrlRule::$pattern must be set.');

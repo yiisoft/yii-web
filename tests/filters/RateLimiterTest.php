@@ -100,7 +100,7 @@ class RateLimiterTest extends TestCase
     public function testBeforeActionEmptyUser()
     {
         $user = new User(['identityClass' => RateLimit::class]);
-        Yii::$app->set('user', $user);
+        $this->app->set('user', $user);
         $rateLimiter = new RateLimiter();
 
         $result = $rateLimiter->beforeAction('test');
@@ -119,7 +119,7 @@ class RateLimiterTest extends TestCase
         $rateLimiter = new RateLimiter();
 
         $this->expectException(\yii\web\TooManyRequestsHttpException::class);
-        $rateLimiter->checkRateLimit($rateLimit, Yii::$app->request, Yii::$app->response, 'testAction');
+        $rateLimiter->checkRateLimit($rateLimit, $this->app->request, $this->app->response, 'testAction');
     }
 
     public function testCheckRateaddRateLimitHeaders()
@@ -131,8 +131,8 @@ class RateLimiterTest extends TestCase
             ->setAllowance([2, time()]);
 
         $rateLimiter = new RateLimiter();
-        $response = Yii::$app->response;
-        $rateLimiter->checkRateLimit($rateLimit, Yii::$app->request, $response, 'testAction');
+        $response = $this->app->response;
+        $rateLimiter->checkRateLimit($rateLimit, $this->app->request, $response, 'testAction');
         $headers = $response->getHeaderCollection();
         $this->assertEquals(2, $headers->get('X-Rate-Limit-Limit'));
         $this->assertEquals(1, $headers->get('X-Rate-Limit-Remaining'));
@@ -143,7 +143,7 @@ class RateLimiterTest extends TestCase
     {
         $rateLimiter = new RateLimiter();
         $rateLimiter->enableRateLimitHeaders = false;
-        $response = Yii::$app->response;
+        $response = $this->app->response;
 
         $rateLimiter->addRateLimitHeaders($response, 1, 0, 0);
         $this->assertCount(0, $response->getHeaders());
@@ -153,7 +153,7 @@ class RateLimiterTest extends TestCase
     {
         $rateLimiter = new RateLimiter();
         $rateLimiter->enableRateLimitHeaders = true;
-        $response = Yii::$app->response;
+        $response = $this->app->response;
 
         $rateLimiter->addRateLimitHeaders($response, 1, 0, 0);
         $this->assertCount(3, $response->getHeaders());

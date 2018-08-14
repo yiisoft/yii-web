@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\tests\web\session\pgsql;
+namespace yii\web\tests\session\pgsql;
 
 /**
  * Class DbSessionTest.
@@ -15,7 +15,7 @@ namespace yii\tests\web\session\pgsql;
  * @group db
  * @group pgsql
  */
-class DbSessionTest extends \yii\tests\web\session\AbstractDbSessionTest
+class DbSessionTest extends \yii\web\tests\session\AbstractDbSessionTest
 {
     protected function setUp()
     {

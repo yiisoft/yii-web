@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\tests\web;
+namespace yii\web\tests;
 
 use yii\helpers\Yii;
 use yii\helpers\VarDumper;
@@ -1289,7 +1289,7 @@ class UrlRuleTest extends TestCase
             [$route, $params, $expected, $status] = $test;
 
             $this->mockWebApplication();
-            Yii::$app->set('request', new Request(['hostInfo' => 'http://example.com', 'scriptUrl' => '/index.php']));
+            $this->app->set('request', new Request(['hostInfo' => 'http://example.com', 'scriptUrl' => '/index.php']));
 
             $manager = new UrlManager([
                 'cache' => null,

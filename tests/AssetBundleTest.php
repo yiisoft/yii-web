@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\tests\web;
+namespace yii\web\tests;
 
 use yii\helpers\Yii;
 use yii\helpers\FileHelper;
@@ -23,14 +23,13 @@ class AssetBundleTest extends \yii\tests\TestCase
         parent::setUp();
         $this->mockApplication();
 
-        Yii::setAlias('@web', '/');
-        Yii::setAlias('@webroot', '@yii/tests/data/web');
-        Yii::setAlias('@testAssetsPath', '@webroot/assets');
-        Yii::setAlias('@testAssetsUrl', '@web/assets');
-        Yii::setAlias('@testSourcePath', '@webroot/assetSources');
+        $this->app->setAlias('@public', '@yii/tests/data/web');
+        $this->app->setAlias('@testAssetsPath', '@public/assets');
+        $this->app->setAlias('@testAssetsUrl', '@web/assets');
+        $this->app->setAlias('@testSourcePath', '@public/assetSources');
 
         // clean up assets directory
-        $handle = opendir($dir = Yii::getAlias('@testAssetsPath'));
+        $handle = opendir($dir = $this->app->getAlias('@testAssetsPath'));
         if ($handle === false) {
             throw new \Exception("Unable to open directory: $dir");
         }
@@ -60,11 +59,11 @@ class AssetBundleTest extends \yii\tests\TestCase
 
         return $this->app->createObject([
             '__class' => View::class,
-            'assetManager' => [
+            'assetManager' => $this->app->createObject([
                 '__class' => AssetManager::class,
                 'basePath' => '@testAssetsPath',
                 'baseUrl' => '@testAssetsUrl',
-            ],
+            ]),
         ]);
     }
 
@@ -236,12 +235,12 @@ EOF;
         $this->assertEmpty($view->assetBundles);
         TestAssetBundle::register($view);
         $this->assertCount(3, $view->assetBundles);
-        $this->assertArrayHasKey('yii\\web\\tests\\TestAssetBundle', $view->assetBundles);
-        $this->assertArrayHasKey('yii\\web\\tests\\TestJqueryAsset', $view->assetBundles);
-        $this->assertArrayHasKey('yii\\web\\tests\\TestAssetLevel3', $view->assetBundles);
-        $this->assertInstanceOf(AssetBundle::class, $view->assetBundles['yii\\web\\tests\\TestAssetBundle']);
-        $this->assertInstanceOf(AssetBundle::class, $view->assetBundles['yii\\web\\tests\\TestJqueryAsset']);
-        $this->assertInstanceOf(AssetBundle::class, $view->assetBundles['yii\\web\\tests\\TestAssetLevel3']);
+        $this->assertArrayHasKey(TestAssetBundle::class, $view->assetBundles);
+        $this->assertArrayHasKey(TestJqueryAsset::class, $view->assetBundles);
+        $this->assertArrayHasKey(TestAssetLevel3::class, $view->assetBundles);
+        $this->assertInstanceOf(AssetBundle::class, $view->assetBundles[TestAssetBundle::class]);
+        $this->assertInstanceOf(AssetBundle::class, $view->assetBundles[TestJqueryAsset::class]);
+        $this->assertInstanceOf(AssetBundle::class, $view->assetBundles[TestAssetLevel3::class]);
 
         $expected = <<<'EOF'
 1<link href="/files/cssFile.css" rel="stylesheet">23<script src="/js/jquery.js"></script>
@@ -514,11 +513,11 @@ EOF;
      */
     public function testRegisterFileAppendTimestamp($type, $path, $appendTimestamp, $expected, $webAlias = null)
     {
-        $originalAlias = Yii::getAlias('@web');
+        $originalAlias = $this->app->getAlias('@web');
         if ($webAlias === null) {
             $webAlias = $originalAlias;
         }
-        Yii::setAlias('@web', $webAlias);
+        $this->app->setAlias('@web', $webAlias);
 
 
         $view = $this->getView(['appendTimestamp' => $appendTimestamp]);
@@ -526,13 +525,13 @@ EOF;
         $view->$method($path);
         $this->assertEquals($expected, $view->renderFile('@yii/tests/data/views/rawlayout.php'));
 
-        Yii::setAlias('@web', $originalAlias);
+        $this->app->setAlias('@web', $originalAlias);
     }
 }
 
 class TestSimpleAsset extends AssetBundle
 {
-    public $basePath = '@webroot/js';
+    public $basePath = '@public/js';
     public $baseUrl = '@web/js';
     public $js = [
         'jquery.js',
@@ -552,7 +551,7 @@ class TestSourceAsset extends AssetBundle
 
 class TestAssetBundle extends AssetBundle
 {
-    public $basePath = '@webroot/files';
+    public $basePath = '@public/files';
     public $baseUrl = '@web/files';
     public $css = [
         'cssFile.css',
@@ -561,55 +560,55 @@ class TestAssetBundle extends AssetBundle
         'jsFile.js',
     ];
     public $depends = [
-        'yii\\web\\tests\\TestJqueryAsset',
+        TestJqueryAsset::class,
     ];
 }
 
 class TestJqueryAsset extends AssetBundle
 {
-    public $basePath = '@webroot/js';
+    public $basePath = '@public/js';
     public $baseUrl = '@web/js';
     public $js = [
         'jquery.js',
     ];
     public $depends = [
-        'yii\\web\\tests\\TestAssetLevel3',
+        TestAssetLevel3::class,
     ];
 }
 
 class TestAssetLevel3 extends AssetBundle
 {
-    public $basePath = '@webroot/js';
+    public $basePath = '@public/js';
     public $baseUrl = '@web/js';
 }
 
 class TestAssetCircleA extends AssetBundle
 {
-    public $basePath = '@webroot/js';
+    public $basePath = '@public/js';
     public $baseUrl = '@web/js';
     public $js = [
         'jquery.js',
     ];
     public $depends = [
-        'yii\\web\\tests\\TestAssetCircleB',
+        TestAssetCircleB::class,
     ];
 }
 
 class TestAssetCircleB extends AssetBundle
 {
-    public $basePath = '@webroot/js';
+    public $basePath = '@public/js';
     public $baseUrl = '@web/js';
     public $js = [
         'jquery.js',
     ];
     public $depends = [
-        'yii\\web\\tests\\TestAssetCircleA',
+        TestAssetCircleA::class,
     ];
 }
 
 class TestAssetPerFileOptions extends AssetBundle
 {
-    public $basePath = '@webroot';
+    public $basePath = '@public';
     public $baseUrl = '@web';
     public $css = [
         'default_options.css',

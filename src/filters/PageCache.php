@@ -40,7 +40,7 @@ use yii\web\Response;
  *                 'sql' => 'SELECT COUNT(*) FROM post',
  *             ],
  *             'variations' => [
- *                 \Yii::$app->language,
+ *                 \Yii::getApp()->language,
  *             ]
  *         ],
  *     ];
@@ -105,7 +105,7 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
      *
      * ```php
      * [
-     *     Yii::$app->language,
+     *     Yii::getApp()->language,
      * ]
      * ```
      */
@@ -143,7 +143,7 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
     {
         parent::init();
         if ($this->view === null) {
-            $this->view = Yii::$app->getView();
+            $this->view = Yii::getApp()->getView();
         }
     }
 
@@ -165,7 +165,7 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
             $this->dependency = Yii::createObject($this->dependency);
         }
 
-        $response = Yii::$app->getResponse();
+        $response = Yii::getApp()->getResponse();
         $data = $this->cache->get($this->calculateCacheKey());
         if (!is_array($data) || !isset($data['cacheVersion']) || $data['cacheVersion'] !== static::PAGE_CACHE_VERSION) {
             $this->view->pushDynamicContent($this);
@@ -242,7 +242,7 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
             return;
         }
 
-        $response = Yii::$app->getResponse();
+        $response = Yii::getApp()->getResponse();
         $data = [
             'cacheVersion' => static::PAGE_CACHE_VERSION,
             'cacheData' => is_array($beforeCacheResponseResult) ? $beforeCacheResponseResult : null,
@@ -301,7 +301,7 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
     {
         $key = [__CLASS__];
         if ($this->varyByRoute) {
-            $key[] = Yii::$app->requestedRoute;
+            $key[] = Yii::getApp()->requestedRoute;
         }
         return array_merge($key, (array)$this->variations);
     }

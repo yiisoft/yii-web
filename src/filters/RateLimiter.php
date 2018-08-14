@@ -49,7 +49,7 @@ class RateLimiter extends ActionFilter
     public $errorMessage = 'Rate limit exceeded.';
     /**
      * @var RateLimitInterface the user object that implements the RateLimitInterface.
-     * If not set, it will take the value of `Yii::$app->user->getIdentity(false)`.
+     * If not set, it will take the value of `Yii::getApp()->user->getIdentity(false)`.
      */
     public $user;
     /**
@@ -68,10 +68,10 @@ class RateLimiter extends ActionFilter
     public function init()
     {
         if ($this->request === null) {
-            $this->request = Yii::$app->getRequest();
+            $this->request = Yii::getApp()->getRequest();
         }
         if ($this->response === null) {
-            $this->response = Yii::$app->getResponse();
+            $this->response = Yii::getApp()->getResponse();
         }
     }
 
@@ -80,8 +80,8 @@ class RateLimiter extends ActionFilter
      */
     public function beforeAction($action)
     {
-        if ($this->user === null && Yii::$app->getUser()) {
-            $this->user = Yii::$app->getUser()->getIdentity(false);
+        if ($this->user === null && Yii::getApp()->getUser()) {
+            $this->user = Yii::getApp()->getUser()->getIdentity(false);
         }
 
         if ($this->user instanceof RateLimitInterface) {

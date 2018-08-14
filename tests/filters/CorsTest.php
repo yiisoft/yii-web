@@ -23,9 +23,9 @@ class CorsTest extends TestCase
     public function testPreflight()
     {
         $this->mockWebApplication();
-        $controller = new Controller('id', Yii::$app);
+        $controller = new Controller('id', $this->app);
         $action = new Action('test', $controller);
-        $request = new Request();
+        $request = new Request($this->app);
 
         $cors = new Cors();
         $cors->request = $request;
@@ -46,9 +46,9 @@ class CorsTest extends TestCase
     public function testWildcardOrigin()
     {
         $this->mockWebApplication();
-        $controller = new Controller('id', Yii::$app);
+        $controller = new Controller('id', $this->app);
         $action = new Action('test', $controller);
-        $request = new Request();
+        $request = new Request($this->app);
 
         $cors = new Cors([
             'cors' => [

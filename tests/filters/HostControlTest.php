@@ -91,12 +91,12 @@ class HostControlTest extends TestCase
      */
     public function testFilter($allowedHosts, $host, $allowed)
     {
-        Yii::$app->request->setHeader('Host', $host);
+        $this->app->request->setHeader('Host', $host);
 
         $filter = new HostControl();
         $filter->allowedHosts = $allowedHosts;
 
-        $controller = new Controller('id', Yii::$app);
+        $controller = new Controller('id', $this->app);
         $action = new Action('test', $controller);
 
         if ($allowed) {
@@ -116,7 +116,7 @@ class HostControlTest extends TestCase
             ob_get_clean();
 
             $this->assertTrue($isExit);
-            $this->assertEquals(404, Yii::$app->response->getStatusCode());
+            $this->assertEquals(404, $this->app->response->getStatusCode());
         }
     }
 
@@ -131,7 +131,7 @@ class HostControlTest extends TestCase
             $this->denyCallBackCalled = true;
         };
 
-        $controller = new Controller('test', Yii::$app);
+        $controller = new Controller('test', $this->app);
         $action = new Action('test', $controller);
         $this->assertFalse($filter->beforeAction($action));
         $this->assertTrue($this->denyCallBackCalled, 'denyCallback should have been called.');
@@ -144,11 +144,11 @@ class HostControlTest extends TestCase
         $filter->fallbackHostInfo = 'http://yiiframework.com';
         $filter->denyCallback = function () {};
 
-        $controller = new Controller('test', Yii::$app);
+        $controller = new Controller('test', $this->app);
         $action = new Action('test', $controller);
         $filter->beforeAction($action);
 
-        $this->assertSame('yiiframework.com', Yii::$app->getRequest()->getHostName());
+        $this->assertSame('yiiframework.com', $this->app->getRequest()->getHostName());
     }
 
     public function testErrorHandlerWithDefaultHost()
@@ -160,7 +160,7 @@ class HostControlTest extends TestCase
         $filter->allowedHosts = ['example.com'];
         $filter->fallbackHostInfo = 'http://yiiframework.com';
 
-        $controller = new Controller('test', Yii::$app);
+        $controller = new Controller('test', $this->app);
         $action = new Action('test', $controller);
         $filter->beforeAction($action);
     }

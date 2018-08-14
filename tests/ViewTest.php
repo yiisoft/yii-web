@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\tests\web;
+namespace yii\web\tests;
 
 use yii\caching\FileCache;
 use yii\web\View;
@@ -113,7 +113,7 @@ class ViewTest extends TestCase
         $csrfToken1 = $this->getCSRFTokenValue($html);
 
         // regenerate token
-        \Yii::$app->request->getCsrfToken(true);
+        $this->app->request->getCsrfToken(true);
         $view->registerCsrfMetaTags();
         $html = $view->render('@yii/tests/data/views/layout.php', ['content' => 'content']);
         $this->assertContains('<meta name="csrf-param" content="_csrf">', $html);

@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\tests\web\session;
+namespace yii\web\tests\session;
 
 use yii\web\Session;
 use yii\tests\TestCase;

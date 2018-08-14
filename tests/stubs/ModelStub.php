@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\tests\web\stubs;
+namespace yii\web\tests\stubs;
 
 use yii\base\Model;
 

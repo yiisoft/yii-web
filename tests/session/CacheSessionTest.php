@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\tests\web\session;
+namespace yii\web\tests\session;
 
 use yii\helpers\Yii;
 use yii\caching\ArrayCache;
@@ -21,7 +21,7 @@ class CacheSessionTest extends \yii\tests\TestCase
     {
         parent::setUp();
         $this->mockApplication();
-        Yii::$app->set('cache', new Cache(['handler' => new ArrayCache()]));
+        $this->app->set('cache', new Cache(['handler' => new ArrayCache()]));
     }
 
     public function testCacheSession()

@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\tests\web\session\sqlite;
+namespace yii\web\tests\session\sqlite;
 
 use yii\helpers\Yii;
 
@@ -17,13 +17,13 @@ use yii\helpers\Yii;
  * @group db
  * @group sqlite
  */
-class DbSessionTest extends \yii\tests\web\session\AbstractDbSessionTest
+class DbSessionTest extends \yii\web\tests\session\AbstractDbSessionTest
 {
     protected function setUp()
     {
         parent::setUp();
 
-        if (version_compare(Yii::$app->get('db')->getServerVersion(), '3.8.3', '<')) {
+        if (version_compare($this->app->get('db')->getServerVersion(), '3.8.3', '<')) {
             $this->markTestSkipped('SQLite < 3.8.3 does not support "WITH" keyword.');
         }
     }

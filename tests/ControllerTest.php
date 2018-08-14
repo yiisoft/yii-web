@@ -5,9 +5,8 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\tests\web;
+namespace yii\web\tests;
 
-use yii\helpers\Yii;
 use yii\base\InlineAction;
 use yii\web\Response;
 use yii\tests\TestCase;
@@ -45,7 +44,7 @@ class ControllerTest extends TestCase
         ];
         $result = $this->controller->asJson($data);
         $this->assertInstanceOf('yii\web\Response', $result);
-        $this->assertSame(Yii::$app->response, $result, 'response should be the same as Yii::$app->response');
+        $this->assertSame($this->app->response, $result, 'response should be the same as $this->app->response');
         $this->assertEquals(Response::FORMAT_JSON, $result->format);
         $this->assertEquals($data, $result->data);
     }
@@ -58,7 +57,7 @@ class ControllerTest extends TestCase
         ];
         $result = $this->controller->asXml($data);
         $this->assertInstanceOf('yii\web\Response', $result);
-        $this->assertSame(Yii::$app->response, $result, 'response should be the same as Yii::$app->response');
+        $this->assertSame($this->app->response, $result, 'response should be the same as $this->app->response');
         $this->assertEquals(Response::FORMAT_XML, $result->format);
         $this->assertEquals($data, $result->data);
     }
@@ -83,18 +82,8 @@ class ControllerTest extends TestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->controller = new FakeController('fake', new \yii\web\Application([
-            'id' => 'app',
-            'basePath' => __DIR__,
-
-            'components' => [
-                'request' => [
-                    'cookieValidationKey' => 'wefJDF8sfdsfSDefwqdxj9oq',
-                    'scriptFile' => __DIR__ . '/index.php',
-                    'scriptUrl' => '/index.php',
-                ],
-            ],
-        ]));
-        $this->mockWebApplication(['controller' => $this->controller]);
+        $this->mockWebApplication();
+        $this->controller = new FakeController('fake', $this->app);
+        $this->app->controller = $this->controller;
     }
 }

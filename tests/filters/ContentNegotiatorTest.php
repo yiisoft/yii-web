@@ -29,10 +29,10 @@ class ContentNegotiatorTest extends TestCase
 
     protected function mockActionAndFilter()
     {
-        $action = new Action('test', new Controller('id', Yii::$app));
+        $action = new Action('test', new Controller('id', $this->app));
         $filter = new ContentNegotiator([
-            'request' => new Request(),
-            'response' => new Response(),
+            'request' => new Request($this->app),
+            'response' => new Response($this->app),
         ]);
 
         return [$action, $filter];
@@ -52,7 +52,7 @@ class ContentNegotiatorTest extends TestCase
         $filter->languages = [$targetLanguage, 'ru', 'en'];
 
         $filter->beforeAction($action);
-        $this->assertEquals($targetLanguage, Yii::$app->language);
+        $this->assertEquals($targetLanguage, $this->app->language);
     }
 
     /**

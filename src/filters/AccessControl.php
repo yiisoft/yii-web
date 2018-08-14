@@ -117,7 +117,7 @@ class AccessControl extends ActionFilter
     public function beforeAction($action)
     {
         $user = $this->user;
-        $request = Yii::$app->getRequest();
+        $request = Yii::getApp()->getRequest();
         /* @var $rule AccessRule */
         foreach ($this->rules as $rule) {
             if ($allow = $rule->allows($action, $user, $request)) {

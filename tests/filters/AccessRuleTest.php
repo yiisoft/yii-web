@@ -16,7 +16,7 @@ use yii\web\Request;
 use yii\web\User;
 use yii\web\tests\filters\stubs\MockAuthManager;
 use yii\web\tests\filters\stubs\UserIdentity;
-use yii\tests\framework\rbac\AuthorRule;
+use yii\rbac\tests\unit\AuthorRule;
 
 /**
  * @group filters
@@ -40,7 +40,8 @@ class AccessRuleTest extends \yii\tests\TestCase
     protected function mockRequest($method = 'GET')
     {
         /** @var Request $request */
-        $request = $this->getMockBuilder('\yii\web\Request')
+        $request = $this->getMockBuilder(Request::class)
+            ->setConstructorArgs([$this->app])
             ->setMethods(['getMethod'])
             ->getMock();
         $request->method('getMethod')->willReturn($method);
@@ -54,7 +55,8 @@ class AccessRuleTest extends \yii\tests\TestCase
      */
     protected function mockUser($userid = null)
     {
-        $user = new User([
+        $user = $this->factory->create([
+            '__class' => User::class,
             'identityClass' => UserIdentity::class,
             'enableAutoLogin' => false,
         ]);
@@ -70,7 +72,7 @@ class AccessRuleTest extends \yii\tests\TestCase
      */
     protected function mockAction()
     {
-        $controller = new Controller('site', Yii::$app);
+        $controller = new Controller('site', $this->app);
         return new Action('test', $controller);
     }
 
@@ -329,7 +331,9 @@ class AccessRuleTest extends \yii\tests\TestCase
     public function testMatchRolesAndPermissions()
     {
         $action = $this->mockAction();
-        $user = $this->getMockBuilder('\yii\web\User')->getMock();
+        $user = $this->getMockBuilder(User::class)
+            ->setConstructorArgs([$this->app])
+            ->getMock();
         $user->identityCLass = UserIdentity::class;
 
         $rule = new AccessRule([

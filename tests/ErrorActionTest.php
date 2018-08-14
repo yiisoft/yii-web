@@ -5,14 +5,15 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\tests\web;
+namespace yii\web\tests;
 
 use yii\helpers\Yii;
 use yii\exceptions\InvalidConfigException;
 use yii\exceptions\UserException;
+use yii\tests\TestCase;
+use yii\view\ViewNotFoundException;
 use yii\web\Controller;
 use yii\web\ErrorAction;
-use yii\tests\TestCase;
 
 /**
  * @group web
@@ -31,14 +32,18 @@ class ErrorActionTest extends TestCase
      * @param array $actionConfig
      * @return TestController
      */
-    public function getController($actionConfig = [])
+    public function getController(array $actionConfig = [])
     {
-        return new TestController('test', Yii::$app, ['layout' => false, 'actionConfig' => $actionConfig]);
+        $controller = new TestController('test', $this->app);
+        $controller->layout = false;
+        $controller->actionConfig = $actionConfig;
+
+        return $controller;
     }
 
     public function testYiiException()
     {
-        Yii::$app->getErrorHandler()->exception = new InvalidConfigException('This message will not be shown to the user');
+        $this->app->getErrorHandler()->exception = new InvalidConfigException('This message will not be shown to the user');
 
         $this->assertEquals('Name: Invalid Configuration
 Code: 500
@@ -48,7 +53,7 @@ Exception: yii\exceptions\InvalidConfigException', $this->getController()->runAc
 
     public function testUserException()
     {
-        Yii::$app->getErrorHandler()->exception = new UserException('User can see this error message');
+        $this->app->getErrorHandler()->exception = new UserException('User can see this error message');
 
         $this->assertEquals('Name: Exception
 Code: 500
@@ -65,7 +70,7 @@ Exception: yii\exceptions\UserException', $this->getController()->runAction('err
 
     public function testGenericException()
     {
-        Yii::$app->getErrorHandler()->exception = new \InvalidArgumentException('This message will not be shown to the user');
+        $this->app->getErrorHandler()->exception = new \InvalidArgumentException('This message will not be shown to the user');
 
         $this->assertEquals('Name: Error
 Code: 500
@@ -75,7 +80,7 @@ Exception: InvalidArgumentException', $this->getController()->runAction('error')
 
     public function testGenericExceptionCustomNameAndMessage()
     {
-        Yii::$app->getErrorHandler()->exception = new \InvalidArgumentException('This message will not be shown to the user');
+        $this->app->getErrorHandler()->exception = new \InvalidArgumentException('This message will not be shown to the user');
 
         $controller = $this->getController([
             'defaultName' => 'Oops...',
@@ -104,14 +109,14 @@ Exception: yii\web\NotFoundHttpException', $this->getController()->runAction('er
         // Unset view name. Class should try to load view that matches action name by default
         $action->view = null;
         $ds = preg_quote(DIRECTORY_SEPARATOR, '\\');
-        $this->expectException('yii\exceptions\ViewNotFoundException');
+        $this->expectException(ViewNotFoundException::class);
         $this->expectExceptionMessageRegExp('#The view file does not exist: .*?views' . $ds . 'test' . $ds . 'error.php#');
         $this->invokeMethod($action, 'renderHtmlResponse');
     }
 
     public function testLayout()
     {
-        $this->expectException('yii\exceptions\ViewNotFoundException');
+        $this->expectException(ViewNotFoundException::class);
 
         $this->getController([
             'layout' => 'non-existing',

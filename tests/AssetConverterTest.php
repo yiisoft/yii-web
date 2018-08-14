@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\tests\web;
+namespace yii\web\tests;
 
 use yii\helpers\FileHelper;
 use yii\web\AssetConverter;
@@ -27,7 +27,7 @@ class AssetConverterTest extends \yii\tests\TestCase
     {
         parent::setUp();
         $this->mockApplication();
-        $this->tmpPath = \Yii::$app->runtimePath . '/assetConverterTest_' . getmypid();
+        $this->tmpPath = $this->app->runtimePath . '/assetConverterTest_' . getmypid();
         if (!is_dir($this->tmpPath)) {
             mkdir($this->tmpPath, 0777, true);
         }

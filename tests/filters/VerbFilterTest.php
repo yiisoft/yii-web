@@ -39,7 +39,7 @@ class VerbFilterTest extends TestCase
                 'request' => $request
             ],
         ]);
-        $controller = new Controller('id', Yii::$app);
+        $controller = new Controller('id', $this->app);
         $action = new Action('test', $controller);
         $filter = new VerbFilter([
             'actions' => [
@@ -60,6 +60,6 @@ class VerbFilterTest extends TestCase
         }
 
         $this->assertTrue(isset($exception));
-        $this->assertEquals(['GET, POST, Custom'], Yii::$app->response->getHeader('Allow'));
+        $this->assertEquals(['GET, POST, Custom'], $this->app->response->getHeader('Allow'));
     }
 }

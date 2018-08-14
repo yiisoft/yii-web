@@ -83,7 +83,7 @@ class AccessRule extends Component
      * ID from the current request, you may use the following:
      *
      * ```php
-     * ['postId' => Yii::$app->request->get('id')]
+     * ['postId' => Yii::getApp()->request->get('id')]
      * ```
      *
      * You may also specify a closure that returns an array. This can be used to
@@ -97,7 +97,7 @@ class AccessRule extends Component
      *         'actions' => ['update'],
      *         'roles' => ['updatePost'],
      *         'roleParams' => function($rule) {
-     *             return ['post' => Post::findOne(Yii::$app->request->get('id'))];
+     *             return ['post' => Post::findOne(Yii::getApp()->request->get('id'))];
      *         },
      *     ],
      * ],

@@ -5,10 +5,10 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\tests\web;
+namespace yii\web\tests;
 
 use yii\web\XmlResponseFormatter;
-use yii\tests\web\stubs\ModelStub;
+use yii\web\tests\stubs\ModelStub;
 
 /**
  * @author Qiang Xue <qiang.xue@gmail.com>

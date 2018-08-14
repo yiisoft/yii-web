@@ -7,10 +7,11 @@
 
 namespace yii\web;
 
-use yii\helpers\Yii;
 use yii\base\BaseObject;
+use yii\di\Initiable;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
+use yii\helpers\Yii;
 
 /**
  * AssetBundle represents a collection of asset files, such as CSS, JS, images.
@@ -27,7 +28,7 @@ use yii\helpers\Url;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class AssetBundle extends BaseObject
+class AssetBundle extends BaseObject implements Initiable
 {
     /**
      * @var string the directory that contains the source asset files for this asset bundle.
@@ -129,7 +130,7 @@ class AssetBundle extends BaseObject
      * Initializes the bundle.
      * If you override this method, make sure you call the parent implementation in the last.
      */
-    public function init()
+    public function init(): void
     {
         if ($this->sourcePath !== null) {
             $this->sourcePath = rtrim(Yii::getAlias($this->sourcePath), '/\\');

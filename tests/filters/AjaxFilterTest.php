@@ -26,7 +26,8 @@ class AjaxFilterTest extends TestCase
     protected function mockRequest($isAjax)
     {
         /** @var Request $request */
-        $request = $this->getMockBuilder('\yii\web\Request')
+        $request = $this->getMockBuilder(Request::class)
+            ->setConstructorArgs([$this->app])
             ->setMethods(['getIsAjax'])
             ->getMock();
         $request->method('getIsAjax')->willReturn($isAjax);
@@ -37,7 +38,7 @@ class AjaxFilterTest extends TestCase
     public function testFilter()
     {
         $this->mockWebApplication();
-        $controller = new Controller('id', Yii::$app);
+        $controller = new Controller('id', $this->app);
         $action = new Action('test', $controller);
         $filter = new AjaxFilter();
 

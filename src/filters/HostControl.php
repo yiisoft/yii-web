@@ -133,7 +133,7 @@ class HostControl extends ActionFilter
             $allowedHosts = (array) $allowedHosts;
         }
 
-        $currentHost = Yii::$app->getRequest()->getHostName();
+        $currentHost = Yii::getApp()->getRequest()->getHostName();
 
         foreach ($allowedHosts as $allowedHost) {
             if (StringHelper::matchWildcard($allowedHost, $currentHost)) {
@@ -143,7 +143,7 @@ class HostControl extends ActionFilter
 
         // replace invalid host info to prevent using it in further processing
         if ($this->fallbackHostInfo !== null) {
-            Yii::$app->getRequest()->setHostInfo($this->fallbackHostInfo);
+            Yii::getApp()->getRequest()->setHostInfo($this->fallbackHostInfo);
         }
 
         if ($this->denyCallback !== null) {
@@ -168,17 +168,17 @@ class HostControl extends ActionFilter
         $exception = new NotFoundHttpException(Yii::t('yii', 'Page not found.'));
 
         // use regular error handling if $this->fallbackHostInfo was set
-        if (!empty(Yii::$app->getRequest()->hostName)) {
+        if (!empty(Yii::getApp()->getRequest()->hostName)) {
             throw $exception;
         }
 
-        $response = Yii::$app->getResponse();
-        $errorHandler = Yii::$app->getErrorHandler();
+        $response = Yii::getApp()->getResponse();
+        $errorHandler = Yii::getApp()->getErrorHandler();
 
         $response->setStatusCode($exception->statusCode, $exception->getMessage());
         $response->data = $errorHandler->renderFile($errorHandler->errorView, ['exception' => $exception]);
         $response->send();
 
-        Yii::$app->end();
+        Yii::getApp()->end();
     }
 }

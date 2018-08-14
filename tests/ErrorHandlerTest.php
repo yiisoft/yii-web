@@ -5,9 +5,8 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\tests\web;
+namespace yii\web\tests;
 
-use yii\helpers\Yii;
 use yii\web\NotFoundHttpException;
 use yii\tests\TestCase;
 
@@ -16,12 +15,10 @@ class ErrorHandlerTest extends TestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->mockWebApplication([
-            'components' => [
-                'errorHandler' => [
-                    '__class' => \yii\tests\web\ErrorHandler::class,
-                    'errorView' => '@yii/tests/data/views/errorHandler.php',
-                ],
+        $this->mockWebApplication([], null, [
+            'errorHandler' => [
+                '__class' => \yii\web\tests\ErrorHandler::class,
+                'errorView' => '@yii/tests/data/views/errorHandler.php',
             ],
         ]);
     }
@@ -29,11 +26,11 @@ class ErrorHandlerTest extends TestCase
     public function testCorrectResponseCodeInErrorView()
     {
         /** @var ErrorHandler $handler */
-        $handler = Yii::$app->getErrorHandler();
+        $handler = $this->app->getErrorHandler();
         ob_start(); // suppress response output
         $this->invokeMethod($handler, 'renderException', [new NotFoundHttpException('This message is displayed to end user')]);
         ob_get_clean();
-        $out = Yii::$app->response->data;
+        $out = $this->app->response->data;
         $this->assertEquals('Code: 404
 Message: This message is displayed to end user
 Exception: yii\web\NotFoundHttpException', $out);
@@ -41,9 +38,9 @@ Exception: yii\web\NotFoundHttpException', $out);
 
     public function testRenderCallStackItem()
     {
-        $handler = Yii::$app->getErrorHandler();
+        $handler = $this->app->getErrorHandler();
         $handler->traceLine = '<a href="netbeans://open?file={file}&line={line}">{html}</a>';
-        $file = \yii\BaseYii::getAlias('@yii/web/Application.php');
+        $file = $this->app->getAlias('@yii/web/Application.php');
 
         $out = $handler->renderCallStackItem($file, 63, \yii\web\Application::class, null, null, null);
 

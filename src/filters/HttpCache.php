@@ -119,7 +119,7 @@ class HttpCache extends ActionFilter
             return true;
         }
 
-        $verb = Yii::$app->getRequest()->getMethod();
+        $verb = Yii::getApp()->getRequest()->getMethod();
         if ($verb !== 'GET' && $verb !== 'HEAD' || $this->lastModified === null && $this->etagSeed === null) {
             return true;
         }
@@ -137,7 +137,7 @@ class HttpCache extends ActionFilter
 
         $this->sendCacheControlHeader();
 
-        $response = Yii::$app->getResponse();
+        $response = Yii::getApp()->getResponse();
         if ($etag !== null) {
             $response->setHeader('Etag', $etag);
         }
@@ -165,11 +165,11 @@ class HttpCache extends ActionFilter
      */
     protected function validateCache($lastModified, $etag)
     {
-        $request = Yii::$app->getRequest();
+        $request = Yii::getApp()->getRequest();
         if ($request->hasHeader('if-none-match')) {
             // 'if-none-match' takes precedence over 'if-modified-since'
             // http://tools.ietf.org/html/rfc7232#section-3.3
-            return $etag !== null && in_array($etag, Yii::$app->request->getETags(), true);
+            return $etag !== null && in_array($etag, Yii::getApp()->request->getETags(), true);
         } elseif ($request->hasHeader('if-modified-since')) {
             return $lastModified !== null && @strtotime($request->getHeaderLine('if-modified-since')) >= $lastModified;
         }
@@ -184,18 +184,18 @@ class HttpCache extends ActionFilter
     protected function sendCacheControlHeader()
     {
         if ($this->sessionCacheLimiter !== null) {
-            if ($this->sessionCacheLimiter === '' && !headers_sent() && Yii::$app->getSession()->getIsActive()) {
+            if ($this->sessionCacheLimiter === '' && !headers_sent() && Yii::getApp()->getSession()->getIsActive()) {
                 header_remove('Expires');
                 header_remove('Cache-Control');
                 header_remove('Last-Modified');
                 header_remove('Pragma');
             }
 
-            Yii::$app->getSession()->setCacheLimiter($this->sessionCacheLimiter);
+            Yii::getApp()->getSession()->setCacheLimiter($this->sessionCacheLimiter);
         }
 
         if ($this->cacheControlHeader !== null) {
-            Yii::$app->getResponse()->setHeader('Cache-Control', $this->cacheControlHeader);
+            Yii::getApp()->getResponse()->setHeader('Cache-Control', $this->cacheControlHeader);
         }
     }
 

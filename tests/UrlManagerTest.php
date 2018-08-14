@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\tests\web;
+namespace yii\web\tests;
 
 use yii\helpers\Yii;
 use yii\web\Request;
@@ -42,7 +42,7 @@ class UrlManagerTest extends TestCase
         // trigger an exception here in case it gets called
         $config['baseUrl'] = null;
         $this->mockApplication();
-        Yii::$app->set('request', function () {
+        $this->app->set('request', function () {
             $this->fail('Request component should not be accessed by UrlManager with current settings.');
         });
 

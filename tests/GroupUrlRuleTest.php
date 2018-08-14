@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\tests\web;
+namespace yii\web\tests;
 
 use yii\web\GroupUrlRule;
 use yii\web\Request;
@@ -24,9 +24,17 @@ class GroupUrlRuleTest extends TestCase
         $this->mockApplication();
     }
 
+    protected function createUrlManager()
+    {
+        return $this->factory->create([
+            '__class' => UrlManager::class,
+            'cache' => null,
+        ]);
+    }
+
     public function testCreateUrl()
     {
-        $manager = new UrlManager(['cache' => null]);
+        $manager = $this->createUrlManager();
         $suites = $this->getTestsForCreateUrl();
         foreach ($suites as $i => [$name, $config, $tests]) {
             $rule = new GroupUrlRule($config);
@@ -41,8 +49,11 @@ class GroupUrlRuleTest extends TestCase
 
     public function testParseRequest()
     {
-        $manager = new UrlManager(['cache' => null]);
-        $request = new Request(['hostInfo' => 'http://en.example.com']);
+        $manager = $this->createUrlManager();
+        $request = $this->factory->create([
+            '__class' => Request::class,
+            'hostInfo' => 'http://en.example.com',
+        ]);
         $suites = $this->getTestsForParseRequest();
         foreach ($suites as $i => [$name, $config, $tests]) {
             $rule = new GroupUrlRule($config);

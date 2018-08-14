@@ -61,7 +61,7 @@ class AuthTest extends \yii\tests\TestCase
     public function authOnly($token, $login, $filter)
     {
         /** @var TestAuthController $controller */
-        $controller = Yii::$app->createController('test-auth')[0];
+        $controller = $this->app->createController('test-auth')[0];
         $controller->authenticatorConfig = ArrayHelper::merge($filter, ['only' => ['filtered']]);
         try {
             $this->assertEquals($login, $controller->run('filtered'));
@@ -72,7 +72,7 @@ class AuthTest extends \yii\tests\TestCase
     public function authOptional($token, $login, $filter)
     {
         /** @var TestAuthController $controller */
-        $controller = Yii::$app->createController('test-auth')[0];
+        $controller = $this->app->createController('test-auth')[0];
         $controller->authenticatorConfig = ArrayHelper::merge($filter, ['optional' => ['filtered']]);
         try {
             $this->assertEquals($login, $controller->run('filtered'));
@@ -83,7 +83,7 @@ class AuthTest extends \yii\tests\TestCase
     public function authExcept($token, $login, $filter)
     {
         /** @var TestAuthController $controller */
-        $controller = Yii::$app->createController('test-auth')[0];
+        $controller = $this->app->createController('test-auth')[0];
         $controller->authenticatorConfig = ArrayHelper::merge($filter, ['except' => ['other']]);
         try {
             $this->assertEquals($login, $controller->run('filtered'));
@@ -158,7 +158,7 @@ class AuthTest extends \yii\tests\TestCase
      */
     public function testHttpHeaderAuth($token, $login)
     {
-        Yii::$app->request->setHeader('X-Api-Key', $token);
+        $this->app->request->setHeader('X-Api-Key', $token);
         $filter = ['__class' => HttpHeaderAuth::class];
         $this->ensureFilterApplies($token, $login, $filter);
     }
@@ -170,7 +170,7 @@ class AuthTest extends \yii\tests\TestCase
      */
     public function testHttpBearerAuth($token, $login)
     {
-        Yii::$app->request->addHeader('Authorization', "Bearer $token");
+        $this->app->request->addHeader('Authorization', "Bearer $token");
         $filter = ['__class' => HttpBearerAuth::class];
         $this->authOnly($token, $login, $filter, 'bearer-auth');
         $this->authOptional($token, $login, $filter, 'bearer-auth');
@@ -199,7 +199,7 @@ class AuthTest extends \yii\tests\TestCase
         $method = $reflection->getMethod('isActive');
         $method->setAccessible(true);
 
-        $controller = new \yii\web\Controller('test', Yii::$app);
+        $controller = new \yii\web\Controller('test', $this->app);
 
         // active by default
         $this->assertTrue($method->invokeArgs($filter, [new Action('index', $controller)]));
@@ -238,15 +238,15 @@ class AuthTest extends \yii\tests\TestCase
 
     public function testHeaders()
     {
-        Yii::$app->request->setHeader('Authorization', "Bearer wrong_token");
+        $this->app->request->setHeader('Authorization', "Bearer wrong_token");
         $filter = ['__class' => HttpBearerAuth::class];
-        $controller = Yii::$app->createController('test-auth')[0];
+        $controller = $this->app->createController('test-auth')[0];
         $controller->authenticatorConfig = ArrayHelper::merge($filter, ['only' => ['filtered']]);
         try {
             $controller->run('filtered');
             $this->fail('Should throw UnauthorizedHttpException');
         } catch (UnauthorizedHttpException $e) {
-            $this->assertTrue(Yii::$app->getResponse()->hasHeader('www-authenticate'));
+            $this->assertTrue($this->app->getResponse()->hasHeader('www-authenticate'));
         }
     }
 }
@@ -268,6 +268,6 @@ class TestAuthController extends Controller
 
     public function actionFiltered()
     {
-        return Yii::$app->user->id;
+        return $this->app->user->id;
     }
 }

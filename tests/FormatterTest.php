@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\tests\web;
+namespace yii\web\tests;
 
 use yii\web\Response;
 use yii\web\ResponseFormatterInterface;
@@ -24,7 +24,7 @@ abstract class FormatterTest extends \yii\tests\TestCase
     protected function setUp()
     {
         $this->mockApplication();
-        $this->response = new Response();
+        $this->response = $this->factory->create(Response::class);
         $this->formatter = $this->getFormatterInstance();
     }
 

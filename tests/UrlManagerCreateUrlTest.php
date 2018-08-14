@@ -5,13 +5,13 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\tests\web;
+namespace yii\web\tests;
 
 use yii\helpers\Yii;
 use yii\caching\ArrayCache;
 use yii\web\UrlManager;
 use yii\web\UrlRule;
-use yii\tests\web\stubs\CachedUrlRule;
+use yii\web\tests\stubs\CachedUrlRule;
 use yii\tests\TestCase;
 
 /**

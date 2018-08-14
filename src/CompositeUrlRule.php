@@ -7,8 +7,10 @@
 
 namespace yii\web;
 
-use yii\helpers\Yii;
 use yii\base\BaseObject;
+use yii\di\Initiable;
+use yii\helpers\Yii;
+use yii\di\AbstractContainer;
 
 /**
  * CompositeUrlRule is the base class for URL rule classes that consist of multiple simpler rules.
@@ -19,7 +21,7 @@ use yii\base\BaseObject;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-abstract class CompositeUrlRule extends BaseObject implements UrlRuleInterface
+abstract class CompositeUrlRule extends BaseObject implements UrlRuleInterface, Initiable
 {
     /**
      * @var UrlRuleInterface[] the URL rules contained in this composite rule.
@@ -39,12 +41,20 @@ abstract class CompositeUrlRule extends BaseObject implements UrlRuleInterface
      */
     abstract protected function createRules();
 
+
+    public function __construct(array $config = [])
+    {
+        if (!empty($config)) {
+            AbstractContainer::configure($this, $config);
+        }
+        $this->init();
+    }
+
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
-        parent::init();
         $this->rules = $this->createRules();
     }
 

@@ -151,13 +151,13 @@ class ContentNegotiator extends ActionFilter implements BootstrapInterface
      */
     public function negotiate()
     {
-        $request = $this->request ?: Yii::$app->getRequest();
-        $response = $this->response ?: Yii::$app->getResponse();
+        $request = $this->request ?: Yii::getApp()->getRequest();
+        $response = $this->response ?: Yii::getApp()->getResponse();
         if (!empty($this->formats)) {
             $this->negotiateContentType($request, $response);
         }
         if (!empty($this->languages)) {
-            Yii::$app->language = $this->negotiateLanguage($request);
+            Yii::getApp()->language = $this->negotiateLanguage($request);
         }
     }
 

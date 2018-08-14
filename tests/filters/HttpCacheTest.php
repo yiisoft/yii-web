@@ -40,7 +40,7 @@ class HttpCacheTest extends \yii\tests\TestCase
             return '';
         };
         $httpCache->beforeAction(null);
-        $response = Yii::$app->getResponse();
+        $response = $this->app->getResponse();
         $this->assertFalse($response->hasHeader('Pragma'));
     }
 
@@ -49,7 +49,7 @@ class HttpCacheTest extends \yii\tests\TestCase
      */
     public function testValidateCache()
     {
-        $request = Yii::$app->request;
+        $request = $this->app->request;
         $httpCache = new HttpCache();
         $method = new \ReflectionMethod($httpCache, 'validateCache');
         $method->setAccessible(true);
@@ -93,14 +93,14 @@ class HttpCacheTest extends \yii\tests\TestCase
             return null;
         };
         $httpCache->beforeAction(null);
-        $response = Yii::$app->getResponse();
+        $response = $this->app->getResponse();
         $this->assertFalse($response->hasHeader('ETag'));
 
         $httpCache->etagSeed = function ($action, $params) {
             return '';
         };
         $httpCache->beforeAction(null);
-        $response = Yii::$app->getResponse();
+        $response = $this->app->getResponse();
 
         $this->assertTrue($response->hasHeader('ETag'));
 
@@ -111,7 +111,7 @@ class HttpCacheTest extends \yii\tests\TestCase
 
         $httpCache->weakEtag = true;
         $httpCache->beforeAction(null);
-        $response = Yii::$app->getResponse();
+        $response = $this->app->getResponse();
 
         $this->assertTrue($response->hasHeader('ETag'));
 

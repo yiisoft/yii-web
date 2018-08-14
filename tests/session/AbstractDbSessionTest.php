@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\tests\web\session;
+namespace yii\web\tests\session;
 
 use yii\helpers\Yii;
 use yii\db\Connection;
@@ -29,7 +29,7 @@ abstract class AbstractDbSessionTest extends TestCase
         parent::setUp();
 
         $this->mockApplication();
-        Yii::$app->set('db', $this->getDbConfig());
+        $this->app->set('db', $this->getDbConfig());
         $this->dropTableSession();
         $this->createTableSession();
     }
@@ -171,7 +171,7 @@ abstract class AbstractDbSessionTest extends TestCase
 
     protected function runMigrate($action, $params = [])
     {
-        $migrate = new EchoMigrateController('migrate', Yii::$app, [
+        $migrate = new EchoMigrateController('migrate', $this->app, [
             'migrationPath' => '@yii/web/migrations',
             'interactive' => false,
         ]);
@@ -209,21 +209,21 @@ abstract class AbstractDbSessionTest extends TestCase
     public function testInstantiate()
     {
         $oldTimeout = ini_get('session.gc_maxlifetime');
-        // unset Yii::$app->db to make sure that all queries are made against sessionDb
-        Yii::$app->set('sessionDb', Yii::$app->db);
-        Yii::$app->set('db', null);
+        // unset $this->app->db to make sure that all queries are made against sessionDb
+        $this->app->set('sessionDb', $this->app->db);
+        $this->app->set('db', null);
 
         $session = new DbSession([
             'timeout' => 300,
             'db' => 'sessionDb',
         ]);
 
-        $this->assertSame(Yii::$app->sessionDb, $session->db);
+        $this->assertSame($this->app->sessionDb, $session->db);
         $this->assertSame(300, $session->timeout);
         $session->close();
 
-        Yii::$app->set('db', Yii::$app->sessionDb);
-        Yii::$app->set('sessionDb', null);
+        $this->app->set('db', $this->app->sessionDb);
+        $this->app->set('sessionDb', null);
         ini_set('session.gc_maxlifetime', $oldTimeout);
     }
 }

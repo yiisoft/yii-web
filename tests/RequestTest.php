@@ -150,7 +150,7 @@ class RequestTest extends TestCase
         $request->enableCookieValidation = false;
 
         $_SERVER['REQUEST_METHOD'] = 'POST';
-        \Yii::$app->security->unmaskToken('');
+        $this->app->security->unmaskToken('');
         $this->assertFalse($request->validateCsrfToken(''));
 
         // When an empty CSRF token is given it is regenerated.
