@@ -16,7 +16,7 @@ use yii\helpers\Yii;
 /**
  * Session provides session data management and the related configurations.
  *
- * Session is a Web application component that can be accessed via `Yii::$app->session`.
+ * Session is a Web application component that can be accessed via `Yii::getApp()->session`.
  *
  * To start the session, call [[open()]]; To complete and send out session data, call [[close()]];
  * To destroy the session, call [[destroy()]].

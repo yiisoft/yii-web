@@ -41,8 +41,8 @@ use yii\http\ResourceStream;
  * ```php
  * use yii\http\UploadedFile;
  *
- * $restRequestData = Yii::$app->request->getParsedBody();
- * $uploadedFile = Yii::$app->request->getUploadedFileByName('photo');
+ * $restRequestData = Yii::getApp()->request->getParsedBody();
+ * $uploadedFile = Yii::getApp()->request->getUploadedFileByName('photo');
  *
  * $model = new Item();
  * $model->populate($restRequestData);

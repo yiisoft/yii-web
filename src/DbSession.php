@@ -173,7 +173,7 @@ class DbSession extends MultiFieldSession
             $fields = $this->typecastFields($fields);
             $this->db->createCommand()->upsert($this->sessionTable, $fields)->execute();
         } catch (\Exception $e) {
-            Yii::$app->errorHandler->handleException($e);
+            Yii::getApp()->errorHandler->handleException($e);
             return false;
         }
 

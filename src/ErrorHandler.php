@@ -20,7 +20,7 @@ use yii\helpers\Yii;
  * nature of the errors and the mode the application runs at.
  *
  * ErrorHandler is configured as an application component in [[\yii\base\Application]] by default.
- * You can access that instance via `Yii::$app->errorHandler`.
+ * You can access that instance via `Yii::getApp()->errorHandler`.
  *
  * For more details and usage information on ErrorHandler, see the [guide article on handling errors](guide:runtime-handling-errors).
  *
@@ -41,7 +41,7 @@ class ErrorHandler extends \yii\base\ErrorHandler
     /**
      * @var string the route (e.g. `site/error`) to the controller action that will be used
      * to display external errors. Inside the action, it can retrieve the error information
-     * using `Yii::$app->errorHandler->exception`. This property defaults to null, meaning ErrorHandler
+     * using `Yii::getApp()->errorHandler->exception`. This property defaults to null, meaning ErrorHandler
      * will handle the error display.
      */
     public $errorAction;

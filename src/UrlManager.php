@@ -19,7 +19,7 @@ use yii\helpers\Yii;
  * UrlManager handles HTTP request parsing and creation of URLs based on a set of rules.
  *
  * UrlManager is configured as an application component in [[\yii\base\Application]] by default.
- * You can access that instance via `Yii::$app->urlManager`.
+ * You can access that instance via `Yii::getApp()->urlManager`.
  *
  * You can modify its configuration by adding an array to your application config under `components`
  * as it is shown in the following example:

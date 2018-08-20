@@ -45,7 +45,7 @@ abstract class MultiFieldSession extends Session
      * ```php
      * function ($fields) {
      *     return [
-     *         'expireDate' => Yii::$app->formatter->asDate($fields['expire']),
+     *         'expireDate' => Yii::getApp()->formatter->asDate($fields['expire']),
      *     ];
      * }
      * ```
@@ -67,7 +67,7 @@ abstract class MultiFieldSession extends Session
      * ```php
      * function ($session) {
      *     return [
-     *         'user_id' => Yii::$app->user->id,
+     *         'user_id' => Yii::getApp()->user->id,
      *         'ip' => $_SERVER['REMOTE_ADDR'],
      *         'is_trusted' => $session->get('is_trusted', false),
      *     ];

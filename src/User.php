@@ -34,7 +34,7 @@ use yii\helpers\Yii;
  * You are also required to set [[identityClass]] with the name of this class.
  *
  * User is configured as an application component in [[\yii\web\Application]] by default.
- * You can access that instance via `Yii::$app->user`.
+ * You can access that instance via `Yii::getApp()->user`.
  *
  * You can modify its configuration by adding an array to your application config under `components`
  * as it is shown in the following example:

@@ -11,7 +11,7 @@ use yii\helpers\Yii;
 use yii\base\Action;
 use yii\cache\ArrayCache;
 use yii\cache\Cache;
-use yii\cache\ExpressionDependency;
+use yii\cache\dependencies\ExpressionDependency;
 use yii\web\filters\PageCache;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Json;

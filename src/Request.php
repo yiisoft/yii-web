@@ -32,7 +32,7 @@ use yii\validators\IpValidator;
  * parameters sent via other HTTP methods like PUT or DELETE.
  *
  * Request is configured as an application component in [[\yii\web\Application]] by default.
- * You can access that instance via `Yii::$app->request`.
+ * You can access that instance via `Yii::getApp()->request`.
  *
  * For more details and usage information on Request, see the [guide article on requests](guide:runtime-requests).
  *
