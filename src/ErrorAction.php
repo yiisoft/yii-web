@@ -60,12 +60,12 @@ class ErrorAction extends Action
      * @var string the name of the error when the exception name cannot be determined.
      * Defaults to "Error".
      */
-    public $defaultName;
+    protected $defaultName;
     /**
      * @var string the message to be displayed when the exception message contains sensitive information.
      * Defaults to "An internal server error occurred.".
      */
-    public $defaultMessage;
+    protected $defaultMessage;
     /**
      * @var string|false|null the name of the layout to be applied to this error action view.
      * If not set, the layout configured in the controller will be used.
@@ -75,7 +75,7 @@ class ErrorAction extends Action
     public $layout;
 
     /**
-     * @var \Exception the exception object, normally is filled on [[init()]] method call.
+     * @var \Throwable the exception object, normally is filled on [[init()]] method call.
      * @see [[findException()]] to know default way of obtaining exception.
      * @since 2.0.11
      */
@@ -83,20 +83,47 @@ class ErrorAction extends Action
 
 
     /**
-     * {@inheritdoc}
+     * @return string
      */
-    public function init()
+    public function getDefaultName(): string
     {
-        if ($this->defaultMessage === null) {
-            $this->defaultMessage = Yii::t('yii', 'An internal server error occurred.');
-        }
-
-        if ($this->defaultName === null) {
-            $this->defaultName = Yii::t('yii', 'Error');
-        }
+        return $this->defaultName ?? Yii::t('yii', 'Error');
     }
 
-    public function getException()
+    /**
+     * @param string $defaultName
+     * @return ErrorAction
+     */
+    public function setDefaultName(string $defaultName): self
+    {
+        $this->defaultName = $defaultName;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDefaultMessage(): string
+    {
+        return $this->defaultMessage ?? Yii::t('yii', 'An internal server error occurred.');
+    }
+
+    /**
+     * @param string $defaultMessage
+     * @return ErrorAction
+     */
+    public function setDefaultMessage(string $defaultMessage): self
+    {
+        $this->defaultMessage = $defaultMessage;
+
+        return $this;
+    }
+
+    /**
+     * @return \Throwable
+     */
+    public function getException(): \Throwable
     {
         if ($this->_exception === null) {
             $this->_exception = $this->findException();
@@ -116,7 +143,7 @@ class ErrorAction extends Action
             $this->controller->layout = $this->layout;
         }
 
-        $this->app->getResponse()->setStatusCodeByException($this->exception);
+        $this->app->getResponse()->setStatusCodeByException($this->getException());
 
         if ($this->app->getRequest()->getIsAjax()) {
             return $this->renderAjaxResponse();
@@ -156,7 +183,7 @@ class ErrorAction extends Action
         return [
             'name' => $this->getExceptionName(),
             'message' => $this->getExceptionMessage(),
-            'exception' => $this->exception,
+            'exception' => $this->getException(),
         ];
     }
 
@@ -164,7 +191,7 @@ class ErrorAction extends Action
      * Gets exception from the [[yii\web\ErrorHandler|ErrorHandler]] component.
      * In case there is no exception in the component, treat as the action has been invoked
      * not from error handler, but by direct route, so '404 Not Found' error will be displayed.
-     * @return \Exception
+     * @return \Throwable
      * @since 2.0.11
      */
     protected function findException()
@@ -183,11 +210,13 @@ class ErrorAction extends Action
      */
     protected function getExceptionCode()
     {
-        if ($this->exception instanceof HttpException) {
-            return $this->exception->statusCode;
+        $exception = $this->getException();
+
+        if ($exception instanceof HttpException) {
+            return $exception->statusCode;
         }
 
-        return $this->exception->getCode();
+        return $exception->getCode();
     }
 
     /**
@@ -196,12 +225,14 @@ class ErrorAction extends Action
      * @return string
      * @since 2.0.11
      */
-    protected function getExceptionName()
+    protected function getExceptionName(): string
     {
-        if ($this->exception instanceof Exception) {
-            $name = $this->exception->getName();
+        $exception = $this->getException();
+
+        if ($exception instanceof Exception) {
+            $name = $exception->getName();
         } else {
-            $name = $this->defaultName;
+            $name = $this->getDefaultName();
         }
 
         if ($code = $this->getExceptionCode()) {
@@ -217,12 +248,14 @@ class ErrorAction extends Action
      * @return string
      * @since 2.0.11
      */
-    protected function getExceptionMessage()
+    protected function getExceptionMessage(): string
     {
-        if ($this->exception instanceof UserException) {
-            return $this->exception->getMessage();
+        $exception = $this->getException();
+
+        if ($exception instanceof UserException) {
+            return $exception->getMessage();
         }
 
-        return $this->defaultMessage;
+        return $this->getDefaultMessage();
     }
 }
