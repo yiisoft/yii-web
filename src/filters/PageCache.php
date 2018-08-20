@@ -7,14 +7,14 @@
 
 namespace yii\web\filters;
 
-use yii\helpers\Yii;
 use yii\base\Action;
 use yii\base\ActionFilter;
+use yii\cache\CacheInterface;
+use yii\cache\dependencies\Dependency;
+use yii\helpers\Yii;
 use yii\view\DynamicContentAwareInterface;
 use yii\view\DynamicContentAwareTrait;
-use yii\caching\CacheInterface;
-use yii\caching\Dependency;
-use yii\di\Instance;
+use yii\view\View;
 use yii\web\Response;
 
 /**
@@ -36,7 +36,7 @@ use yii\web\Response;
  *             'only' => ['index'],
  *             'duration' => 60,
  *             'dependency' => [
- *                 '__class' => \yii\caching\DbDependency::class,
+ *                 '__class' => \yii\cache\dependencies\DbDependency::class,
  *                 'sql' => 'SELECT COUNT(*) FROM post',
  *             ],
  *             'variations' => [
@@ -85,7 +85,7 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
      *
      * ```php
      * [
-     *     '__class' => \yii\caching\DbDependency::class,
+     *     '__class' => \yii\cache\dependencies\DbDependency::class,
      *     'sql' => 'SELECT MAX(updated_at) FROM post',
      * ]
      * ```
@@ -93,7 +93,7 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
      * would make the output cache depend on the last modified time of all posts.
      * If any post has its modification time changed, the cached content would be invalidated.
      *
-     * If [[cacheCookies]] or [[cacheHeaders]] is enabled, then [[\yii\caching\Dependency::reusable]] should be enabled as well to save performance.
+     * If [[cacheCookies]] or [[cacheHeaders]] is enabled, then [[Dependency::reusable]] should be enabled as well to save performance.
      * This is because the cookies and headers are currently stored separately from the actual page content, causing the dependency to be evaluated twice.
      */
     public $dependency;
@@ -116,11 +116,6 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
      */
     public $enabled = true;
     /**
-     * @var \yii\base\View the view component to use for caching. If not set, the default application view component
-     * [[\yii\web\Application::view]] will be used.
-     */
-    public $view;
-    /**
      * @var bool|array a boolean value indicating whether to cache all cookies, or an array of
      * cookie names indicating which cookies can be cached. Be very careful with caching cookies, because
      * it may leak sensitive or private data stored in cookies to unwanted users.
@@ -137,17 +132,6 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
 
 
     /**
-     * {@inheritdoc}
-     */
-    public function init()
-    {
-        parent::init();
-        if ($this->view === null) {
-            $this->view = Yii::getApp()->getView();
-        }
-    }
-
-    /**
      * This method is invoked right before an action is to be executed (after all possible filters.)
      * You may override this method to do last-minute preparation for the action.
      * @param Action $action the action to be executed.
@@ -159,7 +143,7 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
             return true;
         }
 
-        $this->cache = Instance::ensure($this->cache, CacheInterface::class);
+        $this->cache = Yii::ensureObject($this->cache, CacheInterface::class);
 
         if (is_array($this->dependency)) {
             $this->dependency = Yii::createObject($this->dependency);
@@ -168,7 +152,7 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
         $response = Yii::getApp()->getResponse();
         $data = $this->cache->get($this->calculateCacheKey());
         if (!is_array($data) || !isset($data['cacheVersion']) || $data['cacheVersion'] !== static::PAGE_CACHE_VERSION) {
-            $this->view->pushDynamicContent($this);
+            $this->getView()->pushDynamicContent($this);
             ob_start();
             ob_implicit_flush(false);
             $response->on(Response::EVENT_AFTER_SEND, [$this, 'cacheResponse']);
@@ -235,7 +219,7 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
      */
     public function cacheResponse()
     {
-        $this->view->popDynamicContent();
+        $this->getView()->popDynamicContent();
         $beforeCacheResponseResult = $this->beforeCacheResponse();
         if ($beforeCacheResponseResult === false) {
             echo $this->updateDynamicContent(ob_get_clean(), $this->getDynamicPlaceholders());
@@ -306,11 +290,24 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
         return array_merge($key, (array)$this->variations);
     }
 
+    protected $_view;
+
+    public function setView(View $view): self
+    {
+        $this->_view = $view;
+
+        return $this;
+    }
+
     /**
      * {@inheritdoc}
      */
     public function getView()
     {
-        return $this->view;
+        if ($this->_view === null) {
+            $this->_view = Yii::getApp()->getView();
+        }
+
+        return $this->_view;
     }
 }
