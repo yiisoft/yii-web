@@ -15,7 +15,7 @@ use yii\base\Event;
  * @author Andrii Vasyliev <sol@hiqdev.com>
  * @since 3.0
  */
-class LoginEvent extends Event
+class LogoutEvent extends Event
 {
     /**
      * @event raised before executing user logout.
