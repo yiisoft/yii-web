@@ -367,9 +367,9 @@ class AssetManager extends Component
             $asset = $bundle->sourcePath . '/' . $asset;
         }
 
-        $n = mb_strlen($asset, $this->app->charset);
+        $n = mb_strlen($asset, $this->app->encoding);
         foreach ($this->assetMap as $from => $to) {
-            $n2 = mb_strlen($from, $this->app->charset);
+            $n2 = mb_strlen($from, $this->app->encoding);
             if ($n2 <= $n && substr_compare($asset, $from, $n - $n2, $n2) === 0) {
                 return $to;
             }
