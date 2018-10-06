@@ -26,6 +26,7 @@ return [
     ],
     'request' => [
         '__class' => yii\web\Request::class,
+        'cookieValidationKey' => $params['request.cookieValidationKey'],
     ],
     'response' => [
         '__class' => yii\web\Response::class,
