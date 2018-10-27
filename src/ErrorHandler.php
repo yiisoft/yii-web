@@ -259,7 +259,10 @@ class ErrorHandler extends \yii\base\ErrorHandler
             return ob_get_clean();
         }
 
-        return $this->app->getView()->renderFile($_file_, $_params_, $this);
+        $view = $this->app->getView();
+        $view->clear();
+        
+        return $view->renderFile($_file_, $_params_, $this);
     }
 
     /**
