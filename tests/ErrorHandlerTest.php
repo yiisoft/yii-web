@@ -19,6 +19,7 @@ class ErrorHandlerTest extends TestCase
             'errorHandler' => [
                 '__class' => \yii\web\tests\ErrorHandler::class,
                 'errorView' => '@yii/tests/data/views/errorHandler.php',
+                'exceptionView' => '@yii/tests/data/views/errorHandlerForAssetFiles.php',
             ],
         ]);
     }
