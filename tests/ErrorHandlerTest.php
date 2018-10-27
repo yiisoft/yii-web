@@ -35,6 +35,19 @@ class ErrorHandlerTest extends TestCase
 Message: This message is displayed to end user
 Exception: yii\web\NotFoundHttpException', $out);
     }
+    
+    public function testClearAssetFilesInErrorView()
+    {
+        $this->app->getView()->registerJsFile('somefile.js');
+        /** @var ErrorHandler $handler */
+        $handler = $this->app->getErrorHandler();
+        ob_start(); // suppress response output
+        $this->invokeMethod($handler, 'renderException', [new \Exception('Some Exception')]);
+        ob_get_clean();
+        $out = $this->app->response->data;
+        $this->assertEquals('Exception View
+', $out);
+    }
 
     public function testRenderCallStackItem()
     {
