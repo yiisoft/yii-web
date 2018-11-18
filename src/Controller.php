@@ -11,7 +11,7 @@ use yii\base\Action;
 use yii\base\InlineAction;
 use yii\helpers\Url;
 use yii\helpers\Yii;
-use yii\view\View;
+use yii\exceptions\InvalidArgumentException;
 use yii\view\ViewContextInterface;
 
 /**
