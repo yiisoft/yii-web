@@ -49,9 +49,12 @@ return [
     'session' => [
         '__class' => yii\web\Session::class,
     ],
+
     'user' => [
         '__class' => yii\web\User::class,
     ],
+    \yii\rbac\CheckAccessInterface::class => \yii\di\Reference::to('authManager'),
+
     'errorHandler' => [
         '__class' => yii\web\ErrorHandler::class,
         'errorAction' => 'site/error',

@@ -103,10 +103,8 @@ class User extends Component
     public $authTimeout;
     /**
      * @var CheckAccessInterface The access checker to use for checking access.
-     * If not set the application auth manager will be used.
-     * @since 2.0.9
      */
-    public $accessChecker;
+    protected $accessChecker;
     /**
      * @var int the number of seconds in which the user will be logged out automatically
      * regardless of activity.
@@ -150,9 +148,10 @@ class User extends Component
 
     protected $app;
 
-    public function __construct(Application $app)
+    public function __construct(Application $app, CheckAccessInterface $accessChecker)
     {
         $this->app = $app;
+        $this->accessChecker = $accessChecker;
     }
 
     /**
@@ -167,9 +166,6 @@ class User extends Component
         }
         if ($this->enableAutoLogin && !isset($this->identityCookie['name'])) {
             throw new InvalidConfigException('User::identityCookie must contain the "name" element.');
-        }
-        if (!empty($this->accessChecker) && is_string($this->accessChecker)) {
-            $this->accessChecker = Yii::createObject($this->accessChecker);
         }
     }
 
@@ -718,10 +714,7 @@ class User extends Component
         if ($allowCaching && empty($params) && isset($this->_access[$permissionName])) {
             return $this->_access[$permissionName];
         }
-        if (($accessChecker = $this->getAccessChecker()) === null) {
-            return false;
-        }
-        $access = $accessChecker->checkAccess($this->getId(), $permissionName, $params);
+        $access = $this->accessChecker->checkAccess($this->getId(), $permissionName, $params);
         if ($allowCaching && empty($params)) {
             $this->_access[$permissionName] = $access;
         }
@@ -753,16 +746,4 @@ class User extends Component
         return false;
     }
 
-    /**
-     * Returns the access checker used for checking access.
-     *
-     * By default this is the `authManager` application component.
-     *
-     * @return CheckAccessInterface
-     * @since 2.0.9
-     */
-    protected function getAccessChecker()
-    {
-        return $this->accessChecker !== null ? $this->accessChecker : $this->app->getAuthManager();
-    }
 }
