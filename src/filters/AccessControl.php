@@ -7,10 +7,10 @@
 
 namespace yii\web\filters;
 
-use yii\helpers\Yii;
 use yii\base\Action;
 use yii\base\ActionFilter;
-use yii\di\Instance;
+use yii\di\Initiable;
+use yii\helpers\Yii;
 use yii\web\ForbiddenHttpException;
 use yii\web\User;
 
@@ -54,7 +54,7 @@ use yii\web\User;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class AccessControl extends ActionFilter
+class AccessControl extends ActionFilter implements Initiable
 {
     /**
      * @var User|array|string|false the user object representing the authentication status or the ID of the user application component.
@@ -95,11 +95,10 @@ class AccessControl extends ActionFilter
     /**
      * Initializes the [[rules]] array by instantiating rule objects from configurations.
      */
-    public function init()
+    public function init(): void
     {
-        parent::init();
         if ($this->user !== false) {
-            $this->user = Instance::ensure($this->user, User::class);
+            $this->user = Yii::ensureObject($this->user, User::class);
         }
         foreach ($this->rules as $i => $rule) {
             if (is_array($rule)) {
@@ -155,7 +154,7 @@ class AccessControl extends ActionFilter
         if ($user !== false && $user->getIsGuest()) {
             $user->loginRequired();
         } else {
-            throw new ForbiddenHttpException(Yii::t('yii', 'You are not allowed to perform this action.'));
+            throw new ForbiddenHttpException(Yii::getApp()->t('yii', 'You are not allowed to perform this action.'));
         }
     }
 }
