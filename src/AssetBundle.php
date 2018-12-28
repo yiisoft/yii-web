@@ -133,14 +133,45 @@ class AssetBundle extends BaseObject implements Initiable
     public function init(): void
     {
         if ($this->sourcePath !== null) {
-            $this->sourcePath = rtrim(Yii::getAlias($this->sourcePath), '/\\');
+            $this->sourcePath = $this->findPath($this->sourcePath);
         }
         if ($this->basePath !== null) {
-            $this->basePath = rtrim(Yii::getAlias($this->basePath), '/\\');
+            $this->basePath = $this->findPath($this->basePath);
         }
         if ($this->baseUrl !== null) {
             $this->baseUrl = rtrim(Yii::getAlias($this->baseUrl), '/');
         }
+    }
+
+    public $alternatives = [
+        '@npm' => '@root/node_modules',
+    ];
+
+    protected function findPath($path) {
+        $path = rtrim(Yii::getAlias($path), '/\\');
+        if (file_exists($path)) {
+            return $path;
+        }
+
+        return $this->findAlternativePath($path);
+    }
+
+    protected function findAlternativePath($path)
+    {
+        foreach ($this->alternatives as $src => $dst) {
+            $src = Yii::getAlias($src);
+            $dst = Yii::getAlias($dst);
+            $len = strlen($src);
+
+            if (strncmp($path, $src, $len) === 0) {
+                $alt = $dst . substr($path, $len);
+                if (file_exists($alt)) {
+                    return $alt;
+                }
+            }
+        }
+
+        return $path;
     }
 
     /**
