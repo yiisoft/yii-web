@@ -50,6 +50,7 @@ return [
         '__class' => yii\web\Session::class,
     ],
 
+    \yii\web\User::class => \yii\di\Reference::to('user'),
     'user' => [
         '__class' => yii\web\User::class,
     ],
