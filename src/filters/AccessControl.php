@@ -7,9 +7,9 @@
 
 namespace yii\web\filters;
 
-use yii\helpers\Yii;
 use yii\base\Action;
 use yii\base\ActionFilter;
+use yii\base\Application;
 use yii\di\Instance;
 use yii\web\ForbiddenHttpException;
 use yii\web\User;
@@ -57,12 +57,6 @@ use yii\web\User;
 class AccessControl extends ActionFilter
 {
     /**
-     * @var User|array|string|false the user object representing the authentication status or the ID of the user application component.
-     * Starting from version 2.0.2, this can also be a configuration array for creating the object.
-     * Starting from version 2.0.12, you can set it to `false` to explicitly switch this component support off for the filter.
-     */
-    public $user = 'user';
-    /**
      * @var callable a callback that will be called if the access should be denied
      * to the current user. This is the case when either no rule matches, or a rule with
      * [[AccessRule::$allow|$allow]] set to `false` matches.
@@ -92,20 +86,13 @@ class AccessControl extends ActionFilter
     public $rules = [];
 
 
-    /**
-     * Initializes the [[rules]] array by instantiating rule objects from configurations.
-     */
-    public function init()
+    protected $app;
+    protected $user;
+
+    public function __construct(Application $app, User $user)
     {
-        parent::init();
-        if ($this->user !== false) {
-            $this->user = Instance::ensure($this->user, User::class);
-        }
-        foreach ($this->rules as $i => $rule) {
-            if (is_array($rule)) {
-                $this->rules[$i] = Yii::createObject(array_merge($this->ruleConfig, $rule));
-            }
-        }
+        $this->app = $app;
+        $this->user = $user;
     }
 
     /**
@@ -116,28 +103,38 @@ class AccessControl extends ActionFilter
      */
     public function beforeAction($action)
     {
-        $user = $this->user;
-        $request = Yii::getApp()->getRequest();
+        $request = $this->app->getRequest();
         /* @var $rule AccessRule */
-        foreach ($this->rules as $rule) {
-            if ($allow = $rule->allows($action, $user, $request)) {
+        foreach ($this->rules as &$rule) {
+            $rule = $this->ensureRule($rule);
+            $allow = $rule->allows($action, $this->user, $request);
+            if ($allow) {
                 return true;
             } elseif ($allow === false) {
-                if (isset($rule->denyCallback)) {
-                    call_user_func($rule->denyCallback, $rule, $action);
-                } elseif ($this->denyCallback !== null) {
-                    call_user_func($this->denyCallback, $rule, $action);
-                } else {
-                    $this->denyAccess($user);
-                }
-
-                return false;
+                return $this->deny($rule, $action);
             }
         }
-        if ($this->denyCallback !== null) {
-            call_user_func($this->denyCallback, null, $action);
+
+        return $this->deny(null, $action);
+    }
+
+    protected function ensureRule($rule)
+    {
+        if (is_object($rule)) {
+            return $rule;
+        }
+
+        return $this->app->createObject(array_merge($this->ruleConfig, $rule));
+    }
+
+    protected function deny($rule, Action $action): bool
+    {
+        if (isset($rule->denyCallback)) {
+            call_user_func($rule->denyCallback, $rule, $action);
+        } elseif ($this->denyCallback !== null) {
+            call_user_func($this->denyCallback, $rule, $action);
         } else {
-            $this->denyAccess($user);
+            $this->denyAccess();
         }
 
         return false;
@@ -150,12 +147,12 @@ class AccessControl extends ActionFilter
      * @param User|false $user the current user or boolean `false` in case of detached User component
      * @throws ForbiddenHttpException if the user is already logged in or in case of detached User component.
      */
-    protected function denyAccess($user)
+    protected function denyAccess()
     {
-        if ($user !== false && $user->getIsGuest()) {
-            $user->loginRequired();
+        if (isset($this->user) && $this->user !== false && $this->user->getIsGuest()) {
+            $this->user->loginRequired();
         } else {
-            throw new ForbiddenHttpException(Yii::t('yii', 'You are not allowed to perform this action.'));
+            throw new ForbiddenHttpException($this->app->t('yii', 'You are not allowed to perform this action.'));
         }
     }
 }
