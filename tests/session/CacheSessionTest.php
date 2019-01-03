@@ -8,8 +8,8 @@
 namespace yii\web\tests\session;
 
 use yii\helpers\Yii;
-use yii\caching\ArrayCache;
-use yii\caching\Cache;
+use yii\cache\ArrayCache;
+use yii\cache\Cache;
 use yii\web\CacheSession;
 
 /**
