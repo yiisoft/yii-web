@@ -7,10 +7,11 @@
 
 namespace yii\web\tests;
 
-use yii\caching\ArrayCache;
-use yii\caching\Cache;
+use yii\cache\ArrayCache;
+use yii\cache\Cache;
 use yii\web\Request;
 use yii\web\UrlManager;
+use yii\web\UrlRuleInterface;
 use yii\tests\TestCase;
 
 /**
@@ -53,17 +54,20 @@ class UrlManagerParseUrlTest extends TestCase
         // normalizer is tested in UrlNormalizerTest
         $config['normalizer'] = false;
 
-        return new UrlManager(array_merge([
+        return $this->factory->create(array_merge([
+            '__class' => UrlManager::class,
             'cache' => null,
         ], $config));
     }
 
     protected function getRequest($pathInfo, $hostInfo = 'http://www.example.com', $method = 'GET', $config = [])
     {
+        $config['__class'] = Request::class;
         $config['pathInfo'] = $pathInfo;
         $config['hostInfo'] = $hostInfo;
         $_POST['_method'] = $method;
-        return new Request($config);
+
+        return $this->factory->create($config);
     }
 
     protected function tearDown()
@@ -299,10 +303,11 @@ class UrlManagerParseUrlTest extends TestCase
 
     public function testParseRESTRequest()
     {
-        $request = new Request();
+        $request = $this->factory->create(Request::class);
 
         // pretty URL rules
-        $manager = new UrlManager([
+        $manager = $this->factory->create([
+            '__class' => UrlManager::class,
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'cache' => null,
@@ -335,14 +340,13 @@ class UrlManagerParseUrlTest extends TestCase
         $this->assertEquals(['post/get', []], $result);
 
         // createUrl should ignore REST rules
-        $this->mockApplication([
-            'components' => [
-                'request' => [
-                    'hostInfo' => 'http://localhost/',
-                    'baseUrl' => '/app',
-                ],
+        $this->mockWebApplication([], null, [
+            'request' => [
+                '__class' => Request::class,
+                'hostInfo' => 'http://localhost/',
+                'baseUrl' => '/app',
             ],
-        ], \yii\web\Application::class);
+        ]);
         $this->assertEquals('/app/post/delete?id=123', $manager->createUrl(['post/delete', 'id' => 123]));
         $this->destroyApplication();
     }
@@ -353,7 +357,7 @@ class UrlManagerParseUrlTest extends TestCase
 
         $this->assertCount(1, $manager->rules);
         $firstRule = $manager->rules[0];
-        $this->assertInstanceOf('yii\web\UrlRuleInterface', $firstRule);
+        $this->assertInstanceOf(UrlRuleInterface::class, $firstRule);
 
         $manager->addRules([
             'posts' => 'post/index',
@@ -369,7 +373,7 @@ class UrlManagerParseUrlTest extends TestCase
 
         $this->assertCount(1, $manager->rules);
         $firstRule = $manager->rules[0];
-        $this->assertInstanceOf('yii\web\UrlRuleInterface', $firstRule);
+        $this->assertInstanceOf(UrlRuleInterface::class, $firstRule);
 
         $manager->addRules([
             'posts' => 'post/index',
@@ -386,12 +390,12 @@ class UrlManagerParseUrlTest extends TestCase
 
         $manager = $this->getUrlManager([
             'rules' => ['post/<id:\d+>' => 'post/view'],
-            'cache' => new Cache(['handler' => $arrayCache]),
+            'cache' => new Cache($arrayCache),
         ]);
 
         $this->assertCount(1, $manager->rules);
         $firstRule = $manager->rules[0];
-        $this->assertInstanceOf(\yii\web\UrlRuleInterface::class, $firstRule);
+        $this->assertInstanceOf(UrlRuleInterface::class, $firstRule);
         $this->assertCount(1, $this->getInaccessibleProperty($arrayCache, '_cache'),
             'Cache contains the only one record that represents initial built rules'
         );
@@ -412,13 +416,13 @@ class UrlManagerParseUrlTest extends TestCase
 
     public function testRulesCacheIsUsed()
     {
-        $arrayCache = $this->getMockBuilder(\yii\caching\ArrayCache::class)
+        $arrayCache = $this->getMockBuilder(ArrayCache::class)
             ->setMethods(['get', 'set'])
             ->getMock();
 
         $manager = $this->getUrlManager([
             'rules' => ['post/<id:\d+>' => 'post/view'],
-            'cache' => new Cache(['handler' => $arrayCache]),
+            'cache' => new Cache($arrayCache),
         ]);
 
         $savedRules = $manager->rules;
@@ -429,7 +433,7 @@ class UrlManagerParseUrlTest extends TestCase
         for ($i = 0; $i < 2; $i++) {
             $this->getUrlManager([
                 'rules' => ['post/<id:\d+>' => 'post/view'],
-                'cache' => new Cache(['handler' => $arrayCache]),
+                'cache' => new Cache($arrayCache),
             ]);
         }
     }

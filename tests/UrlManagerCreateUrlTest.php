@@ -8,7 +8,7 @@
 namespace yii\web\tests;
 
 use yii\helpers\Yii;
-use yii\caching\ArrayCache;
+use yii\cache\ArrayCache;
 use yii\web\UrlManager;
 use yii\web\UrlRule;
 use yii\web\tests\stubs\CachedUrlRule;
@@ -58,6 +58,7 @@ class UrlManagerCreateUrlTest extends TestCase
 
         // set default values if they are not set
         $config = array_merge([
+            '__class' => UrlManager::class,
             'baseUrl' => '',
             'scriptUrl' => '/index.php',
             'hostInfo' => 'http://www.example.com',
@@ -65,7 +66,7 @@ class UrlManagerCreateUrlTest extends TestCase
             'showScriptName' => $showScriptName,
         ], $config);
 
-        return new UrlManager($config);
+        return $this->factory->create($config);
     }
 
 
@@ -698,7 +699,8 @@ class UrlManagerCreateUrlTest extends TestCase
      */
     public function testMultipleHostsRules($host)
     {
-        $manager = new UrlManager([
+        $manager = $this->factory->create([
+            '__class' => UrlManager::class,
             'enablePrettyUrl' => true,
             'cache' => null,
             'rules' => [
@@ -806,7 +808,8 @@ class UrlManagerCreateUrlTest extends TestCase
      */
     public function testCreatingRulesWithDifferentRuleConfigAndEnabledCache()
     {
-        $this->mockWebApplication([
+        $this->mockWebApplication();
+        $this->container->setAll([
             'components' => [
                 'cache' => ArrayCache::class,
             ],

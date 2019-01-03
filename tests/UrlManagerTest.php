@@ -42,19 +42,20 @@ class UrlManagerTest extends TestCase
         // trigger an exception here in case it gets called
         $config['baseUrl'] = null;
         $this->mockApplication();
-        $this->app->set('request', function () {
+        $this->container->set('request', function () {
             $this->fail('Request component should not be accessed by UrlManager with current settings.');
         });
 
         // set default values if they are not set
         $config = array_merge([
+            '__class' => UrlManager::class,
             'scriptUrl' => '/index.php',
             'hostInfo' => 'http://www.example.com',
             'showScriptName' => $showScriptName,
             'enableStrictParsing' => $enableStrictParsing,
         ], $config);
 
-        return new UrlManager($config);
+        return $this->factory->create($config);
     }
 
     /**
@@ -231,7 +232,7 @@ class UrlManagerTest extends TestCase
     public function testParseRequest($routeParam)
     {
         $manager = $this->getUrlManager(['routeParam' => $routeParam]);
-        $request = new Request();
+        $request = new Request($this->app);
 
         // default setting without 'r' param
         $request->setQueryParams([]);

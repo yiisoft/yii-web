@@ -30,10 +30,14 @@ class UrlRuleTest extends TestCase
 
     public function testCreateUrl()
     {
-        $manager = new UrlManager(['cache' => null]);
+        $manager = $this->factory->create([
+            '__class' => UrlManager::class,
+            'cache' => null,
+        ]);
         $suites = $this->getTestsForCreateUrl();
         foreach ($suites as $i => [$name, $config, $tests]) {
-            $rule = new UrlRule($config);
+            $config['__class'] = UrlRule::class;
+            $rule = $this->factory->create($config);
             foreach ($tests as $j => [$route, $params, $expected]) {
                 $url = $rule->createUrl($manager, $route, $params);
                 $this->assertSame($expected, $url, "Test#$i-$j: $name");
@@ -43,14 +47,19 @@ class UrlRuleTest extends TestCase
 
     public function testParseRequest()
     {
-        $manager = new UrlManager([
+        $manager = $this->factory->create([
+            '__class' => UrlManager::class,
             'cache' => null,
             'normalizer' => false,
         ]);
-        $request = new Request(['hostInfo' => 'http://en.example.com']);
+        $request = $this->factory->create([
+            '__class' => Request::class,
+            'hostInfo' => 'http://en.example.com',
+        ]);
         $suites = $this->getTestsForParseRequest();
         foreach ($suites as $i => [$name, $config, $tests]) {
-            $rule = new UrlRule($config);
+            $config['__class'] = UrlRule::class;
+            $rule = $this->factory->create($config);
             foreach ($tests as $j => $test) {
                 [$request->pathInfo, $expected] = $test;
                 $result = $rule->parseRequest($manager, $request);
@@ -65,13 +74,18 @@ class UrlRuleTest extends TestCase
 
     public function testParseRequestWithNormalizer()
     {
-        $manager = new UrlManager([
+        $manager = $this->factory->create([
+            '__class' => UrlManager::class,
             'cache' => null,
         ]);
-        $request = new Request(['hostInfo' => 'http://en.example.com']);
+        $request = $this->factory->create([
+            '__class' => Request::class,
+            'hostInfo' => 'http://en.example.com',
+        ]);
         $suites = $this->getTestsForParseRequest();
         foreach ($suites as $i => [$name, $config, $tests]) {
-            $rule = new UrlRule($config);
+            $config['__class'] = UrlRule::class;
+            $rule = $this->factory->create($config);
             foreach ($tests as $j => $test) {
                 $request->pathInfo = $test[0];
                 $expected = $test[2] ?? $test[1];
@@ -91,17 +105,22 @@ class UrlRuleTest extends TestCase
 
     public function testParseRequestWithUrlManagerCustomNormalizer()
     {
-        $manager = new UrlManager([
+        $manager = $this->factory->create([
+            '__class' => UrlManager::class,
             'cache' => null,
-            'normalizer' => [
+            'normalizer' => $this->factory->create([
                 '__class' => UrlNormalizer::class,
                 'action' => UrlNormalizer::ACTION_REDIRECT_PERMANENT,
-            ],
+            ]),
         ]);
-        $request = new Request(['hostInfo' => 'http://en.example.com']);
+        $request = $this->factory->create([
+            '__class' => Request::class,
+            'hostInfo' => 'http://en.example.com',
+        ]);
         $suites = $this->getTestsForParseRequest();
         foreach ($suites as $i => [$name, $config, $tests]) {
-            $rule = new UrlRule($config);
+            $config['__class'] = UrlRule::class;
+            $rule = $this->factory->create($config);
             foreach ($tests as $j => $test) {
                 $request->pathInfo = $test[0];
                 $expected = $test[2] ?? $test[1];
@@ -119,17 +138,22 @@ class UrlRuleTest extends TestCase
             }
         }
 
-        $manager = new UrlManager([
+        $manager = $this->factory->create([
+            '__class' => UrlManager::class,
             'cache' => null,
-            'normalizer' => [
+            'normalizer' => $this->factory->create([
                 '__class' => UrlNormalizer::class,
                 'action' => UrlNormalizer::ACTION_REDIRECT_TEMPORARY,
-            ],
+            ]),
         ]);
-        $request = new Request(['hostInfo' => 'http://en.example.com']);
+        $request = $this->factory->create([
+            '__class' => Request::class,
+            'hostInfo' => 'http://en.example.com',
+        ]);
         $suites = $this->getTestsForParseRequest();
         foreach ($suites as $i => [$name, $config, $tests]) {
-            $rule = new UrlRule($config);
+            $config['__class'] = UrlRule::class;
+            $rule = $this->factory->create($config);
             foreach ($tests as $j => $test) {
                 $request->pathInfo = $test[0];
                 $expected = $test[2] ?? $test[1];
@@ -147,17 +171,22 @@ class UrlRuleTest extends TestCase
             }
         }
 
-        $manager = new UrlManager([
+        $manager = $this->factory->create([
+            '__class' => UrlManager::class,
             'cache' => null,
             'normalizer' => [
                 '__class' => UrlNormalizer::class,
                 'action' => UrlNormalizer::ACTION_NOT_FOUND,
             ],
         ]);
-        $request = new Request(['hostInfo' => 'http://en.example.com']);
+        $request = $this->factory->create([
+            '__class' => Request::class,
+            'hostInfo' => 'http://en.example.com'
+        ]);
         $suites = $this->getTestsForParseRequest();
         foreach ($suites as $i => [$name, $config, $tests]) {
-            $rule = new UrlRule($config);
+            $config['__class'] = UrlRule::class;
+            $rule = $this->factory->create($config);
             foreach ($tests as $j => $test) {
                 [$request->pathInfo, $expected] = $test;
                 try {
@@ -173,17 +202,22 @@ class UrlRuleTest extends TestCase
             }
         }
 
-        $manager = new UrlManager([
+        $manager = $this->factory->create([
+            '__class' => UrlManager::class,
             'cache' => null,
-            'normalizer' => [
+            'normalizer' => $this->factory->create([
                 '__class' => UrlNormalizer::class,
                 'action' => null,
-            ],
+            ]),
         ]);
-        $request = new Request(['hostInfo' => 'http://en.example.com']);
+        $request = $this->factory->create([
+            '__class' => Request::class,
+            'hostInfo' => 'http://en.example.com'
+        ]);
         $suites = $this->getTestsForParseRequest();
         foreach ($suites as $i => [$name, $config, $tests]) {
-            $rule = new UrlRule($config);
+            $config['__class'] = UrlRule::class;
+            $rule = $this->factory->create($config);
             foreach ($tests as $j => $test) {
                 $request->pathInfo = $test[0];
                 $expected = $test[2] ?? $test[1];
@@ -201,17 +235,22 @@ class UrlRuleTest extends TestCase
             $route[0] = 'site/myCustomRoute';
             return $route;
         };
-        $manager = new UrlManager([
+        $manager = $this->factory->create([
+            '__class' => UrlManager::class,
             'cache' => null,
-            'normalizer' => [
+            'normalizer' => $this->factory->create([
                 '__class' => UrlNormalizer::class,
                 'action' => $normalizerAction,
-            ],
+            ]),
         ]);
-        $request = new Request(['hostInfo' => 'http://en.example.com']);
+        $request = $this->factory->create([
+            '__class' => Request::class,
+            'hostInfo' => 'http://en.example.com',
+        ]);
         $suites = $this->getTestsForParseRequest();
         foreach ($suites as $i => [$name, $config, $tests]) {
-            $rule = new UrlRule($config);
+            $config['__class'] = UrlRule::class;
+            $rule = $this->factory->create($config);
             foreach ($tests as $j => $test) {
                 $request->pathInfo = $test[0];
                 $expected = isset($test[2]) ? $normalizerAction($test[2]) : $test[1];
@@ -227,15 +266,18 @@ class UrlRuleTest extends TestCase
 
     public function testParseRequestWithUrlRuleCustomNormalizer()
     {
-        $manager = new UrlManager([
+        $manager = $this->factory->create([
+            '__class' => UrlManager::class,
             'cache' => null,
         ]);
-        $request = new Request([
+        $request = $this->factory->create([
+            '__class' => Request::class,
             'hostInfo' => 'http://en.example.com',
             'pathInfo' => 'post/1-a/',
         ]);
 
-        $rule = new UrlRule([
+        $rule = $this->factory->create([
+            '__class' => UrlRule::class,
             'pattern' => 'post/<page:\d+>-<tag>',
             'route' => 'post/index',
             'normalizer' => false,
@@ -243,7 +285,8 @@ class UrlRuleTest extends TestCase
         $result = $rule->parseRequest($manager, $request);
         $this->assertFalse($result);
 
-        $rule = new UrlRule([
+        $rule = $this->factory->create([
+            '__class' => UrlRule::class,
             'pattern' => 'post/<page:\d+>-<tag>',
             'route' => 'post/index',
             'normalizer' => [
@@ -254,7 +297,8 @@ class UrlRuleTest extends TestCase
         $result = $rule->parseRequest($manager, $request);
         $this->assertFalse($result);
 
-        $rule = new UrlRule([
+        $rule = $this->factory->create([
+            '__class' => UrlRule::class,
             'pattern' => 'post/<page:\d+>-<tag>',
             'route' => 'post/index',
             'normalizer' => [
@@ -271,7 +315,8 @@ class UrlRuleTest extends TestCase
     {
         $suites = $this->getTestsForToString();
         foreach ($suites as $i => [$name, $config, $test]) {
-            $rule = new UrlRule($config);
+            $config['__class'] = UrlRule::class;
+            $rule = $this->factory->create($config);
             $this->assertEquals($rule->__toString(), $test, "Test#$i: $name");
         }
     }
@@ -1289,12 +1334,18 @@ class UrlRuleTest extends TestCase
             [$route, $params, $expected, $status] = $test;
 
             $this->mockWebApplication();
-            $this->app->set('request', new Request(['hostInfo' => 'http://example.com', 'scriptUrl' => '/index.php']));
+            $this->container->set('request', [
+                '__class' => Request::class,
+                'hostInfo' => 'http://example.com',
+                'scriptUrl' => '/index.php',
+            ]);
 
-            $manager = new UrlManager([
+            $manager = $this->factory->create([
+                '__class' => UrlManager::class,
                 'cache' => null,
             ]);
-            $rule = new UrlRule($config);
+            $config['__class'] = UrlRule::class;
+            $rule = $this->factory->create($config);
             $errorMessage = 'Failed test: ' . VarDumper::dumpAsString($test);
             $this->assertSame($expected, $rule->createUrl($manager, $route, $params), $errorMessage);
             $this->assertNotNull($status, $errorMessage);
