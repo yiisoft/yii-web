@@ -7,7 +7,6 @@
 
 namespace yii\web\tests\filters;
 
-use yii\helpers\Yii;
 use yii\base\Action;
 use yii\base\ActionEvent;
 use yii\web\filters\VerbFilter;
@@ -33,21 +32,19 @@ class VerbFilterTest extends TestCase
 
     public function testFilter()
     {
-        $request = new Request();
-        $this->mockWebApplication([
-            'components' => [
-                'request' => $request
-            ],
-        ]);
+        $request = new Request($this->app);
+        $this->mockWebApplication();
+        $this->container->set('request', $request);
         $controller = new Controller('id', $this->app);
         $action = new Action('test', $controller);
-        $filter = new VerbFilter([
+        $filter = $this->factory->create([
+            '__class' => VerbFilter::class,
             'actions' => [
                 '*' => ['GET', 'POST', 'Custom'],
             ]
         ]);
 
-        $event = new ActionEvent($action);
+        $event = ActionEvent::before($action);
 
         $request->setMethod('GET');
         $this->assertTrue($filter->beforeAction($event));

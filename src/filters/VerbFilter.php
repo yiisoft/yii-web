@@ -7,7 +7,6 @@
 
 namespace yii\web\filters;
 
-use yii\helpers\Yii;
 use yii\base\ActionEvent;
 use yii\base\Behavior;
 use yii\web\MethodNotAllowedHttpException;
@@ -87,6 +86,7 @@ class VerbFilter extends Behavior
     public function beforeAction($event)
     {
         $action = $event->action->id;
+        $app = $event->action->getApp();
         if (isset($this->actions[$action])) {
             $allowed = $this->actions[$action];
         } elseif (isset($this->actions['*'])) {
@@ -95,11 +95,11 @@ class VerbFilter extends Behavior
             return $event->isValid;
         }
 
-        $verb = Yii::getApp()->getRequest()->getMethod();
+        $verb = $app->getRequest()->getMethod();
         if (!in_array($verb, $allowed)) {
             $event->isValid = false;
             // https://tools.ietf.org/html/rfc2616#section-14.7
-            Yii::getApp()->getResponse()->setHeader('Allow', implode(', ', $allowed));
+            $app->getResponse()->setHeader('Allow', implode(', ', $allowed));
             throw new MethodNotAllowedHttpException('Method Not Allowed. This URL can only handle the following request methods: ' . implode(', ', $allowed) . '.');
         }
 
