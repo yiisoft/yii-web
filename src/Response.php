@@ -1031,7 +1031,7 @@ class Response extends \yii\base\Response implements ResponseInterface
      * The default implementation will convert [[data]] into [[content]] and set headers accordingly.
      * @throws InvalidConfigException if the formatter for the specified format is invalid or [[format]] is not supported
      */
-    protected function prepare()
+    public function prepare()
     {
         if ($this->bodyRange !== null) {
             return;
