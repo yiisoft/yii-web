@@ -328,19 +328,29 @@ class Response extends \yii\base\Response implements ResponseInterface
 
     /**
      * Sends the response to the client.
+     * @param bool $return Send to stdout or return object. If set to `true` method will return prepared Response object.
+     * @return Response
+     * @throws HeadersAlreadySentException
+     * @throws InvalidConfigException
      */
-    public function send()
+    public function send($return = false)
     {
         if ($this->isSent) {
-            return;
+            return $this;
         }
+
         $this->trigger(self::EVENT_BEFORE_SEND);
         $this->prepare();
         $this->trigger(self::EVENT_AFTER_PREPARE);
-        $this->sendHeaders();
-        $this->sendContent();
+
+        if(!$return) {
+            $this->sendHeaders();
+            $this->sendContent();
+        }
+
         $this->trigger(self::EVENT_AFTER_SEND);
         $this->isSent = true;
+        return $this;
     }
 
     /**
@@ -1031,7 +1041,7 @@ class Response extends \yii\base\Response implements ResponseInterface
      * The default implementation will convert [[data]] into [[content]] and set headers accordingly.
      * @throws InvalidConfigException if the formatter for the specified format is invalid or [[format]] is not supported
      */
-    public function prepare()
+    protected function prepare()
     {
         if ($this->bodyRange !== null) {
             return;

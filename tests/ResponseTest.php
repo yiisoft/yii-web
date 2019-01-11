@@ -11,6 +11,7 @@ use Error;
 use Exception;
 use RuntimeException;
 use yii\helpers\StringHelper;
+use yii\http\MemoryStream;
 use yii\web\HttpException;
 
 /**
@@ -93,6 +94,20 @@ class ResponseTest extends \yii\tests\TestCase
     protected function generateTestFileContent()
     {
         return '12ёжик3456798áèabcdefghijklmnopqrstuvwxyz!"§$%&/(ёжик)=?';
+    }
+
+    public function testSendToReturn()
+    {
+        $testBodyContent = "Test response";
+        $this->response->data = $testBodyContent;
+
+        ob_start();
+        $psrResponse = $this->response->send(true);
+        $content = ob_get_clean();
+
+        static::assertEquals('', $content);
+        static::assertEquals(200, $this->response->statusCode);
+        static::assertEquals($psrResponse->getBody()->getContents(), $testBodyContent);
     }
 
     /**
