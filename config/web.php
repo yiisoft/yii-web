@@ -3,11 +3,12 @@
 use yii\di\Reference;
 
 return [
+    'aliases' => [
+        '@web' => '/',
+    ],
+
     'app' => [
         '__class' => yii\web\Application::class,
-        'aliases' => [
-            '@web' => '/',
-        ],
     ],
 
     'assetManager' => [
