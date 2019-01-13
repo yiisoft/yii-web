@@ -137,7 +137,7 @@ class ErrorAction extends Action
      *
      * @return string result content
      */
-    public function run()
+    public function run(): string
     {
         if ($this->layout !== null) {
             $this->controller->layout = $this->layout;
@@ -158,7 +158,7 @@ class ErrorAction extends Action
      * @return string
      * @since 2.0.11
      */
-    protected function renderAjaxResponse()
+    protected function renderAjaxResponse(): string
     {
         return $this->getExceptionName() . ': ' . $this->getExceptionMessage();
     }
@@ -168,7 +168,7 @@ class ErrorAction extends Action
      * @return string
      * @since 2.0.11
      */
-    protected function renderHtmlResponse()
+    protected function renderHtmlResponse(): string
     {
         return $this->controller->render($this->view ?: $this->id, $this->getViewRenderParams());
     }
@@ -178,7 +178,7 @@ class ErrorAction extends Action
      * @return array
      * @since 2.0.11
      */
-    protected function getViewRenderParams()
+    protected function getViewRenderParams(): array
     {
         return [
             'name' => $this->getExceptionName(),
@@ -194,7 +194,7 @@ class ErrorAction extends Action
      * @return \Throwable
      * @since 2.0.11
      */
-    protected function findException()
+    protected function findException(): \Throwable
     {
         if (($exception = $this->app->getErrorHandler()->exception) === null) {
             $exception = new NotFoundHttpException(Yii::t('yii', 'Page not found.'));
@@ -205,10 +205,10 @@ class ErrorAction extends Action
 
     /**
      * Gets the code from the [[exception]].
-     * @return mixed
+     * @return int
      * @since 2.0.11
      */
-    protected function getExceptionCode()
+    protected function getExceptionCode(): int
     {
         $exception = $this->getException();
 

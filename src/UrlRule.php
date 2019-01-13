@@ -36,37 +36,37 @@ class UrlRule extends BaseObject implements UrlRuleInterface, Initiable
     /**
      * Set [[mode]] with this value to mark that this rule is for URL parsing only.
      */
-    const PARSING_ONLY = 1;
+    public const PARSING_ONLY = 1;
     /**
      * Set [[mode]] with this value to mark that this rule is for URL creation only.
      */
-    const CREATION_ONLY = 2;
+    public const CREATION_ONLY = 2;
     /**
      * Represents the successful URL generation by last [[createUrl()]] call.
      * @see $createStatus
      * @since 2.0.12
      */
-    const CREATE_STATUS_SUCCESS = 0;
+    public const CREATE_STATUS_SUCCESS = 0;
     /**
      * Represents the unsuccessful URL generation by last [[createUrl()]] call, because rule does not support
      * creating URLs.
      * @see $createStatus
      * @since 2.0.12
      */
-    const CREATE_STATUS_PARSING_ONLY = 1;
+    public const CREATE_STATUS_PARSING_ONLY = 1;
     /**
      * Represents the unsuccessful URL generation by last [[createUrl()]] call, because of mismatched route.
      * @see $createStatus
      * @since 2.0.12
      */
-    const CREATE_STATUS_ROUTE_MISMATCH = 2;
+    public const CREATE_STATUS_ROUTE_MISMATCH = 2;
     /**
      * Represents the unsuccessful URL generation by last [[createUrl()]] call, because of mismatched
      * or missing parameters.
      * @see $createStatus
      * @since 2.0.12
      */
-    const CREATE_STATUS_PARAMS_MISMATCH = 4;
+    public const CREATE_STATUS_PARAMS_MISMATCH = 4;
 
     /**
      * @var string the name of this rule. If not set, it will use [[pattern]] as the name.
@@ -203,7 +203,7 @@ class UrlRule extends BaseObject implements UrlRuleInterface, Initiable
             throw new InvalidConfigException('Invalid config for UrlRule::normalizer.');
         }
         if ($this->verb !== null) {
-            if (is_array($this->verb)) {
+            if (\is_array($this->verb)) {
                 foreach ($this->verb as $i => $verb) {
                     $this->verb[$i] = strtoupper($verb);
                 }
@@ -221,7 +221,7 @@ class UrlRule extends BaseObject implements UrlRuleInterface, Initiable
     /**
      * Process [[$pattern]] on rule initialization.
      */
-    private function preparePattern()
+    private function preparePattern(): void
     {
         $this->pattern = $this->trimSlashes($this->pattern);
         $this->route = trim($this->route, '/');
@@ -266,7 +266,7 @@ class UrlRule extends BaseObject implements UrlRuleInterface, Initiable
      * If `false` slash will be placed at the beginning of param pattern. If `true` slash position will be detected
      * depending on non-optional pattern part.
      */
-    private function translatePattern($allowAppendSlash)
+    private function translatePattern(bool $allowAppendSlash): void
     {
         $tr = [
             '.' => '\\.',
@@ -351,7 +351,7 @@ class UrlRule extends BaseObject implements UrlRuleInterface, Initiable
      * @return UrlNormalizer|null
      * @since 2.0.10
      */
-    protected function getNormalizer($manager)
+    protected function getNormalizer(UrlManager $manager): ?UrlNormalizer
     {
         if ($this->normalizer === null) {
             return $manager->normalizer;
@@ -365,7 +365,7 @@ class UrlRule extends BaseObject implements UrlRuleInterface, Initiable
      * @return bool
      * @since 2.0.10
      */
-    protected function hasNormalizer($manager)
+    protected function hasNormalizer(UrlManager $manager): bool
     {
         return $this->getNormalizer($manager) instanceof UrlNormalizer;
     }
@@ -377,13 +377,13 @@ class UrlRule extends BaseObject implements UrlRuleInterface, Initiable
      * @return array|bool the parsing result. The route and the parameters are returned as an array.
      * If `false`, it means this rule cannot be used to parse this path info.
      */
-    public function parseRequest($manager, $request)
+    public function parseRequest(UrlManager $manager, Request $request)
     {
         if ($this->mode === self::CREATION_ONLY) {
             return false;
         }
 
-        if (!empty($this->verb) && !in_array($request->getMethod(), $this->verb, true)) {
+        if (!empty($this->verb) && !\in_array($request->getMethod(), $this->verb, true)) {
             return false;
         }
 
@@ -453,7 +453,7 @@ class UrlRule extends BaseObject implements UrlRuleInterface, Initiable
      * @param array $params the parameters
      * @return string|bool the created URL, or `false` if this rule cannot be used for creating this URL.
      */
-    public function createUrl($manager, $route, $params)
+    public function createUrl(UrlManager $manager, string $route, array $params)
     {
         if ($this->mode === self::PARSING_ONLY) {
             $this->createStatus = self::CREATE_STATUS_PARSING_ONLY;
@@ -488,7 +488,7 @@ class UrlRule extends BaseObject implements UrlRuleInterface, Initiable
             if (!isset($params[$name])) {
                 // allow omit empty optional params
                 // @see https://github.com/yiisoft/yii2/issues/10970
-                if (in_array($name, $this->placeholders) && strcmp($value, '') === 0) {
+                if (in_array($name, $this->placeholders, true) && strcmp($value, '') === 0) {
                     $params[$name] = '';
                 } else {
                     $this->createStatus = self::CREATE_STATUS_PARAMS_MISMATCH;
@@ -547,7 +547,7 @@ class UrlRule extends BaseObject implements UrlRuleInterface, Initiable
      * @see $createStatus
      * @since 2.0.12
      */
-    public function getCreateUrlStatus()
+    public function getCreateUrlStatus(): ?int
     {
         return $this->createStatus;
     }
@@ -558,7 +558,7 @@ class UrlRule extends BaseObject implements UrlRuleInterface, Initiable
      *
      * @since 2.0.6
      */
-    protected function getParamRules()
+    protected function getParamRules(): array
     {
         return $this->_paramRules;
     }
@@ -573,7 +573,7 @@ class UrlRule extends BaseObject implements UrlRuleInterface, Initiable
      * @see placeholders
      * @since 2.0.7
      */
-    protected function substitutePlaceholderNames(array $matches)
+    protected function substitutePlaceholderNames(array $matches): array
     {
         foreach ($this->placeholders as $placeholder => $name) {
             if (isset($matches[$placeholder])) {
@@ -592,7 +592,7 @@ class UrlRule extends BaseObject implements UrlRuleInterface, Initiable
      * @param string $string
      * @return string
      */
-    private function trimSlashes($string)
+    private function trimSlashes(string $string): string
     {
         if (strncmp($string, '//', 2) === 0) {
             return '//' . trim($string, '/');

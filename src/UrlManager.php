@@ -171,7 +171,7 @@ class UrlManager extends Component implements Initiable
         if (!$this->enablePrettyUrl) {
             return;
         }
-        if (is_string($this->cache)) {
+        if (\is_string($this->cache)) {
             $this->cache = $this->app->get($this->cache, false);
         }
         if (empty($this->rules)) {
@@ -192,7 +192,7 @@ class UrlManager extends Component implements Initiable
      * Please refer to [[rules]] for the acceptable rule format.
      * @param bool $append whether to add the new rules by appending them to the end of the existing rules.
      */
-    public function addRules($rules, $append = true)
+    public function addRules(array $rules, bool $append = true): void
     {
         if (!$this->enablePrettyUrl) {
             return;
@@ -213,7 +213,7 @@ class UrlManager extends Component implements Initiable
      * @return UrlRuleInterface[] the rule objects built from the given rule declarations
      * @throws InvalidConfigException if a rule declaration is invalid
      */
-    protected function buildRules($ruleDeclarations)
+    protected function buildRules(array $ruleDeclarations): array
     {
         $builtRules = $this->getBuiltRulesFromCache($ruleDeclarations);
         if ($builtRules !== false) {
@@ -258,7 +258,7 @@ class UrlManager extends Component implements Initiable
      * @return bool whether the value is successfully stored into cache
      * @since 2.0.14
      */
-    protected function setBuiltRulesCache($ruleDeclarations, $builtRules)
+    protected function setBuiltRulesCache(array $ruleDeclarations, array $builtRules): bool
     {
         if (!$this->cache instanceof CacheInterface) {
             return false;
@@ -276,7 +276,7 @@ class UrlManager extends Component implements Initiable
      * there are no cache items for this definition exists.
      * @since 2.0.14
      */
-    protected function getBuiltRulesFromCache($ruleDeclarations)
+    protected function getBuiltRulesFromCache(array $ruleDeclarations)
     {
         if (!$this->cache instanceof CacheInterface) {
             return false;
@@ -291,7 +291,7 @@ class UrlManager extends Component implements Initiable
      * @return array|bool the route and the associated parameters. The latter is always empty
      * if [[enablePrettyUrl]] is `false`. `false` is returned if the current request cannot be successfully parsed.
      */
-    public function parseRequest($request)
+    public function parseRequest(Request $request)
     {
         if ($this->enablePrettyUrl) {
             /* @var $rule UrlRule */
@@ -345,7 +345,7 @@ class UrlManager extends Component implements Initiable
 
         Yii::debug('Pretty URL not enabled. Using default URL parsing logic.', __METHOD__);
         $route = $request->getQueryParam($this->routeParam, '');
-        if (is_array($route)) {
+        if (\is_array($route)) {
             $route = '';
         }
 
@@ -381,7 +381,7 @@ class UrlManager extends Component implements Initiable
      * or an array to represent a route with query parameters (e.g. `['site/index', 'param1' => 'value1']`).
      * @return string the created URL
      */
-    public function createUrl($params)
+    public function createUrl($params): string
     {
         $params = (array) $params;
         $anchor = isset($params['#']) ? '#' . $params['#'] : '';
@@ -426,7 +426,9 @@ class UrlManager extends Component implements Initiable
                     }
 
                     return $url . $baseUrl . $anchor;
-                } elseif (strncmp($url, '//', 2) === 0) {
+                }
+
+                if (strncmp($url, '//', 2) === 0) {
                     if ($baseUrl !== '' && ($pos = strpos($url, '/', 2)) !== false) {
                         return substr($url, 0, $pos) . $baseUrl . substr($url, $pos) . $anchor;
                     }
@@ -467,7 +469,7 @@ class UrlManager extends Component implements Initiable
      * @see setRuleToCache()
      * @see UrlRule::getCreateUrlStatus()
      */
-    protected function canBeCached(UrlRuleInterface $rule)
+    protected function canBeCached(UrlRuleInterface $rule): bool
     {
         return
             // if rule does not provide info about create status, we cache it every time to prevent bugs like #13350
@@ -486,7 +488,7 @@ class UrlManager extends Component implements Initiable
      * @see createUrl()
      * @since 2.0.8
      */
-    protected function getUrlFromCache($cacheKey, $route, $params)
+    protected function getUrlFromCache(string $cacheKey, string $route, array $params)
     {
         if (!empty($this->_ruleCache[$cacheKey])) {
             foreach ($this->_ruleCache[$cacheKey] as $rule) {
@@ -504,11 +506,11 @@ class UrlManager extends Component implements Initiable
 
     /**
      * Store rule (e.g. [[UrlRule]]) to internal cache.
-     * @param $cacheKey
+     * @param string $cacheKey
      * @param UrlRuleInterface $rule
      * @since 2.0.8
      */
-    protected function setRuleToCache($cacheKey, UrlRuleInterface $rule)
+    protected function setRuleToCache(string $cacheKey, UrlRuleInterface $rule): void
     {
         $this->_ruleCache[$cacheKey][] = $rule;
     }
@@ -529,7 +531,7 @@ class UrlManager extends Component implements Initiable
      * @return string the created URL
      * @see createUrl()
      */
-    public function createAbsoluteUrl($params, $scheme = null)
+    public function createAbsoluteUrl(array $params, ?string $scheme = null): string
     {
         $params = (array) $params;
         $url = $this->createUrl($params);
@@ -552,7 +554,7 @@ class UrlManager extends Component implements Initiable
      * @return string the base URL that is used by [[createUrl()]] to prepend to created URLs.
      * @throws InvalidConfigException if running in console application and [[baseUrl]] is not configured.
      */
-    public function getBaseUrl()
+    public function getBaseUrl(): string
     {
         if ($this->_baseUrl === null) {
             $request = $this->app->getRequest();
@@ -571,7 +573,7 @@ class UrlManager extends Component implements Initiable
      * This is mainly used when [[enablePrettyUrl]] is `true` and [[showScriptName]] is `false`.
      * @param string $value the base URL that is used by [[createUrl()]] to prepend to created URLs.
      */
-    public function setBaseUrl($value)
+    public function setBaseUrl(?string $value): void
     {
         $this->_baseUrl = $value === null ? null : rtrim(Yii::getAlias($value), '/');
     }
@@ -583,7 +585,7 @@ class UrlManager extends Component implements Initiable
      * @return string the entry script URL that is used by [[createUrl()]] to prepend to created URLs.
      * @throws InvalidConfigException if running in console application and [[scriptUrl]] is not configured.
      */
-    public function getScriptUrl()
+    public function getScriptUrl(): string
     {
         if ($this->_scriptUrl === null) {
             $request = $this->app->getRequest();
@@ -602,7 +604,7 @@ class UrlManager extends Component implements Initiable
      * This is mainly used when [[enablePrettyUrl]] is `false` or [[showScriptName]] is `true`.
      * @param string $value the entry script URL that is used by [[createUrl()]] to prepend to created URLs.
      */
-    public function setScriptUrl($value)
+    public function setScriptUrl(string $value): void
     {
         $this->_scriptUrl = $value;
     }
@@ -612,7 +614,7 @@ class UrlManager extends Component implements Initiable
      * @return string the host info (e.g. `http://www.example.com`) that is used by [[createAbsoluteUrl()]] to prepend to created URLs.
      * @throws InvalidConfigException if running in console application and [[hostInfo]] is not configured.
      */
-    public function getHostInfo()
+    public function getHostInfo(): string
     {
         if ($this->_hostInfo === null) {
             $request = $this->app->getRequest();
@@ -630,7 +632,7 @@ class UrlManager extends Component implements Initiable
      * Sets the host info that is used by [[createAbsoluteUrl()]] to prepend to created URLs.
      * @param string $value the host info (e.g. "http://www.example.com") that is used by [[createAbsoluteUrl()]] to prepend to created URLs.
      */
-    public function setHostInfo($value)
+    public function setHostInfo(?string $value): void
     {
         $this->_hostInfo = $value === null ? null : rtrim($value, '/');
     }

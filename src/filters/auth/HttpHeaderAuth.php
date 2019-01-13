@@ -7,6 +7,11 @@
 
 namespace yii\web\filters\auth;
 
+use yii\web\IdentityInterface;
+use yii\web\Request;
+use yii\web\Response;
+use yii\web\User;
+
 /**
  * HttpHeaderAuth is an action filter that supports HTTP authentication through HTTP Headers.
  *
@@ -46,7 +51,7 @@ class HttpHeaderAuth extends AuthMethod
     /**
      * {@inheritdoc}
      */
-    public function authenticate($user, $request, $response)
+    public function authenticate(User $user, Request $request, Response $response): ?IdentityInterface
     {
         $authHeader = $request->getHeaderLine($this->header);
 

@@ -7,13 +7,14 @@
 
 namespace yii\web\tests\stubs;
 
+use yii\web\UrlManager;
 use yii\web\UrlRule;
 
 class CachedUrlRule extends UrlRule
 {
     public $createCounter = 0;
 
-    public function createUrl($manager, $route, $params)
+    public function createUrl(UrlManager $manager, string $route, array $params)
     {
         $this->createCounter++;
         return parent::createUrl($manager, $route, $params);

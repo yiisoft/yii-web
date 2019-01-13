@@ -38,5 +38,5 @@ interface Linkable
      *
      * @return array the links
      */
-    public function getLinks();
+    public function getLinks(): array;
 }

@@ -42,7 +42,7 @@ class UrlNormalizerRedirectException extends \yii\exceptions\Exception
      * @param int $code the error code
      * @param \Exception $previous the previous exception used for the exception chaining
      */
-    public function __construct($url, $statusCode = 302, $scheme = false, $message = null, $code = 0, \Exception $previous = null)
+    public function __construct($url, int $statusCode = 302, $scheme = false, string $message = null, int $code = 0, \Exception $previous = null)
     {
         $this->url = $url;
         $this->scheme = $scheme;

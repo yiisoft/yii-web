@@ -55,7 +55,7 @@ interface IdentityInterface
      * Null should be returned if such an identity cannot be found
      * or the identity is not in an active state (disabled, deleted, etc.)
      */
-    public static function findIdentity($id);
+    public static function findIdentity($id): ?IdentityInterface;
 
     /**
      * Finds an identity by the given token.
@@ -66,7 +66,7 @@ interface IdentityInterface
      * Null should be returned if such an identity cannot be found
      * or the identity is not in an active state (disabled, deleted, etc.)
      */
-    public static function findIdentityByAccessToken($token, $type = null);
+    public static function findIdentityByAccessToken($token, $type = null): ?IdentityInterface;
 
     /**
      * Returns an ID that can uniquely identify a user identity.
@@ -86,7 +86,7 @@ interface IdentityInterface
      * @return string a key that is used to check the validity of a given identity ID.
      * @see validateAuthKey()
      */
-    public function getAuthKey();
+    public function getAuthKey(): string;
 
     /**
      * Validates the given auth key.
@@ -96,5 +96,5 @@ interface IdentityInterface
      * @return bool whether the given auth key is valid.
      * @see getAuthKey()
      */
-    public function validateAuthKey($authKey);
+    public function validateAuthKey(string $authKey): bool;
 }

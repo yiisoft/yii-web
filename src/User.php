@@ -157,7 +157,7 @@ class User extends Component
     /**
      * Initializes the application component.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
 
@@ -182,7 +182,7 @@ class User extends Component
      * @see login()
      * @see logout()
      */
-    public function getIdentity($autoRenew = true)
+    public function getIdentity(bool $autoRenew = true): ?IdentityInterface
     {
         if ($this->_identity === false) {
             if ($this->enableSession && $autoRenew) {
@@ -214,7 +214,7 @@ class User extends Component
      * If null, it means the current user will be a guest without any associated identity.
      * @throws InvalidValueException if `$identity` object does not implement [[IdentityInterface]].
      */
-    public function setIdentity($identity)
+    public function setIdentity(?IdentityInterface $identity): void
     {
         if ($identity instanceof IdentityInterface) {
             $this->_identity = $identity;
@@ -245,7 +245,7 @@ class User extends Component
      * @param int $duration number of seconds that the user can remain in logged-in status, defaults to `0`
      * @return bool whether the user is logged in
      */
-    public function login(IdentityInterface $identity, $duration = 0)
+    public function login(IdentityInterface $identity, int $duration = 0): bool
     {
         if ($this->beforeLogin($identity, false, $duration)) {
             $this->switchIdentity($identity, $duration);
@@ -271,7 +271,7 @@ class User extends Component
      *
      * @since 2.0.14.2
      */
-    protected function regenerateCsrfToken()
+    protected function regenerateCsrfToken(): void
     {
         $request = $this->app->getRequest();
         if ($request->enableCsrfCookie || $this->enableSession) {
@@ -290,7 +290,7 @@ class User extends Component
      * @return IdentityInterface|null the identity associated with the given access token. Null is returned if
      * the access token is invalid or [[login()]] is unsuccessful.
      */
-    public function loginByAccessToken($token, $type = null)
+    public function loginByAccessToken(string $token, $type = null): ?IdentityInterface
     {
         /* @var $class IdentityInterface */
         $class = $this->identityClass;
@@ -308,7 +308,7 @@ class User extends Component
      * This method attempts to log in a user using the ID and authKey information
      * provided by the [[identityCookie|identity cookie]].
      */
-    protected function loginByCookie()
+    protected function loginByCookie(): void
     {
         $data = $this->getIdentityAndDurationFromCookie();
         if (isset($data['identity'], $data['duration'])) {
@@ -332,7 +332,7 @@ class User extends Component
      * This parameter is ignored if [[enableSession]] is false.
      * @return bool whether the user is logged out
      */
-    public function logout($destroySession = true)
+    public function logout(bool $destroySession = true): bool
     {
         $identity = $this->getIdentity();
         if ($identity !== null && $this->beforeLogout($identity)) {
@@ -354,7 +354,7 @@ class User extends Component
      * @return bool whether the current user is a guest.
      * @see getIdentity()
      */
-    public function getIsGuest()
+    public function getIsGuest(): bool
     {
         return $this->getIdentity() === null;
     }
@@ -383,7 +383,7 @@ class User extends Component
      * @return string the URL that the user should be redirected to after login.
      * @see loginRequired()
      */
-    public function getReturnUrl($defaultUrl = null)
+    public function getReturnUrl($defaultUrl = null): string
     {
         $url = $this->app->getSession()->get($this->returnUrlParam, $defaultUrl);
         if (is_array($url)) {
@@ -408,7 +408,7 @@ class User extends Component
      * ['admin/index', 'ref' => 1]
      * ```
      */
-    public function setReturnUrl($url)
+    public function setReturnUrl($url): void
     {
         $this->app->getSession()->set($this->returnUrlParam, $url);
     }
@@ -433,7 +433,7 @@ class User extends Component
      * @throws ForbiddenHttpException the "Access Denied" HTTP exception if [[loginUrl]] is not set or a redirect is
      * not applicable.
      */
-    public function loginRequired($checkAjax = true, $checkAcceptHeader = true)
+    public function loginRequired(bool $checkAjax = true, bool $checkAcceptHeader = true): Response
     {
         $request = $this->app->getRequest();
         $canRedirect = !$checkAcceptHeader || $this->checkRedirectAcceptable();
@@ -464,7 +464,7 @@ class User extends Component
      * If 0, it means login till the user closes the browser or the session is manually destroyed.
      * @return bool whether the user should continue to be logged in
      */
-    protected function beforeLogin($identity, $cookieBased, $duration): bool
+    protected function beforeLogin(IdentityInterface $identity, bool $cookieBased, int $duration): bool
     {
         return $this->trigger(LoginEvent::before($identity, $cookieBased, $duration));
     }
@@ -479,7 +479,7 @@ class User extends Component
      * @param int $duration number of seconds that the user can remain in logged-in status.
      * If 0, it means login till the user closes the browser or the session is manually destroyed.
      */
-    protected function afterLogin($identity, $cookieBased, $duration)
+    protected function afterLogin(IdentityInterface $identity, bool $cookieBased, int $duration): void
     {
         $this->trigger(LoginEvent::after($identity, $cookieBased, $duration));
     }
@@ -492,7 +492,7 @@ class User extends Component
      * @param IdentityInterface $identity the user identity information
      * @return bool whether the user should continue to be logged out
      */
-    protected function beforeLogout($identity): bool
+    protected function beforeLogout(IdentityInterface $identity): bool
     {
         return $this->trigger(LogoutEvent::before($identity));
     }
@@ -504,7 +504,7 @@ class User extends Component
      * so that the event is triggered.
      * @param IdentityInterface $identity the user identity information
      */
-    protected function afterLogout($identity)
+    protected function afterLogout(IdentityInterface $identity): void
     {
         $this->trigger(LogoutEvent::before($identity));
     }
@@ -514,7 +514,7 @@ class User extends Component
      * This method will set the expiration time of the identity cookie to be the current time
      * plus the originally specified cookie duration.
      */
-    protected function renewIdentityCookie()
+    protected function renewIdentityCookie(): void
     {
         $name = $this->identityCookie['name'];
         $value = $this->app->getRequest()->getCookies()->getValue($name);
@@ -540,7 +540,7 @@ class User extends Component
      * @param int $duration number of seconds that the user can remain in logged-in status.
      * @see loginByCookie()
      */
-    protected function sendIdentityCookie($identity, $duration)
+    protected function sendIdentityCookie(IdentityInterface $identity, int $duration): void
     {
         $cookie = Yii::createObject(array_merge($this->identityCookie, [
             '__class' => \yii\http\Cookie::class,
@@ -562,7 +562,7 @@ class User extends Component
      * @see loginByCookie()
      * @since 2.0.9
      */
-    protected function getIdentityAndDurationFromCookie()
+    protected function getIdentityAndDurationFromCookie(): ?array
     {
         $value = $this->app->getRequest()->getCookies()->getValue($this->identityCookie['name']);
         if ($value === null) {
@@ -577,7 +577,9 @@ class User extends Component
             if ($identity !== null) {
                 if (!$identity instanceof IdentityInterface) {
                     throw new InvalidValueException("$class::findIdentity() must return an object implementing IdentityInterface.");
-                } elseif (!$identity->validateAuthKey($authKey)) {
+                }
+
+                if (!$identity->validateAuthKey($authKey)) {
                     Yii::warning("Invalid auth key attempted for user '$id': $authKey", __METHOD__);
                 } else {
                     return ['identity' => $identity, 'duration' => $duration];
@@ -593,7 +595,7 @@ class User extends Component
      * This method is used when [[enableAutoLogin]] is true.
      * @since 2.0.9
      */
-    protected function removeIdentityCookie()
+    protected function removeIdentityCookie(): void
     {
         $this->app->getResponse()->getCookies()->remove(Yii::createObject(array_merge($this->identityCookie, [
             '__class' => \yii\http\Cookie::class,
@@ -614,7 +616,7 @@ class User extends Component
      * @param int $duration number of seconds that the user can remain in logged-in status.
      * This parameter is used only when `$identity` is not null.
      */
-    public function switchIdentity($identity, $duration = 0)
+    public function switchIdentity(IdentityInterface $identity, int $duration = 0): void
     {
         $this->setIdentity($identity);
 
@@ -658,7 +660,7 @@ class User extends Component
      * If the user identity cannot be determined by session, this method will try to [[loginByCookie()|login by cookie]]
      * if [[enableAutoLogin]] is true.
      */
-    protected function renewAuthStatus()
+    protected function renewAuthStatus(): void
     {
         $session = $this->app->getSession();
         $id = $session->getHasSessionId() || $session->getIsActive() ? $session->get($this->idParam) : null;
@@ -676,7 +678,7 @@ class User extends Component
         if ($identity !== null && ($this->authTimeout !== null || $this->absoluteAuthTimeout !== null)) {
             $expire = $this->authTimeout !== null ? $session->get($this->authTimeoutParam) : null;
             $expireAbsolute = $this->absoluteAuthTimeout !== null ? $session->get($this->absoluteAuthTimeoutParam) : null;
-            if ($expire !== null && $expire < time() || $expireAbsolute !== null && $expireAbsolute < time()) {
+            if (($expire !== null && $expire < time()) || ($expireAbsolute !== null && $expireAbsolute < time())) {
                 $this->logout(false);
             } elseif ($this->authTimeout !== null) {
                 $session->set($this->authTimeoutParam, time() + $this->authTimeout);
@@ -709,7 +711,7 @@ class User extends Component
      * caching is effective only within the same request and only works when `$params = []`.
      * @return bool whether the user can perform the operation as specified by the given permission.
      */
-    public function can($permissionName, $params = [], $allowCaching = true)
+    public function can(string $permissionName, array $params = [], bool $allowCaching = true): bool
     {
         if ($allowCaching && empty($params) && isset($this->_access[$permissionName])) {
             return $this->_access[$permissionName];
@@ -730,15 +732,15 @@ class User extends Component
      * @see acceptableRedirectTypes
      * @since 2.0.8
      */
-    protected function checkRedirectAcceptable()
+    protected function checkRedirectAcceptable(): bool
     {
         $acceptableTypes = $this->app->getRequest()->getAcceptableContentTypes();
-        if (empty($acceptableTypes) || count($acceptableTypes) === 1 && array_keys($acceptableTypes)[0] === '*/*') {
+        if (empty($acceptableTypes) || (count($acceptableTypes) === 1 && array_keys($acceptableTypes)[0] === '*/*')) {
             return true;
         }
 
         foreach ($acceptableTypes as $type => $params) {
-            if (in_array($type, $this->acceptableRedirectTypes, true)) {
+            if (\in_array($type, $this->acceptableRedirectTypes, true)) {
                 return true;
             }
         }

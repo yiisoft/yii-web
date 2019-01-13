@@ -50,7 +50,7 @@ abstract class AuthMethod extends ActionFilter implements AuthInterface
     /**
      * {@inheritdoc}
      */
-    public function beforeAction($action)
+    public function beforeAction(Action $action): bool
     {
         $response = $this->response ?: Yii::getApp()->getResponse();
 
@@ -81,14 +81,14 @@ abstract class AuthMethod extends ActionFilter implements AuthInterface
     /**
      * {@inheritdoc}
      */
-    public function challenge($response)
+    public function challenge(Response $response): void
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function handleFailure($response)
+    public function handleFailure(Response $response): void
     {
         throw new UnauthorizedHttpException('Your request was made with invalid credentials.');
     }
@@ -101,7 +101,7 @@ abstract class AuthMethod extends ActionFilter implements AuthInterface
      * @see optional
      * @since 2.0.7
      */
-    protected function isOptional($action)
+    protected function isOptional(Action $action): bool
     {
         $id = $this->getActionId($action);
         foreach ($this->optional as $pattern) {

@@ -39,7 +39,7 @@ abstract class CompositeUrlRule extends BaseObject implements UrlRuleInterface, 
      * Creates the URL rules that should be contained within this composite rule.
      * @return UrlRuleInterface[] the URL rules
      */
-    abstract protected function createRules();
+    abstract protected function createRules(): array;
 
 
     public function __construct(array $config = [])
@@ -61,7 +61,7 @@ abstract class CompositeUrlRule extends BaseObject implements UrlRuleInterface, 
     /**
      * {@inheritdoc}
      */
-    public function parseRequest($manager, $request)
+    public function parseRequest(UrlManager $manager, Request $request)
     {
         foreach ($this->rules as $rule) {
             /* @var $rule UrlRule */
@@ -84,7 +84,7 @@ abstract class CompositeUrlRule extends BaseObject implements UrlRuleInterface, 
     /**
      * {@inheritdoc}
      */
-    public function createUrl($manager, $route, $params)
+    public function createUrl(UrlManager $manager, string $route, array $params)
     {
         $this->createStatus = UrlRule::CREATE_STATUS_SUCCESS;
         $url = $this->iterateRules($this->rules, $manager, $route, $params);
@@ -111,7 +111,7 @@ abstract class CompositeUrlRule extends BaseObject implements UrlRuleInterface, 
      * @see createUrl()
      * @since 2.0.12
      */
-    protected function iterateRules($rules, $manager, $route, $params)
+    protected function iterateRules(array $rules, UrlManager $manager, string $route, array $params)
     {
         /* @var $rule UrlRule */
         foreach ($rules as $rule) {
@@ -146,7 +146,7 @@ abstract class CompositeUrlRule extends BaseObject implements UrlRuleInterface, 
      * @see http://php.net/manual/en/language.operators.bitwise.php
      * @since 2.0.12
      */
-    public function getCreateUrlStatus()
+    public function getCreateUrlStatus(): ?int
     {
         return $this->createStatus;
     }

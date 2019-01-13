@@ -82,7 +82,7 @@ class DbSession extends MultiFieldSession
      * This method will initialize the [[db]] property to make sure it refers to a valid DB connection.
      * @throws InvalidConfigException if [[db]] is invalid.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         $this->db = Instance::ensure($this->db, Connection::class);
@@ -93,7 +93,7 @@ class DbSession extends MultiFieldSession
      * Please refer to <http://php.net/session_regenerate_id> for more details.
      * @param bool $deleteOldSession Whether to delete the old associated session file or not.
      */
-    public function regenerateID($deleteOldSession = false)
+    public function regenerateID(bool $deleteOldSession = false): void
     {
         $oldID = session_id();
 
@@ -142,7 +142,7 @@ class DbSession extends MultiFieldSession
      * @param string $id session ID
      * @return string the session data
      */
-    public function readSession($id)
+    public function readSession(string $id): string
     {
         $query = new Query();
         $query->from($this->sessionTable)
@@ -164,7 +164,7 @@ class DbSession extends MultiFieldSession
      * @param string $data session data
      * @return bool whether session write is successful
      */
-    public function writeSession($id, $data)
+    public function writeSession(string $id, string $data): bool
     {
         // exception must be caught in session write handler
         // http://us.php.net/manual/en/function.session-set-save-handler.php#refsect1-function.session-set-save-handler-notes
@@ -186,7 +186,7 @@ class DbSession extends MultiFieldSession
      * @param string $id session ID
      * @return bool whether session is destroyed successfully
      */
-    public function destroySession($id)
+    public function destroySession(string $id): bool
     {
         $this->db->createCommand()
             ->delete($this->sessionTable, ['id' => $id])
@@ -201,7 +201,7 @@ class DbSession extends MultiFieldSession
      * @param int $maxLifetime the number of seconds after which data will be seen as 'garbage' and cleaned up.
      * @return bool whether session is GCed successfully
      */
-    public function gcSession($maxLifetime)
+    public function gcSession(int $maxLifetime): bool
     {
         $this->db->createCommand()
             ->delete($this->sessionTable, '[[expire]]<:expire', [':expire' => time()])
@@ -219,9 +219,9 @@ class DbSession extends MultiFieldSession
      * @return array
      * @since 2.0.13
      */
-    protected function typecastFields($fields)
+    protected function typecastFields(array $fields): array
     {
-        if (isset($fields['data']) && is_array($fields['data'] && is_object($fields['data']))) {
+        if (isset($fields['data']) && \is_array($fields['data'] && is_object($fields['data']))) {
             $fields['data'] = new PdoValue($fields['data'], \PDO::PARAM_LOB);
         }
 

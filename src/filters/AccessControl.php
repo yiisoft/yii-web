@@ -101,7 +101,7 @@ class AccessControl extends ActionFilter
      * @param Action $action the action to be executed.
      * @return bool whether the action should continue to be executed.
      */
-    public function beforeAction($action)
+    public function beforeAction(Action $action): bool
     {
         $request = $this->app->getRequest();
         /* @var $rule AccessRule */
@@ -120,7 +120,7 @@ class AccessControl extends ActionFilter
 
     protected function ensureRule($rule)
     {
-        if (is_object($rule)) {
+        if (\is_object($rule)) {
             return $rule;
         }
 
@@ -130,9 +130,9 @@ class AccessControl extends ActionFilter
     protected function deny($rule, Action $action): bool
     {
         if (isset($rule->denyCallback)) {
-            call_user_func($rule->denyCallback, $rule, $action);
+            \call_user_func($rule->denyCallback, $rule, $action);
         } elseif ($this->denyCallback !== null) {
-            call_user_func($this->denyCallback, $rule, $action);
+            \call_user_func($this->denyCallback, $rule, $action);
         } else {
             $this->denyAccess();
         }
@@ -144,12 +144,11 @@ class AccessControl extends ActionFilter
      * Denies the access of the user.
      * The default implementation will redirect the user to the login page if he is a guest;
      * if the user is already logged, a 403 HTTP exception will be thrown.
-     * @param User|false $user the current user or boolean `false` in case of detached User component
      * @throws ForbiddenHttpException if the user is already logged in or in case of detached User component.
      */
     protected function denyAccess()
     {
-        if (isset($this->user) && $this->user !== false && $this->user->getIsGuest()) {
+        if ($this->user !== null && $this->user !== false && $this->user->getIsGuest()) {
             $this->user->loginRequired();
         } else {
             throw new ForbiddenHttpException($this->app->t('yii', 'You are not allowed to perform this action.'));

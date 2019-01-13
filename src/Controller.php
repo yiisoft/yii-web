@@ -92,7 +92,7 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      * @return string the rendering result.
      * @throws InvalidArgumentException if the view file or the layout file does not exist.
      */
-    public function render($view, $params = [])
+    public function render(string $view, array $params = []): string
     {
         $content = $this->getView()->render($view, $params, $this);
         return $this->renderContent($content);
@@ -105,7 +105,7 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      * If the layout is disabled, the string will be returned back.
      * @since 2.0.1
      */
-    public function renderContent($content)
+    public function renderContent(string $content): string
     {
         $layoutFile = $this->findLayoutFile($this->getView());
         if ($layoutFile !== false) {
@@ -123,7 +123,7 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      * @return string the rendering result.
      * @throws InvalidArgumentException if the view file does not exist.
      */
-    public function renderPartial($view, $params = [])
+    public function renderPartial(string $view, array $params = []): string
     {
         return $this->getView()->render($view, $params, $this);
     }
@@ -135,7 +135,7 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      * @return string the rendering result.
      * @throws InvalidArgumentException if the view file does not exist.
      */
-    public function renderFile($file, $params = [])
+    public function renderFile(string $file, array $params = []): string
     {
         return $this->getView()->renderFile($file, $params, $this);
     }
@@ -152,7 +152,7 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      * @param array $params the parameters (name-value pairs) that should be made available in the view.
      * @return string the rendering result.
      */
-    public function renderAjax($view, $params = [])
+    public function renderAjax(string $view, array $params = []): string
     {
         return $this->getView()->renderAjax($view, $params, $this);
     }
@@ -164,7 +164,7 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      * If not set, it will default to the "view" application component.
      * @return View|\yii\web\View the view object that can be used to render views or view files.
      */
-    public function getView()
+    public function getView(): View
     {
         if ($this->_view === null) {
             $this->_view = $this->app->getView();
@@ -177,7 +177,7 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      * Sets the view object to be used by this controller.
      * @param View|\yii\web\View $view the view object that can be used to render views or view files.
      */
-    public function setView($view)
+    public function setView(View $view): void
     {
         $this->_view = $view;
     }
@@ -188,7 +188,7 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      * [[viewPath]] directory.
      * @return string the directory containing the view files for this controller.
      */
-    public function getViewPath()
+    public function getViewPath(): string
     {
         if ($this->_viewPath === null) {
             $this->_viewPath = $this->module->getViewPath() . DIRECTORY_SEPARATOR . $this->id;
@@ -203,7 +203,7 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      * @throws InvalidArgumentException if the directory is invalid
      * @since 2.0.7
      */
-    public function setViewPath($path)
+    public function setViewPath(string $path): void
     {
         $this->_viewPath = $this->app->getAlias($path);
     }
@@ -215,10 +215,10 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      * Please refer to [[render()]] on how to specify this parameter.
      * @throws InvalidArgumentException if an invalid path alias is used to specify the layout.
      */
-    public function findLayoutFile($view)
+    public function findLayoutFile(View $view)
     {
         $module = $this->module;
-        if (is_string($this->layout)) {
+        if (\is_string($this->layout)) {
             $layout = $this->layout;
         } elseif ($this->layout === null) {
             while ($module !== null && $module->layout === null) {
@@ -271,7 +271,7 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      * @see Response::FORMAT_JSON
      * @see JsonResponseFormatter
      */
-    public function asJson($data)
+    public function asJson($data): Response
     {
         $response = $this->app->getResponse();
         $response->format = Response::FORMAT_JSON;
@@ -298,7 +298,7 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      * @see Response::FORMAT_XML
      * @see XmlResponseFormatter
      */
-    public function asXml($data)
+    public function asXml($data): Response
     {
         $response = $this->app->getResponse();
         $response->format = Response::FORMAT_XML;
@@ -317,7 +317,7 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      * @return array the valid parameters that the action can run with.
      * @throws BadRequestHttpException if there are missing or invalid parameters.
      */
-    public function bindActionParams($action, $params)
+    public function bindActionParams(Action $action, array $params): array
     {
         if ($action instanceof InlineAction) {
             $method = new \ReflectionMethod($this, $action->actionMethod);
@@ -400,14 +400,14 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      * See <https://tools.ietf.org/html/rfc2616#section-10>
      * for details about HTTP status code
      *
-     * @param boolean $checkAjax whether to specially handle AJAX requests. Defaults to false,
+     * @param bool $checkAjax whether to specially handle AJAX requests. Defaults to false,
      * meaning a `Location` header will be sent, which when received as an AJAX response, may NOT cause
      * browser redirection. If this is true, the current request is an AJAX request, then calling this method
      * will cause the browser to redirect to the given URL.
      * Takes effect only when request header `X-Ie-Redirect-Compatibility` is absent.
      * @return Response the current response object
      */
-    public function redirect($url, $statusCode = 302, $checkAjax = true)
+    public function redirect($url, int $statusCode = 302, bool $checkAjax = true): Response
     {
         return $this->app->getResponse()->redirect(Url::to($url), $statusCode, $checkAjax);
     }
@@ -424,7 +424,7 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      *
      * @return Response the current response object
      */
-    public function goHome()
+    public function goHome(): Response
     {
         return $this->app->getResponse()->redirect($this->app->getHomeUrl());
     }
@@ -447,7 +447,7 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      * @return Response the current response object
      * @see User::getReturnUrl()
      */
-    public function goBack($defaultUrl = null)
+    public function goBack($defaultUrl = null): Response
     {
         return $this->app->getResponse()->redirect($this->app->getUser()->getReturnUrl($defaultUrl));
     }
@@ -467,7 +467,7 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      * Defaults to empty. Make sure the anchor starts with '#' if you want to specify it.
      * @return Response the response object itself
      */
-    public function refresh($anchor = '')
+    public function refresh(string $anchor = ''): Response
     {
         return $this->app->getResponse()->redirect($this->app->getRequest()->getUrl() . $anchor);
     }

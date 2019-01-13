@@ -83,7 +83,7 @@ class MultipartFormDataParser extends BaseObject implements RequestParserInterfa
     /**
      * @return int upload file max size in bytes.
      */
-    public function getUploadFileMaxSize()
+    public function getUploadFileMaxSize(): int
     {
         if ($this->_uploadFileMaxSize === null) {
             $this->_uploadFileMaxSize = $this->getByteSize(ini_get('upload_max_filesize'));
@@ -95,7 +95,7 @@ class MultipartFormDataParser extends BaseObject implements RequestParserInterfa
     /**
      * @param int $uploadFileMaxSize upload file max size in bytes.
      */
-    public function setUploadFileMaxSize($uploadFileMaxSize)
+    public function setUploadFileMaxSize(int $uploadFileMaxSize): void
     {
         $this->_uploadFileMaxSize = $uploadFileMaxSize;
     }
@@ -103,7 +103,7 @@ class MultipartFormDataParser extends BaseObject implements RequestParserInterfa
     /**
      * @return int maximum upload files count.
      */
-    public function getUploadFileMaxCount()
+    public function getUploadFileMaxCount(): int
     {
         if ($this->_uploadFileMaxCount === null) {
             $this->_uploadFileMaxCount = ini_get('max_file_uploads');
@@ -115,7 +115,7 @@ class MultipartFormDataParser extends BaseObject implements RequestParserInterfa
     /**
      * @param int $uploadFileMaxCount maximum upload files count.
      */
-    public function setUploadFileMaxCount($uploadFileMaxCount)
+    public function setUploadFileMaxCount(int $uploadFileMaxCount): void
     {
         $this->_uploadFileMaxCount = $uploadFileMaxCount;
     }
@@ -123,7 +123,7 @@ class MultipartFormDataParser extends BaseObject implements RequestParserInterfa
     /**
      * {@inheritdoc}
      */
-    public function parse($request)
+    public function parse(Request $request): array
     {
         if (!$this->force) {
             if (!empty($_POST) || !empty($_FILES)) {
@@ -216,7 +216,7 @@ class MultipartFormDataParser extends BaseObject implements RequestParserInterfa
      * @param string $headerContent headers source content
      * @return array parsed headers.
      */
-    private function parseHeaders($headerContent)
+    private function parseHeaders(string $headerContent): array
     {
         $headers = [];
         $headerParts = preg_split('/\\R/s', $headerContent, -1, PREG_SPLIT_NO_EMPTY);
@@ -256,7 +256,7 @@ class MultipartFormDataParser extends BaseObject implements RequestParserInterfa
      * @param string $name input name specification.
      * @param mixed $value value to be added.
      */
-    private function addValue(&$array, $name, $value)
+    private function addValue(array &$array, string $name, $value): void
     {
         $nameParts = preg_split('/\\]\\[|\\[/s', $name);
         $current = &$array;
@@ -284,7 +284,7 @@ class MultipartFormDataParser extends BaseObject implements RequestParserInterfa
      * @param string $verboseSize verbose size representation.
      * @return int actual size in bytes.
      */
-    private function getByteSize($verboseSize)
+    private function getByteSize(string $verboseSize): int
     {
         if (empty($verboseSize)) {
             return 0;

@@ -21,5 +21,5 @@ interface AssetConverterInterface
      * @param string $basePath the directory the $asset is relative to.
      * @return string the converted asset file path, relative to $basePath.
      */
-    public function convert($asset, $basePath);
+    public function convert(string $asset, string $basePath): string;
 }

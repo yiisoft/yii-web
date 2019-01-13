@@ -121,9 +121,9 @@ class AssetBundle extends BaseObject implements Initiable
      * @param View $view the view to be registered with
      * @return static the registered asset bundle instance
      */
-    public static function register($view)
+    public static function register(View $view): self
     {
-        return $view->registerAssetBundle(get_called_class());
+        return $view->registerAssetBundle(static::class);
     }
 
     /**
@@ -147,7 +147,8 @@ class AssetBundle extends BaseObject implements Initiable
         '@npm' => '@root/node_modules',
     ];
 
-    protected function findPath($path) {
+    protected function findPath(string $path): string
+    {
         $path = rtrim(Yii::getAlias($path), '/\\');
         if (file_exists($path)) {
             return $path;
@@ -156,7 +157,7 @@ class AssetBundle extends BaseObject implements Initiable
         return $this->findAlternativePath($path);
     }
 
-    protected function findAlternativePath($path)
+    protected function findAlternativePath(string $path): string
     {
         foreach ($this->alternatives as $src => $dst) {
             $src = Yii::getAlias($src);
@@ -178,11 +179,11 @@ class AssetBundle extends BaseObject implements Initiable
      * Registers the CSS and JS files with the given view.
      * @param \yii\web\View $view the view that the asset files are to be registered with.
      */
-    public function registerAssetFiles($view)
+    public function registerAssetFiles(View $view): void
     {
         $manager = $view->getAssetManager();
         foreach ($this->js as $js) {
-            if (is_array($js)) {
+            if (\is_array($js)) {
                 $file = array_shift($js);
                 $options = ArrayHelper::merge($this->jsOptions, $js);
                 $view->registerJsFile($manager->getAssetUrl($this, $file), $options);
@@ -193,7 +194,7 @@ class AssetBundle extends BaseObject implements Initiable
             }
         }
         foreach ($this->css as $css) {
-            if (is_array($css)) {
+            if (\is_array($css)) {
                 $file = array_shift($css);
                 $options = ArrayHelper::merge($this->cssOptions, $css);
                 $view->registerCssFile($manager->getAssetUrl($this, $file), $options);
@@ -209,17 +210,17 @@ class AssetBundle extends BaseObject implements Initiable
      * Publishes the asset bundle if its source code is not under Web-accessible directory.
      * It will also try to convert non-CSS or JS files (e.g. LESS, Sass) into the corresponding
      * CSS or JS files using [[AssetManager::converter|asset converter]].
-     * @param AssetManager $am the asset manager to perform the asset publishing
+     * @param AssetManager $assetManager the asset manager to perform the asset publishing
      */
-    public function publish($am)
+    public function publish(AssetManager $assetManager): void
     {
         if ($this->sourcePath !== null && !isset($this->basePath, $this->baseUrl)) {
-            [$this->basePath, $this->baseUrl] = $am->publish($this->sourcePath, $this->publishOptions);
+            [$this->basePath, $this->baseUrl] = $assetManager->publish($this->sourcePath, $this->publishOptions);
         }
 
-        if (isset($this->basePath, $this->baseUrl) && ($converter = $am->getConverter()) !== null) {
+        if (isset($this->basePath, $this->baseUrl) && ($converter = $assetManager->getConverter()) !== null) {
             foreach ($this->js as $i => $js) {
-                if (is_array($js)) {
+                if (\is_array($js)) {
                     $file = array_shift($js);
                     if (Url::isRelative($file)) {
                         $js = ArrayHelper::merge($this->jsOptions, $js);
@@ -231,7 +232,7 @@ class AssetBundle extends BaseObject implements Initiable
                 }
             }
             foreach ($this->css as $i => $css) {
-                if (is_array($css)) {
+                if (\is_array($css)) {
                     $file = array_shift($css);
                     if (Url::isRelative($file)) {
                         $css = ArrayHelper::merge($this->cssOptions, $css);

@@ -210,7 +210,7 @@ class AssetManager extends Component
 
     protected $realBasePath;
 
-    public function getRealBasePath()
+    public function getRealBasePath(): string
     {
         if ($this->realBasePath === null) {
             $this->realBasePath = $this->prepareBasePath($this->basePath);
@@ -219,12 +219,14 @@ class AssetManager extends Component
         return $this->realBasePath;
     }
 
-    public function prepareBasePath($basePath)
+    public function prepareBasePath(string $basePath): string
     {
         $basePath = $this->app->getAlias($basePath);
         if (!is_dir($basePath)) {
             throw new InvalidConfigException("The directory does not exist: {$basePath}");
-        } elseif (!is_writable($basePath)) {
+        }
+
+        if (!is_writable($basePath)) {
             throw new InvalidConfigException("The directory is not writable by the Web process: {$basePath}");
         }
 
@@ -243,17 +245,25 @@ class AssetManager extends Component
      * @return AssetBundle the asset bundle instance
      * @throws InvalidConfigException if $name does not refer to a valid asset bundle
      */
-    public function getBundle($name, $publish = true)
+    public function getBundle(string $name, bool $publish = true): AssetBundle
     {
         if ($this->bundles === false) {
             return $this->loadDummyBundle($name);
-        } elseif (!isset($this->bundles[$name])) {
+        }
+
+        if (!isset($this->bundles[$name])) {
             return $this->bundles[$name] = $this->loadBundle($name, [], $publish);
-        } elseif ($this->bundles[$name] instanceof AssetBundle) {
+        }
+
+        if ($this->bundles[$name] instanceof AssetBundle) {
             return $this->bundles[$name];
-        } elseif (is_array($this->bundles[$name])) {
+        }
+
+        if (\is_array($this->bundles[$name])) {
             return $this->bundles[$name] = $this->loadBundle($name, $this->bundles[$name], $publish);
-        } elseif ($this->bundles[$name] === false) {
+        }
+
+        if ($this->bundles[$name] === false) {
             return $this->loadDummyBundle($name);
         }
 
@@ -269,7 +279,7 @@ class AssetManager extends Component
      * @return AssetBundle
      * @throws InvalidConfigException if configuration isn't valid
      */
-    protected function loadBundle($name, $config = [], $publish = true)
+    protected function loadBundle(string $name, array $config = [], bool $publish = true): AssetBundle
     {
         if (!isset($config['__class'])) {
             $config['__class'] = $name;
@@ -289,7 +299,7 @@ class AssetManager extends Component
      * @param string $name
      * @return AssetBundle
      */
-    protected function loadDummyBundle($name)
+    protected function loadDummyBundle(string $name): AssetBundle
     {
         if (!isset($this->_dummyBundles[$name])) {
             $this->_dummyBundles[$name] = $this->loadBundle($name, [
@@ -310,7 +320,7 @@ class AssetManager extends Component
      * @param string $asset the asset path. This should be one of the assets listed in [[AssetBundle::$js]] or [[AssetBundle::$css]].
      * @return string the actual URL for the specified asset.
      */
-    public function getAssetUrl($bundle, $asset)
+    public function getAssetUrl(AssetBundle $bundle, string $asset): string
     {
         if (($actualAsset = $this->resolveAsset($bundle, $asset)) !== false) {
             if (strncmp($actualAsset, '@web/', 5) === 0) {
@@ -342,23 +352,23 @@ class AssetManager extends Component
      * Returns the actual file path for the specified asset.
      * @param AssetBundle $bundle the asset bundle which the asset file belongs to
      * @param string $asset the asset path. This should be one of the assets listed in [[AssetBundle::$js]] or [[AssetBundle::$css]].
-     * @return string|false the actual file path, or `false` if the asset is specified as an absolute URL
+     * @return string|null the actual file path, or `null` if the asset is specified as an absolute URL
      */
-    public function getAssetPath($bundle, $asset)
+    public function getAssetPath(AssetBundle $bundle, string $asset): ?string
     {
-        if (($actualAsset = $this->resolveAsset($bundle, $asset)) !== false) {
-            return Url::isRelative($actualAsset) ? $this->getRealBasePath() . '/' . $actualAsset : false;
+        if (($actualAsset = $this->resolveAsset($bundle, $asset)) !== null) {
+            return Url::isRelative($actualAsset) ? $this->getRealBasePath() . '/' . $actualAsset : null;
         }
 
-        return Url::isRelative($asset) ? $bundle->basePath . '/' . $asset : false;
+        return Url::isRelative($asset) ? $bundle->basePath . '/' . $asset : null;
     }
 
     /**
      * @param AssetBundle $bundle
      * @param string $asset
-     * @return string|bool
+     * @return string|null
      */
-    protected function resolveAsset($bundle, $asset)
+    protected function resolveAsset(AssetBundle $bundle, string $asset): ?string
     {
         if (isset($this->assetMap[$asset])) {
             return $this->assetMap[$asset];
@@ -375,7 +385,7 @@ class AssetManager extends Component
             }
         }
 
-        return false;
+        return null;
     }
 
     private $_converter;
@@ -384,12 +394,12 @@ class AssetManager extends Component
      * Returns the asset converter.
      * @return AssetConverterInterface the asset converter.
      */
-    public function getConverter()
+    public function getConverter(): AssetConverterInterface
     {
         if ($this->_converter === null) {
             $this->_converter = $this->app->createObject(AssetConverter::class);
-        } elseif (is_array($this->_converter) || is_string($this->_converter)) {
-            if (is_array($this->_converter) && !isset($this->_converter['__class'])) {
+        } elseif (\is_array($this->_converter) || \is_string($this->_converter)) {
+            if (\is_array($this->_converter) && !isset($this->_converter['__class'])) {
                 $this->_converter['__class'] = AssetConverter::class;
             }
             $this->_converter = $this->app->createObject($this->_converter);
@@ -404,7 +414,7 @@ class AssetManager extends Component
      * an object implementing the [[AssetConverterInterface]], or a configuration
      * array that can be used to create the asset converter object.
      */
-    public function setConverter($value)
+    public function setConverter($value): void
     {
         $this->_converter = $value;
     }
@@ -456,7 +466,7 @@ class AssetManager extends Component
      * @return array the path (directory or file path) and the URL that the asset is published as.
      * @throws InvalidArgumentException if the asset to be published does not exist.
      */
-    public function publish($path, $options = [])
+    public function publish(string $path, array $options = []): array
     {
         $path = $this->app->getAlias($path);
 
@@ -464,7 +474,7 @@ class AssetManager extends Component
             return $this->_published[$path];
         }
 
-        if (!is_string($path) || ($src = realpath($path)) === false) {
+        if (!\is_string($path) || ($src = realpath($path)) === false) {
             throw new InvalidArgumentException("The file or directory to be published does not exist: $path");
         }
 
@@ -481,7 +491,7 @@ class AssetManager extends Component
      * @return string[] the path and the URL that the asset is published as.
      * @throws InvalidArgumentException if the asset to be published does not exist.
      */
-    protected function publishFile($src)
+    protected function publishFile(string $src): array
     {
         $dir = $this->hash($src);
         $fileName = basename($src);
@@ -532,7 +542,7 @@ class AssetManager extends Component
      * @return string[] the path directory and the URL that the asset is published as.
      * @throws InvalidArgumentException if the asset to be published does not exist.
      */
-    protected function publishDirectory($src, $options)
+    protected function publishDirectory(string $src, array $options): array
     {
         $dir = $this->hash($src);
         $dstDir = $this->getRealBasePath() . DIRECTORY_SEPARATOR . $dir;
@@ -579,20 +589,20 @@ class AssetManager extends Component
      * This method does not perform any publishing. It merely tells you
      * if the file or directory is published, where it will go.
      * @param string $path directory or file path being published
-     * @return string|false string the published file path. False if the file or directory does not exist
+     * @return string|null string the published file path. null if the file or directory does not exist
      */
-    public function getPublishedPath($path)
+    public function getPublishedPath(string $path): ?string
     {
         $path = $this->app->getAlias($path);
 
         if (isset($this->_published[$path])) {
             return $this->_published[$path][0];
         }
-        if (is_string($path) && ($path = realpath($path)) !== false) {
+        if (\is_string($path) && ($path = realpath($path)) !== false) {
             return $this->getRealBasePath() . DIRECTORY_SEPARATOR . $this->hash($path) . (is_file($path) ? DIRECTORY_SEPARATOR . basename($path) : '');
         }
 
-        return false;
+        return null;
     }
 
     /**
@@ -600,20 +610,20 @@ class AssetManager extends Component
      * This method does not perform any publishing. It merely tells you
      * if the file path is published, what the URL will be to access it.
      * @param string $path directory or file path being published
-     * @return string|false string the published URL for the file or directory. False if the file or directory does not exist.
+     * @return string|null string the published URL for the file or directory. null if the file or directory does not exist.
      */
-    public function getPublishedUrl($path)
+    public function getPublishedUrl(string $path): ?string
     {
         $path = $this->app->getAlias($path);
 
         if (isset($this->_published[$path])) {
             return $this->_published[$path][1];
         }
-        if (is_string($path) && ($path = realpath($path)) !== false) {
+        if (\is_string($path) && ($path = realpath($path)) !== false) {
             return $this->baseUrl . '/' . $this->hash($path) . (is_file($path) ? '/' . basename($path) : '');
         }
 
-        return false;
+        return null;
     }
 
     /**
@@ -622,12 +632,12 @@ class AssetManager extends Component
      * @param string $path string to be hashed.
      * @return string hashed string.
      */
-    protected function hash($path)
+    protected function hash(string $path): string
     {
-        if (is_callable($this->hashCallback)) {
-            return call_user_func($this->hashCallback, $path);
+        if (\is_callable($this->hashCallback)) {
+            return \call_user_func($this->hashCallback, $path);
         }
-        $path = (is_file($path) ? dirname($path) : $path) . filemtime($path);
+        $path = (is_file($path) ? \dirname($path) : $path) . filemtime($path);
         return sprintf('%x', crc32($path . Yii::getVersion() . '|' . $this->linkAssets));
     }
 }

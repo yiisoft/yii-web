@@ -15,7 +15,7 @@ class MockAuthManager extends PhpManager
      * This mock does not persist.
      * {@inheritdoc}
      */
-    protected function saveToFile($data, $file)
+    protected function saveToFile($data, $file): void
     {
     }
 }

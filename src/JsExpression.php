@@ -31,7 +31,7 @@ class JsExpression extends BaseObject
      * @param string $expression the JavaScript expression represented by this object
      * @param array $config additional configurations for this object
      */
-    public function __construct($expression, $config = [])
+    public function __construct(string $expression, array $config = [])
     {
         $this->expression = $expression;
     }
@@ -40,7 +40,7 @@ class JsExpression extends BaseObject
      * The PHP magic function converting an object into a string.
      * @return string the JavaScript expression.
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->expression;
     }

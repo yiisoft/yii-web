@@ -7,8 +7,13 @@
 
 namespace yii\web\filters\auth;
 
+use yii\base\Action;
 use yii\helpers\Yii;
 use yii\exceptions\InvalidConfigException;
+use yii\web\IdentityInterface;
+use yii\web\Request;
+use yii\web\Response;
+use yii\web\User;
 
 /**
  * CompositeAuth is an action filter that supports multiple authentication methods at the same time.
@@ -52,7 +57,7 @@ class CompositeAuth extends AuthMethod
     /**
      * {@inheritdoc}
      */
-    public function beforeAction($action)
+    public function beforeAction(Action $action): bool
     {
         return empty($this->authMethods) ? true : parent::beforeAction($action);
     }
@@ -60,7 +65,7 @@ class CompositeAuth extends AuthMethod
     /**
      * {@inheritdoc}
      */
-    public function authenticate($user, $request, $response)
+    public function authenticate(User $user, Request $request, Response $response): ?IdentityInterface
     {
         foreach ($this->authMethods as $i => $auth) {
             if (!$auth instanceof AuthInterface) {

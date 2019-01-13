@@ -24,17 +24,17 @@ class UrlNormalizer extends BaseObject
      * Represents permament redirection during route normalization.
      * @see https://en.wikipedia.org/wiki/HTTP_301
      */
-    const ACTION_REDIRECT_PERMANENT = 301;
+    public const ACTION_REDIRECT_PERMANENT = 301;
     /**
      * Represents temporary redirection during route normalization.
      * @see https://en.wikipedia.org/wiki/HTTP_302
      */
-    const ACTION_REDIRECT_TEMPORARY = 302;
+    public const ACTION_REDIRECT_TEMPORARY = 302;
     /**
      * Represents showing 404 error page during route normalization.
      * @see https://en.wikipedia.org/wiki/HTTP_404
      */
-    const ACTION_NOT_FOUND = 404;
+    public const ACTION_NOT_FOUND = 404;
 
     /**
      * @var bool whether slashes should be collapsed, for example `site///index` will be
@@ -77,16 +77,22 @@ class UrlNormalizer extends BaseObject
      * @throws UrlNormalizerRedirectException if normalization requires redirection.
      * @throws NotFoundHttpException if normalization suggests action matching route does not exist.
      */
-    public function normalizeRoute($route)
+    public function normalizeRoute(array $route): array
     {
         if ($this->action === null) {
             return $route;
-        } elseif ($this->action === static::ACTION_REDIRECT_PERMANENT || $this->action === static::ACTION_REDIRECT_TEMPORARY) {
+        }
+
+        if ($this->action === static::ACTION_REDIRECT_PERMANENT || $this->action === static::ACTION_REDIRECT_TEMPORARY) {
             throw new UrlNormalizerRedirectException([$route[0]] + $route[1], $this->action);
-        } elseif ($this->action === static::ACTION_NOT_FOUND) {
+        }
+
+        if ($this->action === static::ACTION_NOT_FOUND) {
             throw new NotFoundHttpException(Yii::t('yii', 'Page not found.'));
-        } elseif (is_callable($this->action)) {
-            return call_user_func($this->action, $route, $this);
+        }
+
+        if (\is_callable($this->action)) {
+            return \call_user_func($this->action, $route, $this);
         }
 
         throw new InvalidConfigException('Invalid normalizer action.');
@@ -100,7 +106,7 @@ class UrlNormalizer extends BaseObject
      * was changed during normalization
      * @return string normalized pathInfo
      */
-    public function normalizePathInfo($pathInfo, $suffix, &$normalized = false)
+    public function normalizePathInfo(string $pathInfo, string $suffix, bool &$normalized = false): string
     {
         if (empty($pathInfo)) {
             return $pathInfo;
@@ -125,7 +131,7 @@ class UrlNormalizer extends BaseObject
      * @param string $pathInfo raw path info.
      * @return string normalized path info.
      */
-    protected function collapseSlashes($pathInfo)
+    protected function collapseSlashes(string $pathInfo): string
     {
         return ltrim(preg_replace('#/{2,}#', '/', $pathInfo), '/');
     }
@@ -137,7 +143,7 @@ class UrlNormalizer extends BaseObject
      * @param string $suffix
      * @return string normalized path info.
      */
-    protected function normalizeTrailingSlash($pathInfo, $suffix)
+    protected function normalizeTrailingSlash(string $pathInfo, string $suffix): string
     {
         if (substr($suffix, -1) === '/' && substr($pathInfo, -1) !== '/') {
             $pathInfo .= '/';

@@ -59,7 +59,7 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
      * Page cache version, to detect incompatibilities in cached values when the
      * data format of the cache changes.
      */
-    const PAGE_CACHE_VERSION = 2;
+    private const PAGE_CACHE_VERSION = 2;
 
     /**
      * @var bool whether the content being cached should be differentiated according to the route.
@@ -137,7 +137,7 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
      * @param Action $action the action to be executed.
      * @return bool whether the action should continue to be executed.
      */
-    public function beforeAction($action)
+    public function beforeAction(Action $action): bool
     {
         if (!$this->enabled) {
             return true;
@@ -145,13 +145,13 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
 
         $this->cache = Yii::ensureObject($this->cache, CacheInterface::class);
 
-        if (is_array($this->dependency)) {
+        if (\is_array($this->dependency)) {
             $this->dependency = Yii::createObject($this->dependency);
         }
 
         $response = Yii::getApp()->getResponse();
         $data = $this->cache->get($this->calculateCacheKey());
-        if (!is_array($data) || !isset($data['cacheVersion']) || $data['cacheVersion'] !== static::PAGE_CACHE_VERSION) {
+        if (!\is_array($data) || !isset($data['cacheVersion']) || $data['cacheVersion'] !== static::PAGE_CACHE_VERSION) {
             $this->getView()->pushDynamicContent($this);
             ob_start();
             ob_implicit_flush(false);
@@ -193,7 +193,7 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
      * @param array $data the response property data.
      * @since 2.0.3
      */
-    protected function restoreResponse($response, $data)
+    protected function restoreResponse(Response $response, array $data): void
     {
         foreach (['format', 'protocolVersion', 'statusCode', 'reasonPhrase', 'content'] as $name) {
             $response->{$name} = $data[$name];
@@ -203,11 +203,11 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
             $response->setHeaders($data['headers']);
         }
 
-        if (isset($data['cookies']) && is_array($data['cookies'])) {
+        if (isset($data['cookies']) && \is_array($data['cookies'])) {
             $response->getCookies()->fromArray(array_merge($data['cookies'], $response->getCookies()->toArray()));
         }
 
-        if (!empty($data['dynamicPlaceholders']) && is_array($data['dynamicPlaceholders'])) {
+        if (!empty($data['dynamicPlaceholders']) && \is_array($data['dynamicPlaceholders'])) {
             $response->content = $this->updateDynamicContent($response->content, $data['dynamicPlaceholders'], true);
         }
         $this->afterRestoreResponse($data['cacheData'] ?? null);
@@ -217,7 +217,7 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
      * Caches response properties.
      * @since 2.0.3
      */
-    public function cacheResponse()
+    public function cacheResponse(): void
     {
         $this->getView()->popDynamicContent();
         $beforeCacheResponseResult = $this->beforeCacheResponse();
@@ -229,7 +229,7 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
         $response = Yii::getApp()->getResponse();
         $data = [
             'cacheVersion' => static::PAGE_CACHE_VERSION,
-            'cacheData' => is_array($beforeCacheResponseResult) ? $beforeCacheResponseResult : null,
+            'cacheData' => \is_array($beforeCacheResponseResult) ? $beforeCacheResponseResult : null,
             'content' => ob_get_clean(),
         ];
         if ($data['content'] === false || $data['content'] === '') {
@@ -253,7 +253,7 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
      * @param string $collectionName currently it's `headers` or `cookies`.
      * @param array $data the cache data.
      */
-    private function insertResponseCollectionIntoData(Response $response, $collectionName, array &$data)
+    private function insertResponseCollectionIntoData(Response $response, string $collectionName, array &$data): array
     {
         $property = 'cache' . ucfirst($collectionName);
         if ($this->{$property} === false) {
@@ -261,8 +261,8 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
         }
 
         $collection = $response->{$collectionName};
-        $all = is_array($collection) ? $collection : $collection->toArray();
-        if (is_array($this->{$property})) {
+        $all = \is_array($collection) ? $collection : $collection->toArray();
+        if (\is_array($this->{$property})) {
             $filtered = [];
             foreach ($this->{$property} as $name) {
                 if ($collectionName === 'headers') {
@@ -281,7 +281,7 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
      * @return array the key used to cache response properties.
      * @since 2.0.3
      */
-    protected function calculateCacheKey()
+    protected function calculateCacheKey(): array
     {
         $key = [__CLASS__];
         if ($this->varyByRoute) {
@@ -302,7 +302,7 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
     /**
      * {@inheritdoc}
      */
-    public function getView()
+    public function getView(): View
     {
         if ($this->_view === null) {
             $this->_view = Yii::getApp()->getView();

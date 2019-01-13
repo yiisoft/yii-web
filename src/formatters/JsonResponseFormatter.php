@@ -10,6 +10,7 @@ namespace yii\web\formatters;
 use yii\helpers\Yii;
 use yii\base\Component;
 use yii\helpers\Json;
+use yii\web\Response;
 
 /**
  * JsonResponseFormatter formats the given data into a JSON or JSONP response content.
@@ -41,17 +42,17 @@ class JsonResponseFormatter extends Component implements ResponseFormatterInterf
      * JSON Content Type
      * @since 2.0.14
      */
-    const CONTENT_TYPE_JSONP = 'application/javascript; charset=UTF-8';
+    public const CONTENT_TYPE_JSONP = 'application/javascript; charset=UTF-8';
     /**
      * JSONP Content Type
      * @since 2.0.14
      */
-    const CONTENT_TYPE_JSON = 'application/json; charset=UTF-8';
+    public const CONTENT_TYPE_JSON = 'application/json; charset=UTF-8';
     /**
      * HAL JSON Content Type
      * @since 2.0.14
      */
-    const CONTENT_TYPE_HAL_JSON = 'application/hal+json; charset=UTF-8';
+    public const CONTENT_TYPE_HAL_JSON = 'application/hal+json; charset=UTF-8';
 
     /**
      * @var string|null custom value of the `Content-Type` header of the response.
@@ -87,7 +88,7 @@ class JsonResponseFormatter extends Component implements ResponseFormatterInterf
      * Formats the specified response.
      * @param Response $response the response to be formatted.
      */
-    public function format($response)
+    public function format(Response $response): void
     {
         if ($this->contentType === null) {
             $this->contentType = $this->useJsonp
@@ -109,7 +110,7 @@ class JsonResponseFormatter extends Component implements ResponseFormatterInterf
      * Formats response data in JSON format.
      * @param Response $response
      */
-    protected function formatJson($response)
+    protected function formatJson(Response $response): void
     {
         if ($response->data !== null) {
             $options = $this->encodeOptions;
@@ -124,9 +125,9 @@ class JsonResponseFormatter extends Component implements ResponseFormatterInterf
      * Formats response data in JSONP format.
      * @param Response $response
      */
-    protected function formatJsonp($response)
+    protected function formatJsonp(Response $response): void
     {
-        if (is_array($response->data)
+        if (\is_array($response->data)
             && isset($response->data['data'], $response->data['callback'])
         ) {
             $response->content = sprintf(

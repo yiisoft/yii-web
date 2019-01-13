@@ -93,7 +93,7 @@ class AssetConverter extends Component implements AssetConverterInterface
      * @param string $basePath the directory the $asset is relative to.
      * @return string the converted asset file path, relative to $basePath.
      */
-    public function convert($asset, $basePath)
+    public function convert(string $asset, string $basePath): string
     {
         $pos = strrpos($asset, '.');
         if ($pos !== false) {
@@ -122,7 +122,7 @@ class AssetConverter extends Component implements AssetConverterInterface
      * @return bool whether asset is outdated or not.
      * @since 3.0.0
      */
-    protected function isOutdated($basePath, $sourceFile, $targetFile, $sourceExtension, $targetExtension)
+    protected function isOutdated(string $basePath, string $sourceFile, string$targetFile, string $sourceExtension, string $targetExtension): bool
     {
         $resultModificationTime = @filemtime("$basePath/$targetFile");
         if ($resultModificationTime === false || $resultModificationTime === null) {
@@ -137,7 +137,7 @@ class AssetConverter extends Component implements AssetConverterInterface
             return false;
         }
 
-        return call_user_func($this->isOutdatedCallback, $basePath, $sourceFile, $targetFile, $sourceExtension, $targetExtension);
+        return \call_user_func($this->isOutdatedCallback, $basePath, $sourceFile, $targetFile, $sourceExtension, $targetExtension);
     }
 
     /**
@@ -150,7 +150,7 @@ class AssetConverter extends Component implements AssetConverterInterface
      * @throws \yii\exceptions\Exception when the command fails and YII_DEBUG is true.
      * In production mode the error will be logged.
      */
-    protected function runCommand($command, $basePath, $asset, $result)
+    protected function runCommand(string $command, string $basePath, string $asset, string $result): bool
     {
         $command = Yii::getAlias($command);
 

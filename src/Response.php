@@ -72,21 +72,21 @@ class Response extends \yii\base\Response implements ResponseInterface
     /**
      * @event ResponseEvent an event that is triggered at the beginning of [[send()]].
      */
-    const EVENT_BEFORE_SEND = 'response.send.before';
+    public const EVENT_BEFORE_SEND = 'response.send.before';
     /**
      * @event ResponseEvent an event that is triggered at the end of [[send()]].
      */
-    const EVENT_AFTER_SEND = 'response.send.after';
+    public const EVENT_AFTER_SEND = 'response.send.after';
     /**
      * @event ResponseEvent an event that is triggered right after [[prepare()]] is called in [[send()]].
      * You may respond to this event to filter the response content before it is sent to the client.
      */
-    const EVENT_AFTER_PREPARE = 'response.prepare.after';
-    const FORMAT_RAW = 'raw';
-    const FORMAT_HTML = 'html';
-    const FORMAT_JSON = 'json';
-    const FORMAT_JSONP = 'jsonp';
-    const FORMAT_XML = 'xml';
+    public const EVENT_AFTER_PREPARE = 'response.prepare.after';
+    public const FORMAT_RAW = 'raw';
+    public const FORMAT_HTML = 'html';
+    public const FORMAT_JSON = 'json';
+    public const FORMAT_JSONP = 'jsonp';
+    public const FORMAT_XML = 'xml';
 
     /**
      * @var string the response format. This determines how to convert [[data]] into [[content]]
@@ -235,7 +235,7 @@ class Response extends \yii\base\Response implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    public function getStatusCode()
+    public function getStatusCode(): int
     {
         return $this->_statusCode;
     }
@@ -248,12 +248,9 @@ class Response extends \yii\base\Response implements ResponseInterface
      * @throws InvalidArgumentException if the status code is invalid.
      * @return $this the response object itself
      */
-    public function setStatusCode($code, $reasonPhrase = null)
+    public function setStatusCode(int $code, string $reasonPhrase = null): self
     {
-        if ($code === null) {
-            $code = 200;
-        }
-        $this->_statusCode = (int) $code;
+        $this->_statusCode = $code;
         if ($this->getIsInvalid()) {
             throw new InvalidArgumentException("The HTTP status code is invalid: $code");
         }
@@ -269,7 +266,7 @@ class Response extends \yii\base\Response implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    public function withStatus($code, $reasonPhrase = '')
+    public function withStatus($code, $reasonPhrase = ''): self
     {
         if ($this->getStatusCode() === $code && $this->reasonPhrase === $reasonPhrase) {
             return $this;
@@ -283,19 +280,19 @@ class Response extends \yii\base\Response implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    public function getReasonPhrase()
+    public function getReasonPhrase(): string
     {
         return $this->reasonPhrase;
     }
 
     /**
      * Sets the response status code based on the exception.
-     * @param \Exception|\Error|\Throwable $e the exception object.
+     * @param \Throwable $e the exception object.
      * @throws InvalidArgumentException if the status code is invalid.
      * @return $this the response object itself
      * @since 2.0.12
      */
-    public function setStatusCodeByException($e)
+    public function setStatusCodeByException(\Throwable $e): self
     {
         if ($e instanceof HttpException) {
             $this->setStatusCode($e->statusCode);
@@ -310,7 +307,7 @@ class Response extends \yii\base\Response implements ResponseInterface
      * @return string body content string.
      * @since 3.0.0
      */
-    public function getContent()
+    public function getContent(): string
     {
         return $this->getBody()->__toString();
     }
@@ -319,7 +316,7 @@ class Response extends \yii\base\Response implements ResponseInterface
      * @param string $content body content string.
      * @since 3.0.0
      */
-    public function setContent($content)
+    public function setContent(string $content): void
     {
         $body = new MemoryStream();
         $body->write($content);
@@ -329,7 +326,7 @@ class Response extends \yii\base\Response implements ResponseInterface
     /**
      * Sends the response to the client.
      */
-    public function send()
+    public function send(): void
     {
         if ($this->isSent) {
             return;
@@ -346,7 +343,7 @@ class Response extends \yii\base\Response implements ResponseInterface
     /**
      * Clears the headers, cookies, content, status code of the response.
      */
-    public function clear()
+    public function clear(): void
     {
         $this->_headerCollection = null;
         $this->_cookies = null;
@@ -361,7 +358,7 @@ class Response extends \yii\base\Response implements ResponseInterface
     /**
      * Sends the response headers to the client.
      */
-    protected function sendHeaders()
+    protected function sendHeaders(): void
     {
         if (headers_sent($file, $line)) {
             throw new HeadersAlreadySentException($file, $line);
@@ -386,7 +383,7 @@ class Response extends \yii\base\Response implements ResponseInterface
     /**
      * Sends the cookies to the client.
      */
-    protected function sendCookies()
+    protected function sendCookies(): void
     {
         if ($this->_cookies === null) {
             return;
@@ -410,7 +407,7 @@ class Response extends \yii\base\Response implements ResponseInterface
     /**
      * Sends the response content to the client.
      */
-    protected function sendContent()
+    protected function sendContent(): void
     {
         $body = $this->getBody();
         if (!$body->isReadable()) {
@@ -420,7 +417,7 @@ class Response extends \yii\base\Response implements ResponseInterface
         set_time_limit(0); // Reset time limit for big files
         $chunkSize = 8 * 1024 * 1024; // 8MB per chunk
 
-        if (is_array($this->bodyRange)) {
+        if (\is_array($this->bodyRange)) {
             [$begin, $end] = $this->bodyRange;
 
             if (!$body->isSeekable()) {
@@ -484,7 +481,7 @@ class Response extends \yii\base\Response implements ResponseInterface
      * @see sendStreamAsFile()
      * @see xSendFile()
      */
-    public function sendFile($filePath, $attachmentName = null, $options = [])
+    public function sendFile(string $filePath, string $attachmentName = null, array $options = []): self
     {
         if (!isset($options['mimeType'])) {
             $options['mimeType'] = FileHelper::getMimeTypeByExtension($filePath);
@@ -516,7 +513,7 @@ class Response extends \yii\base\Response implements ResponseInterface
      * @throws RangeNotSatisfiableHttpException if the requested range is not satisfiable
      * @see sendFile() for an example implementation.
      */
-    public function sendContentAsFile($content, $attachmentName, $options = [])
+    public function sendContentAsFile(string $content, string $attachmentName, array $options = []): self
     {
         $contentLength = StringHelper::byteLength($content);
         $range = $this->getHttpRange($contentLength);
@@ -566,7 +563,7 @@ class Response extends \yii\base\Response implements ResponseInterface
      * @throws RangeNotSatisfiableHttpException if the requested range is not satisfiable
      * @see sendFile() for an example implementation.
      */
-    public function sendStreamAsFile($handle, $attachmentName, $options = [])
+    public function sendStreamAsFile($handle, string $attachmentName, array $options = []): self
     {
         if (isset($options['fileSize'])) {
             $fileSize = $options['fileSize'];
@@ -611,7 +608,7 @@ class Response extends \yii\base\Response implements ResponseInterface
      * @param int $contentLength the byte length of the file being downloaded. If null, `Content-Length` header will NOT be set.
      * @return $this the response object itself
      */
-    public function setDownloadHeaders($attachmentName, $mimeType = null, $inline = false, $contentLength = null)
+    public function setDownloadHeaders(string $attachmentName, string $mimeType = null, bool $inline = false, int $contentLength = null)
     {
         $disposition = $inline ? 'inline' : 'attachment';
 
@@ -645,7 +642,7 @@ class Response extends \yii\base\Response implements ResponseInterface
      * @param int $fileSize the size of the file that will be used to validate the requested HTTP range.
      * @return array|bool the range (begin, end), or false if the range request is invalid.
      */
-    protected function getHttpRange($fileSize)
+    protected function getHttpRange(int $fileSize)
     {
         $rangeHeader = $this->app->getRequest()->getHeaderLine('Range');
 
@@ -733,7 +730,7 @@ class Response extends \yii\base\Response implements ResponseInterface
      * @return $this the response object itself
      * @see sendFile()
      */
-    public function xSendFile($filePath, $attachmentName = null, $options = [])
+    public function xSendFile(string $filePath, string $attachmentName = null, array $options = []): self
     {
         if ($attachmentName === null) {
             $attachmentName = basename($filePath);
@@ -792,7 +789,7 @@ class Response extends \yii\base\Response implements ResponseInterface
      *
      * @since 2.0.10
      */
-    protected function getDispositionHeaderValue($disposition, $attachmentName)
+    protected function getDispositionHeaderValue(string $disposition, string $attachmentName): string
     {
         $fallbackName = str_replace(
             ['%', '/', '\\', '"'],
@@ -865,9 +862,9 @@ class Response extends \yii\base\Response implements ResponseInterface
      * Takes effect only when request header `X-Ie-Redirect-Compatibility` is absent.
      * @return $this the response object itself
      */
-    public function redirect($url, $statusCode = 302, $checkAjax = true)
+    public function redirect($url, int $statusCode = 302, bool $checkAjax = true): self
     {
-        if (is_array($url) && isset($url[0])) {
+        if (\is_array($url) && isset($url[0])) {
             // ensure the route is absolute
             $url[0] = '/' . ltrim($url[0], '/');
         }
@@ -910,7 +907,7 @@ class Response extends \yii\base\Response implements ResponseInterface
      * Defaults to empty. Make sure the anchor starts with '#' if you want to specify it.
      * @return Response the response object itself
      */
-    public function refresh($anchor = '')
+    public function refresh(string $anchor = ''): Response
     {
         return $this->redirect($this->app->getRequest()->getUrl() . $anchor);
     }
@@ -937,7 +934,7 @@ class Response extends \yii\base\Response implements ResponseInterface
      *
      * @return CookieCollection the cookie collection.
      */
-    public function getCookies()
+    public function getCookies(): CookieCollection
     {
         if ($this->_cookies === null) {
             $this->_cookies = new CookieCollection();
@@ -949,7 +946,7 @@ class Response extends \yii\base\Response implements ResponseInterface
     /**
      * @return bool whether this response has a valid [[statusCode]].
      */
-    public function getIsInvalid()
+    public function getIsInvalid(): bool
     {
         return $this->getStatusCode() < 100 || $this->getStatusCode() >= 600;
     }
@@ -957,7 +954,7 @@ class Response extends \yii\base\Response implements ResponseInterface
     /**
      * @return bool whether this response is informational
      */
-    public function getIsInformational()
+    public function getIsInformational(): bool
     {
         return $this->getStatusCode() >= 100 && $this->getStatusCode() < 200;
     }
@@ -965,7 +962,7 @@ class Response extends \yii\base\Response implements ResponseInterface
     /**
      * @return bool whether this response is successful
      */
-    public function getIsSuccessful()
+    public function getIsSuccessful(): bool
     {
         return $this->getStatusCode() >= 200 && $this->getStatusCode() < 300;
     }
@@ -973,7 +970,7 @@ class Response extends \yii\base\Response implements ResponseInterface
     /**
      * @return bool whether this response is a redirection
      */
-    public function getIsRedirection()
+    public function getIsRedirection(): bool
     {
         return $this->getStatusCode() >= 300 && $this->getStatusCode() < 400;
     }
@@ -981,7 +978,7 @@ class Response extends \yii\base\Response implements ResponseInterface
     /**
      * @return bool whether this response indicates a client error
      */
-    public function getIsClientError()
+    public function getIsClientError(): bool
     {
         return $this->getStatusCode() >= 400 && $this->getStatusCode() < 500;
     }
@@ -989,7 +986,7 @@ class Response extends \yii\base\Response implements ResponseInterface
     /**
      * @return bool whether this response indicates a server error
      */
-    public function getIsServerError()
+    public function getIsServerError(): bool
     {
         return $this->getStatusCode() >= 500 && $this->getStatusCode() < 600;
     }
@@ -997,7 +994,7 @@ class Response extends \yii\base\Response implements ResponseInterface
     /**
      * @return bool whether this response is OK
      */
-    public function getIsOk()
+    public function getIsOk(): bool
     {
         return $this->getStatusCode() == 200;
     }
@@ -1005,7 +1002,7 @@ class Response extends \yii\base\Response implements ResponseInterface
     /**
      * @return bool whether this response indicates the current request is forbidden
      */
-    public function getIsForbidden()
+    public function getIsForbidden(): bool
     {
         return $this->getStatusCode() == 403;
     }
@@ -1013,7 +1010,7 @@ class Response extends \yii\base\Response implements ResponseInterface
     /**
      * @return bool whether this response indicates the currently requested resource is not found
      */
-    public function getIsNotFound()
+    public function getIsNotFound(): bool
     {
         return $this->getStatusCode() == 404;
     }
@@ -1021,7 +1018,7 @@ class Response extends \yii\base\Response implements ResponseInterface
     /**
      * @return bool whether this response is empty
      */
-    public function getIsEmpty()
+    public function getIsEmpty(): bool
     {
         return in_array($this->getStatusCode(), [201, 204, 304]);
     }
@@ -1031,7 +1028,7 @@ class Response extends \yii\base\Response implements ResponseInterface
      * The default implementation will convert [[data]] into [[content]] and set headers accordingly.
      * @throws InvalidConfigException if the formatter for the specified format is invalid or [[format]] is not supported
      */
-    protected function prepare()
+    protected function prepare(): void
     {
         if ($this->bodyRange !== null) {
             return;
@@ -1039,7 +1036,7 @@ class Response extends \yii\base\Response implements ResponseInterface
 
         if (isset($this->formatters[$this->format])) {
             $formatter = $this->formatters[$this->format];
-            if (!is_object($formatter)) {
+            if (!\is_object($formatter)) {
                 $this->formatters[$this->format] = $formatter = Yii::createObject($formatter);
             }
             if ($formatter instanceof ResponseFormatterInterface) {
@@ -1047,14 +1044,18 @@ class Response extends \yii\base\Response implements ResponseInterface
                 return;
             }
             throw new InvalidConfigException("The '{$this->format}' response formatter is invalid. It must implement the ResponseFormatterInterface.");
-        } elseif ($this->format !== self::FORMAT_RAW) {
+        }
+
+        if ($this->format !== self::FORMAT_RAW) {
             throw new InvalidConfigException("Unsupported response format: {$this->format}");
         }
 
         if ($this->data !== null) {
-            if (is_array($this->data)) {
+            if (\is_array($this->data)) {
                 throw new InvalidArgumentException('Response raw data must not be an array.');
-            } elseif (is_object($this->data)) {
+            }
+
+            if (\is_object($this->data)) {
                 if (method_exists($this->data, '__toString')) {
                     $content = $this->data->__toString();
                 } else {

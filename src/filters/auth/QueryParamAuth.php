@@ -7,6 +7,11 @@
 
 namespace yii\web\filters\auth;
 
+use yii\web\IdentityInterface;
+use yii\web\Request;
+use yii\web\Response;
+use yii\web\User;
+
 /**
  * QueryParamAuth is an action filter that supports the authentication based on the access token passed through a query parameter.
  *
@@ -24,10 +29,10 @@ class QueryParamAuth extends AuthMethod
     /**
      * {@inheritdoc}
      */
-    public function authenticate($user, $request, $response)
+    public function authenticate(User $user, Request $request, Response $response): IdentityInterface
     {
         $accessToken = $request->get($this->tokenParam);
-        if (is_string($accessToken)) {
+        if (\is_string($accessToken)) {
             $identity = $user->loginByAccessToken($accessToken, get_class($this));
             if ($identity !== null) {
                 return $identity;

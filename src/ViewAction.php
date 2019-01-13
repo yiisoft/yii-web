@@ -63,7 +63,7 @@ class ViewAction extends Action
      * This method displays the view requested by the user.
      * @throws NotFoundHttpException if the view file cannot be found
      */
-    public function run()
+    public function run(): string
     {
         $viewName = $this->resolveViewName();
         $this->controller->actionParams[$this->viewParam] = Yii::getApp()->request->get($this->viewParam);
@@ -103,7 +103,7 @@ class ViewAction extends Action
      * @param string $viewName view name
      * @return string result of the rendering
      */
-    protected function render($viewName)
+    protected function render(string $viewName): string
     {
         return $this->controller->render($viewName);
     }
@@ -114,11 +114,11 @@ class ViewAction extends Action
      * @return string the resolved view name
      * @throws NotFoundHttpException if the specified view name is invalid
      */
-    protected function resolveViewName()
+    protected function resolveViewName(): string
     {
         $viewName = Yii::getApp()->request->get($this->viewParam, $this->defaultView);
 
-        if (!is_string($viewName) || !preg_match('~^\w(?:(?!\/\.{0,2}\/)[\w\/\-\.])*$~', $viewName)) {
+        if (!\is_string($viewName) || !preg_match('~^\w(?:(?!\/\.{0,2}\/)[\w\/\-\.])*$~', $viewName)) {
             if (YII_DEBUG) {
                 throw new NotFoundHttpException("The requested view \"$viewName\" must start with a word character, must not contain /../ or /./, can contain only word characters, forward slashes, dots and dashes.");
             }

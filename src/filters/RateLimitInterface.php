@@ -7,6 +7,9 @@
 
 namespace yii\web\filters;
 
+use yii\base\Action;
+use yii\web\Request;
+
 /**
  * RateLimitInterface is the interface that may be implemented by an identity object to enforce rate limiting.
  *
@@ -22,7 +25,7 @@ interface RateLimitInterface
      * @return array an array of two elements. The first element is the maximum number of allowed requests,
      * and the second element is the size of the window in seconds.
      */
-    public function getRateLimit($request, $action);
+    public function getRateLimit(Request $request, Action $action): array;
 
     /**
      * Loads the number of allowed requests and the corresponding timestamp from a persistent storage.
@@ -31,7 +34,7 @@ interface RateLimitInterface
      * @return array an array of two elements. The first element is the number of allowed requests,
      * and the second element is the corresponding UNIX timestamp.
      */
-    public function loadAllowance($request, $action);
+    public function loadAllowance(Request $request, Action $action): array;
 
     /**
      * Saves the number of allowed requests and the corresponding timestamp to a persistent storage.
@@ -40,5 +43,5 @@ interface RateLimitInterface
      * @param int $allowance the number of allowed requests remaining.
      * @param int $timestamp the current timestamp.
      */
-    public function saveAllowance($request, $action, $allowance, $timestamp);
+    public function saveAllowance(Request $request, Action $action, int $allowance, int $timestamp): void;
 }

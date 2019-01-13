@@ -7,6 +7,7 @@
 
 namespace yii\web\filters;
 
+use yii\base\Action;
 use yii\helpers\Yii;
 use yii\base\ActionFilter;
 use yii\web\BadRequestHttpException;
@@ -45,7 +46,7 @@ class AjaxFilter extends ActionFilter
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         if ($this->request === null) {
             $this->request = Yii::getApp()->getRequest();
@@ -55,7 +56,7 @@ class AjaxFilter extends ActionFilter
     /**
      * {@inheritdoc}
      */
-    public function beforeAction($action)
+    public function beforeAction(Action $action): bool
     {
         if ($this->request->getIsAjax()) {
             return true;

@@ -34,16 +34,16 @@ class UserIdentity extends Component implements IdentityInterface
 
     private $_token;
 
-    public static function findIdentity($id)
+    public static function findIdentity($id): ?IdentityInterface
     {
-        if (in_array($id, static::$ids)) {
+        if (\in_array($id, static::$ids, true)) {
             $identitiy = new static();
             $identitiy->_id = $id;
             return $identitiy;
         }
     }
 
-    public static function findIdentityByAccessToken($token, $type = null)
+    public static function findIdentityByAccessToken($token, $type = null): ?IdentityInterface
     {
         if (isset(static::$tokens[$token])) {
             $id = static::$tokens[$token];
@@ -59,12 +59,12 @@ class UserIdentity extends Component implements IdentityInterface
         return $this->_id;
     }
 
-    public function getAuthKey()
+    public function getAuthKey(): string
     {
         throw new NotSupportedException();
     }
 
-    public function validateAuthKey($authKey)
+    public function validateAuthKey(string $authKey): bool
     {
         throw new NotSupportedException();
     }

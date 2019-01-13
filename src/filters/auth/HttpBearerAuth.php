@@ -7,6 +7,8 @@
 
 namespace yii\web\filters\auth;
 
+use yii\web\Response;
+
 /**
  * HttpBearerAuth is an action filter that supports the authentication method based on HTTP Bearer token.
  *
@@ -45,7 +47,7 @@ class HttpBearerAuth extends HttpHeaderAuth
     /**
      * {@inheritdoc}
      */
-    public function challenge($response)
+    public function challenge(Response $response): void
     {
         $response->setHeader('WWW-Authenticate', "Bearer realm=\"{$this->realm}\"");
     }

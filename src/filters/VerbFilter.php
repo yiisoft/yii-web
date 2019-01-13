@@ -7,6 +7,7 @@
 
 namespace yii\web\filters;
 
+use yii\base\Action;
 use yii\base\ActionEvent;
 use yii\base\Behavior;
 use yii\web\MethodNotAllowedHttpException;
@@ -73,7 +74,7 @@ class VerbFilter extends Behavior
      * Declares event handlers for the [[owner]]'s events.
      * @return array events (array keys) and the corresponding event handler methods (array values).
      */
-    public function events()
+    public function events(): array
     {
         return [ActionEvent::BEFORE => 'beforeAction'];
     }
@@ -83,7 +84,7 @@ class VerbFilter extends Behavior
      * @return bool
      * @throws MethodNotAllowedHttpException when the request method is not allowed.
      */
-    public function beforeAction($event)
+    public function beforeAction(ActionEvent $event): bool
     {
         $action = $event->action->id;
         $app = $event->action->getApp();
@@ -96,7 +97,7 @@ class VerbFilter extends Behavior
         }
 
         $verb = $app->getRequest()->getMethod();
-        if (!in_array($verb, $allowed)) {
+        if (!\in_array($verb, $allowed, true)) {
             $event->isValid = false;
             // https://tools.ietf.org/html/rfc2616#section-14.7
             $app->getResponse()->setHeader('Allow', implode(', ', $allowed));

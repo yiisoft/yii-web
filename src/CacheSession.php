@@ -64,7 +64,7 @@ class CacheSession extends Session
      * This method overrides the parent implementation and always returns true.
      * @return bool whether to use custom storage.
      */
-    public function getUseCustomStorage()
+    public function shouldUseCustomStorage(): bool
     {
         return true;
     }
@@ -75,7 +75,7 @@ class CacheSession extends Session
      * @param string $id session ID
      * @return string the session data
      */
-    public function readSession($id)
+    public function readSession(string $id): string
     {
         $data = $this->cache->get($this->calculateKey($id));
 
@@ -89,7 +89,7 @@ class CacheSession extends Session
      * @param string $data session data
      * @return bool whether session write is successful
      */
-    public function writeSession($id, $data)
+    public function writeSession(string $id, string $data): bool
     {
         return $this->cache->set($this->calculateKey($id), $data, $this->getTimeout());
     }
@@ -100,7 +100,7 @@ class CacheSession extends Session
      * @param string $id session ID
      * @return bool whether session is destroyed successfully
      */
-    public function destroySession($id)
+    public function destroySession(string $id): bool
     {
         $cacheId = $this->calculateKey($id);
         if ($this->cache->has($cacheId) === false) {
@@ -115,7 +115,7 @@ class CacheSession extends Session
      * @param string $id session variable name
      * @return mixed a safe cache key associated with the session variable name
      */
-    protected function calculateKey($id)
+    protected function calculateKey(string $id)
     {
         return [__CLASS__, $id];
     }

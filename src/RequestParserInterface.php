@@ -24,5 +24,5 @@ interface RequestParserInterface
      * @return array parameters parsed from the request body.
      * @throws BadRequestHttpException in case request body format is invalid.
      */
-    public function parse($request);
+    public function parse(Request $request): array;
 }

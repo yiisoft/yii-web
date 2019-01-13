@@ -42,7 +42,7 @@ class JsonParser implements RequestParserInterface
      * {@inheritdoc}
      * @throws BadRequestHttpException if the body contains invalid json and [[throwException]] is `true`.
      */
-    public function parse($request)
+    public function parse(Request $request): array
     {
         try {
             $parameters = Json::decode($request->getBody()->__toString(), $this->asArray);

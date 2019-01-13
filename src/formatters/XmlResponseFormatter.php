@@ -14,6 +14,7 @@ use DOMText;
 use yii\base\Arrayable;
 use yii\base\Component;
 use yii\helpers\StringHelper;
+use yii\web\Response;
 
 /**
  * XmlResponseFormatter formats the given data into an XML response content.
@@ -62,9 +63,9 @@ class XmlResponseFormatter extends Component implements ResponseFormatterInterfa
      * Formats the specified response.
      * @param Response $response the response to be formatted.
      */
-    public function format($response)
+    public function format(Response $response): void
     {
-        $charset = $this->encoding === null ? $response->charset : $this->encoding;
+        $charset = $this->encoding ?? $response->charset;
         if (stripos($this->contentType, 'charset') === false) {
             $this->contentType .= '; charset=' . $charset;
         }
@@ -86,7 +87,7 @@ class XmlResponseFormatter extends Component implements ResponseFormatterInterfa
      * @param DOMElement $element
      * @param mixed $data
      */
-    protected function buildXml($element, $data)
+    protected function buildXml(DOMElement $element, $data)
     {
         if (is_array($data) ||
             ($data instanceof \Traversable && $this->useTraversableAsArray && !$data instanceof Arrayable)
@@ -106,12 +107,12 @@ class XmlResponseFormatter extends Component implements ResponseFormatterInterfa
                             $child->setAttribute($attribute, $val);
                         }
                         $child->appendChild(new DOMText($this->formatScalarValue($value['value'])));
-                    }else{
+                    } else {
                         $child->appendChild(new DOMText($this->formatScalarValue($value)));
                     }
                 }
             }
-        } elseif (is_object($data)) {
+        } elseif (\is_object($data)) {
             if ($this->useObjectTags) {
                 $child = new DOMElement(StringHelper::basename(get_class($data)));
                 $element->appendChild($child);
@@ -139,7 +140,7 @@ class XmlResponseFormatter extends Component implements ResponseFormatterInterfa
      * @return string string representation of the value.
      * @since 2.0.11
      */
-    protected function formatScalarValue($value)
+    protected function formatScalarValue($value): string
     {
         if ($value === true) {
             return 'true';
@@ -147,7 +148,7 @@ class XmlResponseFormatter extends Component implements ResponseFormatterInterfa
         if ($value === false) {
             return 'false';
         }
-        if (is_float($value)) {
+        if (\is_float($value)) {
             return StringHelper::floatToString($value);
         }
         return (string) $value;
@@ -163,9 +164,9 @@ class XmlResponseFormatter extends Component implements ResponseFormatterInterfa
      * @return string
      * @since 2.0.12
      */
-    protected function getValidXmlElementName($name)
+    protected function getValidXmlElementName($name): string
     {
-        if (empty($name) || is_int($name) || !$this->isValidXmlName($name)) {
+        if (empty($name) || \is_int($name) || !$this->isValidXmlName($name)) {
             return $this->itemTag;
         }
 
@@ -180,7 +181,7 @@ class XmlResponseFormatter extends Component implements ResponseFormatterInterfa
      * @see http://stackoverflow.com/questions/2519845/how-to-check-if-string-is-a-valid-xml-element-name/2519943#2519943
      * @since 2.0.12
      */
-    protected function isValidXmlName($name)
+    protected function isValidXmlName(string $name): bool
     {
         try {
             new DOMElement($name);

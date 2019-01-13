@@ -306,7 +306,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @return array the first element is the route, and the second is the associated parameters.
      * @throws NotFoundHttpException if the request cannot be resolved.
      */
-    public function resolve()
+    public function resolve(): array
     {
         $result = $this->app->getUrlManager()->parseRequest($this);
         if ($result !== false) {
@@ -329,7 +329,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @return array filtered headers
      * @since 2.0.13
      */
-    protected function filterHeaders($rawHeaders)
+    protected function filterHeaders(array $rawHeaders): array
     {
         // do not trust any of the [[secureHeaders]] by default
         $trustedHeaders = [];
@@ -355,7 +355,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
 
         // filter all secure headers unless they are trusted
         foreach ($this->secureHeaders as $secureHeader) {
-            if (!in_array($secureHeader, $trustedHeaders)) {
+            if (!in_array($secureHeader, $trustedHeaders, true)) {
                 unset($rawHeaders[strtolower($secureHeader)]);
             }
         }
@@ -370,7 +370,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @return IpValidator
      * @since 2.0.13
      */
-    protected function getIpValidator()
+    protected function getIpValidator(): IpValidator
     {
         return new IpValidator();
     }
@@ -379,11 +379,11 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * Returns default message's headers, which should be present once [[headerCollection]] is instantiated.
      * @return string[][] an associative array of the message's headers.
      */
-    protected function defaultHeaders()
+    protected function defaultHeaders(): array
     {
-        if (function_exists('getallheaders')) {
+        if (\function_exists('getallheaders')) {
             $headers = getallheaders();
-        } elseif (function_exists('http_get_request_headers')) {
+        } elseif (\function_exists('http_get_request_headers')) {
             $headers = http_get_request_headers();
         } else {
             $headers = [];
@@ -415,7 +415,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @param mixed $requestTarget the message's request target.
      * @since 3.0.0
      */
-    public function setRequestTarget($requestTarget)
+    public function setRequestTarget($requestTarget): void
     {
         $this->_requestTarget = $requestTarget;
     }
@@ -424,7 +424,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * {@inheritdoc}
      * @since 3.0.0
      */
-    public function withRequestTarget($requestTarget)
+    public function withRequestTarget($requestTarget): self
     {
         if ($this->getRequestTarget() === $requestTarget) {
             return $this;
@@ -438,7 +438,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function getMethod()
+    public function getMethod(): string
     {
         if ($this->_method === null) {
             if (isset($_POST[$this->methodParam])) {
@@ -457,7 +457,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @param string $method case-sensitive HTTP method.
      * @since 3.0.0
      */
-    public function setMethod($method)
+    public function setMethod(string $method): void
     {
         $this->_method =  $method;
     }
@@ -466,7 +466,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * {@inheritdoc}
      * @since 3.0.0
      */
-    public function withMethod($method)
+    public function withMethod(string $method): self
     {
         if ($this->getMethod() === $method) {
             return $this;
@@ -481,13 +481,13 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * {@inheritdoc}
      * @since 3.0.0
      */
-    public function getUri()
+    public function getUri(): UriInterface
     {
         if (!$this->_uri instanceof UriInterface) {
             if ($this->_uri === null) {
                 $uri = new Uri(['string' => $this->getAbsoluteUrl()]);
             } elseif ($this->_uri instanceof \Closure) {
-                $uri = call_user_func($this->_uri, $this);
+                $uri = \call_user_func($this->_uri, $this);
             } else {
                 $uri = $this->_uri;
             }
@@ -502,7 +502,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @param UriInterface|\Closure|array $uri URI instance or its DI compatible configuration.
      * @since 3.0.0
      */
-    public function setUri($uri)
+    public function setUri($uri): void
     {
         $this->_uri = $uri;
     }
@@ -511,7 +511,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * {@inheritdoc}
      * @since 3.0.0
      */
-    public function withUri(UriInterface $uri, $preserveHost = false)
+    public function withUri(UriInterface $uri, $preserveHost = false): self
     {
         if ($this->getUri() === $uri) {
             return $this;
@@ -530,7 +530,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * Returns whether this is a GET request.
      * @return bool whether this is a GET request.
      */
-    public function getIsGet()
+    public function getIsGet(): bool
     {
         return $this->getMethod() === 'GET';
     }
@@ -539,7 +539,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * Returns whether this is an OPTIONS request.
      * @return bool whether this is a OPTIONS request.
      */
-    public function getIsOptions()
+    public function getIsOptions(): bool
     {
         return $this->getMethod() === 'OPTIONS';
     }
@@ -548,7 +548,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * Returns whether this is a HEAD request.
      * @return bool whether this is a HEAD request.
      */
-    public function getIsHead()
+    public function getIsHead(): bool
     {
         return $this->getMethod() === 'HEAD';
     }
@@ -557,7 +557,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * Returns whether this is a POST request.
      * @return bool whether this is a POST request.
      */
-    public function getIsPost()
+    public function getIsPost(): bool
     {
         return $this->getMethod() === 'POST';
     }
@@ -566,7 +566,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * Returns whether this is a DELETE request.
      * @return bool whether this is a DELETE request.
      */
-    public function getIsDelete()
+    public function getIsDelete(): bool
     {
         return $this->getMethod() === 'DELETE';
     }
@@ -575,7 +575,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * Returns whether this is a PUT request.
      * @return bool whether this is a PUT request.
      */
-    public function getIsPut()
+    public function getIsPut(): bool
     {
         return $this->getMethod() === 'PUT';
     }
@@ -584,7 +584,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * Returns whether this is a PATCH request.
      * @return bool whether this is a PATCH request.
      */
-    public function getIsPatch()
+    public function getIsPatch(): bool
     {
         return $this->getMethod() === 'PATCH';
     }
@@ -597,7 +597,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      *
      * @return bool whether this is an AJAX (XMLHttpRequest) request.
      */
-    public function getIsAjax()
+    public function getIsAjax(): bool
     {
         return $this->getHeaderLine('x-requested-with') === 'XMLHttpRequest';
     }
@@ -606,7 +606,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * Returns whether this is an Adobe Flash or Flex request.
      * @return bool whether this is an Adobe Flash or Adobe Flex request.
      */
-    public function getIsFlash()
+    public function getIsFlash(): bool
     {
         $userAgent = $this->getUserAgent();
         if ($userAgent === null) {
@@ -619,7 +619,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * Returns default message body to be used in case it is not explicitly set.
      * @return StreamInterface default body instance.
      */
-    protected function defaultBody()
+    protected function defaultBody(): StreamInterface
     {
         return Yii::createObject([
             '__class' => FileStream::class,
@@ -632,7 +632,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * Returns the raw HTTP request body.
      * @return string the request body
      */
-    public function getRawBody()
+    public function getRawBody(): string
     {
         return $this->getBody()->__toString();
     }
@@ -641,7 +641,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * Sets the raw HTTP request body, this method is mainly used by test scripts to simulate raw HTTP requests.
      * @param string $rawBody the request body
      */
-    public function setRawBody($rawBody)
+    public function setRawBody(string $rawBody): void
     {
         $body = new MemoryStream();
         $body->write($rawBody);
@@ -667,7 +667,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @see getParsedBodyParam()
      * @see setParsedBody()
      */
-    public function getParsedBody()
+    public function getParsedBody(): ?array
     {
         if ($this->_parsedBody === false) {
             if (isset($_POST[$this->methodParam])) {
@@ -724,7 +724,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @see getParsedBodyParam()
      * @see getParsedBody()
      */
-    public function setParsedBody($values)
+    public function setParsedBody(array $values): void
     {
         $this->_parsedBody = $values;
     }
@@ -733,7 +733,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * {@inheritdoc}
      * @since 3.0.0
      */
-    public function withParsedBody($data)
+    public function withParsedBody($data): self
     {
         $newInstance = clone $this;
         $newInstance->setParsedBody($data);
@@ -749,7 +749,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @see getParsedBody()
      * @see setParsedBody()
      */
-    public function getParsedBodyParam($name, $defaultValue = null)
+    public function getParsedBodyParam(string $name, $defaultValue = null)
     {
         $params = $this->getParsedBody();
 
@@ -772,7 +772,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @param mixed $defaultValue the default parameter value if the parameter does not exist.
      * @return array|mixed
      */
-    public function post($name = null, $defaultValue = null)
+    public function post(string $name = null, $defaultValue = null)
     {
         if ($name === null) {
             return $this->getParsedBody();
@@ -790,7 +790,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @return array the request GET parameter values.
      * @see setQueryParams()
      */
-    public function getQueryParams()
+    public function getQueryParams(): array
     {
         if ($this->_queryParams === null) {
             return $_GET;
@@ -805,7 +805,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @see getQueryParam()
      * @see getQueryParams()
      */
-    public function setQueryParams($values)
+    public function setQueryParams(array $values): void
     {
         $this->_queryParams = $values;
     }
@@ -813,7 +813,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function withQueryParams(array $query)
+    public function withQueryParams(array $query): self
     {
         if ($this->getQueryParams() === $query) {
             return $this;
@@ -831,7 +831,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @param mixed $defaultValue the default parameter value if the parameter does not exist.
      * @return array|mixed
      */
-    public function get($name = null, $defaultValue = null)
+    public function get(string $name = null, $defaultValue = null)
     {
         if ($name === null) {
             return $this->getQueryParams();
@@ -848,7 +848,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @return mixed the GET parameter value
      * @see getParsedBodyParam()
      */
-    public function getQueryParam($name, $defaultValue = null)
+    public function getQueryParam(string $name, $defaultValue = null)
     {
         $params = $this->getQueryParams();
 
@@ -860,7 +860,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @param array $serverParams server parameters.
      * @since 3.0.0
      */
-    public function setServerParams(array $serverParams)
+    public function setServerParams(array $serverParams): void
     {
         $this->_serverParams = $serverParams;
     }
@@ -869,7 +869,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * {@inheritdoc}
      * @since 3.0.0
      */
-    public function getServerParams()
+    public function getServerParams(): array
     {
         if ($this->_serverParams === null) {
             $this->_serverParams = $_SERVER;
@@ -884,7 +884,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @return mixed parameter value.
      * @since 3.0.0
      */
-    public function getServerParam($name, $default = null)
+    public function getServerParam(string $name, $default = null)
     {
         $params = $this->getServerParams();
         if (!isset($params[$name])) {
@@ -898,7 +898,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @param array $cookies array of key/value pairs representing cookies.
      * @since 3.0.0
      */
-    public function setCookieParams(array $cookies)
+    public function setCookieParams(array $cookies): void
     {
         $this->_cookieParams = $cookies;
         $this->_cookies = null;
@@ -908,7 +908,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * {@inheritdoc}
      * @since 3.0.0
      */
-    public function getCookieParams()
+    public function getCookieParams(): array
     {
         if ($this->_cookieParams === null) {
             $this->_cookieParams = $_COOKIE;
@@ -920,7 +920,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * {@inheritdoc}
      * @since 3.0.0
      */
-    public function withCookieParams(array $cookies)
+    public function withCookieParams(array $cookies): self
     {
         if ($this->getCookieParams() === $cookies) {
             return $this;
@@ -961,7 +961,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * (e.g. `http://www.yiiframework.com`), null if can't be obtained from `$_SERVER` and wasn't set.
      * @see setHostInfo()
      */
-    public function getHostInfo()
+    public function getHostInfo(): ?string
     {
         if ($this->_hostInfo === null) {
             $secure = $this->getIsSecureConnection();
@@ -990,7 +990,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @param string|null $value the schema and host part of the application URL. The trailing slashes will be removed.
      * @see getHostInfo() for security related notes on this property.
      */
-    public function setHostInfo($value)
+    public function setHostInfo(?string $value): void
     {
         $this->_hostName = null;
         $this->_hostInfo = $value === null ? null : rtrim($value, '/');
@@ -1007,7 +1007,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @see getHostInfo()
      * @since 2.0.10
      */
-    public function getHostName()
+    public function getHostName(): ?string
     {
         if ($this->_hostName === null) {
             $this->_hostName = parse_url($this->getHostInfo(), PHP_URL_HOST);
@@ -1025,7 +1025,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @return string the relative URL for the application
      * @see setScriptUrl()
      */
-    public function getBaseUrl()
+    public function getBaseUrl(): string
     {
         if ($this->_baseUrl === null) {
             $this->_baseUrl = rtrim(dirname($this->getScriptUrl()), '\\/');
@@ -1040,7 +1040,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * This setter is provided in case you want to change this behavior.
      * @param string $value the relative URL for the application
      */
-    public function setBaseUrl($value)
+    public function setBaseUrl(string $value): void
     {
         $this->_baseUrl = $value;
     }
@@ -1053,7 +1053,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @return string the relative URL of the entry script.
      * @throws InvalidConfigException if unable to determine the entry script URL
      */
-    public function getScriptUrl()
+    public function getScriptUrl(): string
     {
         if ($this->_scriptUrl === null) {
             $scriptFile = $this->getScriptFile();
@@ -1083,7 +1083,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * on certain Web servers.
      * @param string $value the relative URL for the application entry script.
      */
-    public function setScriptUrl($value)
+    public function setScriptUrl(?string $value)
     {
         $this->_scriptUrl = $value === null ? null : '/' . trim($value, '/');
     }
@@ -1096,9 +1096,9 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @return string the entry script file path
      * @throws InvalidConfigException
      */
-    public function getScriptFile()
+    public function getScriptFile(): string
     {
-        if (isset($this->_scriptFile)) {
+        if ($this->_scriptFile !== null) {
             return $this->_scriptFile;
         }
 
@@ -1116,7 +1116,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * this property to make it right.
      * @param string $value the entry script file path.
      */
-    public function setScriptFile($value)
+    public function setScriptFile(string $value): void
     {
         $this->_scriptFile = $value;
     }
@@ -1131,7 +1131,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * Note, the returned path info is already URL-decoded.
      * @throws InvalidConfigException if the path info cannot be determined due to unexpected server configuration
      */
-    public function getPathInfo()
+    public function getPathInfo(): string
     {
         if ($this->_pathInfo === null) {
             $this->_pathInfo = $this->resolvePathInfo();
@@ -1145,7 +1145,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * This method is mainly provided for testing purpose.
      * @param string $value the path info of the current request
      */
-    public function setPathInfo($value)
+    public function setPathInfo(?string $value): void
     {
         $this->_pathInfo = $value === null ? null : ltrim($value, '/');
     }
@@ -1158,7 +1158,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * Note, the returned path info is decoded.
      * @throws InvalidConfigException if the path info cannot be determined due to unexpected server configuration
      */
-    protected function resolvePathInfo()
+    protected function resolvePathInfo(): string
     {
         $pathInfo = $this->getUrl();
 
@@ -1196,7 +1196,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
             throw new InvalidConfigException('Unable to determine the path info of the current request.');
         }
 
-        if (substr($pathInfo, 0, 1) === '/') {
+        if (strpos($pathInfo, '/') === 0) {
             $pathInfo = substr($pathInfo, 1);
         }
 
@@ -1208,7 +1208,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * This is a shortcut to the concatenation of [[hostInfo]] and [[url]].
      * @return string the currently requested absolute URL.
      */
-    public function getAbsoluteUrl()
+    public function getAbsoluteUrl(): string
     {
         return $this->getHostInfo() . $this->getUrl();
     }
@@ -1222,7 +1222,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @return string the currently requested relative URL. Note that the URI returned may be URL-encoded depending on the client.
      * @throws InvalidConfigException if the URL cannot be determined due to unusual server configuration
      */
-    public function getUrl()
+    public function getUrl(): string
     {
         if ($this->_url === null) {
             $this->_url = $this->resolveRequestUri();
@@ -1237,7 +1237,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * Note that the URI should be URL-encoded.
      * @param string $value the request URI to be set
      */
-    public function setUrl($value)
+    public function setUrl(string $value): void
     {
         $this->_url = $value;
     }
@@ -1277,7 +1277,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * Returns part of the request URL that is after the question mark.
      * @return string part of the request URL that is after the question mark
      */
-    public function getQueryString()
+    public function getQueryString(): string
     {
         return $this->getServerParam('QUERY_STRING', '');
     }
@@ -1286,7 +1286,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * Return if the request is sent via secure channel (https).
      * @return bool if the request is sent via secure channel (https)
      */
-    public function getIsSecureConnection()
+    public function getIsSecureConnection(): bool
     {
         $https = $this->getServerParam('HTTPS');
         if ($https !== null && (strcasecmp($https, 'on') === 0 || $https == 1)) {
@@ -1309,7 +1309,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * Returns the server name.
      * @return string server name, null if not available
      */
-    public function getServerName()
+    public function getServerName(): string
     {
         return $this->getServerParam('SERVER_NAME');
     }
@@ -1318,7 +1318,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * Returns the server port number.
      * @return int|null server port number, null if not available
      */
-    public function getServerPort()
+    public function getServerPort(): ?int
     {
         $port = $this->getServerParam('SERVER_PORT');
         return $port === null ? null : (int) $port;
@@ -1328,7 +1328,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * Returns the URL referrer.
      * @return string|null URL referrer, null if not available
      */
-    public function getReferrer()
+    public function getReferrer(): ?string
     {
         if (!$this->hasHeader('Referer')) {
             return null;
@@ -1351,7 +1351,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @see getHeaders()
      * @since 2.0.13
      */
-    public function getOrigin()
+    public function getOrigin(): ?string
     {
         return $this->getHeaderLine('origin');
     }
@@ -1360,7 +1360,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * Returns the user agent.
      * @return string|null user agent, null if not available
      */
-    public function getUserAgent()
+    public function getUserAgent(): ?string
     {
         if (!$this->hasHeader('User-Agent')) {
             return null;
@@ -1373,7 +1373,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * The IP is determined using headers and / or `$_SERVER` variables.
      * @return string|null user IP address, null if not available
      */
-    public function getUserIP()
+    public function getUserIP(): ?string
     {
         foreach ($this->ipHeaders as $ipHeader) {
             if ($this->hasHeader($ipHeader)) {
@@ -1389,7 +1389,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * The HOST is determined using headers and / or `$_SERVER` variables.
      * @return string|null user host name, null if not available
      */
-    public function getUserHost()
+    public function getUserHost(): ?string
     {
         foreach ($this->ipHeaders as $ipHeader) {
             if ($this->hasHeader($ipHeader)) {
@@ -1406,7 +1406,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @return string|null remote IP address, `null` if not available.
      * @since 2.0.13
      */
-    public function getRemoteIP()
+    public function getRemoteIP(): ?string
     {
         return $this->getServerParam('REMOTE_ADDR');
     }
@@ -1419,7 +1419,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @see getRemoteIP()
      * @since 2.0.13
      */
-    public function getRemoteHost()
+    public function getRemoteHost(): ?string
     {
         return $this->getServerParam('REMOTE_HOST');
     }
@@ -1428,7 +1428,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @return string|null the username sent via HTTP authentication, `null` if the username is not given
      * @see getAuthCredentials() to get both username and password in one call
      */
-    public function getAuthUser()
+    public function getAuthUser(): ?string
     {
         return $this->getAuthCredentials()[0];
     }
@@ -1437,7 +1437,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @return string|null the password sent via HTTP authentication, `null` if the password is not given
      * @see getAuthCredentials() to get both username and password in one call
      */
-    public function getAuthPassword()
+    public function getAuthPassword(): ?string
     {
         return $this->getAuthCredentials()[1];
     }
@@ -1450,7 +1450,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @see getAuthPassword() to get only password
      * @since 2.0.13
      */
-    public function getAuthCredentials()
+    public function getAuthCredentials(): array
     {
         $username = $this->getServerParam('PHP_AUTH_USER');
         $password = $this->getServerParam('PHP_AUTH_PW');
@@ -1489,7 +1489,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @return int port number for insecure requests.
      * @see setPort()
      */
-    public function getPort()
+    public function getPort(): int
     {
         if ($this->_port === null) {
             $serverPort = $this->getServerPort();
@@ -1505,10 +1505,10 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * server configurations.
      * @param int $value port number.
      */
-    public function setPort($value)
+    public function setPort(int $value): void
     {
-        if ($value != $this->_port) {
-            $this->_port = (int) $value;
+        if ($value !== $this->_port) {
+            $this->_port = $value;
             $this->_hostInfo = null;
         }
     }
@@ -1522,7 +1522,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @return int port number for secure requests.
      * @see setSecurePort()
      */
-    public function getSecurePort()
+    public function getSecurePort(): int
     {
         if ($this->_securePort === null) {
             $serverPort = $this->getServerPort();
@@ -1538,10 +1538,10 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * server configurations.
      * @param int $value port number.
      */
-    public function setSecurePort($value)
+    public function setSecurePort(int $value): void
     {
-        if ($value != $this->_securePort) {
-            $this->_securePort = (int) $value;
+        if ($value !== $this->_securePort) {
+            $this->_securePort = $value;
             $this->_hostInfo = null;
         }
     }
@@ -1569,7 +1569,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * will be returned first. The array keys are the content types, while the array values
      * are the corresponding quality score and other parameters as given in the header.
      */
-    public function getAcceptableContentTypes()
+    public function getAcceptableContentTypes(): array
     {
         if ($this->_contentTypes === null) {
             if ($this->hasHeader('Accept')) {
@@ -1590,7 +1590,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @see getAcceptableContentTypes()
      * @see parseAcceptHeader()
      */
-    public function setAcceptableContentTypes($value)
+    public function setAcceptableContentTypes(array $value)
     {
         $this->_contentTypes = $value;
     }
@@ -1605,7 +1605,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @link https://tools.ietf.org/html/rfc2616#section-14.17
      * HTTP 1.1 header field definitions
      */
-    public function getContentType()
+    public function getContentType(): string
     {
         return $this->getHeaderLine('Content-Type');
     }
@@ -1618,7 +1618,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @return array the languages ordered by the preference level. The first element
      * represents the most preferred language.
      */
-    public function getAcceptableLanguages()
+    public function getAcceptableLanguages(): array
     {
         if ($this->_languages === null) {
             if ($this->hasHeader('Accept-Language')) {
@@ -1635,7 +1635,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @param array $value the languages that are acceptable by the end user. They should
      * be ordered by the preference level.
      */
-    public function setAcceptableLanguages($value)
+    public function setAcceptableLanguages(array $value): void
     {
         $this->_languages = $value;
     }
@@ -1664,7 +1664,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @return array the acceptable values ordered by their quality score. The values with the highest scores
      * will be returned first.
      */
-    public function parseAcceptHeader($header)
+    public function parseAcceptHeader(string $header): array
     {
         $accepts = [];
         foreach (explode(',', $header) as $i => $part) {
@@ -1740,7 +1740,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * application language will be returned without further processing.
      * @return string the language that the application should use.
      */
-    public function getPreferredLanguage(array $languages = [])
+    public function getPreferredLanguage(array $languages = []): string
     {
         if (empty($languages)) {
             return $this->app->language;
@@ -1768,7 +1768,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      *
      * @return array The entity tags
      */
-    public function getETags()
+    public function getETags(): array
     {
         if ($this->hasHeader('if-none-match')) {
             return preg_split('/[\s,]+/', str_replace('-gzip', '', $this->getHeaderLine('if-none-match')), -1, PREG_SPLIT_NO_EMPTY);
@@ -1794,7 +1794,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      *
      * @return CookieCollection the cookie collection.
      */
-    public function getCookies()
+    public function getCookies(): CookieCollection
     {
         if ($this->_cookies === null) {
             $this->_cookies = new CookieCollection($this->loadCookies(), [
@@ -1810,7 +1810,7 @@ class Request extends \yii\base\Request implements ServerRequestInterface
      * @return array the cookies obtained from request
      * @throws InvalidConfigException if [[cookieValidationKey]] is not set when [[enableCookieValidation]] is true
      */
-    protected function loadCookies()
+    protected function loadCookies(): array
     {
         $cookies = [];
         if ($this->enableCookieValidation) {

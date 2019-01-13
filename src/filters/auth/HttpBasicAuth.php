@@ -7,6 +7,11 @@
 
 namespace yii\web\filters\auth;
 
+use yii\web\IdentityInterface;
+use yii\web\Request;
+use yii\web\Response;
+use yii\web\User;
+
 /**
  * HttpBasicAuth is an action filter that supports the HTTP Basic authentication method.
  *
@@ -90,13 +95,13 @@ class HttpBasicAuth extends AuthMethod
     /**
      * {@inheritdoc}
      */
-    public function authenticate($user, $request, $response)
+    public function authenticate(User $user, Request $request, Response $response): IdentityInterface
     {
         [$username, $password] = $request->getAuthCredentials();
 
         if ($this->auth) {
             if ($username !== null || $password !== null) {
-                $identity = $user->getIdentity() ?: call_user_func($this->auth, $username, $password);
+                $identity = $user->getIdentity() ?: \call_user_func($this->auth, $username, $password);
 
                 if ($identity === null) {
                     $this->handleFailure($response);
@@ -121,7 +126,7 @@ class HttpBasicAuth extends AuthMethod
     /**
      * {@inheritdoc}
      */
-    public function challenge($response)
+    public function challenge(Response $response): void
     {
         $response->setHeader('WWW-Authenticate', "Basic realm=\"{$this->realm}\"");
     }

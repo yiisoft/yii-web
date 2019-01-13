@@ -7,6 +7,7 @@
 
 namespace yii\web\filters;
 
+use yii\base\Action;
 use yii\helpers\Yii;
 use yii\base\ActionFilter;
 use yii\helpers\StringHelper;
@@ -119,17 +120,17 @@ class HostControl extends ActionFilter
     /**
      * {@inheritdoc}
      */
-    public function beforeAction($action)
+    public function beforeAction(Action $action): bool
     {
         $allowedHosts = $this->allowedHosts;
         if ($allowedHosts instanceof \Closure) {
-            $allowedHosts = call_user_func($allowedHosts, $action);
+            $allowedHosts = \call_user_func($allowedHosts, $action);
         }
         if ($allowedHosts === null) {
             return true;
         }
 
-        if (!is_array($allowedHosts) && !$allowedHosts instanceof \Traversable) {
+        if (!\is_array($allowedHosts) && !$allowedHosts instanceof \Traversable) {
             $allowedHosts = (array) $allowedHosts;
         }
 
@@ -147,7 +148,7 @@ class HostControl extends ActionFilter
         }
 
         if ($this->denyCallback !== null) {
-            call_user_func($this->denyCallback, $action);
+            \call_user_func($this->denyCallback, $action);
         } else {
             $this->denyAccess($action);
         }
@@ -163,7 +164,7 @@ class HostControl extends ActionFilter
      * @param \yii\base\Action $action the action to be executed.
      * @throws NotFoundHttpException
      */
-    protected function denyAccess($action)
+    protected function denyAccess(Action $action): void
     {
         $exception = new NotFoundHttpException(Yii::t('yii', 'Page not found.'));
 

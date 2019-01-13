@@ -66,7 +66,7 @@ class Application extends \yii\base\Application
      * @return Response the resulting response
      * @throws NotFoundHttpException if the requested route is invalid
      */
-    public function handleRequest($request)
+    public function handleRequest(Request $request): Response
     {
         if (empty($this->catchAll)) {
             try {
@@ -112,7 +112,7 @@ class Application extends \yii\base\Application
     /**
      * @return string the homepage URL
      */
-    public function getHomeUrl()
+    public function getHomeUrl(): string
     {
         if ($this->_homeUrl === null) {
             if ($this->getUrlManager()->showScriptName) {
@@ -128,17 +128,17 @@ class Application extends \yii\base\Application
     /**
      * @param string $value the homepage URL
      */
-    public function setHomeUrl($value)
+    public function setHomeUrl(string $value): void
     {
         $this->_homeUrl = $value;
     }
 
-    public function getAssetManager()
+    public function getAssetManager(): AssetManager
     {
         return $this->container->get('assetManager');
     }
 
-    public function getUrlManager()
+    public function getUrlManager(): UrlManager
     {
         return $this->container->get('urlManager');
     }

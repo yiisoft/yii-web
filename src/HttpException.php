@@ -42,7 +42,7 @@ class HttpException extends UserException
      * @param int $code error code
      * @param \Exception $previous The previous exception used for the exception chaining.
      */
-    public function __construct($status, $message = null, $code = 0, \Exception $previous = null)
+    public function __construct(int $status, string $message = null, int $code = 0, \Exception $previous = null)
     {
         $this->statusCode = $status;
         parent::__construct($message, $code, $previous);
@@ -51,7 +51,7 @@ class HttpException extends UserException
     /**
      * @return string the user-friendly name of this exception
      */
-    public function getName()
+    public function getName(): string
     {
         if (isset(Response::$httpStatuses[$this->statusCode])) {
             return Response::$httpStatuses[$this->statusCode];

@@ -163,7 +163,7 @@ class AccessRule extends Component
      * @param Request $request
      * @return bool|null `true` if the user is allowed, `false` if the user is denied, `null` if the rule does not apply to the user
      */
-    public function allows($action, $user, $request)
+    public function allows(Action $action, $user, Request $request): ?bool
     {
         if ($this->matchAction($action)
             && $this->matchRole($user)
@@ -182,16 +182,16 @@ class AccessRule extends Component
      * @param Action $action the action
      * @return bool whether the rule applies to the action
      */
-    protected function matchAction($action)
+    protected function matchAction(Action $action): bool
     {
-        return empty($this->actions) || in_array($action->id, $this->actions, true);
+        return empty($this->actions) || \in_array($action->id, $this->actions, true);
     }
 
     /**
      * @param Controller $controller the controller
      * @return bool whether the rule applies to the controller
      */
-    protected function matchController($controller)
+    protected function matchController(Controller $controller): bool
     {
         if (empty($this->controllers)) {
             return true;
@@ -212,7 +212,7 @@ class AccessRule extends Component
      * @return bool whether the rule applies to the role
      * @throws InvalidConfigException if User component is detached
      */
-    protected function matchRole($user)
+    protected function matchRole(User $user): bool
     {
         $items = empty($this->roles) ? [] : $this->roles;
 
@@ -254,7 +254,7 @@ class AccessRule extends Component
      * @param string|null $ip the IP address
      * @return bool whether the rule applies to the IP address
      */
-    protected function matchIP($ip)
+    protected function matchIP(string $ip): bool
     {
         if (empty($this->ips)) {
             return true;
@@ -279,17 +279,17 @@ class AccessRule extends Component
      * @param string $verb the request method.
      * @return bool whether the rule applies to the request
      */
-    protected function matchVerb($verb)
+    protected function matchVerb(string $verb): bool
     {
-        return empty($this->verbs) || in_array(strtoupper($verb), array_map('strtoupper', $this->verbs), true);
+        return empty($this->verbs) || \in_array(strtoupper($verb), array_map('strtoupper', $this->verbs), true);
     }
 
     /**
      * @param Action $action the action to be performed
      * @return bool whether the rule should be applied
      */
-    protected function matchCustom($action)
+    protected function matchCustom(Action $action): bool
     {
-        return empty($this->matchCallback) || call_user_func($this->matchCallback, $this, $action);
+        return empty($this->matchCallback) || \call_user_func($this->matchCallback, $this, $action);
     }
 }

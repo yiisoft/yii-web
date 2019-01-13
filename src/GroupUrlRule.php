@@ -85,7 +85,7 @@ class GroupUrlRule extends CompositeUrlRule
     /**
      * {@inheritdoc}
      */
-    protected function createRules()
+    protected function createRules(): array
     {
         $rules = [];
         foreach ($this->rules as $key => $rule) {
@@ -119,7 +119,7 @@ class GroupUrlRule extends CompositeUrlRule
     /**
      * {@inheritdoc}
      */
-    public function parseRequest($manager, $request)
+    public function parseRequest(UrlManager $manager, Request $request): bool
     {
         $pathInfo = $request->getPathInfo();
         if ($this->prefix === '' || strpos($pathInfo . '/', $this->prefix . '/') === 0) {
@@ -132,7 +132,7 @@ class GroupUrlRule extends CompositeUrlRule
     /**
      * {@inheritdoc}
      */
-    public function createUrl($manager, $route, $params)
+    public function createUrl(UrlManager $manager, string $route, array $params)
     {
         if ($this->routePrefix === '' || strpos($route, $this->routePrefix . '/') === 0) {
             return parent::createUrl($manager, $route, $params);

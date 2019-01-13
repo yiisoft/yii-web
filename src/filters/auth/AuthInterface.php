@@ -29,14 +29,14 @@ interface AuthInterface
      * @return IdentityInterface the authenticated user identity. If authentication information is not provided, null will be returned.
      * @throws UnauthorizedHttpException if authentication information is provided but is invalid.
      */
-    public function authenticate($user, $request, $response);
+    public function authenticate(User $user, Request $request, Response $response): IdentityInterface;
 
     /**
      * Generates challenges upon authentication failure.
      * For example, some appropriate HTTP headers may be generated.
      * @param Response $response
      */
-    public function challenge($response);
+    public function challenge(Response $response): void;
 
     /**
      * Handles authentication failure.
@@ -44,5 +44,5 @@ interface AuthInterface
      * @param Response $response
      * @throws UnauthorizedHttpException
      */
-    public function handleFailure($response);
+    public function handleFailure(Response $response): void;
 }

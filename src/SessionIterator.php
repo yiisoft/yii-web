@@ -37,7 +37,7 @@ class SessionIterator implements \Iterator
      * Rewinds internal array pointer.
      * This method is required by the interface [[\Iterator]].
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->_key = reset($this->_keys);
     }
@@ -59,7 +59,7 @@ class SessionIterator implements \Iterator
      */
     public function current()
     {
-        return isset($_SESSION[$this->_key]) ? $_SESSION[$this->_key] : null;
+        return $_SESSION[$this->_key] ?? null;
     }
 
     /**
@@ -78,7 +78,7 @@ class SessionIterator implements \Iterator
      * This method is required by the interface [[\Iterator]].
      * @return bool
      */
-    public function valid()
+    public function valid(): bool
     {
         return $this->_key !== false;
     }

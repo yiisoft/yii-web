@@ -82,7 +82,7 @@ abstract class MultiFieldSession extends Session
      * This method overrides the parent implementation and always returns true.
      * @return bool whether to use custom storage.
      */
-    public function getUseCustomStorage()
+    public function shouldUseCustomStorage(): bool
     {
         return true;
     }
@@ -93,7 +93,7 @@ abstract class MultiFieldSession extends Session
      * @param string $data session data
      * @return array storage fields
      */
-    protected function composeFields($id, $data)
+    protected function composeFields(string $id, string $data): array
     {
         $fields = [
             'data' => $data,
@@ -101,9 +101,9 @@ abstract class MultiFieldSession extends Session
         if ($this->writeCallback !== null) {
             $fields = array_merge(
                 $fields,
-                call_user_func($this->writeCallback, $this)
+                \call_user_func($this->writeCallback, $this)
             );
-            if (!is_string($fields['data'])) {
+            if (!\is_string($fields['data'])) {
                 $_SESSION = $fields['data'];
                 $fields['data'] = session_encode();
             }
@@ -121,13 +121,13 @@ abstract class MultiFieldSession extends Session
      * @param array $fields storage fields.
      * @return string session data.
      */
-    protected function extractData($fields)
+    protected function extractData(array $fields): string
     {
         if ($this->readCallback !== null) {
             if (!isset($fields['data'])) {
                 $fields['data'] = '';
             }
-            $extraData = call_user_func($this->readCallback, $fields);
+            $extraData = \call_user_func($this->readCallback, $fields);
             if (!empty($extraData)) {
                 session_decode($fields['data']);
                 $_SESSION = array_merge((array) $_SESSION, (array) $extraData);

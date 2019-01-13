@@ -7,6 +7,8 @@
 
 namespace yii\web\formatters;
 
+use yii\web\Response;
+
 /**
  * ResponseFormatterInterface specifies the interface needed to format a response before it is sent out.
  *
@@ -19,5 +21,5 @@ interface ResponseFormatterInterface
      * Formats the specified response.
      * @param Response $response the response to be formatted.
      */
-    public function format($response);
+    public function format(Response $response): void;
 }

@@ -113,14 +113,14 @@ class HttpCache extends ActionFilter
      * @param Action $action the action to be executed.
      * @return bool whether the action should continue to be executed.
      */
-    public function beforeAction($action)
+    public function beforeAction(Action $action): bool
     {
         if (!$this->enabled) {
             return true;
         }
 
         $verb = Yii::getApp()->getRequest()->getMethod();
-        if ($verb !== 'GET' && $verb !== 'HEAD' || $this->lastModified === null && $this->etagSeed === null) {
+        if (($verb !== 'GET' && $verb !== 'HEAD') || ($this->lastModified === null && $this->etagSeed === null)) {
             return true;
         }
 
@@ -163,14 +163,16 @@ class HttpCache extends ActionFilter
      * @param string $etag the calculated ETag value. If null, the ETag header will not be validated.
      * @return bool whether the HTTP cache is still valid.
      */
-    protected function validateCache($lastModified, $etag)
+    protected function validateCache(int $lastModified, string $etag): bool
     {
         $request = Yii::getApp()->getRequest();
         if ($request->hasHeader('if-none-match')) {
             // 'if-none-match' takes precedence over 'if-modified-since'
             // http://tools.ietf.org/html/rfc7232#section-3.3
             return $etag !== null && in_array($etag, Yii::getApp()->request->getETags(), true);
-        } elseif ($request->hasHeader('if-modified-since')) {
+        }
+
+        if ($request->hasHeader('if-modified-since')) {
             return $lastModified !== null && @strtotime($request->getHeaderLine('if-modified-since')) >= $lastModified;
         }
 
@@ -181,7 +183,7 @@ class HttpCache extends ActionFilter
      * Sends the cache control header to the client.
      * @see cacheControlHeader
      */
-    protected function sendCacheControlHeader()
+    protected function sendCacheControlHeader(): void
     {
         if ($this->sessionCacheLimiter !== null) {
             if ($this->sessionCacheLimiter === '' && !headers_sent() && Yii::getApp()->getSession()->getIsActive()) {
@@ -204,7 +206,7 @@ class HttpCache extends ActionFilter
      * @param string $seed Seed for the ETag
      * @return string the generated ETag
      */
-    protected function generateEtag($seed)
+    protected function generateEtag(string $seed): string
     {
         $etag = '"' . rtrim(base64_encode(sha1($seed, true)), '=') . '"';
         return $this->weakEtag ? 'W/' . $etag : $etag;

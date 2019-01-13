@@ -7,9 +7,11 @@
 
 namespace yii\web\filters;
 
+use yii\base\Action;
 use yii\helpers\Yii;
 use yii\base\ActionFilter;
 use yii\base\BootstrapInterface;
+use yii\web\Application;
 use yii\web\BadRequestHttpException;
 use yii\web\NotAcceptableHttpException;
 use yii\web\Request;
@@ -132,7 +134,7 @@ class ContentNegotiator extends ActionFilter implements BootstrapInterface
     /**
      * {@inheritdoc}
      */
-    public function bootstrap($app)
+    public function bootstrap(Application $app): void
     {
         $this->negotiate();
     }
@@ -140,7 +142,7 @@ class ContentNegotiator extends ActionFilter implements BootstrapInterface
     /**
      * {@inheritdoc}
      */
-    public function beforeAction($action)
+    public function beforeAction(Action $action): bool
     {
         $this->negotiate();
         return true;
@@ -149,7 +151,7 @@ class ContentNegotiator extends ActionFilter implements BootstrapInterface
     /**
      * Negotiates the response format and application language.
      */
-    public function negotiate()
+    public function negotiate(): void
     {
         $request = $this->request ?: Yii::getApp()->getRequest();
         $response = $this->response ?: Yii::getApp()->getResponse();
@@ -168,10 +170,10 @@ class ContentNegotiator extends ActionFilter implements BootstrapInterface
      * @throws BadRequestHttpException if an array received for GET parameter [[formatParam]].
      * @throws NotAcceptableHttpException if none of the requested content types is accepted.
      */
-    protected function negotiateContentType($request, $response)
+    protected function negotiateContentType(Request $request, Response $response): void
     {
         if (!empty($this->formatParam) && ($format = $request->get($this->formatParam)) !== null) {
-            if (is_array($format)) {
+            if (\is_array($format)) {
                 throw new BadRequestHttpException("Invalid data received for GET parameter '{$this->formatParam}'.");
             }
 
@@ -218,10 +220,10 @@ class ContentNegotiator extends ActionFilter implements BootstrapInterface
      * @param Request $request
      * @return string the chosen language
      */
-    protected function negotiateLanguage($request)
+    protected function negotiateLanguage(Request $request): string
     {
         if (!empty($this->languageParam) && ($language = $request->get($this->languageParam)) !== null) {
-            if (is_array($language)) {
+            if (\is_array($language)) {
                 // If an array received, then skip it and use the first of supported languages
                 return reset($this->languages);
             }
@@ -229,7 +231,7 @@ class ContentNegotiator extends ActionFilter implements BootstrapInterface
                 return $this->languages[$language];
             }
             foreach ($this->languages as $key => $supported) {
-                if (is_int($key) && $this->isLanguageSupported($language, $supported)) {
+                if (\is_int($key) && $this->isLanguageSupported($language, $supported)) {
                     return $supported;
                 }
             }
@@ -242,7 +244,7 @@ class ContentNegotiator extends ActionFilter implements BootstrapInterface
                 return $this->languages[$language];
             }
             foreach ($this->languages as $key => $supported) {
-                if (is_int($key) && $this->isLanguageSupported($language, $supported)) {
+                if (\is_int($key) && $this->isLanguageSupported($language, $supported)) {
                     return $supported;
                 }
             }
@@ -257,7 +259,7 @@ class ContentNegotiator extends ActionFilter implements BootstrapInterface
      * @param string $supported the supported language code
      * @return bool whether the requested language is supported
      */
-    protected function isLanguageSupported($requested, $supported)
+    protected function isLanguageSupported(string $requested, string $supported): bool
     {
         $supported = str_replace('_', '-', strtolower($supported));
         $requested = str_replace('_', '-', strtolower($requested));

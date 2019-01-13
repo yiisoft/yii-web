@@ -8,6 +8,7 @@
 namespace yii\web\formatters;
 
 use yii\base\Component;
+use yii\web\Response;
 
 /**
  * HtmlResponseFormatter formats the given data into an HTML response content.
@@ -29,7 +30,7 @@ class HtmlResponseFormatter extends Component implements ResponseFormatterInterf
      * Formats the specified response.
      * @param Response $response the response to be formatted.
      */
-    public function format($response)
+    public function format(Response $response): void
     {
         if (stripos($this->contentType, 'charset') === false) {
             $this->contentType .= '; charset=' . $response->charset;
