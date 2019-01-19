@@ -192,7 +192,12 @@ class MultipartFormDataParser extends BaseObject implements RequestParserInterfa
                         } else {
                             fwrite($tmpResource, $value);
                             $fileConfig['tempFilename'] = $tmpFileName;
-                            $fileConfig['stream'] = new ResourceStream($tmpResource); // save file resource, otherwise it will be deleted
+                            $fileConfig['stream'] = Yii::createObject([
+                                '__class' => ResourceStream::class,
+                                '__construct()' => [
+                                    'resource' => $tmpResource
+                                ],
+                            ]); // save file resource, otherwise it will be deleted
                         }
                     }
                 }
