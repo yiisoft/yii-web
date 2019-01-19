@@ -7,7 +7,6 @@
 
 namespace yii\web\tests\filters\auth;
 
-use yii\helpers\Yii;
 use yii\base\Action;
 use yii\web\filters\auth\AuthMethod;
 use yii\web\filters\auth\HttpBasicAuth;
@@ -16,6 +15,7 @@ use yii\web\filters\auth\QueryParamAuth;
 use yii\web\filters\auth\HttpHeaderAuth;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
+use yii\web\User;
 use yii\web\UnauthorizedHttpException;
 use yii\web\tests\filters\stubs\UserIdentity;
 
@@ -33,18 +33,17 @@ class AuthTest extends \yii\tests\TestCase
         $_SERVER['SCRIPT_FILENAME'] = '/index.php';
         $_SERVER['SCRIPT_NAME'] = '/index.php';
 
-        $appConfig = [
-            'components' => [
-                'user' => [
-                    'identityClass' => UserIdentity::class,
-                ],
-            ],
+        $this->mockWebApplication([
             'controllerMap' => [
                 'test-auth' => TestAuthController::class,
             ],
-        ];
-
-        $this->mockWebApplication($appConfig);
+        ]);
+        $this->container->setAll([
+            'user' => [
+                '__class' => User::class,
+                'identityClass' => UserIdentity::class,
+            ],
+        ]);
     }
 
     public function tokenProvider()

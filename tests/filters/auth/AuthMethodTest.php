@@ -7,7 +7,6 @@
 
 namespace yii\web\tests\filters\auth;
 
-use yii\helpers\Yii;
 use yii\base\Action;
 use yii\web\filters\auth\AuthMethod;
 use yii\web\Controller;
