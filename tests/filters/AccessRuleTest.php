@@ -8,7 +8,6 @@
 namespace yii\web\tests\filters;
 
 use Closure;
-use yii\helpers\Yii;
 use yii\base\Action;
 use yii\web\filters\AccessRule;
 use yii\web\Controller;
@@ -16,7 +15,8 @@ use yii\web\Request;
 use yii\web\User;
 use yii\web\tests\filters\stubs\MockAuthManager;
 use yii\web\tests\filters\stubs\UserIdentity;
-use yii\rbac\tests\unit\AuthorRule;
+use yii\web\tests\data\AuthorRule;
+use yii\rbac\DenyAll;
 
 /**
  * @group filters
@@ -53,13 +53,17 @@ class AccessRuleTest extends \yii\tests\TestCase
      * @param string $userid optional user id
      * @return User
      */
-    protected function mockUser($userid = null)
+    protected function mockUser($userid = null, $accessChecker = null)
     {
-        $user = $this->factory->create([
+        $user = $this->factory->create(array_filter([
             '__class' => User::class,
+            '__construct()' => array_filter([
+                'app' => $this->app,
+                'accessChecker' => $accessChecker,
+            ]),
             'identityClass' => UserIdentity::class,
             'enableAutoLogin' => false,
-        ]);
+        ]));
         if ($userid !== null) {
             $user->setIdentity(UserIdentity::findIdentity($userid));
         }
@@ -278,8 +282,7 @@ class AccessRuleTest extends \yii\tests\TestCase
 
         $action->id = $actionid;
 
-        $user = $this->mockUser($userid);
-        $user->accessChecker = $auth;
+        $user = $this->mockUser($userid, $auth);
         $this->assertEquals($expected, $rule->allows($action, $user, $request));
     }
 
@@ -332,7 +335,7 @@ class AccessRuleTest extends \yii\tests\TestCase
     {
         $action = $this->mockAction();
         $user = $this->getMockBuilder(User::class)
-            ->setConstructorArgs([$this->app])
+            ->setConstructorArgs([$this->app, new DenyAll()])
             ->getMock();
         $user->identityCLass = UserIdentity::class;
 

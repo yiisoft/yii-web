@@ -7,7 +7,6 @@
 
 namespace yii\web\tests\filters;
 
-use yii\helpers\Yii;
 use yii\base\Action;
 use yii\exceptions\ExitException;
 use yii\web\filters\HostControl;

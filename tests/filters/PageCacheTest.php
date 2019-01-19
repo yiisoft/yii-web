@@ -17,6 +17,7 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
 use yii\web\Controller;
 use yii\http\Cookie;
+use yii\view\Theme;
 use yii\web\View;
 use yii\cache\tests\unit\CacheTestCase;
 use yii\tests\TestCase;
@@ -158,7 +159,7 @@ class PageCacheTest extends TestCase
         $filter = $this->factory->create(array_merge([
             '__class' => PageCache::class,
             'cache' => $cache = new Cache(new ArrayCache()),
-            'view' => new View($this->app),
+            'view' => $this->createView(),
         ], $testCase['properties']));
         $this->assertTrue($filter->beforeAction($action), $testCase['name']);
         // Cookies
@@ -213,7 +214,7 @@ class PageCacheTest extends TestCase
         $filter = $this->factory->create(array_merge([
             '__class' => PageCache::class,
             'cache' => $cache,
-            'view' => new View($this->app),
+            'view' => $this->createView(),
         ]), $testCase['properties']);
         $this->app->params['dynamic'] = $dynamic = $this->app->security->generateRandomString();
         $this->assertFalse($filter->beforeAction($action), $testCase['name']);
@@ -258,7 +259,7 @@ class PageCacheTest extends TestCase
         $filter = $this->factory->create([
             '__class' => PageCache::class,
             'cache' => $cache = new Cache(new ArrayCache()),
-            'view' => new View($this->app),
+            'view' => $this->createView(),
             'duration' => 1,
         ]);
         $this->assertTrue($filter->beforeAction($action));
@@ -284,7 +285,7 @@ class PageCacheTest extends TestCase
         $filter = $this->factory->create([
             '__class' => PageCache::class,
             'cache' => $cache,
-            'view' => new View($this->app),
+            'view' => $this->createView(),
         ]);
         $this->app->params['dynamic'] = $dynamic = $this->app->security->generateRandomString();
         $this->assertTrue($filter->beforeAction($action));
@@ -312,7 +313,7 @@ class PageCacheTest extends TestCase
             $filter = $this->factory->create([
                 '__class' => PageCache::class,
                 'cache' => $cache = new Cache(new ArrayCache()),
-                'view' => new View($this->app),
+                'view' => $this->createView(),
                 'varyByRoute' => $enabled,
             ]);
             $this->assertTrue($filter->beforeAction($action));
@@ -335,7 +336,7 @@ class PageCacheTest extends TestCase
             $filter = $this->factory->create([
                 '__class' => PageCache::class,
                 'cache' => $cache,
-                'view' => new View($this->app),
+                'view' => $this->createView(),
                 'varyByRoute' => $enabled,
             ]);
             $this->app->params['dynamic'] = $dynamic = $this->app->security->generateRandomString();
@@ -367,7 +368,7 @@ class PageCacheTest extends TestCase
             $filter = $this->factory->create([
                 '__class' => PageCache::class,
                 'cache' => $cache = new Cache(new ArrayCache()),
-                'view' => new View($this->app),
+                'view' => $this->createView(),
                 'variations' => $originalVariations,
             ]);
             $this->assertTrue($filter->beforeAction($action));
@@ -389,7 +390,7 @@ class PageCacheTest extends TestCase
             $filter = $this->factory->create([
                 '__class' => PageCache::class,
                 'cache' => $cache,
-                'view' => new View($this->app),
+                'view' => $this->createView(),
                 'variations' => $testCase,
             ]);
             $this->app->params['dynamic'] = $dynamic = $this->app->security->generateRandomString();
@@ -418,7 +419,7 @@ class PageCacheTest extends TestCase
             $filter = $this->factory->create([
                 '__class' => PageCache::class,
                 'cache' => $cache = new Cache(new ArrayCache()),
-                'view' => new View($this->app),
+                'view' => $this->createView(),
                 'dependency' => [
                     '__class' => ExpressionDependency::class,
                     'expression' => '$this->app->params[\'dependency\']',
@@ -444,7 +445,7 @@ class PageCacheTest extends TestCase
             $filter = $this->factory->create([
                 '__class' => PageCache::class,
                 'cache' => $cache,
-                'view' => new View($this->app),
+                'view' => $this->createView(),
             ]);
             $this->app->params['dynamic'] = $dynamic = $this->app->security->generateRandomString();
             if ($changed) {
@@ -471,5 +472,10 @@ class PageCacheTest extends TestCase
 
         $keys = $this->invokeMethod(new PageCache(), 'calculateCacheKey');
         $this->assertEquals([PageCache::class, 'test'], $keys);
+    }
+
+    protected function createView()
+    {
+        return new View($this->app, new Theme());
     }
 }

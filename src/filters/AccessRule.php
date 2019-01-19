@@ -11,6 +11,7 @@ use Closure;
 use yii\base\Action;
 use yii\base\Component;
 use yii\base\Controller;
+use yii\di\AbstractContainer;
 use yii\exceptions\InvalidConfigException;
 use yii\helpers\StringHelper;
 use yii\web\Request;
@@ -155,6 +156,11 @@ class AccessRule extends Component
      */
     public $denyCallback;
 
+
+    public function __construct(array $config = [])
+    {
+        AbstractContainer::configure($this, $config);
+    }
 
     /**
      * Checks whether the Web user is allowed to perform the specified action.

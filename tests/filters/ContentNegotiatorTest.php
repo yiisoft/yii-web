@@ -7,7 +7,6 @@
 
 namespace yii\web\tests\filters;
 
-use yii\helpers\Yii;
 use yii\base\Action;
 use yii\web\filters\ContentNegotiator;
 use yii\web\Controller;
