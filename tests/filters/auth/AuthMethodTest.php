@@ -7,12 +7,12 @@
 
 namespace yii\web\tests\filters\auth;
 
-use yii\helpers\Yii;
 use yii\base\Action;
 use yii\web\filters\auth\AuthMethod;
 use yii\web\Controller;
 use yii\web\tests\filters\stubs\UserIdentity;
 use yii\tests\TestCase;
+use yii\web\User;
 
 class AuthMethodTest extends TestCase
 {
@@ -20,11 +20,11 @@ class AuthMethodTest extends TestCase
     {
         parent::setUp();
 
-        $this->mockWebApplication([
-            'components' => [
-                'user' => [
-                    'identityClass' => UserIdentity::class,
-                ],
+        $this->mockWebApplication();
+        $this->container->setAll([
+            'user' => [
+                '__class' => User::class,
+                'identityClass' => UserIdentity::class,
             ],
         ]);
     }
@@ -52,7 +52,13 @@ class AuthMethodTest extends TestCase
     protected function createAction(array $config = [])
     {
         $controller = new Controller('test', $this->app);
-        return new Action('index', $controller, $config);
+        return $this->factory->create([
+            '__class' => Action::class,
+            '__construct()' => [
+                'id' => 'index',
+                'controller' => $controller
+            ],
+        ], $config);
     }
 
     // Tests :

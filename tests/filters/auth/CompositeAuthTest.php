@@ -7,11 +7,11 @@
 
 namespace yii\web\tests\filters\auth;
 
-use yii\helpers\Yii;
 use yii\web\filters\auth\AuthMethod;
 use yii\web\filters\auth\CompositeAuth;
 use yii\web\filters\auth\HttpBearerAuth;
 use yii\web\Controller;
+use yii\web\User;
 use yii\web\tests\UserIdentity;
 
 /**
@@ -89,18 +89,17 @@ class CompositeAuthTest extends \yii\tests\TestCase
         $_SERVER['SCRIPT_FILENAME'] = '/index.php';
         $_SERVER['SCRIPT_NAME'] = '/index.php';
 
-        $appConfig = [
-            'components' => [
-                'user' => [
-                    'identityClass' => UserIdentity::class,
-                ],
-            ],
+        $this->mockWebApplication([
             'controllerMap' => [
                 'test' => TestController::class,
             ],
-        ];
-
-        $this->mockWebApplication($appConfig);
+        ]);
+        $this->container->setAll([
+            'user' => [
+                '__class' => User::class,
+                'identityClass' => UserIdentity::class,
+            ],
+        ]);
     }
 
     public function testCallingRunWithCompleteRoute()
