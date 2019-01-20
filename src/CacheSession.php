@@ -7,6 +7,8 @@
 
 namespace yii\web;
 
+use yii\base\Application;
+use yii\di\Initiable;
 use yii\helpers\Yii;
 use yii\cache\CacheInterface;
 use yii\di\Instance;
@@ -47,16 +49,12 @@ class CacheSession extends Session
      *
      * Starting from version 2.0.2, this can also be a configuration array for creating the object.
      */
-    public $cache = 'cache';
+    protected $cache = 'cache';
 
-
-    /**
-     * Initializes the application component.
-     */
-    public function init()
+    public function __construct(Application $app)
     {
-        parent::init();
-        $this->cache = Instance::ensure($this->cache, CacheInterface::class);
+        parent::__construct($app);
+        $this->setCache($this->cache);
     }
 
     /**
@@ -119,4 +117,22 @@ class CacheSession extends Session
     {
         return [__CLASS__, $id];
     }
+
+    /**
+     * @return CacheInterface
+     */
+    public function getCache()
+    {
+        return $this->cache;
+    }
+
+    /**
+     * @param array|string|CacheInterface $cache
+     */
+    public function setCache($cache)
+    {
+        $factory = Yii::get('factory');
+        $this->cache = $factory->ensure($cache, CacheInterface::class);
+    }
+
 }

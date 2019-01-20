@@ -21,12 +21,19 @@ class CacheSessionTest extends \yii\tests\TestCase
     {
         parent::setUp();
         $this->mockApplication();
-        $this->app->set('cache', new Cache(['handler' => new ArrayCache()]));
+        $this->container->setAll([
+            'cache' => [
+                '__class' => Cache::class,
+                '__construct()' => [
+                    'handler' => new ArrayCache()
+                ]
+            ]
+        ]);
     }
 
     public function testCacheSession()
     {
-        $session = new CacheSession();
+        $session = new CacheSession($this->app);
 
         $session->writeSession('test', 'sessionData');
         $this->assertEquals('sessionData', $session->readSession('test'));
@@ -37,7 +44,8 @@ class CacheSessionTest extends \yii\tests\TestCase
     public function testInvalidCache()
     {
         $this->expectException('\Exception');
-        new CacheSession(['cache' => 'invalid']);
+        $session = new CacheSession($this->app);
+        $session->setCache('invalid');
     }
 
     /**
@@ -45,7 +53,7 @@ class CacheSessionTest extends \yii\tests\TestCase
      */
     public function testNotWrittenSessionDestroying()
     {
-        $session = new CacheSession();
+        $session = new CacheSession($this->app);
 
         $session->set('foo', 'bar');
         $this->assertEquals('bar', $session->get('foo'));
