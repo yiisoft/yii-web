@@ -15,7 +15,7 @@ use yii\web\Request;
 use yii\web\User;
 use yii\web\tests\filters\stubs\MockAuthManager;
 use yii\web\tests\filters\stubs\UserIdentity;
-use yii\web\tests\data\AuthorRule;
+use yii\web\tests\stubs\AuthorRule;
 use yii\rbac\DenyAll;
 
 /**

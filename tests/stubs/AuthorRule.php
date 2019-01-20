@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\tests\data;
+namespace yii\web\tests\stubs;
 
 use yii\rbac\Rule;
 
