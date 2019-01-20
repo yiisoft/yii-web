@@ -7,6 +7,7 @@
 
 namespace yii\web\tests;
 
+use yii\web\formatters\HtmlResponseFormatter;
 use yii\web\NotFoundHttpException;
 use yii\tests\TestCase;
 
@@ -20,6 +21,12 @@ class ErrorHandlerTest extends TestCase
                 '__class' => \yii\web\tests\ErrorHandler::class,
                 'errorView' => '@yii/tests/data/views/errorHandler.php',
             ],
+            'response' => [
+                '__class' => \yii\web\Response::class,
+                'formatters' => [
+                    'html' => HtmlResponseFormatter::class
+                ]
+            ]
         ]);
     }
 
