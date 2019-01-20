@@ -7,7 +7,7 @@
 
 namespace yii\web\tests;
 
-use yii\web\XmlResponseFormatter;
+use yii\web\formatters\XmlResponseFormatter;
 use yii\web\tests\stubs\ModelStub;
 
 /**
@@ -24,7 +24,9 @@ class XmlResponseFormatterTest extends FormatterTest
      */
     protected function getFormatterInstance($options = [])
     {
-        return new XmlResponseFormatter($options);
+        return $this->factory->create(array_merge([
+            '__class' => XmlResponseFormatter::class
+        ], $options));
     }
 
     private $xmlHead = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
@@ -134,9 +136,15 @@ class XmlResponseFormatterTest extends FormatterTest
 
     public function formatModelDataProvider()
     {
+        $model = $this->factory->create([
+            '__class' => ModelStub::class,
+            'id' => 123,
+            'title' => 'abc',
+            'hidden' => 'hidden'
+        ]);
         return $this->addXmlHead([
             [
-                new ModelStub(['id' => 123, 'title' => 'abc', 'hidden' => 'hidden']),
+                $model,
                 "<response><ModelStub><id>123</id><title>abc</title></ModelStub></response>\n",
             ],
         ]);

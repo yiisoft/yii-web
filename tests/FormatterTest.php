@@ -7,8 +7,9 @@
 
 namespace yii\web\tests;
 
+use yii\web\formatters\ResponseFormatterInterface;
 use yii\web\Response;
-use yii\web\ResponseFormatterInterface;
+
 
 abstract class FormatterTest extends \yii\tests\TestCase
 {
@@ -24,7 +25,10 @@ abstract class FormatterTest extends \yii\tests\TestCase
     protected function setUp()
     {
         $this->mockApplication();
-        $this->response = $this->factory->create(Response::class);
+        $this->response = $this->factory->create([
+            '__class' => Response::class,
+            'charset' => 'UTF-8'
+        ]);
         $this->formatter = $this->getFormatterInstance();
     }
 

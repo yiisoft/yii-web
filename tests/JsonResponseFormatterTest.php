@@ -23,7 +23,9 @@ class JsonResponseFormatterTest extends FormatterTest
      */
     protected function getFormatterInstance($configuration = [])
     {
-        return new JsonResponseFormatter($configuration);
+        return $this->factory->create(array_merge([
+           '__class' => JsonResponseFormatter::class
+        ], $configuration));
     }
 
     public function formatScalarDataProvider()
@@ -101,8 +103,14 @@ class JsonResponseFormatterTest extends FormatterTest
 
     public function formatModelDataProvider()
     {
+        $model = $this->factory->create([
+            '__class' => ModelStub::class,
+            'id' => 123,
+            'title' => 'abc',
+            'hidden' => 'hidden'
+        ]);
         return [
-            [new ModelStub(['id' => 123, 'title' => 'abc', 'hidden' => 'hidden']), '{"id":123,"title":"abc"}'],
+            [$model , '{"id":123,"title":"abc"}'],
         ];
     }
 
@@ -158,7 +166,7 @@ class JsonResponseFormatterTest extends FormatterTest
     }
 
     /**
-     * @param mixed  $data the data to be formatted
+     * @param mixed $data the data to be formatted
      * @param string $json the expected JSON body
      * @param string $prettyJson the expected pretty JSON body
      * @dataProvider formatArrayDataProvider
