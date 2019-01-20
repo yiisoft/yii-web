@@ -12,6 +12,7 @@ use yii\http\UploadedFile;
 use yii\web\Request;
 use yii\web\UnsupportedMediaTypeHttpException;
 use yii\tests\TestCase;
+use yii\web\UrlManager;
 
 /**
  * @group web
@@ -20,7 +21,8 @@ class RequestTest extends TestCase
 {
     public function testParseAcceptHeader()
     {
-        $request = new Request();
+        $this->mockWebApplication();
+        $request = new Request($this->app);
 
         $this->assertEquals([], $request->parseAcceptHeader(' '));
 
@@ -43,41 +45,40 @@ class RequestTest extends TestCase
 
     public function testPreferredLanguage()
     {
-        $this->mockApplication([
-            'language' => 'en',
-        ]);
+        $this->mockApplication();
+        $this->container->get('app')->setLocale('en');
 
-        $request = new Request();
+        $request = new Request($this->app);
         $request->acceptableLanguages = [];
         $this->assertEquals('en', $request->getPreferredLanguage());
 
-        $request = new Request();
+        $request = new Request($this->app);
         $request->acceptableLanguages = ['de'];
         $this->assertEquals('en', $request->getPreferredLanguage());
 
-        $request = new Request();
+        $request = new Request($this->app);
         $request->acceptableLanguages = ['en-us', 'de', 'ru-RU'];
         $this->assertEquals('en', $request->getPreferredLanguage(['en']));
 
-        $request = new Request();
+        $request = new Request($this->app);
         $request->acceptableLanguages = ['en-us', 'de', 'ru-RU'];
         $this->assertEquals('de', $request->getPreferredLanguage(['ru', 'de']));
         $this->assertEquals('de-DE', $request->getPreferredLanguage(['ru', 'de-DE']));
 
-        $request = new Request();
+        $request = new Request($this->app);
         $request->acceptableLanguages = ['en-us', 'de', 'ru-RU'];
         $this->assertEquals('de', $request->getPreferredLanguage(['de', 'ru']));
 
-        $request = new Request();
+        $request = new Request($this->app);
         $request->acceptableLanguages = ['en-us', 'de', 'ru-RU'];
         $this->assertEquals('ru-ru', $request->getPreferredLanguage(['ru-ru']));
 
-        $request = new Request();
+        $request = new Request($this->app);
         $request->acceptableLanguages = ['en-us', 'de'];
         $this->assertEquals('ru-ru', $request->getPreferredLanguage(['ru-ru', 'pl']));
         $this->assertEquals('ru-RU', $request->getPreferredLanguage(['ru-RU', 'pl']));
 
-        $request = new Request();
+        $request = new Request($this->app);
         $request->acceptableLanguages = ['en-us', 'de'];
         $this->assertEquals('pl', $request->getPreferredLanguage(['pl', 'ru-ru']));
     }
@@ -89,7 +90,7 @@ class RequestTest extends TestCase
     {
         $this->mockWebApplication();
 
-        $request = new Request();
+        $request = new Request($this->app);
         $request->enableCsrfCookie = false;
 
         $token = $request->getCsrfToken();
@@ -100,7 +101,7 @@ class RequestTest extends TestCase
     {
         $this->mockWebApplication();
 
-        $request = new Request();
+        $request = new Request($this->app);
         $request->setHeader('Content-Type', 'application/x-www-form-urlencoded');
         $request->enableCsrfCookie = false;
 
@@ -144,8 +145,8 @@ class RequestTest extends TestCase
     public function testIssue15317()
     {
         $this->mockWebApplication();
-        $_COOKIE[(new Request())->csrfParam] = '';
-        $request = new Request();
+        $_COOKIE[(new Request($this->app))->csrfParam] = '';
+        $request = new Request($this->app);
         $request->enableCsrfCookie = true;
         $request->enableCookieValidation = false;
 
@@ -164,7 +165,7 @@ class RequestTest extends TestCase
     {
         $this->mockWebApplication();
 
-        $request = new Request();
+        $request = new Request($this->app);
         $request->enableCsrfCookie = false;
 
         $token = $request->getCsrfToken();
@@ -192,7 +193,7 @@ class RequestTest extends TestCase
     {
         $this->mockWebApplication();
 
-        $request = new Request();
+        $request = new Request($this->app);
         $request->enableCsrfCookie = false;
 
         $token = $request->getCsrfToken();
@@ -215,21 +216,19 @@ class RequestTest extends TestCase
 
     public function testResolve()
     {
-        $this->mockWebApplication([
-            'components' => [
-                'urlManager' => [
-                    'enablePrettyUrl' => true,
-                    'showScriptName' => false,
-                    'cache' => null,
-                    'rules' => [
-                        'posts' => 'post/list',
-                        'post/<id>' => 'post/view',
-                    ],
-                ],
+        $this->mockWebApplication();
+        $this->container->set('urlManager', [
+            '__class' => UrlManager::class,
+            'enablePrettyUrl' => true,
+            'showScriptName' => false,
+            'cache' => null,
+            'rules' => [
+                'posts' => 'post/list',
+                'post/<id>' => 'post/view',
             ],
         ]);
 
-        $request = new Request();
+        $request = new Request($this->app);
         $request->pathInfo = 'posts';
 
         $_GET['page'] = 1;
@@ -249,7 +248,7 @@ class RequestTest extends TestCase
 
         unset($_GET['page']);
 
-        $request = new Request();
+        $request = new Request($this->app);
         $request->pathInfo = 'post/21';
 
         $this->assertEquals($_GET, []);
@@ -348,7 +347,8 @@ class RequestTest extends TestCase
     {
         $original = $_SERVER;
         $_SERVER = $server;
-        $request = new Request([
+        $request = $this->factory->create([
+            '__class' => Request::class,
             'trustedHosts' => [
                 '192.168.0.0/24',
             ],
@@ -362,7 +362,8 @@ class RequestTest extends TestCase
 
     public function testSetHostInfo()
     {
-        $request = new Request();
+        $this->mockWebApplication();
+        $request = new Request($this->app);
 
         unset($_SERVER['SERVER_NAME'], $_SERVER['HTTP_HOST']);
         $this->assertNull($request->getHostInfo());
@@ -378,7 +379,8 @@ class RequestTest extends TestCase
      */
     public function testGetScriptFileWithEmptyServer()
     {
-        $request = new Request();
+        $this->mockWebApplication();
+        $request = new Request($this->app);
         $_SERVER = [];
 
         $request->getScriptFile();
@@ -389,7 +391,8 @@ class RequestTest extends TestCase
      */
     public function testGetScriptUrlWithEmptyServer()
     {
-        $request = new Request();
+        $this->mockWebApplication();
+        $request = new Request($this->app);
         $_SERVER = [];
 
         $request->getScriptUrl();
@@ -397,7 +400,8 @@ class RequestTest extends TestCase
 
     public function testGetServerName()
     {
-        $request = new Request();
+        $this->mockWebApplication();
+        $request = new Request($this->app);
 
         $request->setServerParams([
             'SERVER_NAME' => 'servername'
@@ -410,7 +414,8 @@ class RequestTest extends TestCase
 
     public function testGetServerPort()
     {
-        $request = new Request();
+        $this->mockWebApplication();
+        $request = new Request($this->app);
 
         $request->setServerParams([
             'SERVER_PORT' => 33
@@ -476,7 +481,8 @@ class RequestTest extends TestCase
     public function testGetIsSecureConnection($server, $expected)
     {
         $original = $_SERVER;
-        $request = new Request([
+        $request = $this->factory->create([
+            '__class' => Request::class,
             'trustedHosts' => [
                 '192.168.0.0/24',
             ],
@@ -536,7 +542,8 @@ class RequestTest extends TestCase
     {
         $original = $_SERVER;
         $_SERVER = $server;
-        $request = new Request([
+        $request = $this->factory->create([
+            '__class' => Request::class,
             'trustedHosts' => [
                 '192.168.0.0/24',
             ],
@@ -572,9 +579,10 @@ class RequestTest extends TestCase
      */
     public function testGetMethod($server, $expected)
     {
+        $this->mockWebApplication();
         $original = $_SERVER;
         $_SERVER = $server;
-        $request = new Request();
+        $request = new Request($this->app);
 
         $this->assertEquals($expected, $request->getMethod());
         $_SERVER = $original;
@@ -604,9 +612,10 @@ class RequestTest extends TestCase
      */
     public function testGetIsAjax($server, $expected)
     {
+        $this->mockWebApplication();
         $original = $_SERVER;
         $_SERVER = $server;
-        $request = new Request();
+        $request = new Request($this->app);
 
         $this->assertEquals($expected, $request->getIsAjax());
         $_SERVER = $original;
@@ -614,12 +623,13 @@ class RequestTest extends TestCase
 
     public function testGetOrigin()
     {
+        $this->mockWebApplication();
         $_SERVER['HTTP_ORIGIN'] = 'https://www.w3.org';
-        $request = new Request();
+        $request = new Request($this->app);
         $this->assertEquals('https://www.w3.org', $request->getOrigin());
 
         unset($_SERVER['HTTP_ORIGIN']);
-        $request = new Request();
+        $request = new Request($this->app);
         $this->assertSame('', $request->getOrigin());
     }
 
@@ -644,7 +654,8 @@ class RequestTest extends TestCase
      */
     public function testHttpAuthCredentialsFromHttpAuthorizationHeader($secret, $expected)
     {
-        $request = new Request();
+        $this->mockWebApplication();
+        $request = new Request($this->app);
 
         $request->setHeader('HTTP_AUTHORIZATION', 'Basic ' . $secret);
         $this->assertSame($request->getAuthCredentials(), $expected);
@@ -660,12 +671,13 @@ class RequestTest extends TestCase
 
     public function testHttpAuthCredentialsFromServerSuperglobal()
     {
+        $this->mockWebApplication();
         $original = $_SERVER;
         [$user, $pw] = ['foo', 'bar'];
         $_SERVER['PHP_AUTH_USER'] = $user;
         $_SERVER['PHP_AUTH_PW'] = $pw;
 
-        $request = new Request();
+        $request = new Request($this->app);
         $request->setHeader('HTTP_AUTHORIZATION', 'Basic ' . base64_encode('less-priority:than-PHP_AUTH_*'));
 
         $this->assertSame($request->getAuthCredentials(), [$user, $pw]);
@@ -677,10 +689,11 @@ class RequestTest extends TestCase
 
     public function testGetParsedBody()
     {
+        $this->mockWebApplication();
         $body = new MemoryStream();
         $body->write('name=value');
 
-        $request = new Request();
+        $request = new Request($this->app);
         $request->setMethod('PUT');
         $request->setBody($body);
         $_POST = ['name' => 'post'];
@@ -705,7 +718,8 @@ class RequestTest extends TestCase
      */
     public function testParseEmptyBody()
     {
-        $request = new Request();
+        $this->mockWebApplication();
+        $request = new Request($this->app);
         $request->setMethod('GET');
         $request->setBody(new MemoryStream());
 
@@ -848,7 +862,8 @@ class RequestTest extends TestCase
      */
     public function testDefaultUploadedFiles(array $rawFiles, array $expectedFiles)
     {
-        $request = new Request();
+        $this->mockWebApplication();
+        $request = new Request($this->app);
         $request->setMethod('POST');
         $request->setHeader('Content-Type', 'multipart/form-data');
 
@@ -862,7 +877,8 @@ class RequestTest extends TestCase
      */
     public function testGetUploadedFileByName()
     {
-        $request = new Request();
+        $this->mockWebApplication();
+        $request = new Request($this->app);
         $request->setUploadedFiles([
             'ItemFile' => [
                 0 => new UploadedFile([
@@ -897,7 +913,8 @@ class RequestTest extends TestCase
      */
     public function testGetUploadedFilesByName()
     {
-        $request = new Request();
+        $this->mockWebApplication();
+        $request = new Request($this->app);
         $request->setUploadedFiles([
             'Item' => [
                 'file' => [
@@ -936,7 +953,8 @@ class RequestTest extends TestCase
 
     public function testSetupAttributes()
     {
-        $request = new Request();
+        $this->mockWebApplication();
+        $request = new Request($this->app);
 
         $request->setAttributes(['some' => 'foo']);
         $this->assertSame(['some' => 'foo'], $request->getAttributes());
@@ -947,7 +965,8 @@ class RequestTest extends TestCase
      */
     public function testGetAttribute()
     {
-        $request = new Request();
+        $this->mockWebApplication();
+        $request = new Request($this->app);
 
         $request->setAttributes(['some' => 'foo']);
 
@@ -961,7 +980,8 @@ class RequestTest extends TestCase
      */
     public function testModifyAttributes()
     {
-        $request = new Request();
+        $this->mockWebApplication();
+        $request = new Request($this->app);
 
         $request->setAttributes(['attr1' => '1']);
 
@@ -977,7 +997,8 @@ class RequestTest extends TestCase
 
     public function testGetParsedBodyParam()
     {
-        $request = new Request();
+        $this->mockWebApplication();
+        $request = new Request($this->app);
 
         $request->setParsedBody([
             'someParam' => 'some value',
