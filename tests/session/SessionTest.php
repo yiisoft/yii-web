@@ -15,12 +15,18 @@ use yii\tests\TestCase;
  */
 class SessionTest extends TestCase
 {
+    public function setUp()
+    {
+        parent::setUp();
+        $this->mockWebApplication();
+    }
+
     /**
      * Test to prove that after Session::destroy session id set to old value.
      */
     public function testDestroySessionId()
     {
-        $session = new Session();
+        $session = new Session($this->app);
         $session->open();
         $oldSessionId = @session_id();
 
@@ -39,7 +45,7 @@ class SessionTest extends TestCase
      */
     public function testParamsAfterSessionStart()
     {
-        $session = new Session();
+        $session = new Session($this->app);
         $session->open();
 
         $oldUseTransparentSession = $session->getUseTransparentSessionID();
@@ -76,7 +82,7 @@ class SessionTest extends TestCase
      */
     public function testSetName()
     {
-        $session = new Session();
+        $session = new Session($this->app);
         $session->setName('oldName');
 
         $this->assertEquals('oldName', $session->getName());
