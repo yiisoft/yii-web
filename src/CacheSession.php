@@ -8,10 +8,8 @@
 namespace yii\web;
 
 use yii\base\Application;
-use yii\di\Initiable;
 use yii\helpers\Yii;
 use yii\cache\CacheInterface;
-use yii\di\Instance;
 
 /**
  * CacheSession implements a session component using cache as storage medium.

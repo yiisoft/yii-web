@@ -7,7 +7,6 @@
 
 namespace yii\web\tests\session;
 
-use yii\helpers\Yii;
 use yii\cache\ArrayCache;
 use yii\cache\Cache;
 use yii\web\CacheSession;
