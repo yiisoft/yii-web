@@ -7,7 +7,7 @@
 
 namespace yii\web\tests;
 
-use yii\web\XmlResponseFormatter;
+use yii\web\formatters\XmlResponseFormatter;
 use yii\web\tests\stubs\ModelStub;
 
 /**

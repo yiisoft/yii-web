@@ -26,14 +26,12 @@ class VerbFilterTest extends TestCase
 
         $_SERVER['SCRIPT_FILENAME'] = '/index.php';
         $_SERVER['SCRIPT_NAME'] = '/index.php';
-
-        $this->mockWebApplication();
     }
 
     public function testFilter()
     {
-        $request = new Request($this->app);
         $this->mockWebApplication();
+        $request = new Request($this->app);
         $this->container->set('request', $request);
         $controller = new Controller('id', $this->app);
         $action = new Action('test', $controller);

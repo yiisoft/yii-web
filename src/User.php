@@ -14,6 +14,7 @@ use yii\exceptions\InvalidValueException;
 use yii\http\Cookie;
 use yii\rbac\CheckAccessInterface;
 use yii\helpers\Yii;
+use yii\di\Initiable;
 
 /**
  * User is the class for the `user` application component that manages the user authentication status.
@@ -59,7 +60,7 @@ use yii\helpers\Yii;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class User extends Component
+class User extends Component implements Initiable
 {
     /**
      * @var string the class name of the [[identity]] object.
@@ -104,7 +105,7 @@ class User extends Component
     /**
      * @var CheckAccessInterface The access checker to use for checking access.
      */
-    protected $accessChecker;
+    public $accessChecker;
     /**
      * @var int the number of seconds in which the user will be logged out automatically
      * regardless of activity.
@@ -157,10 +158,8 @@ class User extends Component
     /**
      * Initializes the application component.
      */
-    public function init()
+    public function init(): void
     {
-        parent::init();
-
         if ($this->identityClass === null) {
             throw new InvalidConfigException('User::identityClass must be set.');
         }

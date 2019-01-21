@@ -26,6 +26,7 @@ use yii\http\Cookie;
 use yii\http\CookieCollection;
 use yii\web\ForbiddenHttpException;
 use yii\tests\TestCase;
+use yii\web\User;
 
 /**
  * @group web
@@ -51,21 +52,20 @@ class UserTest extends TestCase
             $this->markTestSkipped('Can not reliably test this on travis-ci.');
         }
 
-        $appConfig = [
-            'components' => [
-                'user' => [
-                    'identityClass' => UserIdentity::class,
-                    'authTimeout' => 10,
-                ],
-                'authManager' => [
-                    '__class' => PhpManager::class,
-                    'itemFile' => '@runtime/user_test_rbac_items.php',
-                     'assignmentFile' => '@runtime/user_test_rbac_assignments.php',
-                     'ruleFile' => '@runtime/user_test_rbac_rules.php',
+        $services = [
+            'user' => [
+                '__class' => User::class,
+                'identityClass' => UserIdentity::class,
+                'authTimeout' => 10,
+            ],
+            'authManager' => [
+                '__class' => PhpManager::class,
+                '__construct()' => [
+                    'dir' => Yii::getAlias('@runtime'),
                 ],
             ],
         ];
-        $this->mockWebApplication($appConfig);
+        $this->mockWebApplication([], null, $services);
 
         $am = $this->app->authManager;
         $am->removeAll();
@@ -81,17 +81,17 @@ class UserTest extends TestCase
 //        print_r($this->app->session);
 //        print_r($_SESSION);
 
-        $this->mockWebApplication($appConfig);
+        $this->mockWebApplication([], null, $services);
         $this->assertFalse($this->app->user->isGuest);
         $this->assertTrue($this->app->user->can('doSomething'));
 
         static::$time += 5;
-        $this->mockWebApplication($appConfig);
+        $this->mockWebApplication([], null, $services);
         $this->assertFalse($this->app->user->isGuest);
         $this->assertTrue($this->app->user->can('doSomething'));
 
         static::$time += 11;
-        $this->mockWebApplication($appConfig);
+        $this->mockWebApplication([], null, $services);
         $this->assertTrue($this->app->user->isGuest);
         $this->assertFalse($this->app->user->can('doSomething'));
     }
@@ -105,49 +105,48 @@ class UserTest extends TestCase
         global $cookiesMock;
         $cookiesMock = new CookieCollection();
 
-        $appConfig = [
-            'components' => [
-                'user' => [
-                    'identityClass' => UserIdentity::class,
-                    'authTimeout' => 10,
-                    'enableAutoLogin' => true,
-                    'autoRenewCookie' => false,
-                ],
-                'response' => [
-                    '__class' => MockResponse::class,
-                ],
-                'request' => [
-                    '__class' => MockRequest::class,
-                ],
+        $services = [
+            'user' => [
+                '__class' => User::class,
+                'identityClass' => UserIdentity::class,
+                'authTimeout' => 10,
+                'enableAutoLogin' => true,
+                'autoRenewCookie' => false,
+            ],
+            'response' => [
+                '__class' => MockResponse::class,
+            ],
+            'request' => [
+                '__class' => MockRequest::class,
             ],
         ];
-        $this->mockWebApplication($appConfig);
+        $this->mockWebApplication([], null, $services);
 
         $this->app->session->removeAll();
         static::$time = \time();
         $this->app->user->login(UserIdentity::findIdentity('user1'), 20);
 
         // User is logged in
-        $this->mockWebApplication($appConfig);
+        $this->mockWebApplication([], null, $services);
         $this->assertFalse($this->app->user->isGuest);
 
         // IdentityCookie is valid
         $this->app->session->removeAll();
         static::$time += 5;
-        $this->mockWebApplication($appConfig);
+        $this->mockWebApplication([], null, $services);
         $this->assertFalse($this->app->user->isGuest);
 
         // IdentityCookie is still valid
         $this->app->session->removeAll();
         static::$time += 10;
-        $this->mockWebApplication($appConfig);
+        $this->mockWebApplication([], null, $services);
         $this->assertFalse($this->app->user->isGuest);
 
         // IdentityCookie is no longer valid (we remove it manually, but browser will do it automatically)
         $this->invokeMethod($this->app->user, 'removeIdentityCookie');
         $this->app->session->removeAll();
         static::$time += 25;
-        $this->mockWebApplication($appConfig);
+        $this->mockWebApplication([], null, $services);
         $this->assertTrue($this->app->user->isGuest);
     }
 
@@ -157,22 +156,21 @@ class UserTest extends TestCase
 
         $cookiesMock = new CookieCollection();
 
-        $appConfig = [
-            'components' => [
-                'user' => [
-                    'identityClass' => UserIdentity::class,
-                    'enableAutoLogin' => true,
-                ],
-                'response' => [
-                    '__class' => MockResponse::class,
-                ],
-                'request' => [
-                    '__class' => MockRequest::class,
-                ],
+        $services = [
+            'user' => [
+                '__class' => User::class,
+                'identityClass' => UserIdentity::class,
+                'enableAutoLogin' => true,
+            ],
+            'response' => [
+                '__class' => MockResponse::class,
+            ],
+            'request' => [
+                '__class' => MockRequest::class,
             ],
         ];
 
-        $this->mockWebApplication($appConfig);
+        $this->mockWebApplication([], null, $services);
         $this->app->session->removeAll();
 
         $cookie = new Cookie($this->app->user->identityCookie);
@@ -204,32 +202,35 @@ class UserTest extends TestCase
         }
 
         $_SERVER = $server;
-        $this->app->set('response', ['__class' => \yii\web\Response::class]);
-        $this->app->set('request', [
-            '__class' => \yii\web\Request::class,
-            'scriptFile' => __DIR__ . '/index.php',
-            'scriptUrl' => '/index.php',
-            'url' => '',
+        $this->container->setAll([
+            'response' => [
+                '__class' => \yii\web\Response::class,
+            ],
+            'request' => [
+                '__class' => \yii\web\Request::class,
+                'scriptFile' => __DIR__ . '/index.php',
+                'scriptUrl' => '/index.php',
+                'url' => '',
+            ],
         ]);
         $this->app->user->setReturnUrl(null);
     }
 
     public function testLoginRequired()
     {
-        $appConfig = [
-            'components' => [
-                'user' => [
-                    'identityClass' => UserIdentity::class,
-                ],
-                'authManager' => [
-                    '__class' => PhpManager::class,
-                    'itemFile' => '@runtime/user_test_rbac_items.php',
-                    'assignmentFile' => '@runtime/user_test_rbac_assignments.php',
-                    'ruleFile' => '@runtime/user_test_rbac_rules.php',
+        $services = [
+            'user' => [
+                '__class' => User::class,
+                'identityClass' => UserIdentity::class,
+            ],
+            'authManager' => [
+                '__class' => PhpManager::class,
+                '__construct()' => [
+                    'dir' => Yii::getAlias('@runtime'),
                 ],
             ],
         ];
-        $this->mockWebApplication($appConfig);
+        $this->mockWebApplication([], null, $services);
 
 
         $user = $this->app->user;
@@ -329,21 +330,20 @@ class UserTest extends TestCase
 
     public function testLoginRequiredException1()
     {
-        $appConfig = [
-            'components' => [
-                'user' => [
-                    'identityClass' => UserIdentity::class,
-                ],
-                'authManager' => [
-                    '__class' => PhpManager::class,
-                    'itemFile' => '@runtime/user_test_rbac_items.php',
-                    'assignmentFile' => '@runtime/user_test_rbac_assignments.php',
-                    'ruleFile' => '@runtime/user_test_rbac_rules.php',
+        $services = [
+            'user' => [
+                '__class' => User::class,
+                'identityClass' => UserIdentity::class,
+            ],
+            'authManager' => [
+                '__class' => PhpManager::class,
+                '__construct()' => [
+                    'dir' => Yii::getAlias('@runtime'),
                 ],
             ],
         ];
 
-        $this->mockWebApplication($appConfig);
+        $this->mockWebApplication([], null, $services);
         $this->reset();
         $_SERVER['HTTP_ACCEPT'] = 'text/json,q=0.1';
         $this->expectException('yii\\web\\ForbiddenHttpException');
@@ -352,36 +352,38 @@ class UserTest extends TestCase
 
     public function testAccessChecker()
     {
-        $appConfig = [
-            'components' => [
-                'user' => [
-                    'identityClass' => UserIdentity::class,
-                    'accessChecker' => AccessChecker::class
-                ]
+        $services = [
+            'user' => [
+                '__class' => User::class,
+                '__construct()' => [
+                    'app' => \yii\di\Reference::to('app'),
+                    'accessChecker' => \yii\di\Reference::to(AccessChecker::class),
+                ],
+                'identityClass' => UserIdentity::class,
             ],
         ];
 
-        $this->mockWebApplication($appConfig);
+        $this->mockWebApplication([], null, $services);
         $this->assertInstanceOf(AccessChecker::class, $this->app->user->accessChecker);
     }
 
     public function testGetIdentityException()
     {
+        $this->mockWebApplication();
         $session = $this->getMockBuilder(\yii\web\Session::class)
+            ->setConstructorArgs([$this->app])
             ->setMethods(['getHasSessionId', 'get'])
             ->getMock();
         $session->expects($this->any())->method('getHasSessionId')->willReturn(true);
         $session->expects($this->any())->method('get')->with($this->equalTo('__id'))->willReturn('1');
 
-        $appConfig = [
-            'components' => [
-                'user' => [
-                    'identityClass' => ExceptionIdentity::class,
-                ],
-                'session' => $session,
+        $this->container->setAll([
+            'user' => [
+                '__class' => User::class,
+                'identityClass' => ExceptionIdentity::class,
             ],
-        ];
-        $this->mockWebApplication($appConfig);
+            'session' => $session,
+        ]);
 
         $exceptionThrown = false;
         try {

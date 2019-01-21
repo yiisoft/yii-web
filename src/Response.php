@@ -595,8 +595,7 @@ class Response extends \yii\base\Response implements ResponseInterface
         $this->format = self::FORMAT_RAW;
         $this->bodyRange = [$begin, $end];
 
-        $body = new ResourceStream();
-        $body->resource = $handle;
+        $body = new ResourceStream($handle);
 
         $this->setBody($body);
         return $this;

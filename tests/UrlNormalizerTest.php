@@ -124,18 +124,19 @@ class UrlNormalizerTest extends TestCase
     public function testUrlManager()
     {
         $config = [
+            '__class' => UrlManager::class,
             'enablePrettyUrl' => true,
             'cache' => null,
-            'normalizer' => [
+            'normalizer' => $this->factory->create([
                 '__class' => \yii\web\UrlNormalizer::class,
                 'action' => null,
-            ],
+            ]),
         ];
-        $request = new Request();
+        $request = new Request($this->app);
 
         // pretty URL without rules
         $config['rules'] = [];
-        $manager = new UrlManager($config);
+        $manager = $this->factory->create($config);
         $request->pathInfo = '/module/site/index/';
         $result = $manager->parseRequest($request);
         $this->assertEquals(['module/site/index', []], $result);
@@ -147,7 +148,7 @@ class UrlNormalizerTest extends TestCase
                 'route' => 'post/view',
             ],
         ];
-        $manager = new UrlManager($config);
+        $manager = $this->factory->create($config);
         $request->pathInfo = 'post/123/this+is+sample/';
         $result = $manager->parseRequest($request);
         $this->assertEquals(['post/view', ['id' => '123', 'title' => 'this+is+sample']], $result);

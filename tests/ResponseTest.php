@@ -27,7 +27,7 @@ class ResponseTest extends \yii\tests\TestCase
     {
         parent::setUp();
         $this->mockWebApplication();
-        $this->response = new \yii\web\Response();
+        $this->response = new \yii\web\Response($this->app);
     }
 
     public function rightRanges()
@@ -50,7 +50,7 @@ class ResponseTest extends \yii\tests\TestCase
      */
     public function testSendFileRanges($rangeHeader, $expectedHeader, $length, $expectedContent)
     {
-        $dataFile = \Yii::getAlias('@yii/tests/data/web/data.txt');
+        $dataFile = $this->app->getAlias('@yii/tests/data/web/data.txt');
         $fullContent = file_get_contents($dataFile);
         $_SERVER['HTTP_RANGE'] = 'bytes=' . $rangeHeader;
         ob_start();
@@ -85,7 +85,7 @@ class ResponseTest extends \yii\tests\TestCase
     {
         $this->expectException('yii\web\RangeNotSatisfiableHttpException');
 
-        $dataFile = \Yii::getAlias('@yii/tests/data/web/data.txt');
+        $dataFile = $this->app->getAlias('@yii/tests/data/web/data.txt');
         $_SERVER['HTTP_RANGE'] = 'bytes=' . $rangeHeader;
         $this->response->sendFile($dataFile);
     }
