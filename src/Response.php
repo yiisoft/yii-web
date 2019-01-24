@@ -141,10 +141,10 @@ class Response extends \yii\base\Response implements ResponseInterface
      */
     public $bodyRange;
     /**
-     * @var string the charset of the text response. If not set, it will use
-     * the value of [[Application::charset]].
+     * @var string the encoding of the text response. If not set, it will use
+     * the value of [[I18N::encoding]].
      */
-    public $charset;
+    public $encoding;
     /**
      * @var string the HTTP status description that comes together with the status code.
      * @see httpStatuses
@@ -231,6 +231,12 @@ class Response extends \yii\base\Response implements ResponseInterface
      * @var int the HTTP status code to send with the response.
      */
     private $_statusCode = 200;
+
+    public function __construct(Application $app)
+    {
+        parent::__construct($app);
+        $this->encoding = $this->app->getEncoding();
+    }
 
     /**
      * {@inheritdoc}

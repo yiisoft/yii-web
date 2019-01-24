@@ -34,7 +34,7 @@ class XmlResponseFormatter extends Component implements ResponseFormatterInterfa
      */
     public $version = '1.0';
     /**
-     * @var string the XML encoding. If not set, it will use the value of [[Response::charset]].
+     * @var string the XML encoding. If not set, it will use the value of [[Response::encoding]].
      */
     public $encoding;
     /**
@@ -64,13 +64,13 @@ class XmlResponseFormatter extends Component implements ResponseFormatterInterfa
      */
     public function format($response)
     {
-        $charset = $this->encoding === null ? $response->charset : $this->encoding;
+        $encoding = $this->encoding === null ? $response->encoding : $this->encoding;
         if (stripos($this->contentType, 'charset') === false) {
-            $this->contentType .= '; charset=' . $charset;
+            $this->contentType .= '; charset=' . $encoding;
         }
         $response->setHeader('Content-Type', $this->contentType);
         if ($response->data !== null) {
-            $dom = new DOMDocument($this->version, $charset);
+            $dom = new DOMDocument($this->version, $encoding);
             if (!empty($this->rootTag)) {
                 $root = new DOMElement($this->rootTag);
                 $dom->appendChild($root);
