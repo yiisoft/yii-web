@@ -9,7 +9,7 @@ namespace yii\web\tests\formatters;
 
 use yii\web\formatters\XmlResponseFormatter;
 use yii\web\tests\stubs\ModelStub;
-use yii\web\tests\Post;
+use yii\web\tests\stubs\Post;
 
 /**
  * @author Qiang Xue <qiang.xue@gmail.com>

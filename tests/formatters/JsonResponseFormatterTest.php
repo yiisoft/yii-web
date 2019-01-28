@@ -9,7 +9,7 @@ namespace yii\web\tests\formatters;
 
 use yii\web\formatters\JsonResponseFormatter;
 use yii\web\tests\stubs\ModelStub;
-use yii\web\tests\Post;
+use yii\web\tests\stubs\Post;
 
 /**
  * @author Alexander Makarov <sam@rmcreative.ru>
