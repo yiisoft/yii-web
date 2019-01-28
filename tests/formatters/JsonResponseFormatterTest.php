@@ -5,10 +5,11 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\tests;
+namespace yii\web\tests\formatters;
 
 use yii\web\formatters\JsonResponseFormatter;
 use yii\web\tests\stubs\ModelStub;
+use yii\web\tests\Post;
 
 /**
  * @author Alexander Makarov <sam@rmcreative.ru>
@@ -23,7 +24,9 @@ class JsonResponseFormatterTest extends FormatterTest
      */
     protected function getFormatterInstance($configuration = [])
     {
-        return new JsonResponseFormatter($configuration);
+        $configuration['__class'] = JsonResponseFormatter::class;
+
+        return $this->factory->create($configuration);
     }
 
     public function formatScalarDataProvider()

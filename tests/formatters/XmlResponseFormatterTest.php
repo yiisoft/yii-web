@@ -5,10 +5,11 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\tests;
+namespace yii\web\tests\formatters;
 
 use yii\web\formatters\XmlResponseFormatter;
 use yii\web\tests\stubs\ModelStub;
+use yii\web\tests\Post;
 
 /**
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -24,7 +25,9 @@ class XmlResponseFormatterTest extends FormatterTest
      */
     protected function getFormatterInstance($options = [])
     {
-        return new XmlResponseFormatter($options);
+        $options['__class'] = XmlResponseFormatter::class;
+
+        return $this->factory->create($options);
     }
 
     private $xmlHead = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";

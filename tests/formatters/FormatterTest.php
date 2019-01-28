@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\tests;
+namespace yii\web\tests\formatters;
 
 use yii\web\Response;
 use yii\web\ResponseFormatterInterface;

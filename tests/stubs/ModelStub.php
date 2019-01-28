@@ -8,12 +8,19 @@
 namespace yii\web\tests\stubs;
 
 use yii\base\Model;
+use yii\di\AbstractContainer;
 
 class ModelStub extends Model
 {
     public $id;
     public $title;
     public $hidden;
+
+
+    public function __construct(array $config = [])
+    {
+        AbstractContainer::configure($this, $config);
+    }
 
     public function toArray(array $fields = [], array $expand = [], $recursive = true)
     {
