@@ -50,20 +50,20 @@ class AssetBundleTest extends \yii\tests\TestCase
     /**
      * Returns View with configured AssetManager.
      *
-     * @param array $config may be used to override default AssetManager config
+     * @param array $amConfig may be used to override default AssetManager config
      * @return View
      */
-    protected function getView(array $config = [])
+    protected function getView(array $amConfig = [])
     {
         $this->mockApplication();
 
-        return $this->app->createObject([
+        return $this->factory->create([
             '__class' => View::class,
-            'assetManager' => $this->app->createObject([
+            'assetManager' => $this->factory->create(array_merge([
                 '__class' => AssetManager::class,
                 'basePath' => '@testAssetsPath',
                 'baseUrl' => '@testAssetsUrl',
-            ]),
+            ], $amConfig)),
         ]);
     }
 
@@ -153,13 +153,12 @@ class AssetBundleTest extends \yii\tests\TestCase
         $view = $this->getView();
         $am = $view->assetManager;
 
-        $bundle = new TestSourceAsset([
-            'publishOptions' => [
-                'only' => [
-                    'js/*',
-                ],
+        $bundle = new TestSourceAsset();
+        $bundle->publishOptions = [
+            'only' => [
+                'js/*',
             ],
-        ]);
+        ];
         $bundle->publish($am);
 
         $notNeededFilesDir = dirname($bundle->basePath . DIRECTORY_SEPARATOR . $bundle->css[0]);
