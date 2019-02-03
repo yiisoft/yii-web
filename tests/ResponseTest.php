@@ -12,6 +12,8 @@ use Exception;
 use RuntimeException;
 use yii\helpers\StringHelper;
 use yii\web\HttpException;
+use yii\web\Response;
+use yii\web\RangeNotSatisfiableHttpException;
 
 /**
  * @group web
@@ -19,7 +21,7 @@ use yii\web\HttpException;
 class ResponseTest extends \yii\tests\TestCase
 {
     /**
-     * @var \yii\web\Response
+     * @var Response
      */
     public $response;
 
@@ -27,7 +29,7 @@ class ResponseTest extends \yii\tests\TestCase
     {
         parent::setUp();
         $this->mockWebApplication();
-        $this->response = new \yii\web\Response($this->app);
+        $this->response = new Response($this->app);
     }
 
     public function rightRanges()
@@ -83,7 +85,7 @@ class ResponseTest extends \yii\tests\TestCase
      */
     public function testSendFileWrongRanges($rangeHeader)
     {
-        $this->expectException('yii\web\RangeNotSatisfiableHttpException');
+        $this->expectException(RangeNotSatisfiableHttpException::class);
 
         $dataFile = $this->app->getAlias('@yii/tests/data/web/data.txt');
         $_SERVER['HTTP_RANGE'] = 'bytes=' . $rangeHeader;

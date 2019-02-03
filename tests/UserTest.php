@@ -20,13 +20,16 @@ namespace yii\web\tests;
 
 use yii\helpers\Yii;
 use yii\base\BaseObject;
-use yii\rbac\CheckAccessInterface;
-use yii\rbac\PhpManager;
+use yii\di\Reference;
 use yii\http\Cookie;
 use yii\http\CookieCollection;
+use yii\rbac\CheckAccessInterface;
+use yii\rbac\PhpManager;
+use yii\web\Request;
+use yii\web\Response;
 use yii\web\ForbiddenHttpException;
-use yii\tests\TestCase;
 use yii\web\User;
+use yii\tests\TestCase;
 
 /**
  * @group web
@@ -58,6 +61,7 @@ class UserTest extends TestCase
                 'identityClass' => UserIdentity::class,
                 'authTimeout' => 10,
             ],
+            CheckAccessInterface::class => Reference::to('authManager'),
             'authManager' => [
                 '__class' => PhpManager::class,
                 '__construct()' => [
@@ -77,9 +81,6 @@ class UserTest extends TestCase
         $this->app->session->removeAll();
         static::$time = \time();
         $this->app->user->login(UserIdentity::findIdentity('user1'));
-
-//        print_r($this->app->session);
-//        print_r($_SESSION);
 
         $this->mockWebApplication([], null, $services);
         $this->assertFalse($this->app->user->isGuest);
@@ -204,10 +205,10 @@ class UserTest extends TestCase
         $_SERVER = $server;
         $this->container->setAll([
             'response' => [
-                '__class' => \yii\web\Response::class,
+                '__class' => Response::class,
             ],
             'request' => [
-                '__class' => \yii\web\Request::class,
+                '__class' => Request::class,
                 'scriptFile' => __DIR__ . '/index.php',
                 'scriptUrl' => '/index.php',
                 'url' => '',
@@ -324,7 +325,7 @@ class UserTest extends TestCase
 
         $this->reset();
         $_SERVER['HTTP_ACCEPT'] = 'text/json;q=0.1';
-        $this->expectException('yii\\web\\ForbiddenHttpException');
+        $this->expectException(ForbiddenHttpException::class);
         $user->loginRequired();
     }
 
@@ -346,7 +347,7 @@ class UserTest extends TestCase
         $this->mockWebApplication([], null, $services);
         $this->reset();
         $_SERVER['HTTP_ACCEPT'] = 'text/json,q=0.1';
-        $this->expectException('yii\\web\\ForbiddenHttpException');
+        $this->expectException(ForbiddenHttpException::class);
         $this->app->user->loginRequired();
     }
 
@@ -356,8 +357,8 @@ class UserTest extends TestCase
             'user' => [
                 '__class' => User::class,
                 '__construct()' => [
-                    'app' => \yii\di\Reference::to('app'),
-                    'accessChecker' => \yii\di\Reference::to(AccessChecker::class),
+                    'app' => Reference::to('app'),
+                    'accessChecker' => Reference::to(AccessChecker::class),
                 ],
                 'identityClass' => UserIdentity::class,
             ],
@@ -402,7 +403,7 @@ class UserTest extends TestCase
 
 static $cookiesMock;
 
-class MockRequest extends \yii\web\Request
+class MockRequest extends Request
 {
     public function getCookies()
     {
@@ -412,7 +413,7 @@ class MockRequest extends \yii\web\Request
     }
 }
 
-class MockResponse extends \yii\web\Response
+class MockResponse extends Response
 {
     public function getCookies()
     {
