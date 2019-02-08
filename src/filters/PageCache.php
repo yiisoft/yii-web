@@ -287,6 +287,7 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
         if ($this->varyByRoute) {
             $key[] = Yii::getApp()->requestedRoute;
         }
+
         return array_merge($key, (array)$this->variations);
     }
 

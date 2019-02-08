@@ -167,7 +167,8 @@ class PageCacheTest extends TestCase
         if (isset($testCase['cookies'])) {
             foreach (array_keys($testCase['cookies']) as $name) {
                 $value = $this->app->security->generateRandomString();
-                $this->app->response->cookies->add(new Cookie([
+                $this->app->response->cookies->add($this->factory->create([
+                    '__class' => Cookie::class,
                     'name' => $name,
                     'value' => $value,
                     'expire' => strtotime('now +1 year'),
@@ -215,7 +216,7 @@ class PageCacheTest extends TestCase
             '__class' => PageCache::class,
             'cache' => $cache,
             'view' => $this->createView(),
-        ]), $testCase['properties']);
+        ], $testCase['properties']));
         $this->app->params['dynamic'] = $dynamic = $this->app->security->generateRandomString();
         $this->assertFalse($filter->beforeAction($action), $testCase['name']);
         // Content
@@ -422,7 +423,7 @@ class PageCacheTest extends TestCase
                 'view' => $this->createView(),
                 'dependency' => [
                     '__class' => ExpressionDependency::class,
-                    'expression' => '$this->app->params[\'dependency\']',
+                    'expression' => '\yii\helpers\Yii::getApp()->params[\'dependency\']',
                 ],
             ]);
             $this->assertTrue($filter->beforeAction($action));
@@ -464,10 +465,16 @@ class PageCacheTest extends TestCase
     {
         $expected = [PageCache::class, 'test', 'ru'];
         $this->app->requestedRoute = 'test';
-        $keys = $this->invokeMethod(new PageCache(['variations' => ['ru']]), 'calculateCacheKey');
+        $keys = $this->invokeMethod($this->factory->create([
+            '__class' => PageCache::class,
+            'variations' => ['ru'],
+        ]), 'calculateCacheKey');
         $this->assertEquals($expected, $keys);
 
-        $keys = $this->invokeMethod(new PageCache(['variations' => 'ru']), 'calculateCacheKey');
+        $keys = $this->invokeMethod($this->factory->create([
+            '__class' => PageCache::class,
+            'variations' => 'ru',
+        ]), 'calculateCacheKey');
         $this->assertEquals($expected, $keys);
 
         $keys = $this->invokeMethod(new PageCache(), 'calculateCacheKey');
