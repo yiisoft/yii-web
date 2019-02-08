@@ -23,10 +23,13 @@ use yii\tests\TestCase;
  */
 class RateLimiterTest extends TestCase
 {
+    private $originalLogger;
+
     protected function setUp()
     {
         parent::setUp();
 
+        $this->originalLogger = $this->container->getDefinition('logger');
         /* @var $logger Logger|\Prophecy\ObjectProphecy */
         $logger = $this->prophesize(Logger::class);
         $logger
@@ -42,7 +45,7 @@ class RateLimiterTest extends TestCase
     protected function tearDown()
     {
         parent::tearDown();
-        $this->container->set('logger', null);
+        $this->container->set('logger', $this->originalLogger);
     }
 
     public function testInitFilledRequest()
