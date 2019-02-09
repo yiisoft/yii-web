@@ -17,16 +17,18 @@ use yii\web\CacheSession;
  */
 class CacheSessionTest extends \yii\tests\TestCase
 {
+    private $cache;
+
     protected function setUp()
     {
         parent::setUp();
         $this->mockApplication();
-        $this->app->set('cache', new Cache(['handler' => new ArrayCache()]));
+        $this->cache = new Cache(new ArrayCache());
     }
 
     public function testCacheSession()
     {
-        $session = new CacheSession();
+        $session = new CacheSession($this->cache);
 
         $session->writeSession('test', 'sessionData');
         $this->assertEquals('sessionData', $session->readSession('test'));
@@ -36,8 +38,8 @@ class CacheSessionTest extends \yii\tests\TestCase
 
     public function testInvalidCache()
     {
-        $this->expectException('\Exception');
-        new CacheSession(['cache' => 'invalid']);
+        $this->expectException('TypeError');
+        new CacheSession('invalid');
     }
 
     /**
@@ -45,7 +47,7 @@ class CacheSessionTest extends \yii\tests\TestCase
      */
     public function testNotWrittenSessionDestroying()
     {
-        $session = new CacheSession();
+        $session = new CacheSession($this->cache);
 
         $session->set('foo', 'bar');
         $this->assertEquals('bar', $session->get('foo'));

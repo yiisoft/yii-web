@@ -39,7 +39,7 @@ use yii\di\Instance;
 class CacheSession extends Session
 {
     /**
-     * @var CacheInterface|array|string the cache object or the application component ID of the cache object.
+     * @var CacheInterface the cache object or the application component ID of the cache object.
      * The session data will be stored using this cache object.
      *
      * After the CacheSession object is created, if you want to change this property,
@@ -47,16 +47,15 @@ class CacheSession extends Session
      *
      * Starting from version 2.0.2, this can also be a configuration array for creating the object.
      */
-    public $cache = 'cache';
+    public $cache;
 
 
     /**
      * Initializes the application component.
      */
-    public function init()
+    public function __construct(CacheInterface $cache)
     {
-        parent::init();
-        $this->cache = Instance::ensure($this->cache, CacheInterface::class);
+        $this->cache = $cache;
     }
 
     /**
