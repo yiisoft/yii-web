@@ -23,7 +23,7 @@ class DbSessionTest extends \yii\web\tests\session\AbstractDbSessionTest
     {
         parent::setUp();
 
-        if (version_compare($this->app->get('db')->getServerVersion(), '3.8.3', '<')) {
+        if (version_compare($this->container->get('db')->getServerVersion(), '3.8.3', '<')) {
             $this->markTestSkipped('SQLite < 3.8.3 does not support "WITH" keyword.');
         }
     }

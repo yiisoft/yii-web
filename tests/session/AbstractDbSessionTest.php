@@ -11,7 +11,7 @@ use yii\helpers\Yii;
 use yii\db\Connection;
 use yii\db\Query;
 use yii\web\DbSession;
-use yii\tests\framework\console\controllers\EchoMigrateController;
+use yii\console\tests\unit\controllers\EchoMigrateController;
 use yii\tests\TestCase;
 
 /**
@@ -29,8 +29,8 @@ abstract class AbstractDbSessionTest extends TestCase
         parent::setUp();
 
         $this->mockApplication();
-        $this->app->set('db', $this->getDbConfig());
-        $this->dropTableSession();
+        $this->container->set('db', $this->getDbConfig());
+        $this->db = $this->container->get('db');
         $this->createTableSession();
     }
 
@@ -90,7 +90,7 @@ abstract class AbstractDbSessionTest extends TestCase
 
     public function testReadWrite()
     {
-        $session = new DbSession();
+        $session = new DbSession($this->db);
 
         $session->writeSession('test', 'session data');
         $this->assertEquals('session data', $session->readSession('test'));
@@ -101,9 +101,8 @@ abstract class AbstractDbSessionTest extends TestCase
     public function testInitializeWithConfig()
     {
         // should produce no exceptions
-        $session = new DbSession([
-            'useCookies' => true,
-        ]);
+        $session = new DbSession($this->db);
+        $session->useCookies = true;
 
         $session->writeSession('test', 'session data');
         $this->assertEquals('session data', $session->readSession('test'));
@@ -116,7 +115,7 @@ abstract class AbstractDbSessionTest extends TestCase
      */
     public function testGarbageCollection()
     {
-        $session = new DbSession();
+        $session = new DbSession($this->db);
 
         $session->writeSession('new', 'new data');
         $session->writeSession('expire', 'expire data');
@@ -135,7 +134,7 @@ abstract class AbstractDbSessionTest extends TestCase
      */
     public function testWriteCustomField()
     {
-        $session = new DbSession();
+        $session = new DbSession($this->db);
 
         $session->writeCallback = function ($session) {
             return ['data' => 'changed by callback data'];
@@ -162,7 +161,7 @@ abstract class AbstractDbSessionTest extends TestCase
 
     public function testSerializedObjectSaving()
     {
-        $session = new DbSession();
+        $session = new DbSession($this->db);
 
         $serializedObject = serialize($this->buildObjectForSerialization());
         $session->writeSession('test', $serializedObject);
@@ -171,10 +170,9 @@ abstract class AbstractDbSessionTest extends TestCase
 
     protected function runMigrate($action, $params = [])
     {
-        $migrate = new EchoMigrateController('migrate', $this->app, [
-            'migrationPath' => '@yii/web/migrations',
-            'interactive' => false,
-        ]);
+        $migrate = new EchoMigrateController('migrate', $this->app);
+        $migrate->migrationPath = '@yii/web/migrations';
+        $migrate->interactive = false;
 
         ob_start();
         ob_implicit_flush(false);
@@ -189,11 +187,8 @@ abstract class AbstractDbSessionTest extends TestCase
     public function testMigration()
     {
         $this->dropTableSession();
-        $this->mockWebApplication([
-            'components' => [
-                'db' => $this->getDbConfig(),
-            ],
-        ]);
+        $this->mockWebApplication();
+        $this->container->set('db', $this->getDbConfig());
 
         $history = $this->runMigrate('history');
         $this->assertEquals(['base'], $history);
@@ -210,20 +205,18 @@ abstract class AbstractDbSessionTest extends TestCase
     {
         $oldTimeout = ini_get('session.gc_maxlifetime');
         // unset $this->app->db to make sure that all queries are made against sessionDb
-        $this->app->set('sessionDb', $this->app->db);
-        $this->app->set('db', null);
+        $this->container->set('sessionDb', $this->app->db);
+        $this->container->set('db', null);
 
-        $session = new DbSession([
-            'timeout' => 300,
-            'db' => 'sessionDb',
-        ]);
+        $session = new DbSession($this->container->get('sessionDb'));
+        $session->timeout = 300;
 
-        $this->assertSame($this->app->sessionDb, $session->db);
+        $this->assertSame($this->container->get('sessionDb'), $session->db);
         $this->assertSame(300, $session->timeout);
         $session->close();
 
-        $this->app->set('db', $this->app->sessionDb);
-        $this->app->set('sessionDb', null);
+        $this->container->set('db', $this->container->get('sessionDb'));
+        $this->container->set('sessionDb', null);
         ini_set('session.gc_maxlifetime', $oldTimeout);
     }
 }

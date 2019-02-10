@@ -9,7 +9,7 @@ namespace yii\web;
 
 use yii\helpers\Yii;
 use yii\exceptions\InvalidConfigException;
-use yii\db\Connection;
+use yii\db\ConnectionInterface;
 use yii\db\PdoValue;
 use yii\db\Query;
 use yii\di\Instance;
@@ -82,10 +82,9 @@ class DbSession extends MultiFieldSession
      * This method will initialize the [[db]] property to make sure it refers to a valid DB connection.
      * @throws InvalidConfigException if [[db]] is invalid.
      */
-    public function init()
+    public function __construct(ConnectionInterface $db)
     {
-        parent::init();
-        $this->db = Instance::ensure($this->db, Connection::class);
+        $this->db = $db;
     }
 
     /**
