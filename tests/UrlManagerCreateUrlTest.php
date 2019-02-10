@@ -13,6 +13,7 @@ use yii\web\UrlManager;
 use yii\web\UrlRule;
 use yii\web\tests\stubs\CachedUrlRule;
 use yii\tests\TestCase;
+use yii\cache\FileCache;
 
 /**
  * This class implements the tests for URL creation with "pretty" url format.
@@ -809,20 +810,19 @@ class UrlManagerCreateUrlTest extends TestCase
     public function testCreatingRulesWithDifferentRuleConfigAndEnabledCache()
     {
         $this->mockWebApplication();
-        $this->container->setAll([
-            'components' => [
-                'cache' => ArrayCache::class,
-            ],
+        $this->container->set('cache', [
+            '__class' => FileCache::class,
         ]);
+
         $urlManager = $this->getUrlManager([
-            'cache' => 'cache',
+            'cache' => $this->container->get('cache'),
             'rules' => [
                 '/' => 'site/index',
             ],
         ]);
 
         $cachedUrlManager = $this->getUrlManager([
-            'cache' => 'cache',
+            'cache' => $this->container->get('cache'),
             'ruleConfig' => [
                 '__class' => CachedUrlRule::class,
             ],
