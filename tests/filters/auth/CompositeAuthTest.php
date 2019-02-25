@@ -47,7 +47,7 @@ class TestController extends Controller
         /*
          * this call will execute the actionA in a same instance of TestController
          */
-        return $this->run('a');
+        return $this->runAction('a');
     }
 
     public function actionD()
@@ -55,7 +55,7 @@ class TestController extends Controller
         /*
          * this call will execute the actionA in a new instance of TestController
          */
-        return $this->run('test/a');
+        return $this->module->runAction('test/a');
     }
 
     public function behaviors()
@@ -106,7 +106,7 @@ class CompositeAuthTest extends \yii\tests\TestCase
     {
         /** @var TestController $controller */
         $controller = $this->app->createController('test')[0];
-        $this->assertEquals('success', $controller->run('test/d'));
+        $this->assertEquals('success', $controller->module->runAction('test/d'));
     }
 
     /**
@@ -116,14 +116,14 @@ class CompositeAuthTest extends \yii\tests\TestCase
     {
         /** @var TestController $controller */
         $controller = $this->app->createController('test')[0];
-        $this->assertEquals('success', $controller->run('b'));
+        $this->assertEquals('success', $controller->runAction('b'));
     }
 
     public function testRunButWithActionIdOnly()
     {
         /** @var TestController $controller */
         $controller = $this->app->createController('test')[0];
-        $this->assertEquals('success', $controller->run('c'));
+        $this->assertEquals('success', $controller->runAction('c'));
     }
 
     public function testCompositeAuth()
@@ -136,7 +136,7 @@ class CompositeAuthTest extends \yii\tests\TestCase
             TestAuth::class,
         ];
         try {
-            $this->assertEquals('success', $controller->run('b'));
+            $this->assertEquals('success', $controller->runAction('b'));
         } catch (UnauthorizedHttpException $e) {
         }
     }

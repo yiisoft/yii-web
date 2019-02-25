@@ -176,7 +176,7 @@ abstract class AbstractDbSessionTest extends TestCase
 
         ob_start();
         ob_implicit_flush(false);
-        $migrate->run($action, $params);
+        $migrate->runAction($action, $params);
         ob_get_clean();
 
         return array_map(function ($version) {

@@ -63,7 +63,7 @@ class AuthTest extends \yii\tests\TestCase
         $controller = $this->app->createController('test-auth')[0];
         $controller->authenticatorConfig = ArrayHelper::merge($filter, ['only' => ['filtered']]);
         try {
-            $this->assertEquals($login, $controller->run('filtered'));
+            $this->assertEquals($login, $controller->runAction('filtered'));
         } catch (UnauthorizedHttpException $e) {
         }
     }
@@ -74,7 +74,7 @@ class AuthTest extends \yii\tests\TestCase
         $controller = $this->app->createController('test-auth')[0];
         $controller->authenticatorConfig = ArrayHelper::merge($filter, ['optional' => ['filtered']]);
         try {
-            $this->assertEquals($login, $controller->run('filtered'));
+            $this->assertEquals($login, $controller->runAction('filtered'));
         } catch (UnauthorizedHttpException $e) {
         }
     }
@@ -85,7 +85,7 @@ class AuthTest extends \yii\tests\TestCase
         $controller = $this->app->createController('test-auth')[0];
         $controller->authenticatorConfig = ArrayHelper::merge($filter, ['except' => ['other']]);
         try {
-            $this->assertEquals($login, $controller->run('filtered'));
+            $this->assertEquals($login, $controller->runAction('filtered'));
         } catch (UnauthorizedHttpException $e) {
         }
     }
@@ -242,7 +242,7 @@ class AuthTest extends \yii\tests\TestCase
         $controller = $this->app->createController('test-auth')[0];
         $controller->authenticatorConfig = ArrayHelper::merge($filter, ['only' => ['filtered']]);
         try {
-            $controller->run('filtered');
+            $controller->runAction('filtered');
             $this->fail('Should throw UnauthorizedHttpException');
         } catch (UnauthorizedHttpException $e) {
             $this->assertTrue($this->app->getResponse()->hasHeader('www-authenticate'));
