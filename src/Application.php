@@ -18,24 +18,37 @@ use yii\web\emitter\EmitterInterface;
 class Application
 {
     /**
-     * @var ContainerInterface
+     * @var ServerRequestFactory
      */
-    private $container;
+    private $requestFactory;
+
+    /**
+     * @var MiddlewareDispatcher
+     */
+    private $dispatcher;
+
+    /**
+     * @var EmitterInterface
+     */
+    private $emitter;
 
     /**
      * Application constructor.
-     * @param ContainerInterface $container
+     * @param ServerRequestFactory $requestFactory
+     * @param MiddlewareDispatcher $dispatcher
+     * @param EmitterInterface $emitter
      */
-    public function __construct(ContainerInterface $container)
+    public function __construct(ServerRequestFactory $requestFactory, MiddlewareDispatcher $dispatcher, EmitterInterface $emitter)
     {
-        $this->container = $container;
+        $this->requestFactory = $requestFactory;
+        $this->dispatcher = $dispatcher;
+        $this->emitter = $emitter;
     }
 
     public function run(): bool
     {
-        $container = $this->container;
-        $request = $container->get(ServerRequestFactory::class)->createFromGlobals();
-        $response = $container->get(MiddlewareDispatcher::class)->handle($request);
-        return $container->get(EmitterInterface::class)->emit($response);
+        $request = $this->requestFactory->createFromGlobals();
+        $response = $this->dispatcher->handle($request);
+        return $this->emitter->emit($response);
     }
 }
