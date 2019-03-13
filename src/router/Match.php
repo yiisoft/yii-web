@@ -8,11 +8,13 @@ class Match
 {
     private $name;
     private $parameters;
+    private $callback;
 
-    public function __construct(?string $name, array $parameters = [])
+    public function __construct(callable $callback, array $parameters = [], ?string $name = null)
     {
         $this->name = $name;
         $this->parameters = $parameters;
+        $this->callback = $callback;
     }
 
     /**
@@ -31,5 +33,11 @@ class Match
         return $this->parameters;
     }
 
-
+    /**
+     * @return callable
+     */
+    public function getCallback(): callable
+    {
+        return $this->callback;
+    }
 }

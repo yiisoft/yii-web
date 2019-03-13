@@ -7,7 +7,6 @@
 
 namespace yii\web;
 
-use Psr\Container\ContainerInterface;
 use yii\web\emitter\EmitterInterface;
 
 /**
