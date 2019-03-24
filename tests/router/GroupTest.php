@@ -1,16 +1,13 @@
 <?php
 
-
 namespace yii\web\tests\router;
 
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
 use yii\web\router\Group;
-use yii\web\router\Match;
 use yii\web\router\NoHandler;
 use yii\web\router\NoMatch;
 use yii\web\router\Route;
-
 
 class GroupTest extends TestCase
 {
@@ -19,9 +16,8 @@ class GroupTest extends TestCase
         $request = new ServerRequest('GET', '/');
 
         $group = new Group([
-            Route::post('/')
+            Route::post('/'),
         ]);
-
 
         $this->expectException(NoMatch::class);
         $group->match($request);
@@ -46,7 +42,7 @@ class GroupTest extends TestCase
     {
         $request = new ServerRequest('GET', '/');
         $group = new Group([
-            Route::get('/')
+            Route::get('/'),
         ]);
 
         $this->expectException(NoHandler::class);
@@ -55,10 +51,11 @@ class GroupTest extends TestCase
 
     public function testStaticMatch()
     {
-        $handler = function() {};
+        $handler = function () {
+        };
         $request = new ServerRequest('GET', '/');
         $group = new Group([
-            Route::get('/')->to($handler)
+            Route::get('/')->to($handler),
         ]);
 
         $match = $group->match($request);

@@ -1,6 +1,7 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -13,6 +14,7 @@ use yii\base\Event;
  * This event is triggered on [[User]] login.
  *
  * @author Andrii Vasyliev <sol@hiqdev.com>
+ *
  * @since 3.0
  */
 class LoginEvent extends Event
@@ -33,15 +35,15 @@ class LoginEvent extends Event
     public $cookieBased;
     /**
      * @var int number of seconds that the user can remain in logged-in status.
-     * If 0, it means login till the user closes the browser or the session is manually destroyed.
+     *          If 0, it means login till the user closes the browser or the session is manually destroyed.
      */
     public $duration;
 
     /**
-     * @param string $name event name
-     * @param IdentityInterface $identity the action associated with this event.
-     * @param bool $cookieBased whether the login is cookie-based.
-     * @param int $duration number of seconds that the user can remain logged-in.
+     * @param string            $name        event name
+     * @param IdentityInterface $identity    the action associated with this event.
+     * @param bool              $cookieBased whether the login is cookie-based.
+     * @param int               $duration    number of seconds that the user can remain logged-in.
      */
     public function __construct(string $name, IdentityInterface $identity, bool $cookieBased, int $duration)
     {
@@ -52,9 +54,11 @@ class LoginEvent extends Event
 
     /**
      * Creates BEFORE event with result.
-     * @param IdentityInterface $identity the user object this event is fired on.
-     * @param bool $cookieBased whether the login is cookie-based.
-     * @param int $duration number of seconds that the user can remain logged-in.
+     *
+     * @param IdentityInterface $identity    the user object this event is fired on.
+     * @param bool              $cookieBased whether the login is cookie-based.
+     * @param int               $duration    number of seconds that the user can remain logged-in.
+     *
      * @return self created event
      */
     public static function before(IdentityInterface $identity, bool $cookieBased, int $duration): self
@@ -64,9 +68,11 @@ class LoginEvent extends Event
 
     /**
      * Creates AFTER_RUN event with result.
-     * @param IdentityInterface $identity the user object this event is fired on.
-     * @param bool $cookieBased whether the login is cookie-based.
-     * @param int $duration number of seconds that the user can remain logged-in.
+     *
+     * @param IdentityInterface $identity    the user object this event is fired on.
+     * @param bool              $cookieBased whether the login is cookie-based.
+     * @param int               $duration    number of seconds that the user can remain logged-in.
+     *
      * @return self created event
      */
     public static function after(IdentityInterface $identity, bool $cookieBased, int $duration): self

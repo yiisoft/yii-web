@@ -1,6 +1,7 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -25,13 +26,14 @@ namespace yii\web;
  * @property bool $useCustomStorage Whether to use custom storage. This property is read-only.
  *
  * @author Paul Klimov <klimov.paul@gmail.com>
+ *
  * @since 2.0.6
  */
 abstract class MultiFieldSession extends Session
 {
     /**
      * @var callable a callback that will be called during session data reading.
-     * The signature of the callback should be as follows:
+     *               The signature of the callback should be as follows:
      *
      * ```
      * function ($fields)
@@ -53,7 +55,7 @@ abstract class MultiFieldSession extends Session
     public $readCallback;
     /**
      * @var callable a callback that will be called during session data writing.
-     * The signature of the callback should be as follows:
+     *               The signature of the callback should be as follows:
      *
      * ```
      * function ($session)
@@ -76,10 +78,10 @@ abstract class MultiFieldSession extends Session
      */
     public $writeCallback;
 
-
     /**
      * Returns a value indicating whether to use custom session storage.
      * This method overrides the parent implementation and always returns true.
+     *
      * @return bool whether to use custom storage.
      */
     public function getUseCustomStorage()
@@ -89,8 +91,10 @@ abstract class MultiFieldSession extends Session
 
     /**
      * Composes storage field set for session writing.
-     * @param string $id session id
+     *
+     * @param string $id   session id
      * @param string $data session data
+     *
      * @return array storage fields
      */
     protected function composeFields($id, $data)
@@ -110,15 +114,18 @@ abstract class MultiFieldSession extends Session
         }
         // ensure 'id' and 'expire' are never affected by [[writeCallback]]
         $fields = array_merge($fields, [
-            'id' => $id,
+            'id'     => $id,
             'expire' => time() + $this->getTimeout(),
         ]);
+
         return $fields;
     }
 
     /**
      * Extracts session data from storage field set.
+     *
      * @param array $fields storage fields.
+     *
      * @return string session data.
      */
     protected function extractData($fields)
@@ -131,6 +138,7 @@ abstract class MultiFieldSession extends Session
             if (!empty($extraData)) {
                 session_decode($fields['data']);
                 $_SESSION = array_merge((array) $_SESSION, (array) $extraData);
+
                 return session_encode();
             }
 

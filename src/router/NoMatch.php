@@ -1,8 +1,6 @@
 <?php
 
-
 namespace yii\web\router;
-
 
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -16,7 +14,7 @@ class NoMatch extends \Exception
     public function __construct(ServerRequestInterface $request)
     {
         $this->request = $request;
-        parent::__construct('No route matching ' . $request->getMethod() . ' ' . $request->getUri() . ' was found.');
+        parent::__construct('No route matching '.$request->getMethod().' '.$request->getUri().' was found.');
     }
 
     /**

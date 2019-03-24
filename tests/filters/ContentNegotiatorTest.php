@@ -1,6 +1,7 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -8,11 +9,11 @@
 namespace yii\web\tests\filters;
 
 use yii\base\Action;
-use yii\web\filters\ContentNegotiator;
+use yii\tests\TestCase;
 use yii\web\Controller;
+use yii\web\filters\ContentNegotiator;
 use yii\web\Request;
 use yii\web\Response;
-use yii\tests\TestCase;
 
 /**
  *  @group filters
@@ -30,7 +31,7 @@ class ContentNegotiatorTest extends TestCase
     {
         $action = new Action('test', new Controller('id', $this->app));
         $filter = new ContentNegotiator([
-            'request' => new Request($this->app),
+            'request'  => new Request($this->app),
             'response' => new Response($this->app),
         ]);
 
@@ -70,7 +71,7 @@ class ContentNegotiatorTest extends TestCase
 
         $filter->formats = [
             'application/json' => Response::FORMAT_JSON,
-            'application/xml' => Response::FORMAT_XML,
+            'application/xml'  => Response::FORMAT_XML,
         ];
 
         $filter->beforeAction($action);

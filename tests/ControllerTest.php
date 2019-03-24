@@ -1,6 +1,7 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -8,8 +9,8 @@
 namespace yii\web\tests;
 
 use yii\base\InlineAction;
-use yii\web\Response;
 use yii\tests\TestCase;
+use yii\web\Response;
 
 /**
  * @group web
@@ -39,7 +40,7 @@ class ControllerTest extends TestCase
     public function testAsJson()
     {
         $data = [
-            'test' => 123,
+            'test'    => 123,
             'example' => 'data',
         ];
         $result = $this->controller->asJson($data);
@@ -52,7 +53,7 @@ class ControllerTest extends TestCase
     public function testAsXml()
     {
         $data = [
-            'test' => 123,
+            'test'    => 123,
             'example' => 'data',
         ];
         $result = $this->controller->asXml($data);

@@ -1,16 +1,17 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
 namespace yii\web;
 
-use yii\helpers\Yii;
 use yii\base\BaseObject;
 use yii\helpers\ArrayHelper;
 use yii\helpers\StringHelper;
+use yii\helpers\Yii;
 use yii\http\ResourceStream;
 
 /**
@@ -57,15 +58,17 @@ use yii\http\ResourceStream;
  * @property int $uploadFileMaxSize Upload file max size in bytes.
  *
  * @author Paul Klimov <klimov.paul@gmail.com>
+ *
  * @since 2.0.10
  */
 class MultipartFormDataParser extends BaseObject implements RequestParserInterface
 {
     /**
      * @var bool whether to parse raw body even for 'POST' request and `$_FILES` already populated.
-     * By default this option is disabled saving performance for 'POST' requests, which are already
-     * processed by PHP automatically.
-     * > Note: if this option is enabled, value of [[Request::$uploadedFiles]] will be reset on each parse.
+     *           By default this option is disabled saving performance for 'POST' requests, which are already
+     *           processed by PHP automatically.
+     *           > Note: if this option is enabled, value of [[Request::$uploadedFiles]] will be reset on each parse.
+     *
      * @since 2.0.13
      */
     public $force = false;
@@ -78,7 +81,6 @@ class MultipartFormDataParser extends BaseObject implements RequestParserInterfa
      * @var int maximum upload files count.
      */
     private $_uploadFileMaxCount;
-
 
     /**
      * @return int upload file max size in bytes.
@@ -146,7 +148,7 @@ class MultipartFormDataParser extends BaseObject implements RequestParserInterfa
         }
         $boundary = $matches[1];
 
-        $bodyParts = preg_split('/\\R?-+' . preg_quote($boundary, '/') . '/s', $rawBody);
+        $bodyParts = preg_split('/\\R?-+'.preg_quote($boundary, '/').'/s', $rawBody);
         array_pop($bodyParts); // last block always has no data, contains boundary ending like `--`
 
         $bodyParams = [];
@@ -169,12 +171,12 @@ class MultipartFormDataParser extends BaseObject implements RequestParserInterfa
                 }
 
                 $fileConfig = [
-                    '__class' => $request->uploadedFileClass,
-                    'clientFilename' => $headers['content-disposition']['filename'],
+                    '__class'         => $request->uploadedFileClass,
+                    'clientFilename'  => $headers['content-disposition']['filename'],
                     'clientMediaType' => ArrayHelper::getValue($headers, 'content-type', 'application/octet-stream'),
-                    'size' => StringHelper::byteLength($value),
-                    'error' => UPLOAD_ERR_OK,
-                    'tempFilename' => null,
+                    'size'            => StringHelper::byteLength($value),
+                    'error'           => UPLOAD_ERR_OK,
+                    'tempFilename'    => null,
                 ];
 
                 if ($fileConfig['size'] > $this->getUploadFileMaxSize()) {
@@ -213,7 +215,9 @@ class MultipartFormDataParser extends BaseObject implements RequestParserInterfa
 
     /**
      * Parses content part headers.
+     *
      * @param string $headerContent headers source content
+     *
      * @return array parsed headers.
      */
     private function parseHeaders($headerContent)
@@ -252,9 +256,10 @@ class MultipartFormDataParser extends BaseObject implements RequestParserInterfa
 
     /**
      * Adds value to the array by input name, e.g. `Item[name]`.
-     * @param array $array array which should store value.
-     * @param string $name input name specification.
-     * @param mixed $value value to be added.
+     *
+     * @param array  $array array which should store value.
+     * @param string $name  input name specification.
+     * @param mixed  $value value to be added.
      */
     private function addValue(&$array, $name, $value)
     {
@@ -281,7 +286,9 @@ class MultipartFormDataParser extends BaseObject implements RequestParserInterfa
      * Gets the size in bytes from verbose size representation.
      *
      * For example: '5K' => 5*1024.
+     *
      * @param string $verboseSize verbose size representation.
+     *
      * @return int actual size in bytes.
      */
     private function getByteSize($verboseSize)

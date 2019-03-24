@@ -1,6 +1,7 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -9,9 +10,9 @@ namespace yii\web\tests\filters;
 
 use yii\base\Action;
 use yii\exceptions\ExitException;
-use yii\web\filters\HostControl;
-use yii\web\Controller;
 use yii\tests\TestCase;
+use yii\web\Controller;
+use yii\web\filters\HostControl;
 
 /**
  * @group filters
@@ -84,9 +85,9 @@ class HostControlTest extends TestCase
     /**
      * @dataProvider hostInfoValidationDataProvider
      *
-     * @param mixed $allowedHosts
+     * @param mixed  $allowedHosts
      * @param string $host
-     * @param bool $allowed
+     * @param bool   $allowed
      */
     public function testFilter($allowedHosts, $host, $allowed)
     {
@@ -141,7 +142,8 @@ class HostControlTest extends TestCase
         $filter = new HostControl();
         $filter->allowedHosts = ['example.com'];
         $filter->fallbackHostInfo = 'http://yiiframework.com';
-        $filter->denyCallback = function () {};
+        $filter->denyCallback = function () {
+        };
 
         $controller = new Controller('test', $this->app);
         $action = new Action('test', $controller);

@@ -16,6 +16,7 @@ class NotFoundHandler implements RequestHandlerInterface
 
     /**
      * NotFoundHandler constructor.
+     *
      * @param ResponseFactoryInterface $responseFactory
      */
     public function __construct(ResponseFactoryInterface $responseFactory)
@@ -33,6 +34,7 @@ class NotFoundHandler implements RequestHandlerInterface
         $path = $request->getUri()->getPath();
         $response = $this->responseFactory->createResponse(404);
         $response->getBody()->write("We were unable to find the page $path.");
+
         return $response;
     }
 }

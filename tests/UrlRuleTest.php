@@ -1,21 +1,22 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
 namespace yii\web\tests;
 
-use yii\helpers\Yii;
 use yii\helpers\VarDumper;
+use yii\helpers\Yii;
+use yii\tests\TestCase;
 use yii\web\NotFoundHttpException;
 use yii\web\Request;
 use yii\web\UrlManager;
 use yii\web\UrlNormalizer;
 use yii\web\UrlNormalizerRedirectException;
 use yii\web\UrlRule;
-use yii\tests\TestCase;
 
 /**
  * @group web
@@ -32,7 +33,7 @@ class UrlRuleTest extends TestCase
     {
         $manager = $this->factory->create([
             '__class' => UrlManager::class,
-            'cache' => null,
+            'cache'   => null,
         ]);
         $suites = $this->getTestsForCreateUrl();
         foreach ($suites as $i => [$name, $config, $tests]) {
@@ -48,12 +49,12 @@ class UrlRuleTest extends TestCase
     public function testParseRequest()
     {
         $manager = $this->factory->create([
-            '__class' => UrlManager::class,
-            'cache' => null,
+            '__class'    => UrlManager::class,
+            'cache'      => null,
             'normalizer' => false,
         ]);
         $request = $this->factory->create([
-            '__class' => Request::class,
+            '__class'  => Request::class,
             'hostInfo' => 'http://en.example.com',
         ]);
         $suites = $this->getTestsForParseRequest();
@@ -76,10 +77,10 @@ class UrlRuleTest extends TestCase
     {
         $manager = $this->factory->create([
             '__class' => UrlManager::class,
-            'cache' => null,
+            'cache'   => null,
         ]);
         $request = $this->factory->create([
-            '__class' => Request::class,
+            '__class'  => Request::class,
             'hostInfo' => 'http://en.example.com',
         ]);
         $suites = $this->getTestsForParseRequest();
@@ -89,6 +90,7 @@ class UrlRuleTest extends TestCase
             foreach ($tests as $j => $test) {
                 $request->pathInfo = $test[0];
                 $expected = $test[2] ?? $test[1];
+
                 try {
                     $result = $rule->parseRequest($manager, $request);
                     if ($expected === false) {
@@ -106,15 +108,15 @@ class UrlRuleTest extends TestCase
     public function testParseRequestWithUrlManagerCustomNormalizer()
     {
         $manager = $this->factory->create([
-            '__class' => UrlManager::class,
-            'cache' => null,
+            '__class'    => UrlManager::class,
+            'cache'      => null,
             'normalizer' => $this->factory->create([
                 '__class' => UrlNormalizer::class,
-                'action' => UrlNormalizer::ACTION_REDIRECT_PERMANENT,
+                'action'  => UrlNormalizer::ACTION_REDIRECT_PERMANENT,
             ]),
         ]);
         $request = $this->factory->create([
-            '__class' => Request::class,
+            '__class'  => Request::class,
             'hostInfo' => 'http://en.example.com',
         ]);
         $suites = $this->getTestsForParseRequest();
@@ -124,6 +126,7 @@ class UrlRuleTest extends TestCase
             foreach ($tests as $j => $test) {
                 $request->pathInfo = $test[0];
                 $expected = $test[2] ?? $test[1];
+
                 try {
                     $result = $rule->parseRequest($manager, $request);
                     if ($expected === false) {
@@ -139,15 +142,15 @@ class UrlRuleTest extends TestCase
         }
 
         $manager = $this->factory->create([
-            '__class' => UrlManager::class,
-            'cache' => null,
+            '__class'    => UrlManager::class,
+            'cache'      => null,
             'normalizer' => $this->factory->create([
                 '__class' => UrlNormalizer::class,
-                'action' => UrlNormalizer::ACTION_REDIRECT_TEMPORARY,
+                'action'  => UrlNormalizer::ACTION_REDIRECT_TEMPORARY,
             ]),
         ]);
         $request = $this->factory->create([
-            '__class' => Request::class,
+            '__class'  => Request::class,
             'hostInfo' => 'http://en.example.com',
         ]);
         $suites = $this->getTestsForParseRequest();
@@ -157,6 +160,7 @@ class UrlRuleTest extends TestCase
             foreach ($tests as $j => $test) {
                 $request->pathInfo = $test[0];
                 $expected = $test[2] ?? $test[1];
+
                 try {
                     $result = $rule->parseRequest($manager, $request);
                     if ($expected === false) {
@@ -172,16 +176,16 @@ class UrlRuleTest extends TestCase
         }
 
         $manager = $this->factory->create([
-            '__class' => UrlManager::class,
-            'cache' => null,
+            '__class'    => UrlManager::class,
+            'cache'      => null,
             'normalizer' => [
                 '__class' => UrlNormalizer::class,
-                'action' => UrlNormalizer::ACTION_NOT_FOUND,
+                'action'  => UrlNormalizer::ACTION_NOT_FOUND,
             ],
         ]);
         $request = $this->factory->create([
-            '__class' => Request::class,
-            'hostInfo' => 'http://en.example.com'
+            '__class'  => Request::class,
+            'hostInfo' => 'http://en.example.com',
         ]);
         $suites = $this->getTestsForParseRequest();
         foreach ($suites as $i => [$name, $config, $tests]) {
@@ -189,6 +193,7 @@ class UrlRuleTest extends TestCase
             $rule = $this->factory->create($config);
             foreach ($tests as $j => $test) {
                 [$request->pathInfo, $expected] = $test;
+
                 try {
                     $result = $rule->parseRequest($manager, $request);
                     if ($expected === false) {
@@ -203,16 +208,16 @@ class UrlRuleTest extends TestCase
         }
 
         $manager = $this->factory->create([
-            '__class' => UrlManager::class,
-            'cache' => null,
+            '__class'    => UrlManager::class,
+            'cache'      => null,
             'normalizer' => $this->factory->create([
                 '__class' => UrlNormalizer::class,
-                'action' => null,
+                'action'  => null,
             ]),
         ]);
         $request = $this->factory->create([
-            '__class' => Request::class,
-            'hostInfo' => 'http://en.example.com'
+            '__class'  => Request::class,
+            'hostInfo' => 'http://en.example.com',
         ]);
         $suites = $this->getTestsForParseRequest();
         foreach ($suites as $i => [$name, $config, $tests]) {
@@ -233,18 +238,19 @@ class UrlRuleTest extends TestCase
         $normalizerAction = function ($route) {
             $route[1]['oldRoute'] = $route[0];
             $route[0] = 'site/myCustomRoute';
+
             return $route;
         };
         $manager = $this->factory->create([
-            '__class' => UrlManager::class,
-            'cache' => null,
+            '__class'    => UrlManager::class,
+            'cache'      => null,
             'normalizer' => $this->factory->create([
                 '__class' => UrlNormalizer::class,
-                'action' => $normalizerAction,
+                'action'  => $normalizerAction,
             ]),
         ]);
         $request = $this->factory->create([
-            '__class' => Request::class,
+            '__class'  => Request::class,
             'hostInfo' => 'http://en.example.com',
         ]);
         $suites = $this->getTestsForParseRequest();
@@ -268,29 +274,29 @@ class UrlRuleTest extends TestCase
     {
         $manager = $this->factory->create([
             '__class' => UrlManager::class,
-            'cache' => null,
+            'cache'   => null,
         ]);
         $request = $this->factory->create([
-            '__class' => Request::class,
+            '__class'  => Request::class,
             'hostInfo' => 'http://en.example.com',
             'pathInfo' => 'post/1-a/',
         ]);
 
         $rule = $this->factory->create([
-            '__class' => UrlRule::class,
-            'pattern' => 'post/<page:\d+>-<tag>',
-            'route' => 'post/index',
+            '__class'    => UrlRule::class,
+            'pattern'    => 'post/<page:\d+>-<tag>',
+            'route'      => 'post/index',
             'normalizer' => false,
         ]);
         $result = $rule->parseRequest($manager, $request);
         $this->assertFalse($result);
 
         $rule = $this->factory->create([
-            '__class' => UrlRule::class,
-            'pattern' => 'post/<page:\d+>-<tag>',
-            'route' => 'post/index',
+            '__class'    => UrlRule::class,
+            'pattern'    => 'post/<page:\d+>-<tag>',
+            'route'      => 'post/index',
             'normalizer' => [
-                '__class' => \yii\web\UrlNormalizer::class,
+                '__class'                => \yii\web\UrlNormalizer::class,
                 'normalizeTrailingSlash' => false,
             ],
         ]);
@@ -298,13 +304,13 @@ class UrlRuleTest extends TestCase
         $this->assertFalse($result);
 
         $rule = $this->factory->create([
-            '__class' => UrlRule::class,
-            'pattern' => 'post/<page:\d+>-<tag>',
-            'route' => 'post/index',
+            '__class'    => UrlRule::class,
+            'pattern'    => 'post/<page:\d+>-<tag>',
+            'route'      => 'post/index',
             'normalizer' => [
-                '__class' => \yii\web\UrlNormalizer::class,
+                '__class'                => \yii\web\UrlNormalizer::class,
                 'normalizeTrailingSlash' => true,
-                'action' => null,
+                'action'                 => null,
             ],
         ]);
         $result = $rule->parseRequest($manager, $request);
@@ -335,7 +341,7 @@ class UrlRuleTest extends TestCase
                 'empty pattern',
                 [
                     'pattern' => '',
-                    'route' => 'post/index',
+                    'route'   => 'post/index',
                 ],
                 [
                     ['post/index', [], ''],
@@ -347,7 +353,7 @@ class UrlRuleTest extends TestCase
                 'without param',
                 [
                     'pattern' => 'posts',
-                    'route' => 'post/index',
+                    'route'   => 'post/index',
                 ],
                 [
                     ['post/index', [], 'posts'],
@@ -359,8 +365,8 @@ class UrlRuleTest extends TestCase
                 'parsing only',
                 [
                     'pattern' => 'posts',
-                    'route' => 'post/index',
-                    'mode' => UrlRule::PARSING_ONLY,
+                    'route'   => 'post/index',
+                    'mode'    => UrlRule::PARSING_ONLY,
                 ],
                 [
                     ['post/index', [], false],
@@ -370,7 +376,7 @@ class UrlRuleTest extends TestCase
                 'with param',
                 [
                     'pattern' => 'post/<page>',
-                    'route' => 'post/index',
+                    'route'   => 'post/index',
                 ],
                 [
                     ['post/index', [], false],
@@ -383,7 +389,7 @@ class UrlRuleTest extends TestCase
                 'with param requirement',
                 [
                     'pattern' => 'post/<page:\d+>',
-                    'route' => 'post/index',
+                    'route'   => 'post/index',
                 ],
                 [
                     ['post/index', ['page' => 'abc'], false],
@@ -395,7 +401,7 @@ class UrlRuleTest extends TestCase
                 'with multiple params',
                 [
                     'pattern' => 'post/<page:\d+>-<tag>',
-                    'route' => 'post/index',
+                    'route'   => 'post/index',
                 ],
                 [
                     ['post/index', ['page' => '1abc'], false],
@@ -407,7 +413,7 @@ class UrlRuleTest extends TestCase
                 'multiple params with special chars',
                 [
                     'pattern' => 'post/<page-number:\d+>/<per_page:\d+>/<author.login>',
-                    'route' => 'post/index',
+                    'route'   => 'post/index',
                 ],
                 [
                     ['post/index', [], false],
@@ -419,7 +425,7 @@ class UrlRuleTest extends TestCase
                 'multiple params with leading non-letter chars',
                 [
                     'pattern' => 'post/<1page-number:\d+>/<-per_page:\d+>/<_author.login>',
-                    'route' => 'post/index',
+                    'route'   => 'post/index',
                 ],
                 [
                     ['post/index', [], false],
@@ -430,8 +436,8 @@ class UrlRuleTest extends TestCase
             [
                 'with optional param',
                 [
-                    'pattern' => 'post/<page:\d+>/<tag>',
-                    'route' => 'post/index',
+                    'pattern'  => 'post/<page:\d+>/<tag>',
+                    'route'    => 'post/index',
                     'defaults' => ['page' => 1],
                 ],
                 [
@@ -444,8 +450,8 @@ class UrlRuleTest extends TestCase
             [
                 'with optional param not in pattern',
                 [
-                    'pattern' => 'post/<tag>',
-                    'route' => 'post/index',
+                    'pattern'  => 'post/<tag>',
+                    'route'    => 'post/index',
                     'defaults' => ['page' => 1],
                 ],
                 [
@@ -458,8 +464,8 @@ class UrlRuleTest extends TestCase
             [
                 'multiple optional params',
                 [
-                    'pattern' => 'post/<page:\d+>/<tag>/<sort:yes|no>',
-                    'route' => 'post/index',
+                    'pattern'  => 'post/<page:\d+>/<tag>/<sort:yes|no>',
+                    'route'    => 'post/index',
                     'defaults' => ['page' => 1, 'sort' => 'yes'],
                 ],
                 [
@@ -475,8 +481,8 @@ class UrlRuleTest extends TestCase
             [
                 'optional param and required param separated by dashes',
                 [
-                    'pattern' => 'post/<page:\d+>-<tag>',
-                    'route' => 'post/index',
+                    'pattern'  => 'post/<page:\d+>-<tag>',
+                    'route'    => 'post/index',
                     'defaults' => ['page' => 1],
                 ],
                 [
@@ -489,8 +495,8 @@ class UrlRuleTest extends TestCase
             [
                 'optional param at the end',
                 [
-                    'pattern' => 'post/<tag>/<page:\d+>',
-                    'route' => 'post/index',
+                    'pattern'  => 'post/<tag>/<page:\d+>',
+                    'route'    => 'post/index',
                     'defaults' => ['page' => 1],
                 ],
                 [
@@ -503,8 +509,8 @@ class UrlRuleTest extends TestCase
             [
                 'optional param at the beginning',
                 [
-                    'pattern' => '<language>/<category>',
-                    'route' => 'site/category',
+                    'pattern'  => '<language>/<category>',
+                    'route'    => 'site/category',
                     'defaults' => ['language' => 'en'],
                 ],
                 [
@@ -515,8 +521,8 @@ class UrlRuleTest extends TestCase
             [
                 'two optional params at the beginning',
                 [
-                    'pattern' => '<language>/<category>',
-                    'route' => 'site/category',
+                    'pattern'  => '<language>/<category>',
+                    'route'    => 'site/category',
                     'defaults' => ['language' => 'en', 'category' => 'books'],
                 ],
                 [
@@ -528,10 +534,10 @@ class UrlRuleTest extends TestCase
             [
                 'optional param at the beginning with suffix',
                 [
-                    'pattern' => '<page>',
-                    'route' => 'page/view',
+                    'pattern'  => '<page>',
+                    'route'    => 'page/view',
                     'defaults' => ['page' => 'index'],
-                    'suffix' => '/',
+                    'suffix'   => '/',
                 ],
                 [
                     ['page/view', ['page' => 'index'], ''],
@@ -541,8 +547,8 @@ class UrlRuleTest extends TestCase
             [
                 'consecutive optional params',
                 [
-                    'pattern' => 'post/<page:\d+>/<tag>',
-                    'route' => 'post/index',
+                    'pattern'  => 'post/<page:\d+>/<tag>',
+                    'route'    => 'post/index',
                     'defaults' => ['page' => 1, 'tag' => 'a'],
                 ],
                 [
@@ -557,8 +563,8 @@ class UrlRuleTest extends TestCase
             [
                 'consecutive optional params separated by dash',
                 [
-                    'pattern' => 'post/<page:\d+>-<tag>',
-                    'route' => 'post/index',
+                    'pattern'  => 'post/<page:\d+>-<tag>',
+                    'route'    => 'post/index',
                     'defaults' => ['page' => 1, 'tag' => 'a'],
                 ],
                 [
@@ -573,8 +579,8 @@ class UrlRuleTest extends TestCase
             [
                 'optional params - example from guide',
                 [
-                    'pattern' => 'posts/<page:\d+>/<tag>',
-                    'route' => 'post/index',
+                    'pattern'  => 'posts/<page:\d+>/<tag>',
+                    'route'    => 'post/index',
                     'defaults' => ['page' => 1, 'tag' => ''],
                 ],
                 [
@@ -592,8 +598,8 @@ class UrlRuleTest extends TestCase
             [
                 'required params',
                 [
-                    'pattern' => 'about-me',
-                    'route' => 'site/page',
+                    'pattern'  => 'about-me',
+                    'route'    => 'site/page',
                     'defaults' => ['id' => 1],
                 ],
                 [
@@ -604,8 +610,8 @@ class UrlRuleTest extends TestCase
             [
                 'required default param',
                 [
-                    'pattern' => '',
-                    'route' => 'site/home',
+                    'pattern'  => '',
+                    'route'    => 'site/home',
                     'defaults' => ['lang' => 'en'],
                 ],
                 [
@@ -617,8 +623,8 @@ class UrlRuleTest extends TestCase
             [
                 'required default empty param',
                 [
-                    'pattern' => '',
-                    'route' => 'site/home',
+                    'pattern'  => '',
+                    'route'    => 'site/home',
                     'defaults' => ['lang' => ''],
                 ],
                 [
@@ -630,8 +636,8 @@ class UrlRuleTest extends TestCase
             [
                 'route has parameters',
                 [
-                    'pattern' => '<controller>/<action>',
-                    'route' => '<controller>/<action>',
+                    'pattern'  => '<controller>/<action>',
+                    'route'    => '<controller>/<action>',
                     'defaults' => [],
                 ],
                 [
@@ -642,8 +648,8 @@ class UrlRuleTest extends TestCase
             [
                 'route has parameters with regex',
                 [
-                    'pattern' => '<controller:post|comment>/<action>',
-                    'route' => '<controller>/<action>',
+                    'pattern'  => '<controller:post|comment>/<action>',
+                    'route'    => '<controller>/<action>',
                     'defaults' => [],
                 ],
                 [
@@ -658,8 +664,8 @@ class UrlRuleTest extends TestCase
             [
                 'route has default parameter',
                 [
-                    'pattern' => '<controller:post|comment>/<action>',
-                    'route' => '<controller>/<action>',
+                    'pattern'  => '<controller:post|comment>/<action>',
+                    'route'    => '<controller>/<action>',
                     'defaults' => ['action' => 'index'],
                 ],
                 [
@@ -674,8 +680,8 @@ class UrlRuleTest extends TestCase
                 'empty pattern with suffix',
                 [
                     'pattern' => '',
-                    'route' => 'post/index',
-                    'suffix' => '.html',
+                    'route'   => 'post/index',
+                    'suffix'  => '.html',
                 ],
                 [
                     ['post/index', [], ''],
@@ -687,8 +693,8 @@ class UrlRuleTest extends TestCase
                 'regular pattern with suffix',
                 [
                     'pattern' => 'posts',
-                    'route' => 'post/index',
-                    'suffix' => '.html',
+                    'route'   => 'post/index',
+                    'suffix'  => '.html',
                 ],
                 [
                     ['post/index', [], 'posts.html'],
@@ -700,8 +706,8 @@ class UrlRuleTest extends TestCase
                 'empty pattern with slash suffix',
                 [
                     'pattern' => '',
-                    'route' => 'post/index',
-                    'suffix' => '/',
+                    'route'   => 'post/index',
+                    'suffix'  => '/',
                 ],
                 [
                     ['post/index', [], ''],
@@ -713,8 +719,8 @@ class UrlRuleTest extends TestCase
                 'regular pattern with slash suffix',
                 [
                     'pattern' => 'posts',
-                    'route' => 'post/index',
-                    'suffix' => '/',
+                    'route'   => 'post/index',
+                    'suffix'  => '/',
                 ],
                 [
                     ['post/index', [], 'posts/'],
@@ -725,10 +731,10 @@ class UrlRuleTest extends TestCase
             [
                 'with host info',
                 [
-                    'pattern' => 'post/<page:\d+>/<tag>',
-                    'route' => 'post/index',
+                    'pattern'  => 'post/<page:\d+>/<tag>',
+                    'route'    => 'post/index',
                     'defaults' => ['page' => 1],
-                    'host' => 'http://<lang:en|fr>.example.com',
+                    'host'     => 'http://<lang:en|fr>.example.com',
                 ],
                 [
                     ['post/index', ['page' => 1, 'tag' => 'a'], false],
@@ -738,8 +744,8 @@ class UrlRuleTest extends TestCase
             [
                 'with host info in pattern',
                 [
-                    'pattern' => 'http://<lang:en|fr>.example.com/post/<page:\d+>/<tag>',
-                    'route' => 'post/index',
+                    'pattern'  => 'http://<lang:en|fr>.example.com/post/<page:\d+>/<tag>',
+                    'route'    => 'post/index',
                     'defaults' => ['page' => 1],
                 ],
                 [
@@ -750,10 +756,10 @@ class UrlRuleTest extends TestCase
             [
                 'with relative host info',
                 [
-                    'pattern' => 'post/<page:\d+>/<tag>',
-                    'route' => 'post/index',
+                    'pattern'  => 'post/<page:\d+>/<tag>',
+                    'route'    => 'post/index',
                     'defaults' => ['page' => 1],
-                    'host' => '//<lang:en|fr>.example.com',
+                    'host'     => '//<lang:en|fr>.example.com',
                 ],
                 [
                     ['post/index', ['page' => 1, 'tag' => 'a'], false],
@@ -763,8 +769,8 @@ class UrlRuleTest extends TestCase
             [
                 'with relative host info in pattern',
                 [
-                    'pattern' => '//<lang:en|fr>.example.com/post/<page:\d+>/<tag>',
-                    'route' => 'post/index',
+                    'pattern'  => '//<lang:en|fr>.example.com/post/<page:\d+>/<tag>',
+                    'route'    => 'post/index',
                     'defaults' => ['page' => 1],
                 ],
                 [
@@ -776,7 +782,7 @@ class UrlRuleTest extends TestCase
                 'with unicode',
                 [
                     'pattern' => '/blog/search/<tag:[a-zA-Zа-яА-Я0-9\_\+\-]{1,255}>',
-                    'route' => 'blog/search',
+                    'route'   => 'blog/search',
                 ],
                 [
                     ['blog/search', ['tag' => 'метра'], 'blog/search/%D0%BC%D0%B5%D1%82%D1%80%D0%B0'],
@@ -799,7 +805,7 @@ class UrlRuleTest extends TestCase
                 'empty pattern',
                 [
                     'pattern' => '',
-                    'route' => 'post/index',
+                    'route'   => 'post/index',
                 ],
                 [
                     ['', ['post/index', []]],
@@ -810,7 +816,7 @@ class UrlRuleTest extends TestCase
                 'without param',
                 [
                     'pattern' => 'posts',
-                    'route' => 'post/index',
+                    'route'   => 'post/index',
                 ],
                 [
                     ['posts', ['post/index', []]],
@@ -821,7 +827,7 @@ class UrlRuleTest extends TestCase
                 'with dot', // https://github.com/yiisoft/yii/issues/2945
                 [
                     'pattern' => 'posts.html',
-                    'route' => 'post/index',
+                    'route'   => 'post/index',
                 ],
                 [
                     ['posts.html', ['post/index', []]],
@@ -832,8 +838,8 @@ class UrlRuleTest extends TestCase
                 'creation only',
                 [
                     'pattern' => 'posts',
-                    'route' => 'post/index',
-                    'mode' => UrlRule::CREATION_ONLY,
+                    'route'   => 'post/index',
+                    'mode'    => UrlRule::CREATION_ONLY,
                 ],
                 [
                     ['posts', false],
@@ -843,7 +849,7 @@ class UrlRuleTest extends TestCase
                 'with param',
                 [
                     'pattern' => 'post/<page>',
-                    'route' => 'post/index',
+                    'route'   => 'post/index',
                 ],
                 [
                     ['post/1', ['post/index', ['page' => '1']]],
@@ -856,7 +862,7 @@ class UrlRuleTest extends TestCase
                 'with param requirement',
                 [
                     'pattern' => 'post/<page:\d+>',
-                    'route' => 'post/index',
+                    'route'   => 'post/index',
                 ],
                 [
                     ['post/1', ['post/index', ['page' => '1']]],
@@ -868,7 +874,7 @@ class UrlRuleTest extends TestCase
                 'with multiple params',
                 [
                     'pattern' => 'post/<page:\d+>-<tag>',
-                    'route' => 'post/index',
+                    'route'   => 'post/index',
                 ],
                 [
                     ['post/1-a', ['post/index', ['page' => '1', 'tag' => 'a']]],
@@ -881,7 +887,7 @@ class UrlRuleTest extends TestCase
                 'multiple params with special chars',
                 [
                     'pattern' => 'post/<page-number:\d+>/<per_page:\d+>/<author.login>',
-                    'route' => 'post/index',
+                    'route'   => 'post/index',
                 ],
                 [
                     ['post/1/25/yiiuser', ['post/index', ['page-number' => '1', 'per_page' => '25', 'author.login' => 'yiiuser']]],
@@ -893,7 +899,7 @@ class UrlRuleTest extends TestCase
                 'multiple params with special chars',
                 [
                     'pattern' => 'post/<1page-number:\d+>/<-per_page:\d+>/<_author.login>',
-                    'route' => 'post/index',
+                    'route'   => 'post/index',
                 ],
                 [
                     ['post/1/25/yiiuser', ['post/index', ['1page-number' => '1', '-per_page' => '25', '_author.login' => 'yiiuser']]],
@@ -904,8 +910,8 @@ class UrlRuleTest extends TestCase
             [
                 'with optional param',
                 [
-                    'pattern' => 'post/<page:\d+>/<tag>',
-                    'route' => 'post/index',
+                    'pattern'  => 'post/<page:\d+>/<tag>',
+                    'route'    => 'post/index',
                     'defaults' => ['page' => 1],
                 ],
                 [
@@ -918,8 +924,8 @@ class UrlRuleTest extends TestCase
             [
                 'with optional param not in pattern',
                 [
-                    'pattern' => 'post/<tag>',
-                    'route' => 'post/index',
+                    'pattern'  => 'post/<tag>',
+                    'route'    => 'post/index',
                     'defaults' => ['page' => 1],
                 ],
                 [
@@ -931,8 +937,8 @@ class UrlRuleTest extends TestCase
             [
                 'multiple optional params',
                 [
-                    'pattern' => 'post/<page:\d+>/<tag>/<sort:yes|no>',
-                    'route' => 'post/index',
+                    'pattern'  => 'post/<page:\d+>/<tag>/<sort:yes|no>',
+                    'route'    => 'post/index',
                     'defaults' => ['page' => 1, 'sort' => 'yes'],
                 ],
                 [
@@ -948,8 +954,8 @@ class UrlRuleTest extends TestCase
             [
                 'optional param and required param separated by dashes',
                 [
-                    'pattern' => 'post/<page:\d+>-<tag>',
-                    'route' => 'post/index',
+                    'pattern'  => 'post/<page:\d+>-<tag>',
+                    'route'    => 'post/index',
                     'defaults' => ['page' => 1],
                 ],
                 [
@@ -963,8 +969,8 @@ class UrlRuleTest extends TestCase
             [
                 'optional param at the beginning',
                 [
-                    'pattern' => '<language>/<category>',
-                    'route' => 'site/category',
+                    'pattern'  => '<language>/<category>',
+                    'route'    => 'site/category',
                     'defaults' => ['language' => 'en'],
                 ],
                 [
@@ -975,8 +981,8 @@ class UrlRuleTest extends TestCase
             [
                 'two optional params at the beginning',
                 [
-                    'pattern' => '<language:(en|pl)>/<category>',
-                    'route' => 'site/category',
+                    'pattern'  => '<language:(en|pl)>/<category>',
+                    'route'    => 'site/category',
                     'defaults' => ['language' => 'en', 'category' => 'books'],
                 ],
                 [
@@ -988,8 +994,8 @@ class UrlRuleTest extends TestCase
             [
                 'two optional params at the beginning followed by placeholder',
                 [
-                    'pattern' => '<language:(en|pl)>/<category>/test',
-                    'route' => 'site/category',
+                    'pattern'  => '<language:(en|pl)>/<category>/test',
+                    'route'    => 'site/category',
                     'defaults' => ['language' => 'en', 'category' => 'books'],
                 ],
                 [
@@ -1002,8 +1008,8 @@ class UrlRuleTest extends TestCase
             [
                 'two optional params at the beginning separated by placeholder',
                 [
-                    'pattern' => '<language:(en|pl)>/test/<category>',
-                    'route' => 'site/category',
+                    'pattern'  => '<language:(en|pl)>/test/<category>',
+                    'route'    => 'site/category',
                     'defaults' => ['language' => 'en', 'category' => 'books'],
                 ],
                 [
@@ -1016,8 +1022,8 @@ class UrlRuleTest extends TestCase
             [
                 'three optional params at the beginning separated by placeholder',
                 [
-                    'pattern' => '<language:(en|pl)>/test/<category>/<id:\d+>',
-                    'route' => 'site/category',
+                    'pattern'  => '<language:(en|pl)>/test/<category>/<id:\d+>',
+                    'route'    => 'site/category',
                     'defaults' => ['language' => 'en', 'category' => 'books', 'id' => 1],
                 ],
                 [
@@ -1030,8 +1036,8 @@ class UrlRuleTest extends TestCase
             [
                 'two optional params at the beginning separated by dash',
                 [
-                    'pattern' => '<language:(en|pl)>-<category>',
-                    'route' => 'site/category',
+                    'pattern'  => '<language:(en|pl)>-<category>',
+                    'route'    => 'site/category',
                     'defaults' => ['language' => 'en', 'category' => 'books'],
                 ],
                 [
@@ -1044,8 +1050,8 @@ class UrlRuleTest extends TestCase
             [
                 'three optional params at the beginning separated by dash',
                 [
-                    'pattern' => '<language:(en|pl)>-<category>/<id:\d+>',
-                    'route' => 'site/category',
+                    'pattern'  => '<language:(en|pl)>-<category>/<id:\d+>',
+                    'route'    => 'site/category',
                     'defaults' => ['language' => 'en', 'category' => 'books', 'id' => 1],
                 ],
                 [
@@ -1060,8 +1066,8 @@ class UrlRuleTest extends TestCase
             [
                 'optional param at the end',
                 [
-                    'pattern' => 'post/<tag>/<page:\d+>',
-                    'route' => 'post/index',
+                    'pattern'  => 'post/<tag>/<page:\d+>',
+                    'route'    => 'post/index',
                     'defaults' => ['page' => 1],
                 ],
                 [
@@ -1075,8 +1081,8 @@ class UrlRuleTest extends TestCase
             [
                 'consecutive optional params',
                 [
-                    'pattern' => 'post/<page:\d+>/<tag>',
-                    'route' => 'post/index',
+                    'pattern'  => 'post/<page:\d+>/<tag>',
+                    'route'    => 'post/index',
                     'defaults' => ['page' => 1, 'tag' => 'a'],
                 ],
                 [
@@ -1090,8 +1096,8 @@ class UrlRuleTest extends TestCase
             [
                 'consecutive optional params separated by dash',
                 [
-                    'pattern' => 'post/<page:\d+>-<tag>',
-                    'route' => 'post/index',
+                    'pattern'  => 'post/<page:\d+>-<tag>',
+                    'route'    => 'post/index',
                     'defaults' => ['page' => 1, 'tag' => 'a'],
                 ],
                 [
@@ -1105,8 +1111,8 @@ class UrlRuleTest extends TestCase
             [
                 'route has parameters',
                 [
-                    'pattern' => '<controller>/<action>',
-                    'route' => '<controller>/<action>',
+                    'pattern'  => '<controller>/<action>',
+                    'route'    => '<controller>/<action>',
                     'defaults' => [],
                 ],
                 [
@@ -1117,8 +1123,8 @@ class UrlRuleTest extends TestCase
             [
                 'route has parameters with regex',
                 [
-                    'pattern' => '<controller:post|comment>/<action>',
-                    'route' => '<controller>/<action>',
+                    'pattern'  => '<controller:post|comment>/<action>',
+                    'route'    => '<controller>/<action>',
                     'defaults' => [],
                 ],
                 [
@@ -1132,8 +1138,8 @@ class UrlRuleTest extends TestCase
             [
                 'route has default parameter',
                 [
-                    'pattern' => '<controller:post|comment>/<action>',
-                    'route' => '<controller>/<action>',
+                    'pattern'  => '<controller:post|comment>/<action>',
+                    'route'    => '<controller>/<action>',
                     'defaults' => ['action' => 'index'],
                 ],
                 [
@@ -1150,8 +1156,8 @@ class UrlRuleTest extends TestCase
                 'empty pattern with suffix',
                 [
                     'pattern' => '',
-                    'route' => 'post/index',
-                    'suffix' => '.html',
+                    'route'   => 'post/index',
+                    'suffix'  => '.html',
                 ],
                 [
                     ['', ['post/index', []]],
@@ -1163,8 +1169,8 @@ class UrlRuleTest extends TestCase
                 'regular pattern with suffix',
                 [
                     'pattern' => 'posts',
-                    'route' => 'post/index',
-                    'suffix' => '.html',
+                    'route'   => 'post/index',
+                    'suffix'  => '.html',
                 ],
                 [
                     ['posts.html', ['post/index', []]],
@@ -1178,8 +1184,8 @@ class UrlRuleTest extends TestCase
                 'empty pattern with slash suffix',
                 [
                     'pattern' => '',
-                    'route' => 'post/index',
-                    'suffix' => '/',
+                    'route'   => 'post/index',
+                    'suffix'  => '/',
                 ],
                 [
                     ['', ['post/index', []]],
@@ -1190,8 +1196,8 @@ class UrlRuleTest extends TestCase
                 'regular pattern with slash suffix',
                 [
                     'pattern' => 'posts',
-                    'route' => 'post/index',
-                    'suffix' => '/',
+                    'route'   => 'post/index',
+                    'suffix'  => '/',
                 ],
                 [
                     ['posts/', ['post/index', []]],
@@ -1203,8 +1209,8 @@ class UrlRuleTest extends TestCase
                 'with host info',
                 [
                     'pattern' => 'post/<page:\d+>',
-                    'route' => 'post/index',
-                    'host' => 'http://<lang:en|fr>.example.com',
+                    'route'   => 'post/index',
+                    'host'    => 'http://<lang:en|fr>.example.com',
                 ],
                 [
                     ['post/1', ['post/index', ['page' => '1', 'lang' => 'en']]],
@@ -1216,7 +1222,7 @@ class UrlRuleTest extends TestCase
                 'with host info in pattern',
                 [
                     'pattern' => 'http://<lang:en|fr>.example.com/post/<page:\d+>',
-                    'route' => 'post/index',
+                    'route'   => 'post/index',
                 ],
                 [
                     ['post/1', ['post/index', ['page' => '1', 'lang' => 'en']]],
@@ -1227,8 +1233,8 @@ class UrlRuleTest extends TestCase
             [
                 'host info + defaults', // https://github.com/yiisoft/yii2/issues/6871
                 [
-                    'pattern' => 'http://en.example.com/<page>',
-                    'route' => 'post/index',
+                    'pattern'  => 'http://en.example.com/<page>',
+                    'route'    => 'post/index',
                     'defaults' => ['page' => 1],
                 ],
                 [
@@ -1240,8 +1246,8 @@ class UrlRuleTest extends TestCase
                 'with relative host info',
                 [
                     'pattern' => 'post/<page:\d+>',
-                    'route' => 'post/index',
-                    'host' => '//<lang:en|fr>.example.com',
+                    'route'   => 'post/index',
+                    'host'    => '//<lang:en|fr>.example.com',
                 ],
                 [
                     ['post/1', ['post/index', ['page' => '1', 'lang' => 'en']]],
@@ -1253,7 +1259,7 @@ class UrlRuleTest extends TestCase
                 'with relative host info in pattern',
                 [
                     'pattern' => '//<lang:en|fr>.example.com/post/<page:\d+>',
-                    'route' => 'post/index',
+                    'route'   => 'post/index',
                 ],
                 [
                     ['post/1', ['post/index', ['page' => '1', 'lang' => 'en']]],
@@ -1271,7 +1277,7 @@ class UrlRuleTest extends TestCase
                 'empty pattern',
                 [
                     'pattern' => '',
-                    'route' => 'post/index',
+                    'route'   => 'post/index',
                 ],
                 '/',
             ],
@@ -1279,25 +1285,25 @@ class UrlRuleTest extends TestCase
                 'multiple params with special chars',
                 [
                     'pattern' => 'post/<page-number:\d+>/<per_page:\d+>/<author.login>',
-                    'route' => 'post/index',
+                    'route'   => 'post/index',
                 ],
                 'post/<page-number:\d+>/<per_page:\d+>/<author.login>',
             ],
             [
                 'with host info',
                 [
-                    'pattern' => 'post/<page:\d+>/<tag>',
-                    'route' => 'post/index',
+                    'pattern'  => 'post/<page:\d+>/<tag>',
+                    'route'    => 'post/index',
                     'defaults' => ['page' => 1],
-                    'host' => 'http://<lang:en|fr>.example.com',
+                    'host'     => 'http://<lang:en|fr>.example.com',
                 ],
                 'http://<lang:en|fr>.example.com/post/<page:\d+>/<tag>',
             ],
             [
                 'with host info in pattern',
                 [
-                    'pattern' => 'http://<lang:en|fr>.example.com/post/<page:\d+>/<tag>',
-                    'route' => 'post/index',
+                    'pattern'  => 'http://<lang:en|fr>.example.com/post/<page:\d+>/<tag>',
+                    'route'    => 'post/index',
                     'defaults' => ['page' => 1],
                 ],
                 'http://<lang:en|fr>.example.com/post/<page:\d+>/<tag>',
@@ -1305,18 +1311,18 @@ class UrlRuleTest extends TestCase
             [
                 'with verb',
                 [
-                    'verb' => ['POST'],
+                    'verb'    => ['POST'],
                     'pattern' => 'post/<id:\d+>',
-                    'route' => 'post/index',
+                    'route'   => 'post/index',
                 ],
                 'POST post/<id:\d+>',
             ],
             [
                 'with verbs',
                 [
-                    'verb' => ['PUT', 'POST'],
+                    'verb'    => ['PUT', 'POST'],
                     'pattern' => 'post/<id:\d+>',
-                    'route' => 'post/index',
+                    'route'   => 'post/index',
                 ],
                 'PUT,POST post/<id:\d+>',
             ],
@@ -1325,6 +1331,7 @@ class UrlRuleTest extends TestCase
 
     /**
      * @dataProvider dataProviderGetCreateUrlStatus
+     *
      * @param array $config
      * @param array $tests
      */
@@ -1335,18 +1342,18 @@ class UrlRuleTest extends TestCase
 
             $this->mockWebApplication();
             $this->container->set('request', [
-                '__class' => Request::class,
-                'hostInfo' => 'http://example.com',
+                '__class'   => Request::class,
+                'hostInfo'  => 'http://example.com',
                 'scriptUrl' => '/index.php',
             ]);
 
             $manager = $this->factory->create([
                 '__class' => UrlManager::class,
-                'cache' => null,
+                'cache'   => null,
             ]);
             $config['__class'] = UrlRule::class;
             $rule = $this->factory->create($config);
-            $errorMessage = 'Failed test: ' . VarDumper::dumpAsString($test);
+            $errorMessage = 'Failed test: '.VarDumper::dumpAsString($test);
             $this->assertSame($expected, $rule->createUrl($manager, $route, $params), $errorMessage);
             $this->assertNotNull($status, $errorMessage);
             if ($status > 0) {
@@ -1373,8 +1380,8 @@ class UrlRuleTest extends TestCase
             'route' => [
                 // rule properties
                 [
-                    'pattern' => 'post/<page:\d+>/<tag>/<sort:yes|no>',
-                    'route' => 'post/index',
+                    'pattern'  => 'post/<page:\d+>/<tag>/<sort:yes|no>',
+                    'route'    => 'post/index',
                     'defaults' => ['page' => 1, 'sort' => 'yes'],
                 ],
                 // test cases: route, params, expected, createStatus
@@ -1387,8 +1394,8 @@ class UrlRuleTest extends TestCase
             'optional params' => [
                 // rule properties
                 [
-                    'pattern' => 'post/<page:\d+>/<tag>/<sort:yes|no>',
-                    'route' => 'post/index',
+                    'pattern'  => 'post/<page:\d+>/<tag>/<sort:yes|no>',
+                    'route'    => 'post/index',
                     'defaults' => ['page' => 1, 'sort' => 'yes'],
                 ],
                 // test cases: route, params, expected, createStatus
@@ -1411,10 +1418,10 @@ class UrlRuleTest extends TestCase
             'parsing only' => [
                 // rule properties
                 [
-                    'pattern' => 'post/<page:\d+>/<tag>/<sort:yes|no>',
-                    'route' => 'post/index',
+                    'pattern'  => 'post/<page:\d+>/<tag>/<sort:yes|no>',
+                    'route'    => 'post/index',
                     'defaults' => ['page' => 1, 'sort' => 'yes'],
-                    'mode' => UrlRule::PARSING_ONLY,
+                    'mode'     => UrlRule::PARSING_ONLY,
                 ],
                 // test cases: route, params, expected, createStatus
                 [

@@ -1,18 +1,19 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
 namespace yii\web\tests\session;
 
-use yii\helpers\Yii;
+use yii\console\tests\unit\controllers\EchoMigrateController;
 use yii\db\Connection;
 use yii\db\Query;
-use yii\web\DbSession;
-use yii\console\tests\unit\controllers\EchoMigrateController;
+use yii\helpers\Yii;
 use yii\tests\TestCase;
+use yii\web\DbSession;
 
 /**
  * @group db
@@ -51,14 +52,15 @@ abstract class AbstractDbSessionTest extends TestCase
             }
         }
         if (!isset($driverAvailable)) {
-            $this->markTestIncomplete(get_called_class() . ' requires ' . implode(' or ', $driverNames) . ' PDO driver! Configuration for connection required too.');
+            $this->markTestIncomplete(get_called_class().' requires '.implode(' or ', $driverNames).' PDO driver! Configuration for connection required too.');
+
             return [];
         }
         $config = $databases[$driverAvailable];
 
         $result = [
             '__class' => Connection::class,
-            'dsn' => $config['dsn'],
+            'dsn'     => $config['dsn'],
         ];
 
         if (isset($config['username'])) {
@@ -154,7 +156,7 @@ abstract class AbstractDbSessionTest extends TestCase
         $object->textValue = str_repeat('QweåßƒТест', 200);
         $object->array = [null, 'ab' => 'cd'];
         $object->binary = base64_decode('5qS2UUcXWH7rjAmvhqGJTDNkYWFiOGMzNTFlMzNmMWIyMDhmOWIwYzAwYTVmOTFhM2E5MDg5YjViYzViN2RlOGZlNjllYWMxMDA0YmQxM2RQ3ZC0in5ahjNcehNB/oP/NtOWB0u3Skm67HWGwGt9MA==');
-        $object->with_null_byte = 'hey!' . "\0" . 'y"ûƒ^äjw¾bðúl5êù-Ö=W¿Š±¬GP¥Œy÷&ø';
+        $object->with_null_byte = 'hey!'."\0".'y"ûƒ^äjw¾bðúl5êù-Ö=W¿Š±¬GP¥Œy÷&ø';
 
         return $object;
     }
