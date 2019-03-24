@@ -1,7 +1,7 @@
 <?php
 
 
-namespace yii\router;
+namespace yii\web\router;
 
 use Psr\Http\Server\MiddlewareInterface;
 
@@ -10,15 +10,28 @@ class Group
     /**
      * @var MiddlewareInterface[]
      */
-    private $before = [];
+    private $before;
 
     /**
      * @var MiddlewareInterface[]
      */
-    private $after = [];
+    private $after;
 
     /**
      * @var RouteInterface[]
      */
-    private $routes = [];
+    private $routes;
+
+    /**
+     * Group constructor.
+     * @param MiddlewareInterface[] $before
+     * @param MiddlewareInterface[] $after
+     * @param RouteInterface[] $routes
+     */
+    public function __construct(array $routes, array $before, array $after)
+    {
+        $this->before = $before;
+        $this->after = $after;
+        $this->routes = $routes;
+    }
 }

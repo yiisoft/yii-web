@@ -1,5 +1,5 @@
 <?php
-namespace yii\router;
+namespace yii\web\router;
 
 final class NewInstance
 {

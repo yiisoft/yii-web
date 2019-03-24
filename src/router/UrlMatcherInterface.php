@@ -1,7 +1,6 @@
 <?php
 
-
-namespace yii\router;
+namespace yii\web\router;
 
 
 use Psr\Http\Message\ServerRequestInterface;
