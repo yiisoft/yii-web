@@ -19,7 +19,8 @@ class Post extends BaseObject
     {
         $this->id = $id;
         $this->title = $title;
-        if(!is_null($city))
-        	$this->city = $city;
+        if (!is_null($city)) {
+            $this->city = $city;
+        }
     }
 }

@@ -11,7 +11,6 @@ use yii\web\router\NoHandler;
 use yii\web\router\NoMatch;
 use yii\web\router\Route;
 
-
 class GroupTest extends TestCase
 {
     public function testMethodMismatch()
@@ -55,7 +54,8 @@ class GroupTest extends TestCase
 
     public function testStaticMatch()
     {
-        $handler = function() {};
+        $handler = function () {
+        };
         $request = new ServerRequest('GET', '/');
         $group = new Group([
             Route::get('/')->to($handler)

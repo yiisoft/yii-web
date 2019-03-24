@@ -3,7 +3,6 @@
 
 namespace yii\web\router;
 
-
 final class Redirect
 {
     private $status = 301;

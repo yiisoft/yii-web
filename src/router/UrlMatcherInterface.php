@@ -2,7 +2,6 @@
 
 namespace yii\web\router;
 
-
 use Psr\Http\Message\ServerRequestInterface;
 
 interface UrlMatcherInterface

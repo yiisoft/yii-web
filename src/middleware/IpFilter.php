@@ -3,7 +3,6 @@
 
 namespace yii\middleware;
 
-
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

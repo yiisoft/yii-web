@@ -46,7 +46,6 @@ class Group implements RouterInterface
                 $this->namedRoutes[$name] = $route;
             }
         }
-
     }
 
     public function match(ServerRequestInterface $request): Match
@@ -231,7 +230,6 @@ class Group implements RouterInterface
         if (!empty($this->_routeParams)) {
             $this->_routeRule = '#^' . strtr($this->route, $tr2) . '$#u';
         }
-
     }
 
     public function generate(string $name, array $parameters = [], string $type = self::TYPE_ABSOLUTE): string

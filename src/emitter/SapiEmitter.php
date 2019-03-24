@@ -3,7 +3,6 @@
 
 namespace yii\web\emitter;
 
-
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -14,7 +13,6 @@ class SapiEmitter implements EmitterInterface
 {
     public function emit(ResponseInterface $response): bool
     {
-
         $status = $response->getStatusCode();
 
         foreach ($response->getHeaders() as $header => $values) {

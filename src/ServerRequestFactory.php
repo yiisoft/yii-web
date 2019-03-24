@@ -13,7 +13,6 @@ use Psr\Http\Message\UriInterface;
 
 final class ServerRequestFactory
 {
-
     private $serverRequestFactory;
     private $uriFactory;
     private $uploadedFileFactory;
@@ -25,8 +24,7 @@ final class ServerRequestFactory
         UriFactoryInterface $uriFactory,
         UploadedFileFactoryInterface $uploadedFileFactory,
         StreamFactoryInterface $streamFactory
-    )
-    {
+    ) {
         $this->serverRequestFactory = $serverRequestFactory;
         $this->uriFactory = $uriFactory;
         $this->uploadedFileFactory = $uploadedFileFactory;
@@ -178,7 +176,6 @@ final class ServerRequestFactory
                 $this->populateUploadedFileRecursive($files[$i], $name, $tempNames[$i], $types[$i], $sizes[$i], $errors[$i]);
             }
         } else {
-
             try {
                 $stream = $this->streamFactory->createStreamFromFile($tempNames);
             } catch (\RuntimeException $e) {

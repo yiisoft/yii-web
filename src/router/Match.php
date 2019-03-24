@@ -3,7 +3,6 @@
 
 namespace yii\web\router;
 
-
 class Match
 {
     private $name;

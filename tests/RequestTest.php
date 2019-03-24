@@ -156,7 +156,6 @@ class RequestTest extends TestCase
 
         // When an empty CSRF token is given it is regenerated.
         $this->assertNotEmpty($request->getCsrfToken());
-
     }
     /**
      * Test CSRF token validation by POST param.
@@ -704,12 +703,14 @@ class RequestTest extends TestCase
 
         try {
             $request->getParsedBody();
-        } catch (UnsupportedMediaTypeHttpException $noContentTypeException) {}
+        } catch (UnsupportedMediaTypeHttpException $noContentTypeException) {
+        }
         $this->assertTrue(isset($noContentTypeException));
 
         try {
             $request->withMethod('POST')->getParsedBody();
-        } catch (UnsupportedMediaTypeHttpException $postWithoutContentTypeException) {}
+        } catch (UnsupportedMediaTypeHttpException $postWithoutContentTypeException) {
+        }
         $this->assertTrue(isset($postWithoutContentTypeException));
     }
 
@@ -727,7 +728,8 @@ class RequestTest extends TestCase
 
         try {
             $request->withHeader('Content-Type', 'test/json')->getParsedBody();
-        } catch (UnsupportedMediaTypeHttpException $noContentException) {}
+        } catch (UnsupportedMediaTypeHttpException $noContentException) {
+        }
         $this->assertTrue(isset($noContentException));
     }
 

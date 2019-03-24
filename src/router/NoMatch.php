@@ -3,7 +3,6 @@
 
 namespace yii\web\router;
 
-
 use Psr\Http\Message\ServerRequestInterface;
 
 class NoMatch extends \Exception

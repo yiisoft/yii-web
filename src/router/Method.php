@@ -3,7 +3,6 @@
 
 namespace yii\web\router;
 
-
 final class Method
 {
     public const GET = 'GET';
