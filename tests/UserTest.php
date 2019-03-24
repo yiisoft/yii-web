@@ -398,7 +398,6 @@ class UserTest extends TestCase
         $this->expectException('Exception');
         $this->app->getUser()->getIdentity();
     }
-
 }
 
 static $cookiesMock;
@@ -425,7 +424,6 @@ class MockResponse extends Response
 
 class AccessChecker extends BaseObject implements CheckAccessInterface
 {
-
     public function checkAccess($userId, $permissionName, $params = [])
     {
         // Implement checkAccess() method.

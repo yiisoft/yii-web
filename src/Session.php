@@ -943,7 +943,6 @@ class Session extends Component implements \IteratorAggregate, \ArrayAccess, \Co
     protected function unfreeze()
     {
         if (null !== $this->frozenSessionData) {
-
             YII_DEBUG ? session_start() : @session_start();
 
             if ($this->getIsActive()) {
