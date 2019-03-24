@@ -744,5 +744,4 @@ class User extends Component implements Initiable
 
         return false;
     }
-
 }

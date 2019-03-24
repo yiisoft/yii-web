@@ -101,12 +101,12 @@ class XmlResponseFormatter extends Component implements ResponseFormatterInterfa
                 } else {
                     $child = new DOMElement($this->getValidXmlElementName($name));
                     $element->appendChild($child);
-                    if(is_array($value) && isset($value['xml-attributes'])){
-                        foreach($value['xml-attributes'] as $attribute => $val){
+                    if (is_array($value) && isset($value['xml-attributes'])) {
+                        foreach ($value['xml-attributes'] as $attribute => $val) {
                             $child->setAttribute($attribute, $val);
                         }
                         $child->appendChild(new DOMText($this->formatScalarValue($value['value'])));
-                    }else{
+                    } else {
                         $child->appendChild(new DOMText($this->formatScalarValue($value)));
                     }
                 }

@@ -142,13 +142,13 @@ EOF
         $converter->convert('test.php', $tmpPath);
         $initialConvertTime = file_get_contents($tmpPath . '/test.txt');
 
-        $converter->isOutdatedCallback = function() {
+        $converter->isOutdatedCallback = function () {
             return false;
         };
         $converter->convert('test.php', $tmpPath);
         $this->assertStringEqualsFile($tmpPath . '/test.txt', $initialConvertTime);
 
-        $converter->isOutdatedCallback = function() {
+        $converter->isOutdatedCallback = function () {
             return true;
         };
         $converter->convert('test.php', $tmpPath);

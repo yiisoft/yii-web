@@ -19,7 +19,6 @@ use yii\tests\TestCase;
  */
 class CorsTest extends TestCase
 {
-
     public function testPreflight()
     {
         $this->mockWebApplication();
@@ -63,5 +62,4 @@ class CorsTest extends TestCase
         $this->assertTrue($cors->beforeAction($action));
         $this->assertEquals('*', $cors->response->getHeaderCollection()->get('access-control-allow-origin'));
     }
-
 }

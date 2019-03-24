@@ -147,7 +147,8 @@ class AssetBundle extends BaseObject implements Initiable
         '@npm' => '@root/node_modules',
     ];
 
-    protected function findPath($path) {
+    protected function findPath($path)
+    {
         $path = rtrim(Yii::getAlias($path), '/\\');
         if (file_exists($path)) {
             return $path;
