@@ -1,6 +1,7 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -11,6 +12,7 @@ namespace yii\web;
  * SessionIterator implements an [[\Iterator|iterator]] for traversing session variables managed by [[Session]].
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ *
  * @since 2.0
  */
 class SessionIterator implements \Iterator
@@ -23,7 +25,6 @@ class SessionIterator implements \Iterator
      * @var mixed current key
      */
     private $_key;
-
 
     /**
      * Constructor.
@@ -45,6 +46,7 @@ class SessionIterator implements \Iterator
     /**
      * Returns the key of the current array element.
      * This method is required by the interface [[\Iterator]].
+     *
      * @return mixed the key of the current array element
      */
     public function key()
@@ -55,6 +57,7 @@ class SessionIterator implements \Iterator
     /**
      * Returns the current array element.
      * This method is required by the interface [[\Iterator]].
+     *
      * @return mixed the current array element
      */
     public function current()
@@ -76,6 +79,7 @@ class SessionIterator implements \Iterator
     /**
      * Returns whether there is an element at current position.
      * This method is required by the interface [[\Iterator]].
+     *
      * @return bool
      */
     public function valid()

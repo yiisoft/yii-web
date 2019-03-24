@@ -1,6 +1,7 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -33,9 +34,10 @@ class Application
 
     /**
      * Application constructor.
+     *
      * @param ServerRequestFactory $requestFactory
      * @param MiddlewareDispatcher $dispatcher
-     * @param EmitterInterface $emitter
+     * @param EmitterInterface     $emitter
      */
     public function __construct(ServerRequestFactory $requestFactory, MiddlewareDispatcher $dispatcher, EmitterInterface $emitter)
     {
@@ -48,6 +50,7 @@ class Application
     {
         $request = $this->requestFactory->createFromGlobals();
         $response = $this->dispatcher->handle($request);
+
         return $this->emitter->emit($response);
     }
 }

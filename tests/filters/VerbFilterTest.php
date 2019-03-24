@@ -1,6 +1,7 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -9,11 +10,11 @@ namespace yii\web\tests\filters;
 
 use yii\base\Action;
 use yii\base\ActionEvent;
-use yii\web\filters\VerbFilter;
+use yii\tests\TestCase;
 use yii\web\Controller;
+use yii\web\filters\VerbFilter;
 use yii\web\MethodNotAllowedHttpException;
 use yii\web\Request;
-use yii\tests\TestCase;
 
 /**
  * @group filters
@@ -39,7 +40,7 @@ class VerbFilterTest extends TestCase
             '__class' => VerbFilter::class,
             'actions' => [
                 '*' => ['GET', 'POST', 'Custom'],
-            ]
+            ],
         ]);
 
         $event = ActionEvent::before($action);

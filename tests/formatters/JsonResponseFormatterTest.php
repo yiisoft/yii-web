@@ -1,6 +1,7 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -13,6 +14,7 @@ use yii\web\tests\stubs\Post;
 
 /**
  * @author Alexander Makarov <sam@rmcreative.ru>
+ *
  * @since 2.0.3
  *
  * @group web
@@ -132,28 +134,28 @@ class JsonResponseFormatterTest extends FormatterTest
             [
                 [
                     'contentType' => 'application/javascript; charset=UTF-8',
-                    'useJsonp' => false,
+                    'useJsonp'    => false,
                 ],
                 'application/javascript; charset=UTF-8',
             ],
             [
                 [
                     'contentType' => 'application/json; charset=UTF-8',
-                    'useJsonp' => true,
+                    'useJsonp'    => true,
                 ],
                 'application/json; charset=UTF-8',
             ],
             [
                 [
                     'contentType' => 'application/hal+json; charset=UTF-8',
-                    'useJsonp' => false,
+                    'useJsonp'    => false,
                 ],
                 'application/hal+json; charset=UTF-8',
             ],
             [
                 [
                     'contentType' => 'application/hal+json; charset=UTF-8',
-                    'useJsonp' => true,
+                    'useJsonp'    => true,
                 ],
                 'application/hal+json; charset=UTF-8',
             ],
@@ -161,8 +163,8 @@ class JsonResponseFormatterTest extends FormatterTest
     }
 
     /**
-     * @param mixed  $data the data to be formatted
-     * @param string $json the expected JSON body
+     * @param mixed  $data       the data to be formatted
+     * @param string $json       the expected JSON body
      * @param string $prettyJson the expected pretty JSON body
      * @dataProvider formatArrayDataProvider
      */
@@ -175,7 +177,7 @@ class JsonResponseFormatterTest extends FormatterTest
     }
 
     /**
-     * @param array $configuration JSON formatter configuration array.
+     * @param array  $configuration       JSON formatter configuration array.
      * @param string $contentTypeExpected Expected value of the response `Content-Type` header.
      * @dataProvider contentTypeGenerationDataProvider
      */

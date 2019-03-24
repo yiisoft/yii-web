@@ -1,16 +1,17 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
 namespace yii\build\controllers;
 
-use yii\helpers\Yii;
 use yii\console\Controller;
 use yii\helpers\Console;
 use yii\helpers\VarDumper;
+use yii\helpers\Yii;
 
 /**
  * MimeTypeController generates a map of file extensions to MIME types.
@@ -22,6 +23,7 @@ use yii\helpers\VarDumper;
  * so we can use it and ship it with Yii.
  *
  * @author Carsten Brandt <mail@cebe.cc>
+ *
  * @since 2.0
  */
 class MimeTypeController extends Controller
@@ -34,7 +36,7 @@ class MimeTypeController extends Controller
     ];
 
     /**
-     * @param string $outFile the mime file to update. Defaults to @yii/helpers/mimeTypes.php
+     * @param string $outFile        the mime file to update. Defaults to @yii/helpers/mimeTypes.php
      * @param string $aliasesOutFile the aliases file to update. Defaults to @yii/helpers/mimeAliases.php
      */
     public function actionIndex($outFile = null, $aliasesOutFile = null)

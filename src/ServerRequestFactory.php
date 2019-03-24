@@ -1,6 +1,5 @@
 <?php
 
-
 namespace yii\web;
 
 use Psr\Http\Message\ServerRequestFactoryInterface;
@@ -13,20 +12,17 @@ use Psr\Http\Message\UriInterface;
 
 final class ServerRequestFactory
 {
-
     private $serverRequestFactory;
     private $uriFactory;
     private $uploadedFileFactory;
     private $streamFactory;
-
 
     public function __construct(
         ServerRequestFactoryInterface $serverRequestFactory,
         UriFactoryInterface $uriFactory,
         UploadedFileFactoryInterface $uploadedFileFactory,
         StreamFactoryInterface $streamFactory
-    )
-    {
+    ) {
         $this->serverRequestFactory = $serverRequestFactory;
         $this->uriFactory = $uriFactory;
         $this->uploadedFileFactory = $uploadedFileFactory;
@@ -47,13 +43,14 @@ final class ServerRequestFactory
     }
 
     /**
-     * @param array $server
-     * @param array $headers
-     * @param array $cookies
-     * @param array $get
-     * @param array $post
-     * @param array $files
+     * @param array                                $server
+     * @param array                                $headers
+     * @param array                                $cookies
+     * @param array                                $get
+     * @param array                                $post
+     * @param array                                $files
      * @param StreamInterface|resource|string|null $body
+     *
      * @return ServerRequestInterface
      */
     public function createFromParameters(array $server, array $headers = [], array $cookies = [], array $get = [], array $post = [], array $files = [], $body = null): ServerRequestInterface
@@ -94,7 +91,6 @@ final class ServerRequestFactory
         } elseif (!$body instanceof StreamInterface) {
             throw new \InvalidArgumentException('Body parameter for ServerRequestFactory::createFromParameters() must be instance of StreamInterface, resource or null.');
         }
-
 
         return $request->withBody($body);
     }
@@ -157,17 +153,20 @@ final class ServerRequestFactory
             $files[$class] = [];
             $this->populateUploadedFileRecursive($files[$class], $info['name'], $info['tmp_name'], $info['type'], $info['size'], $info['error']);
         }
+
         return $files;
     }
 
     /**
      * Populates uploaded files array from $_FILE data structure recursively.
-     * @param array $files uploaded files array to be populated.
-     * @param mixed $names file names provided by PHP
+     *
+     * @param array $files     uploaded files array to be populated.
+     * @param mixed $names     file names provided by PHP
      * @param mixed $tempNames temporary file names provided by PHP
-     * @param mixed $types file types provided by PHP
-     * @param mixed $sizes file sizes provided by PHP
-     * @param mixed $errors uploading issues provided by PHP
+     * @param mixed $types     file types provided by PHP
+     * @param mixed $sizes     file sizes provided by PHP
+     * @param mixed $errors    uploading issues provided by PHP
+     *
      * @since 3.0.0
      */
     private function populateUploadedFileRecursive(&$files, $names, $tempNames, $types, $sizes, $errors): void
@@ -178,7 +177,6 @@ final class ServerRequestFactory
                 $this->populateUploadedFileRecursive($files[$i], $name, $tempNames[$i], $types[$i], $sizes[$i], $errors[$i]);
             }
         } else {
-
             try {
                 $stream = $this->streamFactory->createStreamFromFile($tempNames);
             } catch (\RuntimeException $e) {
@@ -187,8 +185,8 @@ final class ServerRequestFactory
 
             $files = $this->uploadedFileFactory->createUploadedFile(
                 $stream,
-                (int)$sizes,
-                (int)$errors,
+                (int) $sizes,
+                (int) $errors,
                 $names,
                 $types
             );

@@ -1,6 +1,7 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -14,6 +15,7 @@ use yii\exceptions\Exception;
  * any headers that were already sent before web response was sent.
  *
  * @author Dmitry Dorogin <dmirogin@ya.ru>
+ *
  * @since 2.0.14
  */
 class HeadersAlreadySentException extends Exception

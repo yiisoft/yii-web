@@ -15,7 +15,7 @@
     <div class="element-wrap">
         <div class="element">
             <span class="item-number"><?= (int) $index ?>.</span>
-            <span class="text"><?= $file !== null ? 'in ' . $handler->htmlEncode($file) : '' ?></span>
+            <span class="text"><?= $file !== null ? 'in '.$handler->htmlEncode($file) : '' ?></span>
             <span class="at">
                 <?= $line !== null ? 'at line' : '' ?>
                 <span class="line"><?= $line !== null ? $line + 1 : '' ?></span>
@@ -23,7 +23,7 @@
             <?php if ($method !== null): ?>
                 <span class="call">
                     <?= $file !== null ? '&ndash;' : '' ?>
-                    <?= ($class !== null ? $handler->addTypeLinks("$class::$method") : $handler->htmlEncode($method)) . '(' . $handler->argumentsToString($args) . ')' ?>
+                    <?= ($class !== null ? $handler->addTypeLinks("$class::$method") : $handler->htmlEncode($method)).'('.$handler->argumentsToString($args).')' ?>
                 </span>
             <?php endif; ?>
         </div>
@@ -31,13 +31,13 @@
     <?php if (!empty($lines)): ?>
         <div class="code-wrap">
             <div class="error-line"></div>
-            <?php for ($i = $begin; $i <= $end; ++$i): ?><div class="hover-line"></div><?php endfor; ?>
+            <?php for ($i = $begin; $i <= $end; $i++): ?><div class="hover-line"></div><?php endfor; ?>
             <div class="code">
-                <?php for ($i = $begin; $i <= $end; ++$i): ?><span class="lines-item"><?= (int) ($i + 1) ?></span><?php endfor; ?>
+                <?php for ($i = $begin; $i <= $end; $i++): ?><span class="lines-item"><?= (int) ($i + 1) ?></span><?php endfor; ?>
                 <pre>
                     <?php
                     // fill empty lines with a whitespace to avoid rendering problems in opera
-                    for ($i = $begin; $i <= $end; ++$i) {
+                    for ($i = $begin; $i <= $end; $i++) {
                         echo (trim($lines[$i]) === '') ? " \n" : strtr($handler->traceLine, ['{file}' => $file, '{line}' => $i + 1, '{html}' => $handler->htmlEncode($lines[$i])]);
                     }
                     ?>

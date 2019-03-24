@@ -1,6 +1,7 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -8,10 +9,10 @@
 namespace yii\web\tests\filters\auth;
 
 use yii\base\Action;
-use yii\web\filters\auth\AuthMethod;
-use yii\web\Controller;
-use yii\web\tests\filters\stubs\UserIdentity;
 use yii\tests\TestCase;
+use yii\web\Controller;
+use yii\web\filters\auth\AuthMethod;
+use yii\web\tests\filters\stubs\UserIdentity;
 use yii\web\User;
 
 class AuthMethodTest extends TestCase
@@ -23,7 +24,7 @@ class AuthMethodTest extends TestCase
         $this->mockWebApplication();
         $this->container->setAll([
             'user' => [
-                '__class' => User::class,
+                '__class'       => User::class,
                 'identityClass' => UserIdentity::class,
             ],
         ]);
@@ -31,7 +32,9 @@ class AuthMethodTest extends TestCase
 
     /**
      * Creates mock for [[AuthMethod]] filter.
+     *
      * @param callable $authenticateCallback callback, which result should [[authenticate()]] method return.
+     *
      * @return AuthMethod filter instance.
      */
     protected function createFilter($authenticateCallback)
@@ -46,17 +49,20 @@ class AuthMethodTest extends TestCase
 
     /**
      * Creates test action.
+     *
      * @param array $config action configuration.
+     *
      * @return Action action instance.
      */
     protected function createAction(array $config = [])
     {
         $controller = new Controller('test', $this->app);
+
         return $this->factory->create([
-            '__class' => Action::class,
+            '__class'       => Action::class,
             '__construct()' => [
-                'id' => 'index',
-                'controller' => $controller
+                'id'         => 'index',
+                'controller' => $controller,
             ],
         ], $config);
     }
@@ -67,10 +73,13 @@ class AuthMethodTest extends TestCase
     {
         $action = $this->createAction();
 
-        $filter = $this->createFilter(function () {return new \stdClass();});
+        $filter = $this->createFilter(function () {
+            return new \stdClass();
+        });
         $this->assertTrue($filter->beforeAction($action));
 
-        $filter = $this->createFilter(function () {return null;});
+        $filter = $this->createFilter(function () {
+        });
         $this->expectException('yii\web\UnauthorizedHttpException');
         $this->assertTrue($filter->beforeAction($action));
     }
@@ -81,7 +90,9 @@ class AuthMethodTest extends TestCase
         $method = $reflection->getMethod('isOptional');
         $method->setAccessible(true);
 
-        $filter = $this->createFilter(function () {return new \stdClass();});
+        $filter = $this->createFilter(function () {
+            return new \stdClass();
+        });
 
         $filter->optional = ['some'];
         $this->assertFalse($method->invokeArgs($filter, [$this->createAction(['id' => 'index'])]));

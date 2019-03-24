@@ -1,6 +1,7 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -9,14 +10,14 @@ namespace yii\web\tests\filters;
 
 use Closure;
 use yii\base\Action;
-use yii\web\filters\AccessRule;
+use yii\rbac\DenyAll;
 use yii\web\Controller;
+use yii\web\filters\AccessRule;
 use yii\web\Request;
-use yii\web\User;
 use yii\web\tests\filters\stubs\MockAuthManager;
 use yii\web\tests\filters\stubs\UserIdentity;
 use yii\web\tests\stubs\AuthorRule;
-use yii\rbac\DenyAll;
+use yii\web\User;
 
 /**
  * @group filters
@@ -35,6 +36,7 @@ class AccessRuleTest extends \yii\tests\TestCase
 
     /**
      * @param string $method
+     *
      * @return Request
      */
     protected function mockRequest($method = 'GET')
@@ -51,17 +53,18 @@ class AccessRuleTest extends \yii\tests\TestCase
 
     /**
      * @param string $userid optional user id
+     *
      * @return User
      */
     protected function mockUser($userid = null, $accessChecker = null)
     {
         $user = $this->factory->create(array_filter([
-            '__class' => User::class,
+            '__class'       => User::class,
             '__construct()' => array_filter([
-                'app' => $this->app,
+                'app'           => $this->app,
                 'accessChecker' => $accessChecker,
             ]),
-            'identityClass' => UserIdentity::class,
+            'identityClass'   => UserIdentity::class,
             'enableAutoLogin' => false,
         ]));
         if ($userid !== null) {
@@ -77,6 +80,7 @@ class AccessRuleTest extends \yii\tests\TestCase
     protected function mockAction()
     {
         $controller = new Controller('site', $this->app);
+
         return new Action('test', $controller);
     }
 
@@ -133,7 +137,7 @@ class AccessRuleTest extends \yii\tests\TestCase
         $request = $this->mockRequest();
 
         $rule = new AccessRule([
-            'allow' => true,
+            'allow'   => true,
             'actions' => ['test', 'other'],
         ]);
 
@@ -161,7 +165,7 @@ class AccessRuleTest extends \yii\tests\TestCase
         $request = $this->mockRequest();
 
         $rule = new AccessRule([
-            'allow' => true,
+            'allow'       => true,
             'controllers' => ['test', 'other'],
         ]);
 
@@ -193,7 +197,7 @@ class AccessRuleTest extends \yii\tests\TestCase
         $request = $this->mockRequest();
 
         $rule = new AccessRule([
-            'allow' => true,
+            'allow'       => true,
             'controllers' => ['module/*', '*/controller'],
         ]);
 
@@ -218,10 +222,10 @@ class AccessRuleTest extends \yii\tests\TestCase
      * Data provider for testMatchRole.
      *
      * @return array or arrays
-     *           the id of the action
-     *           should the action allow (true) or disallow (false)
-     *           test user id
-     *           expected match result (true, false, null)
+     *               the id of the action
+     *               should the action allow (true) or disallow (false)
+     *               test user id
+     *               expected match result (true, false, null)
      */
     public function matchRoleProvider()
     {
@@ -246,14 +250,26 @@ class AccessRuleTest extends \yii\tests\TestCase
             ['update', true,  'unknown', ['authorID' => 'user2'], null],
 
             // user2 is author, can only edit own posts
-            ['update', true,  'user2',   function () { return ['authorID' => 'user2']; }, true],
-            ['update', true,  'user2',   function () { return ['authorID' => 'user1']; }, null],
+            ['update', true,  'user2',   function () {
+                return ['authorID' => 'user2'];
+            }, true],
+            ['update', true,  'user2',   function () {
+                return ['authorID' => 'user1'];
+            }, null],
             // user1 is admin, can update all posts
-            ['update', true,  'user1',   function () { return ['authorID' => 'user1']; }, true],
-            ['update', true,  'user1',   function () { return ['authorID' => 'user2']; }, true],
+            ['update', true,  'user1',   function () {
+                return ['authorID' => 'user1'];
+            }, true],
+            ['update', true,  'user1',   function () {
+                return ['authorID' => 'user2'];
+            }, true],
             // unknown user can not edit anything
-            ['update', true,  'unknown', function () { return ['authorID' => 'user1']; }, null],
-            ['update', true,  'unknown', function () { return ['authorID' => 'user2']; }, null],
+            ['update', true,  'unknown', function () {
+                return ['authorID' => 'user1'];
+            }, null],
+            ['update', true,  'unknown', function () {
+                return ['authorID' => 'user2'];
+            }, null],
         ];
     }
 
@@ -261,11 +277,12 @@ class AccessRuleTest extends \yii\tests\TestCase
      * Test that a user matches certain roles.
      *
      * @dataProvider matchRoleProvider
-     * @param string $actionid the action id
-     * @param bool $allow whether the rule should allow access
-     * @param string $userid the userid to check
+     *
+     * @param string        $actionid   the action id
+     * @param bool          $allow      whether the rule should allow access
+     * @param string        $userid     the userid to check
      * @param array|Closure $roleParams params for $roleParams
-     * @param bool $expected the expected result or null
+     * @param bool          $expected   the expected result or null
      */
     public function testMatchRole($actionid, $allow, $userid, $roleParams, $expected)
     {
@@ -274,9 +291,9 @@ class AccessRuleTest extends \yii\tests\TestCase
         $request = $this->mockRequest();
 
         $rule = new AccessRule([
-            'allow' => $allow,
-            'roles' => [$actionid === 'create' ? 'createPost' : 'updatePost'],
-            'actions' => [$actionid],
+            'allow'      => $allow,
+            'roles'      => [$actionid === 'create' ? 'createPost' : 'updatePost'],
+            'actions'    => [$actionid],
             'roleParams' => $roleParams,
         ]);
 
@@ -424,7 +441,7 @@ class AccessRuleTest extends \yii\tests\TestCase
 
         // match, one IP
         $request->setServerParams([
-            'REMOTE_ADDR' => '127.0.0.1'
+            'REMOTE_ADDR' => '127.0.0.1',
         ]);
         $rule->ips = ['127.0.0.1'];
         $rule->allow = true;
@@ -434,7 +451,7 @@ class AccessRuleTest extends \yii\tests\TestCase
 
         // no match, one IP
         $request->setServerParams([
-            'REMOTE_ADDR' => '127.0.0.1'
+            'REMOTE_ADDR' => '127.0.0.1',
         ]);
         $rule->ips = ['192.168.0.1'];
         $rule->allow = true;
@@ -444,7 +461,7 @@ class AccessRuleTest extends \yii\tests\TestCase
 
         // no partial match, one IP
         $request->setServerParams([
-            'REMOTE_ADDR' => '127.0.0.1'
+            'REMOTE_ADDR' => '127.0.0.1',
         ]);
         $rule->ips = ['127.0.0.10'];
         $rule->allow = true;
@@ -452,7 +469,7 @@ class AccessRuleTest extends \yii\tests\TestCase
         $rule->allow = false;
         $this->assertNull($rule->allows($action, $user, $request));
         $request->setServerParams([
-            'REMOTE_ADDR' => '127.0.0.10'
+            'REMOTE_ADDR' => '127.0.0.10',
         ]);
         $rule->ips = ['127.0.0.1'];
         $rule->allow = true;
@@ -462,7 +479,7 @@ class AccessRuleTest extends \yii\tests\TestCase
 
         // match, one IP IPv6
         $request->setServerParams([
-            'REMOTE_ADDR' => '::1'
+            'REMOTE_ADDR' => '::1',
         ]);
         $rule->ips = ['::1'];
         $rule->allow = true;
@@ -472,7 +489,7 @@ class AccessRuleTest extends \yii\tests\TestCase
 
         // no match, one IP IPv6
         $request->setServerParams([
-            'REMOTE_ADDR' => '::1'
+            'REMOTE_ADDR' => '::1',
         ]);
         $rule->ips = ['dead::beaf::1'];
         $rule->allow = true;
@@ -482,7 +499,7 @@ class AccessRuleTest extends \yii\tests\TestCase
 
         // no partial match, one IP IPv6
         $request->setServerParams([
-            'REMOTE_ADDR' => '::1'
+            'REMOTE_ADDR' => '::1',
         ]);
         $rule->ips = ['::123'];
         $rule->allow = true;
@@ -491,7 +508,7 @@ class AccessRuleTest extends \yii\tests\TestCase
         $this->assertNull($rule->allows($action, $user, $request));
 
         $request->setServerParams([
-            'REMOTE_ADDR' => '::123'
+            'REMOTE_ADDR' => '::123',
         ]);
         $rule->ips = ['::1'];
         $rule->allow = true;
@@ -501,7 +518,7 @@ class AccessRuleTest extends \yii\tests\TestCase
 
         // undefined IP
         $request->setServerParams([
-            'REMOTE_ADDR' => null
+            'REMOTE_ADDR' => null,
         ]);
         $rule->ips = ['192.168.*'];
         $rule->allow = true;
@@ -520,7 +537,7 @@ class AccessRuleTest extends \yii\tests\TestCase
 
         // no match
         $request->setServerParams([
-            'REMOTE_ADDR' => '127.0.0.1'
+            'REMOTE_ADDR' => '127.0.0.1',
         ]);
         $rule->ips = ['192.168.*'];
         $rule->allow = true;
@@ -530,7 +547,7 @@ class AccessRuleTest extends \yii\tests\TestCase
 
         // match
         $request->setServerParams([
-            'REMOTE_ADDR' => '127.0.0.1'
+            'REMOTE_ADDR' => '127.0.0.1',
         ]);
         $rule->ips = ['127.0.*'];
         $rule->allow = true;
@@ -540,7 +557,7 @@ class AccessRuleTest extends \yii\tests\TestCase
 
         // match, IPv6
         $request->setServerParams([
-            'REMOTE_ADDR' => '2a01:4f8:120:7202::2'
+            'REMOTE_ADDR' => '2a01:4f8:120:7202::2',
         ]);
         $rule->ips = ['2a01:4f8:120:*'];
         $rule->allow = true;
@@ -550,7 +567,7 @@ class AccessRuleTest extends \yii\tests\TestCase
 
         // no match, IPv6
         $request->setServerParams([
-            'REMOTE_ADDR' => '::1'
+            'REMOTE_ADDR' => '::1',
         ]);
         $rule->ips = ['2a01:4f8:120:*'];
         $rule->allow = true;

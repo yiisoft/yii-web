@@ -1,6 +1,7 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -15,6 +16,7 @@ use yii\helpers\FileHelper;
  * Creates a class map for the core Yii classes.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ *
  * @since 2.0
  */
 class ClassmapController extends Controller
@@ -23,6 +25,7 @@ class ClassmapController extends Controller
 
     /**
      * Creates a class map for the core Yii classes.
+     *
      * @param string $root    the root path of Yii framework. Defaults to YII_PATH.
      * @param string $mapFile the file to contain the class map. Defaults to YII_PATH . '/classes.php'.
      */
@@ -33,7 +36,7 @@ class ClassmapController extends Controller
         }
         $root = FileHelper::normalizePath($root);
         if ($mapFile === null) {
-            $mapFile = YII_PATH . '/classes.php';
+            $mapFile = YII_PATH.'/classes.php';
         }
         $options = [
             'filter' => function ($path) {
@@ -43,10 +46,8 @@ class ClassmapController extends Controller
                         return false;
                     }
                 }
-
-                return null;
             },
-            'only' => ['*.php'],
+            'only'   => ['*.php'],
             'except' => [
                 '/Yii.php',
                 '/BaseYii.php',
@@ -61,7 +62,7 @@ class ClassmapController extends Controller
                 throw new Exception("Something wrong: $file\n");
             }
             $path = str_replace('\\', '/', substr($file, \strlen($root)));
-            $map[$path] = "  'yii" . substr(str_replace('/', '\\', $path), 0, -4) . "' => YII_PATH . '$path',";
+            $map[$path] = "  'yii".substr(str_replace('/', '\\', $path), 0, -4)."' => YII_PATH . '$path',";
         }
         ksort($map);
         $map = implode("\n", $map);

@@ -1,16 +1,17 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
-
 use yii\db\Migration;
 
 /**
  * Initializes Session tables.
  *
  * @author Misbahul D Munir <misbahuldmunir@gmail.com>
+ *
  * @since 2.0.8
  */
 class m160313_153426_session_init extends Migration
@@ -36,9 +37,9 @@ class m160313_153426_session_init extends Migration
         }
 
         $this->createTable('{{%session}}', [
-            'id' => $this->string()->notNull(),
+            'id'     => $this->string()->notNull(),
             'expire' => $this->integer(),
-            'data' => $dataType,
+            'data'   => $dataType,
             'PRIMARY KEY ([[id]])',
         ], $tableOptions);
     }

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace yii\web\router;
-
 
 final class Redirect
 {
@@ -22,6 +20,7 @@ final class Redirect
         $new = new static();
         $new->routeName = $name;
         $new->routeParameters = $parameters;
+
         return $new;
     }
 
@@ -29,6 +28,7 @@ final class Redirect
     {
         $new = new static();
         $new->url = $url;
+
         return $new;
     }
 
@@ -36,6 +36,7 @@ final class Redirect
     {
         $new = clone $this;
         $new->status = $status;
+
         return $new;
     }
 

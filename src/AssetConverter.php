@@ -1,15 +1,16 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
 namespace yii\web;
 
-use yii\helpers\Yii;
 use yii\base\Component;
 use yii\exceptions\Exception;
+use yii\helpers\Yii;
 
 /**
  * AssetConverter supports conversion of several popular script formats into JS or CSS scripts.
@@ -17,14 +18,15 @@ use yii\exceptions\Exception;
  * It is used by [[AssetManager]] to convert files after they have been published.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ *
  * @since 2.0
  */
 class AssetConverter extends Component implements AssetConverterInterface
 {
     /**
      * @var array the commands that are used to perform the asset conversion.
-     * The keys are the asset file extension names, and the values are the corresponding
-     * target script types (either "css" or "js") and the commands used for the conversion.
+     *            The keys are the asset file extension names, and the values are the corresponding
+     *            target script types (either "css" or "js") and the commands used for the conversion.
      *
      * You may also use a [path alias](guide:concept-aliases) to specify the location of the command:
      *
@@ -35,24 +37,24 @@ class AssetConverter extends Component implements AssetConverterInterface
      * ```
      */
     public $commands = [
-        'less' => ['css', 'lessc {from} {to} --no-color --source-map'],
-        'scss' => ['css', 'sass {from} {to} --sourcemap'],
-        'sass' => ['css', 'sass {from} {to} --sourcemap'],
-        'styl' => ['css', 'stylus < {from} > {to}'],
+        'less'   => ['css', 'lessc {from} {to} --no-color --source-map'],
+        'scss'   => ['css', 'sass {from} {to} --sourcemap'],
+        'sass'   => ['css', 'sass {from} {to} --sourcemap'],
+        'styl'   => ['css', 'stylus < {from} > {to}'],
         'coffee' => ['js', 'coffee -p {from} > {to}'],
-        'ts' => ['js', 'tsc --out {to} {from}'],
+        'ts'     => ['js', 'tsc --out {to} {from}'],
     ];
     /**
      * @var bool whether the source asset file should be converted even if its result already exists.
-     * You may want to set this to be `true` during the development stage to make sure the converted
-     * assets are always up-to-date. Do not set this to true on production servers as it will
-     * significantly degrade the performance.
+     *           You may want to set this to be `true` during the development stage to make sure the converted
+     *           assets are always up-to-date. Do not set this to true on production servers as it will
+     *           significantly degrade the performance.
      */
     public $forceConvert = false;
     /**
      * @var callable a PHP callback, which should be invoked to check whether asset conversion result is outdated.
-     * It will be invoked only if conversion target file exists and its modification time is older then the one of source file.
-     * Callback should match following signature:
+     *               It will be invoked only if conversion target file exists and its modification time is older then the one of source file.
+     *               Callback should match following signature:
      *
      * ```php
      * function (string $basePath, string $sourceFile, string $targetFile, string $sourceExtension, string $targetExtension) : bool
@@ -86,11 +88,12 @@ class AssetConverter extends Component implements AssetConverterInterface
      */
     public $isOutdatedCallback;
 
-
     /**
      * Converts a given asset file into a CSS or JS file.
-     * @param string $asset the asset file path, relative to $basePath
+     *
+     * @param string $asset    the asset file path, relative to $basePath
      * @param string $basePath the directory the $asset is relative to.
+     *
      * @return string the converted asset file path, relative to $basePath.
      */
     public function convert($asset, $basePath)
@@ -100,7 +103,7 @@ class AssetConverter extends Component implements AssetConverterInterface
             $srcExt = substr($asset, $pos + 1);
             if (isset($this->commands[$srcExt])) {
                 [$ext, $command] = $this->commands[$srcExt];
-                $result = substr($asset, 0, $pos + 1) . $ext;
+                $result = substr($asset, 0, $pos + 1).$ext;
                 if ($this->forceConvert || $this->isOutdated($basePath, $asset, $result, $srcExt, $ext)) {
                     $this->runCommand($command, $basePath, $asset, $result);
                 }
@@ -114,12 +117,15 @@ class AssetConverter extends Component implements AssetConverterInterface
 
     /**
      * Checks whether asset convert result is outdated, and thus should be reconverted.
-     * @param string $basePath the directory the $asset is relative to.
-     * @param string $sourceFile the asset source file path, relative to [[$basePath]].
-     * @param string $targetFile the converted asset file path, relative to [[$basePath]].
+     *
+     * @param string $basePath        the directory the $asset is relative to.
+     * @param string $sourceFile      the asset source file path, relative to [[$basePath]].
+     * @param string $targetFile      the converted asset file path, relative to [[$basePath]].
      * @param string $sourceExtension source asset file extension.
      * @param string $targetExtension target asset file extension.
+     *
      * @return bool whether asset is outdated or not.
+     *
      * @since 3.0.0
      */
     protected function isOutdated($basePath, $sourceFile, $targetFile, $sourceExtension, $targetExtension)
@@ -142,13 +148,16 @@ class AssetConverter extends Component implements AssetConverterInterface
 
     /**
      * Runs a command to convert asset files.
-     * @param string $command the command to run. If prefixed with an `@` it will be treated as a [path alias](guide:concept-aliases).
+     *
+     * @param string $command  the command to run. If prefixed with an `@` it will be treated as a [path alias](guide:concept-aliases).
      * @param string $basePath asset base path and command working directory
-     * @param string $asset the name of the asset file
-     * @param string $result the name of the file to be generated by the converter command
-     * @return bool true on success, false on failure. Failures will be logged.
+     * @param string $asset    the name of the asset file
+     * @param string $result   the name of the file to be generated by the converter command
+     *
      * @throws \yii\exceptions\Exception when the command fails and YII_DEBUG is true.
-     * In production mode the error will be logged.
+     *                                   In production mode the error will be logged.
+     *
+     * @return bool true on success, false on failure. Failures will be logged.
      */
     protected function runCommand($command, $basePath, $asset, $result)
     {
@@ -156,7 +165,7 @@ class AssetConverter extends Component implements AssetConverterInterface
 
         $command = strtr($command, [
             '{from}' => escapeshellarg("$basePath/$asset"),
-            '{to}' => escapeshellarg("$basePath/$result"),
+            '{to}'   => escapeshellarg("$basePath/$result"),
         ]);
         $descriptor = [
             1 => ['pipe', 'w'],

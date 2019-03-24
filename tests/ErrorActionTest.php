@@ -1,15 +1,16 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
 namespace yii\web\tests;
 
-use yii\helpers\Yii;
 use yii\exceptions\InvalidConfigException;
 use yii\exceptions\UserException;
+use yii\helpers\Yii;
 use yii\tests\TestCase;
 use yii\view\ViewNotFoundException;
 use yii\web\Controller;
@@ -30,6 +31,7 @@ class ErrorActionTest extends TestCase
      * Creates a controller instance.
      *
      * @param array $actionConfig
+     *
      * @return TestController
      */
     public function getController(array $actionConfig = [])
@@ -83,7 +85,7 @@ Exception: InvalidArgumentException', $this->getController()->runAction('error')
         $this->app->getErrorHandler()->exception = new \InvalidArgumentException('This message will not be shown to the user');
 
         $controller = $this->getController([
-            'defaultName' => 'Oops...',
+            'defaultName'    => 'Oops...',
             'defaultMessage' => 'The system is drunk',
         ]);
 
@@ -110,7 +112,7 @@ Exception: yii\web\NotFoundHttpException', $this->getController()->runAction('er
         $action->view = null;
         $ds = preg_quote(DIRECTORY_SEPARATOR, '\\');
         $this->expectException(ViewNotFoundException::class);
-        $this->expectExceptionMessageRegExp('#The view file does not exist: .*?views' . $ds . 'test' . $ds . 'error.php#');
+        $this->expectExceptionMessageRegExp('#The view file does not exist: .*?views'.$ds.'test'.$ds.'error.php#');
         $this->invokeMethod($action, 'renderHtmlResponse');
     }
 
@@ -123,7 +125,7 @@ Exception: yii\web\NotFoundHttpException', $this->getController()->runAction('er
         ])->runAction('error');
 
         $ds = preg_quote(DIRECTORY_SEPARATOR, '\\');
-        $this->expectExceptionMessageRegExp('#The view file does not exist: .*?views' . $ds . 'layouts' . $ds . 'non-existing.php#');
+        $this->expectExceptionMessageRegExp('#The view file does not exist: .*?views'.$ds.'layouts'.$ds.'non-existing.php#');
     }
 }
 
@@ -141,7 +143,7 @@ class TestController extends Controller
         return [
             'error' => array_merge([
                 '__class' => ErrorAction::class,
-                'view' => '@yii/tests/data/views/error.php',
+                'view'    => '@yii/tests/data/views/error.php',
             ], $this->actionConfig),
         ];
     }

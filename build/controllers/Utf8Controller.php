@@ -1,6 +1,7 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -24,12 +25,12 @@ class Utf8Controller extends Controller
      * Check guide for non-printable characters that may break docs generation.
      *
      * @param string $directory the directory to check. If not specified, the default
-     * guide directory will be checked.
+     *                          guide directory will be checked.
      */
     public function actionCheckGuide($directory = null)
     {
         if ($directory === null) {
-            $directory = \dirname(\dirname(__DIR__)) . '/docs';
+            $directory = \dirname(\dirname(__DIR__)).'/docs';
         }
         if (is_file($directory)) {
             $files = [$directory];
@@ -90,7 +91,7 @@ class Utf8Controller extends Controller
         }
 
         $hexcode = dechex($this->unicodeOrd($char));
-        $hexcode = str_repeat('0', max(4 - \strlen($hexcode), 0)) . $hexcode;
+        $hexcode = str_repeat('0', max(4 - \strlen($hexcode), 0)).$hexcode;
 
         $this->stdout("  at $line:$pos FOUND $what: 0x$hexcode '$char' http://unicode-table.com/en/$hexcode/\n");
     }
@@ -101,6 +102,7 @@ class Utf8Controller extends Controller
      * http://stackoverflow.com/a/10333324/1106908
      *
      * @param $c
+     *
      * @return bool|int
      */
     private function unicodeOrd($c)

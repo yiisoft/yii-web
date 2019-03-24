@@ -1,6 +1,7 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -9,6 +10,7 @@ namespace yii\web;
 
 /**
  * Mock for the time() function for web classes.
+ *
  * @return int
  */
 function time()
@@ -18,18 +20,18 @@ function time()
 
 namespace yii\web\tests;
 
-use yii\helpers\Yii;
 use yii\base\BaseObject;
 use yii\di\Reference;
+use yii\helpers\Yii;
 use yii\http\Cookie;
 use yii\http\CookieCollection;
 use yii\rbac\CheckAccessInterface;
 use yii\rbac\PhpManager;
+use yii\tests\TestCase;
+use yii\web\ForbiddenHttpException;
 use yii\web\Request;
 use yii\web\Response;
-use yii\web\ForbiddenHttpException;
 use yii\web\User;
-use yii\tests\TestCase;
 
 /**
  * @group web
@@ -38,7 +40,7 @@ class UserTest extends TestCase
 {
     /**
      * @var int virtual time to be returned by mocked time() function.
-     * Null means normal time() behavior.
+     *          Null means normal time() behavior.
      */
     public static $time;
 
@@ -57,13 +59,13 @@ class UserTest extends TestCase
 
         $services = [
             'user' => [
-                '__class' => User::class,
+                '__class'       => User::class,
                 'identityClass' => UserIdentity::class,
-                'authTimeout' => 10,
+                'authTimeout'   => 10,
             ],
             CheckAccessInterface::class => Reference::to('authManager'),
-            'authManager' => [
-                '__class' => PhpManager::class,
+            'authManager'               => [
+                '__class'       => PhpManager::class,
                 '__construct()' => [
                     'dir' => Yii::getAlias('@runtime'),
                 ],
@@ -99,6 +101,7 @@ class UserTest extends TestCase
 
     /**
      * Make sure autologin works more than once.
+     *
      * @see https://github.com/yiisoft/yii2/issues/11825
      */
     public function testIssue11825()
@@ -108,9 +111,9 @@ class UserTest extends TestCase
 
         $services = [
             'user' => [
-                '__class' => User::class,
-                'identityClass' => UserIdentity::class,
-                'authTimeout' => 10,
+                '__class'         => User::class,
+                'identityClass'   => UserIdentity::class,
+                'authTimeout'     => 10,
                 'enableAutoLogin' => true,
                 'autoRenewCookie' => false,
             ],
@@ -159,8 +162,8 @@ class UserTest extends TestCase
 
         $services = [
             'user' => [
-                '__class' => User::class,
-                'identityClass' => UserIdentity::class,
+                '__class'         => User::class,
+                'identityClass'   => UserIdentity::class,
                 'enableAutoLogin' => true,
             ],
             'response' => [
@@ -208,10 +211,10 @@ class UserTest extends TestCase
                 '__class' => Response::class,
             ],
             'request' => [
-                '__class' => Request::class,
-                'scriptFile' => __DIR__ . '/index.php',
-                'scriptUrl' => '/index.php',
-                'url' => '',
+                '__class'    => Request::class,
+                'scriptFile' => __DIR__.'/index.php',
+                'scriptUrl'  => '/index.php',
+                'url'        => '',
             ],
         ]);
         $this->app->user->setReturnUrl(null);
@@ -221,18 +224,17 @@ class UserTest extends TestCase
     {
         $services = [
             'user' => [
-                '__class' => User::class,
+                '__class'       => User::class,
                 'identityClass' => UserIdentity::class,
             ],
             'authManager' => [
-                '__class' => PhpManager::class,
+                '__class'       => PhpManager::class,
                 '__construct()' => [
                     'dir' => Yii::getAlias('@runtime'),
                 ],
             ],
         ];
         $this->mockWebApplication([], null, $services);
-
 
         $user = $this->app->user;
 
@@ -279,6 +281,7 @@ class UserTest extends TestCase
         $this->reset();
         $this->app->request->setUrl('json-and-accept-all');
         $_SERVER['HTTP_ACCEPT'] = 'text/json, */*; q=0.1';
+
         try {
             $user->loginRequired();
         } catch (ForbiddenHttpException $e) {
@@ -317,6 +320,7 @@ class UserTest extends TestCase
         $this->reset();
         $this->app->request->setUrl('json-only');
         $_SERVER['HTTP_ACCEPT'] = 'text/json;q=0.1';
+
         try {
             $user->loginRequired();
         } catch (ForbiddenHttpException $e) {
@@ -333,11 +337,11 @@ class UserTest extends TestCase
     {
         $services = [
             'user' => [
-                '__class' => User::class,
+                '__class'       => User::class,
                 'identityClass' => UserIdentity::class,
             ],
             'authManager' => [
-                '__class' => PhpManager::class,
+                '__class'       => PhpManager::class,
                 '__construct()' => [
                     'dir' => Yii::getAlias('@runtime'),
                 ],
@@ -355,9 +359,9 @@ class UserTest extends TestCase
     {
         $services = [
             'user' => [
-                '__class' => User::class,
+                '__class'       => User::class,
                 '__construct()' => [
-                    'app' => Reference::to('app'),
+                    'app'           => Reference::to('app'),
                     'accessChecker' => Reference::to(AccessChecker::class),
                 ],
                 'identityClass' => UserIdentity::class,
@@ -380,13 +384,14 @@ class UserTest extends TestCase
 
         $this->container->setAll([
             'user' => [
-                '__class' => User::class,
+                '__class'       => User::class,
                 'identityClass' => ExceptionIdentity::class,
             ],
             'session' => $session,
         ]);
 
         $exceptionThrown = false;
+
         try {
             $this->app->getUser()->getIdentity();
         } catch (\Exception $e) {
@@ -398,7 +403,6 @@ class UserTest extends TestCase
         $this->expectException('Exception');
         $this->app->getUser()->getIdentity();
     }
-
 }
 
 static $cookiesMock;
@@ -425,7 +429,6 @@ class MockResponse extends Response
 
 class AccessChecker extends BaseObject implements CheckAccessInterface
 {
-
     public function checkAccess($userId, $permissionName, $params = [])
     {
         // Implement checkAccess() method.

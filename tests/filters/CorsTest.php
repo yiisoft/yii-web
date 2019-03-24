@@ -1,25 +1,25 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
 namespace yii\web\tests\filters;
 
-use yii\helpers\Yii;
 use yii\base\Action;
-use yii\web\filters\Cors;
-use yii\web\Controller;
-use yii\web\Request;
+use yii\helpers\Yii;
 use yii\tests\TestCase;
+use yii\web\Controller;
+use yii\web\filters\Cors;
+use yii\web\Request;
 
 /**
  * @group filters
  */
 class CorsTest extends TestCase
 {
-
     public function testPreflight()
     {
         $this->mockWebApplication();
@@ -52,7 +52,7 @@ class CorsTest extends TestCase
 
         $cors = new Cors([
             'cors' => [
-                'Origin' => ['*',],
+                'Origin'                           => ['*'],
                 'Access-Control-Allow-Credentials' => false,
             ],
         ]);
@@ -63,5 +63,4 @@ class CorsTest extends TestCase
         $this->assertTrue($cors->beforeAction($action));
         $this->assertEquals('*', $cors->response->getHeaderCollection()->get('access-control-allow-origin'));
     }
-
 }

@@ -1,14 +1,15 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
 namespace yii\web\filters\auth;
 
-use yii\helpers\Yii;
 use yii\exceptions\InvalidConfigException;
+use yii\helpers\Yii;
 
 /**
  * CompositeAuth is an action filter that supports multiple authentication methods at the same time.
@@ -34,20 +35,20 @@ use yii\exceptions\InvalidConfigException;
  * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ *
  * @since 2.0
  */
 class CompositeAuth extends AuthMethod
 {
     /**
      * @var array the supported authentication methods. This property should take a list of supported
-     * authentication methods, each represented by an authentication class or configuration.
+     *            authentication methods, each represented by an authentication class or configuration.
      *
      * If this property is empty, no authentication will be performed.
      *
      * Note that an auth method class must implement the [[\yii\web\filters\auth\AuthInterface]] interface.
      */
     public $authMethods = [];
-
 
     /**
      * {@inheritdoc}
@@ -66,7 +67,7 @@ class CompositeAuth extends AuthMethod
             if (!$auth instanceof AuthInterface) {
                 $this->authMethods[$i] = $auth = Yii::createObject($auth);
                 if (!$auth instanceof AuthInterface) {
-                    throw new InvalidConfigException(get_class($auth) . ' must implement yii\web\filters\auth\AuthInterface');
+                    throw new InvalidConfigException(get_class($auth).' must implement yii\web\filters\auth\AuthInterface');
                 }
             }
 
@@ -75,8 +76,6 @@ class CompositeAuth extends AuthMethod
                 return $identity;
             }
         }
-
-        return null;
     }
 
     /**

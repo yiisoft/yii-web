@@ -1,14 +1,15 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
 namespace yii\web\tests;
 
-use yii\web\NotFoundHttpException;
 use yii\tests\TestCase;
+use yii\web\NotFoundHttpException;
 
 class ErrorHandlerTest extends TestCase
 {
@@ -17,7 +18,7 @@ class ErrorHandlerTest extends TestCase
         parent::setUp();
         $this->mockWebApplication([], null, [
             'errorHandler' => [
-                '__class' => \yii\web\tests\ErrorHandler::class,
+                '__class'   => \yii\web\tests\ErrorHandler::class,
                 'errorView' => '@yii/tests/data/views/errorHandler.php',
             ],
         ]);
@@ -44,7 +45,7 @@ Exception: yii\web\NotFoundHttpException', $out);
 
         $out = $handler->renderCallStackItem($file, 63, \yii\web\Application::class, null, null, null);
 
-        $this->assertContains('<a href="netbeans://open?file=' . $file . '&line=63">', $out);
+        $this->assertContains('<a href="netbeans://open?file='.$file.'&line=63">', $out);
     }
 }
 

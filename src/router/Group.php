@@ -1,6 +1,5 @@
 <?php
 
-
 namespace yii\web\router;
 
 use Psr\Http\Message\ServerRequestInterface;
@@ -30,9 +29,10 @@ class Group implements RouterInterface
 
     /**
      * Group constructor.
+     *
      * @param MiddlewareInterface[] $before
      * @param MiddlewareInterface[] $after
-     * @param Route[] $routes
+     * @param Route[]               $routes
      */
     public function __construct(array $routes, array $before = [], array $after = [])
     {
@@ -46,7 +46,6 @@ class Group implements RouterInterface
                 $this->namedRoutes[$name] = $route;
             }
         }
-
     }
 
     public function match(ServerRequestInterface $request): Match
@@ -77,6 +76,7 @@ class Group implements RouterInterface
 
             if ($route->getCallback() === null) {
                 $route = $route->__toString();
+
                 throw new NoHandler("\"$route\" has no handler.");
             }
 
@@ -92,7 +92,9 @@ class Group implements RouterInterface
      * Used in [[parseRequest()]], [[createUrl()]].
      *
      * @param array $matches result of `preg_match()` call
+     *
      * @return array input array with replaced placeholder keys
+     *
      * @see placeholders
      * @since 2.0.7
      */
@@ -113,12 +115,13 @@ class Group implements RouterInterface
      * in the beginning of a string.
      *
      * @param string $string
+     *
      * @return string
      */
     private function trimSlashes($string)
     {
         if (strncmp($string, '//', 2) === 0) {
-            return '//' . trim($string, '/');
+            return '//'.trim($string, '/');
         }
 
         return trim($string, '/');
@@ -135,7 +138,7 @@ class Group implements RouterInterface
             return '#^$#u';
         }
 
-        $pattern = '/' . $pattern . '/';
+        $pattern = '/'.$pattern.'/';
 
 //        if (strpos($pattern, '<') !== false && preg_match_all('/<([\w._-]+)>/', $pattern, $matches)) {
 //            foreach ($matches[1] as $name) {
@@ -150,8 +153,8 @@ class Group implements RouterInterface
      * Prepares [[$pattern]] on rule initialization - replace parameter names by placeholders.
      *
      * @param bool $allowAppendSlash Defines position of slash in the param pattern in [[$pattern]].
-     * If `false` slash will be placed at the beginning of param pattern. If `true` slash position will be detected
-     * depending on non-optional pattern part.
+     *                               If `false` slash will be placed at the beginning of param pattern. If `true` slash position will be detected
+     *                               depending on non-optional pattern part.
      */
     private function translatePattern(string $pattern, $allowAppendSlash = true)
     {
@@ -173,7 +176,7 @@ class Group implements RouterInterface
             foreach ($matches as $match) {
                 $name = $match[1][0];
                 $pattern = $match[2][0] ?? '[^\/]+';
-                $placeholder = 'a' . hash('crc32b', $name); // placeholder must begin with a letter
+                $placeholder = 'a'.hash('crc32b', $name); // placeholder must begin with a letter
                 $this->placeholders[$placeholder] = $name;
                 if (array_key_exists($name, $this->defaults)) {
                     $length = strlen($match[0][0]);
@@ -217,11 +220,12 @@ class Group implements RouterInterface
         // we have only optional params in route - ensure slash position on param patterns
         if ($allowAppendSlash && trim($requiredPatternPart, '/') === '') {
             $this->translatePattern(false);
+
             return;
         }
 
         $this->_template = preg_replace('/<([\w._-]+):?([^>]+)?>/', '<$1>', $this->pattern);
-        $this->pattern = '#^' . trim(strtr($this->_template, $tr), '/') . '$#u';
+        $this->pattern = '#^'.trim(strtr($this->_template, $tr), '/').'$#u';
 
         // if host starts with relative scheme, then insert pattern to match any
         if (strncmp($this->host, '//', 2) === 0) {
@@ -229,9 +233,8 @@ class Group implements RouterInterface
         }
 
         if (!empty($this->_routeParams)) {
-            $this->_routeRule = '#^' . strtr($this->route, $tr2) . '$#u';
+            $this->_routeRule = '#^'.strtr($this->route, $tr2).'$#u';
         }
-
     }
 
     public function generate(string $name, array $parameters = [], string $type = self::TYPE_ABSOLUTE): string
@@ -257,6 +260,7 @@ class Group implements RouterInterface
                 }
             } else {
                 $this->createStatus = self::CREATE_STATUS_ROUTE_MISMATCH;
+
                 return false;
             }
         }
@@ -274,6 +278,7 @@ class Group implements RouterInterface
                     $params[$name] = '';
                 } else {
                     $this->createStatus = self::CREATE_STATUS_PARAMS_MISMATCH;
+
                     return false;
                 }
             }
@@ -284,6 +289,7 @@ class Group implements RouterInterface
                 }
             } elseif (!isset($this->_paramRules[$name])) {
                 $this->createStatus = self::CREATE_STATUS_PARAMS_MISMATCH;
+
                 return false;
             }
         }
@@ -295,6 +301,7 @@ class Group implements RouterInterface
                 unset($params[$name]);
             } elseif (!isset($this->defaults[$name]) || isset($params[$name])) {
                 $this->createStatus = self::CREATE_STATUS_PARAMS_MISMATCH;
+
                 return false;
             }
         }
@@ -303,14 +310,14 @@ class Group implements RouterInterface
         if ($this->host !== null) {
             $pos = strpos($url, '/', 8);
             if ($pos !== false) {
-                $url = substr($url, 0, $pos) . preg_replace('#/+#', '/', substr($url, $pos));
+                $url = substr($url, 0, $pos).preg_replace('#/+#', '/', substr($url, $pos));
             }
         } elseif (strpos($url, '//') !== false) {
             $url = preg_replace('#/+#', '/', trim($url, '/'));
         }
 
         if (!empty($params) && ($query = http_build_query($params)) !== '') {
-            $url .= '?' . $query;
+            $url .= '?'.$query;
         }
 
         return $url;

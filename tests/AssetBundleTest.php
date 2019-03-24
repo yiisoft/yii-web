@@ -1,14 +1,15 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
 namespace yii\web\tests;
 
-use yii\helpers\Yii;
 use yii\helpers\FileHelper;
+use yii\helpers\Yii;
 use yii\web\AssetBundle;
 use yii\web\AssetManager;
 use yii\web\View;
@@ -37,7 +38,7 @@ class AssetBundleTest extends \yii\tests\TestCase
             if ($file === '.' || $file === '..' || $file === '.gitignore') {
                 continue;
             }
-            $path = $dir . DIRECTORY_SEPARATOR . $file;
+            $path = $dir.DIRECTORY_SEPARATOR.$file;
             if (is_dir($path)) {
                 FileHelper::removeDirectory($path);
             } else {
@@ -51,6 +52,7 @@ class AssetBundleTest extends \yii\tests\TestCase
      * Returns View with configured AssetManager.
      *
      * @param array $amConfig may be used to override default AssetManager config
+     *
      * @return View
      */
     protected function getView(array $amConfig = [])
@@ -58,11 +60,11 @@ class AssetBundleTest extends \yii\tests\TestCase
         $this->mockApplication();
 
         return $this->factory->create([
-            '__class' => View::class,
+            '__class'      => View::class,
             'assetManager' => $this->factory->create(array_merge([
-                '__class' => AssetManager::class,
+                '__class'  => AssetManager::class,
                 'basePath' => '@testAssetsPath',
-                'baseUrl' => '@testAssetsUrl',
+                'baseUrl'  => '@testAssetsUrl',
             ], $amConfig)),
         ]);
     }
@@ -83,12 +85,12 @@ class AssetBundleTest extends \yii\tests\TestCase
     private function sourcesPublish_VerifyFiles($type, $bundle)
     {
         foreach ($bundle->$type as $filename) {
-            $publishedFile = $bundle->basePath . DIRECTORY_SEPARATOR . $filename;
-            $sourceFile = $bundle->sourcePath . DIRECTORY_SEPARATOR . $filename;
+            $publishedFile = $bundle->basePath.DIRECTORY_SEPARATOR.$filename;
+            $sourceFile = $bundle->sourcePath.DIRECTORY_SEPARATOR.$filename;
             $this->assertFileExists($publishedFile);
             $this->assertFileEquals($publishedFile, $sourceFile);
         }
-        $this->assertTrue(is_dir($bundle->basePath . DIRECTORY_SEPARATOR . $type));
+        $this->assertTrue(is_dir($bundle->basePath.DIRECTORY_SEPARATOR.$type));
     }
 
     public function testSourcesPublishedBySymlink()
@@ -100,7 +102,7 @@ class AssetBundleTest extends \yii\tests\TestCase
     public function testSourcesPublishedBySymlink_Issue9333()
     {
         $view = $this->getView([
-            'linkAssets' => true,
+            'linkAssets'   => true,
             'hashCallback' => function ($path) {
                 return sprintf('%x/%x', crc32($path), crc32(Yii::getVersion()));
             },
@@ -123,7 +125,7 @@ class AssetBundleTest extends \yii\tests\TestCase
 
         $this->assertFalse(is_dir($bundle->basePath));
         foreach ($bundle->js as $filename) {
-            $publishedFile = $bundle->basePath . DIRECTORY_SEPARATOR . $filename;
+            $publishedFile = $bundle->basePath.DIRECTORY_SEPARATOR.$filename;
             $this->assertFileNotExists($publishedFile);
         }
     }
@@ -143,7 +145,7 @@ class AssetBundleTest extends \yii\tests\TestCase
 
         $this->assertFalse(is_dir($bundle->basePath));
         foreach ($bundle->js as $filename) {
-            $publishedFile = $bundle->basePath . DIRECTORY_SEPARATOR . $filename;
+            $publishedFile = $bundle->basePath.DIRECTORY_SEPARATOR.$filename;
             $this->assertFileNotExists($publishedFile);
         }
     }
@@ -161,19 +163,20 @@ class AssetBundleTest extends \yii\tests\TestCase
         ];
         $bundle->publish($am);
 
-        $notNeededFilesDir = dirname($bundle->basePath . DIRECTORY_SEPARATOR . $bundle->css[0]);
+        $notNeededFilesDir = dirname($bundle->basePath.DIRECTORY_SEPARATOR.$bundle->css[0]);
         $this->assertFileNotExists($notNeededFilesDir);
 
         foreach ($bundle->js as $filename) {
-            $publishedFile = $bundle->basePath . DIRECTORY_SEPARATOR . $filename;
+            $publishedFile = $bundle->basePath.DIRECTORY_SEPARATOR.$filename;
             $this->assertFileExists($publishedFile);
         }
-        $this->assertTrue(is_dir(dirname($bundle->basePath . DIRECTORY_SEPARATOR . $bundle->js[0])));
+        $this->assertTrue(is_dir(dirname($bundle->basePath.DIRECTORY_SEPARATOR.$bundle->js[0])));
         $this->assertTrue(is_dir($bundle->basePath));
     }
 
     /**
      * @param View $view
+     *
      * @return AssetBundle
      */
     protected function verifySourcesPublishedBySymlink($view)
@@ -185,8 +188,8 @@ class AssetBundleTest extends \yii\tests\TestCase
 
         $this->assertTrue(is_dir($bundle->basePath));
         foreach ($bundle->js as $filename) {
-            $publishedFile = $bundle->basePath . DIRECTORY_SEPARATOR . $filename;
-            $sourceFile = $bundle->basePath . DIRECTORY_SEPARATOR . $filename;
+            $publishedFile = $bundle->basePath.DIRECTORY_SEPARATOR.$filename;
+            $sourceFile = $bundle->basePath.DIRECTORY_SEPARATOR.$filename;
 
             $this->assertTrue(is_link($bundle->basePath));
             $this->assertFileExists($publishedFile);
@@ -194,13 +197,15 @@ class AssetBundleTest extends \yii\tests\TestCase
         }
 
         $this->assertTrue(FileHelper::unlink($bundle->basePath));
+
         return $bundle;
     }
 
     /**
-     * Properly removes symlinked directory under Windows, MacOS and Linux
+     * Properly removes symlinked directory under Windows, MacOS and Linux.
      *
      * @param string $file path to symlink
+     *
      * @return bool
      */
     protected function unlink($file)
@@ -208,6 +213,7 @@ class AssetBundleTest extends \yii\tests\TestCase
         if (is_dir($file) && DIRECTORY_SEPARATOR === '\\') {
             return rmdir($file);
         }
+
         return unlink($file);
     }
 
@@ -262,7 +268,8 @@ EOF;
 
     /**
      * @dataProvider positionProvider
-     * @param int $pos
+     *
+     * @param int  $pos
      * @param bool $jqAlreadyRegistered
      */
     public function testPositionDependency($pos, $jqAlreadyRegistered)
@@ -333,7 +340,8 @@ EOF;
 
     /**
      * @dataProvider positionProvider
-     * @param int $pos
+     *
+     * @param int  $pos
      * @param bool $jqAlreadyRegistered
      */
     public function testPositionDependencyConflict($pos, $jqAlreadyRegistered)
@@ -504,10 +512,11 @@ EOF;
 
     /**
      * @dataProvider registerFileDataProvider
-     * @param string $type either `js` or `css`
-     * @param string $path
+     *
+     * @param string      $type            either `js` or `css`
+     * @param string      $path
      * @param string|bool $appendTimestamp
-     * @param string $expected
+     * @param string      $expected
      * @param string|null $webAlias
      */
     public function testRegisterFileAppendTimestamp($type, $path, $appendTimestamp, $expected, $webAlias = null)
@@ -518,9 +527,8 @@ EOF;
         }
         $this->app->setAlias('@web', $webAlias);
 
-
         $view = $this->getView(['appendTimestamp' => $appendTimestamp]);
-        $method = 'register' . ucfirst($type) . 'File';
+        $method = 'register'.ucfirst($type).'File';
         $view->$method($path);
         $this->assertEquals($expected, $view->renderFile('@yii/tests/data/views/rawlayout.php'));
 
