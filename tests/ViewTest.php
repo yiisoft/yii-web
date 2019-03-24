@@ -1,7 +1,6 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
- *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -9,10 +8,10 @@
 namespace yii\web\tests;
 
 use yii\cache\FileCache;
-use yii\tests\TestCase;
 use yii\view\Theme;
 use yii\web\Request;
 use yii\web\View;
+use yii\tests\TestCase;
 
 /**
  * @group web
@@ -23,14 +22,14 @@ class ViewTest extends TestCase
     {
         parent::setUp();
     }
-
+    
     public function testRegisterJsVar()
     {
         $this->mockWebApplication([], null, [
             'request' => [
-                '__class'    => Request::class,
-                'scriptFile' => __DIR__.'/baseUrl/index.php',
-                'scriptUrl'  => '/baseUrl/index.php',
+                '__class' => Request::class,
+                'scriptFile' => __DIR__ . '/baseUrl/index.php',
+                'scriptUrl' => '/baseUrl/index.php',
             ],
         ]);
 
@@ -38,10 +37,10 @@ class ViewTest extends TestCase
         $view->registerJsVar('username', 'samdark');
         $html = $view->render('@yii/tests/data/views/layout.php', ['content' => 'content']);
         $this->assertContains('<script>var username = "samdark";</script></head>', $html);
-
+        
         $view = $this->createView();
         $view->registerJsVar('objectTest', [
-            'number'   => 42,
+            'number' => 42,
             'question' => 'Unknown',
         ]);
         $html = $view->render('@yii/tests/data/views/layout.php', ['content' => 'content']);
@@ -52,9 +51,9 @@ class ViewTest extends TestCase
     {
         $this->mockWebApplication([], null, [
             'request' => [
-                '__class'    => Request::class,
-                'scriptFile' => __DIR__.'/baseUrl/index.php',
-                'scriptUrl'  => '/baseUrl/index.php',
+                '__class' => Request::class,
+                'scriptFile' => __DIR__ . '/baseUrl/index.php',
+                'scriptUrl' => '/baseUrl/index.php',
             ],
         ]);
 
@@ -66,7 +65,7 @@ class ViewTest extends TestCase
         $view = $this->createView();
         $view->registerJsFile('@web/js/somefile.js', ['position' => View::POS_BEGIN]);
         $html = $view->render('@yii/tests/data/views/layout.php', ['content' => 'content']);
-        $this->assertContains('<body>'.PHP_EOL.'<script src="/baseUrl/js/somefile.js"></script>', $html);
+        $this->assertContains('<body>' . PHP_EOL . '<script src="/baseUrl/js/somefile.js"></script>', $html);
 
         $view = $this->createView();
         $view->registerJsFile('@web/js/somefile.js', ['position' => View::POS_END]);
@@ -78,9 +77,9 @@ class ViewTest extends TestCase
     {
         $this->mockWebApplication([], null, [
             'request' => [
-                '__class'    => Request::class,
-                'scriptFile' => __DIR__.'/baseUrl/index.php',
-                'scriptUrl'  => '/baseUrl/index.php',
+                '__class' => Request::class,
+                'scriptFile' => __DIR__ . '/baseUrl/index.php',
+                'scriptUrl' => '/baseUrl/index.php',
             ],
         ]);
 
@@ -94,10 +93,10 @@ class ViewTest extends TestCase
     {
         $this->mockWebApplication([], null, [
             'request' => [
-                '__class'             => Request::class,
+                '__class' => Request::class,
                 'cookieValidationKey' => 'secretkey',
-                'scriptFile'          => __DIR__.'/baseUrl/index.php',
-                'scriptUrl'           => '/baseUrl/index.php',
+                'scriptFile' => __DIR__ . '/baseUrl/index.php',
+                'scriptUrl' => '/baseUrl/index.php',
             ],
             'cache' => [
                 '__class' => FileCache::class,
@@ -127,7 +126,6 @@ class ViewTest extends TestCase
      * Parses CSRF token from page HTML.
      *
      * @param string $html
-     *
      * @return string CSRF token
      */
     private function getCSRFTokenValue($html)

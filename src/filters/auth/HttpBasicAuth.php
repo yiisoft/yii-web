@@ -1,7 +1,6 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
- *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -56,7 +55,6 @@ namespace yii\web\filters\auth;
  * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- *
  * @since 2.0
  */
 class HttpBasicAuth extends AuthMethod
@@ -67,9 +65,9 @@ class HttpBasicAuth extends AuthMethod
     public $realm = 'api';
     /**
      * @var callable a PHP callable that will authenticate the user with the HTTP basic auth information.
-     *               The callable receives a username and a password as its parameters. It should return an identity object
-     *               that matches the username and password. Null should be returned if there is no such identity.
-     *               The callable will be called only if current user is not authenticated.
+     * The callable receives a username and a password as its parameters. It should return an identity object
+     * that matches the username and password. Null should be returned if there is no such identity.
+     * The callable will be called only if current user is not authenticated.
      *
      * The following code is a typical implementation of this callable:
      *
@@ -87,6 +85,7 @@ class HttpBasicAuth extends AuthMethod
      * method will be called to authenticate and login the user.
      */
     public $auth;
+
 
     /**
      * {@inheritdoc}
@@ -115,6 +114,8 @@ class HttpBasicAuth extends AuthMethod
 
             return $identity;
         }
+
+        return null;
     }
 
     /**

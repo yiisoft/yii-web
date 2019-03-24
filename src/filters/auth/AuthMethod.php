@@ -1,17 +1,16 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
- *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
 namespace yii\web\filters\auth;
 
+use yii\helpers\Yii;
 use yii\base\Action;
 use yii\base\ActionFilter;
 use yii\helpers\StringHelper;
-use yii\helpers\Yii;
 use yii\web\Request;
 use yii\web\Response;
 use yii\web\UnauthorizedHttpException;
@@ -21,7 +20,6 @@ use yii\web\User;
  * AuthMethod is a base class implementing the [[AuthInterface]] interface.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- *
  * @since 2.0
  */
 abstract class AuthMethod extends ActionFilter implements AuthInterface
@@ -40,14 +38,14 @@ abstract class AuthMethod extends ActionFilter implements AuthInterface
     public $response;
     /**
      * @var array list of action IDs that this filter will be applied to, but auth failure will not lead to error.
-     *            It may be used for actions, that are allowed for public, but return some additional data for authenticated users.
-     *            Defaults to empty, meaning authentication is not optional for any action.
-     *            Since version 2.0.10 action IDs can be specified as wildcards, e.g. `site/*`.
-     *
+     * It may be used for actions, that are allowed for public, but return some additional data for authenticated users.
+     * Defaults to empty, meaning authentication is not optional for any action.
+     * Since version 2.0.10 action IDs can be specified as wildcards, e.g. `site/*`.
      * @see isOptional()
      * @since 2.0.7
      */
     public $optional = [];
+
 
     /**
      * {@inheritdoc}
@@ -99,9 +97,7 @@ abstract class AuthMethod extends ActionFilter implements AuthInterface
      * Checks, whether authentication is optional for the given action.
      *
      * @param Action $action action to be checked.
-     *
      * @return bool whether authentication is optional or not.
-     *
      * @see optional
      * @since 2.0.7
      */

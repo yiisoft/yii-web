@@ -1,7 +1,6 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
- *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -25,7 +24,6 @@ use yii\helpers\Json;
  * ```
  *
  * @author Dan Schmidt <danschmidt5189@gmail.com>
- *
  * @since 2.0
  */
 class JsonParser implements RequestParserInterface
@@ -39,20 +37,19 @@ class JsonParser implements RequestParserInterface
      */
     public $throwException = true;
 
+
     /**
      * {@inheritdoc}
-     *
      * @throws BadRequestHttpException if the body contains invalid json and [[throwException]] is `true`.
      */
     public function parse($request)
     {
         try {
             $parameters = Json::decode($request->getBody()->__toString(), $this->asArray);
-
             return $parameters === null ? [] : $parameters;
         } catch (InvalidArgumentException $e) {
             if ($this->throwException) {
-                throw new BadRequestHttpException('Invalid JSON data in request body: '.$e->getMessage());
+                throw new BadRequestHttpException('Invalid JSON data in request body: ' . $e->getMessage());
             }
 
             return [];

@@ -1,18 +1,17 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
- *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
 namespace yii\build\controllers;
 
-use yii\console\Controller;
+use yii\helpers\Yii;
 use yii\exceptions\InvalidArgumentException;
+use yii\console\Controller;
 use yii\helpers\Console;
 use yii\helpers\FileHelper;
-use yii\helpers\Yii;
 
 /**
  * This command helps to set up a dev environment with all extensions and applications.
@@ -21,7 +20,6 @@ use yii\helpers\Yii;
  * to help working on yii using the application to test it.
  *
  * @author Carsten Brandt <mail@cebe.cc>
- *
  * @since 2.0
  */
 class DevController extends Controller
@@ -42,41 +40,42 @@ class DevController extends Controller
      * @var array
      */
     public $apps = [
-        'basic'     => 'git@github.com:yiisoft/yii2-app-basic.git',
-        'advanced'  => 'git@github.com:yiisoft/yii2-app-advanced.git',
+        'basic' => 'git@github.com:yiisoft/yii2-app-basic.git',
+        'advanced' => 'git@github.com:yiisoft/yii2-app-advanced.git',
         'benchmark' => 'git@github.com:yiisoft/yii2-app-benchmark.git',
     ];
     /**
      * @var array
      */
     public $extensions = [
-        'apidoc'        => 'git@github.com:yiisoft/yii2-apidoc.git',
-        'authclient'    => 'git@github.com:yiisoft/yii2-authclient.git',
-        'bootstrap'     => 'git@github.com:yiisoft/yii2-bootstrap.git',
-        'captcha'       => 'git@github.com:yiisoft/yii2-captcha.git',
-        'codeception'   => 'git@github.com:yiisoft/yii2-codeception.git',
-        'composer'      => 'git@github.com:yiisoft/yii2-composer.git',
-        'debug'         => 'git@github.com:yiisoft/yii2-debug.git',
+        'apidoc' => 'git@github.com:yiisoft/yii2-apidoc.git',
+        'authclient' => 'git@github.com:yiisoft/yii2-authclient.git',
+        'bootstrap' => 'git@github.com:yiisoft/yii2-bootstrap.git',
+        'captcha' => 'git@github.com:yiisoft/yii2-captcha.git',
+        'codeception' => 'git@github.com:yiisoft/yii2-codeception.git',
+        'composer' => 'git@github.com:yiisoft/yii2-composer.git',
+        'debug' => 'git@github.com:yiisoft/yii2-debug.git',
         'elasticsearch' => 'git@github.com:yiisoft/yii2-elasticsearch.git',
-        'faker'         => 'git@github.com:yiisoft/yii2-faker.git',
-        'gii'           => 'git@github.com:yiisoft/yii2-gii.git',
-        'httpclient'    => 'git@github.com:yiisoft/yii2-httpclient.git',
-        'imagine'       => 'git@github.com:yiisoft/yii2-imagine.git',
-        'jquery'        => 'git@github.com:yiisoft/yii2-jquery.git',
-        'jui'           => 'git@github.com:yiisoft/yii2-jui.git',
-        'maskedinput'   => 'git@github.com:yiisoft/yii2-maskedinput.git',
-        'mongodb'       => 'git@github.com:yiisoft/yii2-mongodb.git',
-        'mssql'         => 'git@github.com:yiisoft/yii2-mssql.git',
-        'oracle'        => 'git@github.com:yiisoft/yii2-oracle.git',
-        'queue'         => 'git@github.com:yiisoft/yii2-queue.git',
-        'redis'         => 'git@github.com:yiisoft/yii2-redis.git',
-        'rest'          => 'git@github.com:yiisoft/yii2-rest.git',
-        'shell'         => 'git@github.com:yiisoft/yii2-shell.git',
-        'smarty'        => 'git@github.com:yiisoft/yii2-smarty.git',
-        'sphinx'        => 'git@github.com:yiisoft/yii2-sphinx.git',
-        'swiftmailer'   => 'git@github.com:yiisoft/yii2-swiftmailer.git',
-        'twig'          => 'git@github.com:yiisoft/yii2-twig.git',
+        'faker' => 'git@github.com:yiisoft/yii2-faker.git',
+        'gii' => 'git@github.com:yiisoft/yii2-gii.git',
+        'httpclient' => 'git@github.com:yiisoft/yii2-httpclient.git',
+        'imagine' => 'git@github.com:yiisoft/yii2-imagine.git',
+        'jquery' => 'git@github.com:yiisoft/yii2-jquery.git',
+        'jui' => 'git@github.com:yiisoft/yii2-jui.git',
+        'maskedinput' => 'git@github.com:yiisoft/yii2-maskedinput.git',
+        'mongodb' => 'git@github.com:yiisoft/yii2-mongodb.git',
+        'mssql' => 'git@github.com:yiisoft/yii2-mssql.git',
+        'oracle' => 'git@github.com:yiisoft/yii2-oracle.git',
+        'queue' => 'git@github.com:yiisoft/yii2-queue.git',
+        'redis' => 'git@github.com:yiisoft/yii2-redis.git',
+        'rest' => 'git@github.com:yiisoft/yii2-rest.git',
+        'shell' => 'git@github.com:yiisoft/yii2-shell.git',
+        'smarty' => 'git@github.com:yiisoft/yii2-smarty.git',
+        'sphinx' => 'git@github.com:yiisoft/yii2-sphinx.git',
+        'swiftmailer' => 'git@github.com:yiisoft/yii2-swiftmailer.git',
+        'twig' => 'git@github.com:yiisoft/yii2-twig.git',
     ];
+
 
     /**
      * Install all extensions and advanced + basic app.
@@ -147,9 +146,8 @@ class DevController extends Controller
      *
      * Extensions required by the application are automatically installed using the `ext` action.
      *
-     * @param string $app  the application name e.g. `basic` or `advanced`.
+     * @param string $app the application name e.g. `basic` or `advanced`.
      * @param string $repo url of the git repo to clone if it does not already exist.
-     *
      * @return int return code
      */
     public function actionApp($app, $repo = null)
@@ -167,13 +165,12 @@ class DevController extends Controller
                     }
                 } else {
                     $this->stderr("Repo argument is required for app '$app'.\n", Console::FG_RED);
-
                     return 1;
                 }
             }
 
             $this->stdout("cloning application repo '$app' from '$repo'...\n", Console::BOLD);
-            passthru('git clone '.escapeshellarg($repo).' '.$appDir);
+            passthru('git clone ' . escapeshellarg($repo) . ' ' . $appDir);
             $this->stdout("done.\n", Console::BOLD, Console::FG_GREEN);
         }
 
@@ -204,7 +201,7 @@ class DevController extends Controller
      * This command installs an extension in the `extensions` directory and links the framework and other extensions.
      *
      * @param string $extension the application name e.g. `basic` or `advanced`.
-     * @param string $repo      url of the git repo to clone if it does not already exist.
+     * @param string $repo url of the git repo to clone if it does not already exist.
      *
      * @return int
      */
@@ -223,13 +220,12 @@ class DevController extends Controller
                     }
                 } else {
                     $this->stderr("Repo argument is required for extension '$extension'.\n", Console::FG_RED);
-
                     return 1;
                 }
             }
 
             $this->stdout("cloning extension repo '$extension' from '$repo'...\n", Console::BOLD);
-            passthru('git clone '.escapeshellarg($repo).' '.$extensionDir);
+            passthru('git clone ' . escapeshellarg($repo) . ' ' . $extensionDir);
             $this->stdout("done.\n", Console::BOLD, Console::FG_GREEN);
         }
 
@@ -270,9 +266,9 @@ class DevController extends Controller
         return $options;
     }
 
+
     /**
      * Remove all symlinks in the vendor subdirectory of the directory specified.
-     *
      * @param string $dir base directory
      */
     protected function cleanupVendorDir($dir)
@@ -292,8 +288,7 @@ class DevController extends Controller
 
     /**
      * Creates symlinks to framework and extension sources for the application.
-     *
-     * @param string $dir  application directory
+     * @param string $dir application directory
      * @param string $base Yii sources base directory
      *
      * @return int
@@ -325,7 +320,6 @@ class DevController extends Controller
 
     /**
      * Get a list of subdirectories for directory specified.
-     *
      * @param string $dir directory to read
      *
      * @return array list of subdirectories
@@ -350,7 +344,6 @@ class DevController extends Controller
             }
         }
         closedir($handle);
-
         return $list;
     }
 
@@ -358,7 +351,6 @@ class DevController extends Controller
      * Finds linkable applications.
      *
      * @param string $dir directory to search in
-     *
      * @return array list of applications command can link
      */
     protected function findDirs($dir)
@@ -372,7 +364,7 @@ class DevController extends Controller
             if ($file === '.' || $file === '..') {
                 continue;
             }
-            $path = $dir.DIRECTORY_SEPARATOR.$file;
+            $path = $dir . DIRECTORY_SEPARATOR . $file;
             if (is_dir($path) && preg_match('/^yii2-(.*)$/', $file, $matches)) {
                 $list[] = $matches[1];
             }

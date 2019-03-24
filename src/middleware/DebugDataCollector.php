@@ -1,6 +1,8 @@
 <?php
 
+
 namespace yii\middleware;
+
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -9,6 +11,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class DebugDataCollector implements MiddlewareInterface
 {
+
     /**
      * Process an incoming server request.
      *

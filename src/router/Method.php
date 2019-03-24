@@ -1,6 +1,8 @@
 <?php
 
+
 namespace yii\web\router;
+
 
 final class Method
 {

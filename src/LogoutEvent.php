@@ -1,7 +1,6 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
- *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -14,7 +13,6 @@ use yii\base\Event;
  * This event is triggered on [[User]] logout.
  *
  * @author Andrii Vasyliev <sol@hiqdev.com>
- *
  * @since 3.0
  */
 class LogoutEvent extends Event
@@ -31,9 +29,7 @@ class LogoutEvent extends Event
 
     /**
      * Creates BEFORE event with result.
-     *
      * @param IdentityInterface $identity the user object this event is fired on.
-     *
      * @return self created event
      */
     public static function before(IdentityInterface $identity): self
@@ -43,9 +39,7 @@ class LogoutEvent extends Event
 
     /**
      * Creates AFTER_RUN event with result.
-     *
      * @param IdentityInterface $identity the user object this event is fired on.
-     *
      * @return self created event
      */
     public static function after(IdentityInterface $identity): self

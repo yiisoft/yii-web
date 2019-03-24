@@ -1,18 +1,20 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 
 namespace yii\web\emitter;
+
 
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * SapiEmitter sends response using PHP Server API.
+ * SapiEmitter sends response using PHP Server API
+ * @package yii\http\emitter
  */
 class SapiEmitter implements EmitterInterface
 {
     public function emit(ResponseInterface $response): bool
     {
+
         $status = $response->getStatusCode();
 
         foreach ($response->getHeaders() as $header => $values) {
@@ -32,7 +34,7 @@ class SapiEmitter implements EmitterInterface
             'HTTP/%s %d%s',
             $response->getProtocolVersion(),
             $status,
-            ($reason ? ' '.$reason : '')
+            ($reason ? ' ' . $reason : '')
         ), true, $status);
 
         echo $response->getBody();

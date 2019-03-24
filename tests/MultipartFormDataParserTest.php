@@ -1,7 +1,6 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
- *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -9,9 +8,10 @@
 namespace yii\web\tests;
 
 use Psr\Http\Message\UploadedFileInterface;
-use yii\tests\TestCase;
+use yii\http\UploadedFile;
 use yii\web\MultipartFormDataParser;
 use yii\web\Request;
+use yii\tests\TestCase;
 
 class MultipartFormDataParserTest extends TestCase
 {
@@ -20,7 +20,7 @@ class MultipartFormDataParserTest extends TestCase
         $parser = new MultipartFormDataParser();
 
         $boundary = '---------------------------22472926011618';
-        $contentType = 'multipart/form-data; boundary='.$boundary;
+        $contentType = 'multipart/form-data; boundary=' . $boundary;
         $rawBody = "--{$boundary}\nContent-Disposition: form-data; name=\"title\"\r\n\r\ntest-title";
         $rawBody .= "\r\n--{$boundary}\nContent-Disposition: form-data; name=\"Item[name]\"\r\n\r\ntest-name";
         $rawBody .= "\r\n--{$boundary}\nContent-Disposition: form-data; name=\"someFile\"; filename=\"some-file.txt\"\nContent-Type: text/plain\r\n\r\nsome file content";
@@ -58,11 +58,11 @@ class MultipartFormDataParserTest extends TestCase
 
         $expectedBodyParams = [
             'title' => 'test-title',
-            'Item'  => [
+            'Item' => [
                 'name' => 'test-name',
                 'file' => $uploadedFiles['Item']['file'],
             ],
-            'someFile' => $uploadedFiles['someFile'],
+            'someFile' => $uploadedFiles['someFile']
         ];
         $this->assertEquals($expectedBodyParams, $bodyParams);
     }
@@ -80,11 +80,11 @@ class MultipartFormDataParserTest extends TestCase
             '__class' => Request::class,
             'rawBody' => 'should not matter',
             'headers' => [
-                'content-type' => ['multipart/form-data; boundary=---12345'],
+                'content-type' => ['multipart/form-data; boundary=---12345']
             ],
             'parsers' => [
-                'multipart/form-data' => MultipartFormDataParser::class,
-            ],
+                'multipart/form-data' => MultipartFormDataParser::class
+            ]
         ]);
 
         $bodyParams = $request->getParsedBody();
@@ -105,18 +105,18 @@ class MultipartFormDataParserTest extends TestCase
         ];
 
         $boundary = '---------------------------22472926011618';
-        $contentType = 'multipart/form-data; boundary='.$boundary;
+        $contentType = 'multipart/form-data; boundary=' . $boundary;
         $rawBody = "--{$boundary}\nContent-Disposition: form-data; name=\"title\"\r\ntest-title--{$boundary}--";
 
         $request = $this->factory->create([
             '__class' => Request::class,
             'rawBody' => $rawBody,
             'headers' => [
-                'content-type' => [$contentType],
+                'content-type' => [$contentType]
             ],
             'parsers' => [
-                'multipart/form-data' => MultipartFormDataParser::class,
-            ],
+                'multipart/form-data' => MultipartFormDataParser::class
+            ]
         ]);
         $bodyParams = $request->getParsedBody();
         $this->assertEquals([], $bodyParams);
@@ -131,7 +131,7 @@ class MultipartFormDataParserTest extends TestCase
         $parser->setUploadFileMaxCount(2);
 
         $boundary = '---------------------------22472926011618';
-        $contentType = 'multipart/form-data; boundary='.$boundary;
+        $contentType = 'multipart/form-data; boundary=' . $boundary;
         $rawBody = "--{$boundary}\nContent-Disposition: form-data; name=\"firstFile\"; filename=\"first-file.txt\"\nContent-Type: text/plain\r\n\r\nfirst file content";
         $rawBody .= "--{$boundary}\nContent-Disposition: form-data; name=\"secondFile\"; filename=\"second-file.txt\"\nContent-Type: text/plain\r\n\r\nsecond file content";
         $rawBody .= "--{$boundary}\nContent-Disposition: form-data; name=\"thirdFile\"; filename=\"third-file.txt\"\nContent-Type: text/plain\r\n\r\nthird file content";
@@ -141,8 +141,8 @@ class MultipartFormDataParserTest extends TestCase
             '__class' => Request::class,
             'rawBody' => $rawBody,
             'headers' => [
-                'content-type' => [$contentType],
-            ],
+                'content-type' => [$contentType]
+            ]
         ]);
         $parser->parse($request);
         $this->assertCount(2, $request->getUploadedFiles());
@@ -157,7 +157,7 @@ class MultipartFormDataParserTest extends TestCase
         $parser->setUploadFileMaxSize(20);
 
         $boundary = '---------------------------22472926011618';
-        $contentType = 'multipart/form-data; boundary='.$boundary;
+        $contentType = 'multipart/form-data; boundary=' . $boundary;
         $rawBody = "--{$boundary}\nContent-Disposition: form-data; name=\"firstFile\"; filename=\"first-file.txt\"\nContent-Type: text/plain\r\n\r\nfirst file content";
         $rawBody .= "--{$boundary}\nContent-Disposition: form-data; name=\"secondFile\"; filename=\"second-file.txt\"\nContent-Type: text/plain\r\n\r\nsecond file content";
         $rawBody .= "--{$boundary}\nContent-Disposition: form-data; name=\"thirdFile\"; filename=\"third-file.txt\"\nContent-Type: text/plain\r\n\r\nthird file with too long file content";
@@ -167,8 +167,8 @@ class MultipartFormDataParserTest extends TestCase
             '__class' => Request::class,
             'rawBody' => $rawBody,
             'headers' => [
-                'content-type' => [$contentType],
-            ],
+                'content-type' => [$contentType]
+            ]
         ]);
         $parser->parse($request);
         $uploadedFiles = $request->getUploadedFiles();
@@ -196,7 +196,7 @@ class MultipartFormDataParserTest extends TestCase
         ];
 
         $boundary = '---------------------------22472926011618';
-        $contentType = 'multipart/form-data; boundary='.$boundary;
+        $contentType = 'multipart/form-data; boundary=' . $boundary;
         $rawBody = "--{$boundary}\nContent-Disposition: form-data; name=\"title\"\r\n\r\ntest-title";
         $rawBody .= "\r\n--{$boundary}\nContent-Disposition: form-data; name=\"someFile\"; filename=\"some-file.txt\"\nContent-Type: text/plain\r\n\r\nsome file content";
         $rawBody .= "\r\n--{$boundary}--";
@@ -205,8 +205,8 @@ class MultipartFormDataParserTest extends TestCase
             '__class' => Request::class,
             'rawBody' => $rawBody,
             'headers' => [
-                'content-type' => [$contentType],
-            ],
+                'content-type' => [$contentType]
+            ]
         ]);
         $bodyParams = $parser->parse($request);
 
@@ -215,7 +215,7 @@ class MultipartFormDataParserTest extends TestCase
         $this->assertFalse(isset($uploadedFiles['existingFile']));
 
         $expectedBodyParams = [
-            'title'    => 'test-title',
+            'title' => 'test-title',
             'someFile' => $uploadedFiles['someFile'],
         ];
         $this->assertEquals($expectedBodyParams, $bodyParams);

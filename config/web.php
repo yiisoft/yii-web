@@ -1,5 +1,6 @@
 <?php
 
+use yii\di\Reference;
 
 return [
     'aliases' => [
@@ -51,12 +52,12 @@ return [
     ],
 
     \yii\web\User::class => \yii\di\Reference::to('user'),
-    'user'               => [
+    'user' => [
         '__class' => yii\web\User::class,
     ],
 
     'errorHandler' => [
-        '__class'     => yii\web\ErrorHandler::class,
+        '__class' => yii\web\ErrorHandler::class,
         'errorAction' => 'site/error',
     ],
 

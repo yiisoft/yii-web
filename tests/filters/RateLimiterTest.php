@@ -1,7 +1,6 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
- *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -10,14 +9,14 @@ namespace yii\web\tests\filters;
 
 use Prophecy\Argument;
 use yii\helpers\Yii;
-use yii\log\Logger;
-use yii\tests\TestCase;
 use yii\web\filters\RateLimiter;
+use yii\log\Logger;
 use yii\web\Request;
 use yii\web\Response;
+use yii\web\User;
 use yii\web\tests\filters\stubs\RateLimit;
 use yii\web\tests\filters\stubs\UserIdentity;
-use yii\web\User;
+use yii\tests\TestCase;
 
 /**
  *  @group filters
@@ -43,7 +42,6 @@ class RateLimiterTest extends TestCase
 
         $this->mockWebApplication();
     }
-
     protected function tearDown()
     {
         parent::tearDown();
@@ -108,7 +106,7 @@ class RateLimiterTest extends TestCase
     public function testBeforeActionEmptyUser()
     {
         $user = $this->factory->create([
-            '__class'       => User::class,
+            '__class' => User::class,
             'identityClass' => RateLimit::class,
         ]);
         $this->container->set('user', $user);

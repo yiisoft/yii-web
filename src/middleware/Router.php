@@ -1,6 +1,8 @@
 <?php
 
+
 namespace yii\middleware;
+
 
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -10,6 +12,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class Router implements MiddlewareInterface
 {
+
     private $responseFactory;
     private $routes;
 
@@ -38,6 +41,7 @@ class Router implements MiddlewareInterface
 
         if ($path === '/test') {
             // obtain $handler, process
+
 
             $response = $this->responseFactory->createResponse(200);
             $response->getBody()->write($path);

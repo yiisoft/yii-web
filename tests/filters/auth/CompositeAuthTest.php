@@ -1,19 +1,18 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
- *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
 namespace yii\web\tests\filters\auth;
 
-use yii\web\Controller;
 use yii\web\filters\auth\AuthMethod;
 use yii\web\filters\auth\CompositeAuth;
 use yii\web\filters\auth\HttpBearerAuth;
-use yii\web\tests\UserIdentity;
+use yii\web\Controller;
 use yii\web\User;
+use yii\web\tests\UserIdentity;
 
 /**
  * @author Ezekiel Fernandez <ezekiel_p_fernandez@yahoo.com>
@@ -69,7 +68,7 @@ class TestController extends Controller
          */
         return [
             'authenticator' => [
-                '__class'     => CompositeAuth::class,
+                '__class' => CompositeAuth::class,
                 'authMethods' => $this->authMethods ?: [
                     TestAuth::class,
                 ],
@@ -97,7 +96,7 @@ class CompositeAuthTest extends \yii\tests\TestCase
         ]);
         $this->container->setAll([
             'user' => [
-                '__class'       => User::class,
+                '__class' => User::class,
                 'identityClass' => UserIdentity::class,
             ],
         ]);
@@ -129,14 +128,13 @@ class CompositeAuthTest extends \yii\tests\TestCase
 
     public function testCompositeAuth()
     {
-        $this->app->request->setHeader('Authorization', base64_encode('foo:bar'));
+        $this->app->request->setHeader('Authorization', base64_encode("foo:bar"));
         /** @var TestAuthController $controller */
         $controller = $this->app->createController('test')[0];
         $controller->authMethods = [
             HttpBearerAuth::class,
             TestAuth::class,
         ];
-
         try {
             $this->assertEquals('success', $controller->runAction('b'));
         } catch (UnauthorizedHttpException $e) {

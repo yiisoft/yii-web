@@ -1,7 +1,6 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
- *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -41,19 +40,17 @@ use yii\web\MethodNotAllowedHttpException;
  * ```
  *
  * @see https://tools.ietf.org/html/rfc2616#section-14.7
- *
  * @author Carsten Brandt <mail@cebe.cc>
- *
  * @since 2.0
  */
 class VerbFilter extends Behavior
 {
     /**
      * @var array this property defines the allowed request methods for each action.
-     *            For each action that should only support limited set of request methods
-     *            you add an entry with the action id as array key and an array of
-     *            allowed methods (e.g. GET, HEAD, PUT) as the value.
-     *            If an action is not listed all request methods are considered allowed.
+     * For each action that should only support limited set of request methods
+     * you add an entry with the action id as array key and an array of
+     * allowed methods (e.g. GET, HEAD, PUT) as the value.
+     * If an action is not listed all request methods are considered allowed.
      *
      * You can use `'*'` to stand for all actions. When an action is explicitly
      * specified, it takes precedence over the specification given by `'*'`.
@@ -71,9 +68,9 @@ class VerbFilter extends Behavior
      */
     public $actions = [];
 
+
     /**
      * Declares event handlers for the [[owner]]'s events.
-     *
      * @return array events (array keys) and the corresponding event handler methods (array values).
      */
     public function events()
@@ -83,10 +80,8 @@ class VerbFilter extends Behavior
 
     /**
      * @param ActionEvent $event
-     *
-     * @throws MethodNotAllowedHttpException when the request method is not allowed.
-     *
      * @return bool
+     * @throws MethodNotAllowedHttpException when the request method is not allowed.
      */
     public function beforeAction($event)
     {
@@ -105,8 +100,7 @@ class VerbFilter extends Behavior
             $event->isValid = false;
             // https://tools.ietf.org/html/rfc2616#section-14.7
             $app->getResponse()->setHeader('Allow', implode(', ', $allowed));
-
-            throw new MethodNotAllowedHttpException('Method Not Allowed. This URL can only handle the following request methods: '.implode(', ', $allowed).'.');
+            throw new MethodNotAllowedHttpException('Method Not Allowed. This URL can only handle the following request methods: ' . implode(', ', $allowed) . '.');
         }
 
         return $event->isValid;

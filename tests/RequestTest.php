@@ -1,7 +1,6 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
- *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -10,9 +9,9 @@ namespace yii\tests\web;
 
 use yii\http\MemoryStream;
 use yii\http\UploadedFile;
-use yii\tests\TestCase;
 use yii\web\Request;
 use yii\web\UnsupportedMediaTypeHttpException;
+use yii\tests\TestCase;
 use yii\web\UrlManager;
 
 /**
@@ -29,15 +28,15 @@ class RequestTest extends TestCase
 
         $this->assertEquals([
             'audio/basic' => ['q' => 1],
-            'audio/*'     => ['q' => 0.2],
+            'audio/*' => ['q' => 0.2],
         ], $request->parseAcceptHeader('audio/*; q=0.2, audio/basic'));
 
         $this->assertEquals([
             'application/json' => ['q' => 1, 'version' => '1.0'],
-            'application/xml'  => ['q' => 1, 'version' => '2.0', 'x'],
-            'text/x-c'         => ['q' => 1],
-            'text/x-dvi'       => ['q' => 0.8],
-            'text/plain'       => ['q' => 0.5],
+            'application/xml' => ['q' => 1, 'version' => '2.0', 'x'],
+            'text/x-c' => ['q' => 1],
+            'text/x-dvi' => ['q' => 0.8],
+            'text/plain' => ['q' => 0.5],
         ], $request->parseAcceptHeader('text/plain; q=0.5,
             application/json; version=1.0,
             application/xml; version=2.0; x,
@@ -111,7 +110,7 @@ class RequestTest extends TestCase
         // accept any value if CSRF validation is disabled
         $request->enableCsrfValidation = false;
         $this->assertTrue($request->validateCsrfToken($token));
-        $this->assertTrue($request->validateCsrfToken($token.'a'));
+        $this->assertTrue($request->validateCsrfToken($token . 'a'));
         $this->assertTrue($request->validateCsrfToken([]));
         $this->assertTrue($request->validateCsrfToken([$token]));
         $this->assertTrue($request->validateCsrfToken(0));
@@ -124,7 +123,7 @@ class RequestTest extends TestCase
         foreach (['GET', 'HEAD', 'OPTIONS'] as $method) {
             $request->setMethod($method);
             $this->assertTrue($request->validateCsrfToken($token));
-            $this->assertTrue($request->validateCsrfToken($token.'a'));
+            $this->assertTrue($request->validateCsrfToken($token . 'a'));
             $this->assertTrue($request->validateCsrfToken([]));
             $this->assertTrue($request->validateCsrfToken([$token]));
             $this->assertTrue($request->validateCsrfToken(0));
@@ -135,7 +134,7 @@ class RequestTest extends TestCase
         foreach (['POST', 'PUT', 'DELETE'] as $method) {
             $request->setMethod($method);
             $this->assertTrue($request->validateCsrfToken($token));
-            $this->assertFalse($request->validateCsrfToken($token.'a'));
+            $this->assertFalse($request->validateCsrfToken($token . 'a'));
             $this->assertFalse($request->validateCsrfToken([]));
             $this->assertFalse($request->validateCsrfToken([$token]));
             $this->assertFalse($request->validateCsrfToken(0));
@@ -157,8 +156,8 @@ class RequestTest extends TestCase
 
         // When an empty CSRF token is given it is regenerated.
         $this->assertNotEmpty($request->getCsrfToken());
-    }
 
+    }
     /**
      * Test CSRF token validation by POST param.
      */
@@ -219,12 +218,12 @@ class RequestTest extends TestCase
     {
         $this->mockWebApplication();
         $this->container->set('urlManager', [
-            '__class'         => UrlManager::class,
+            '__class' => UrlManager::class,
             'enablePrettyUrl' => true,
-            'showScriptName'  => false,
-            'cache'           => null,
-            'rules'           => [
-                'posts'     => 'post/list',
+            'showScriptName' => false,
+            'cache' => null,
+            'rules' => [
+                'posts' => 'post/list',
                 'post/<id>' => 'post/view',
             ],
         ]);
@@ -275,18 +274,18 @@ class RequestTest extends TestCase
             // empty
             [
                 [],
-                [null, null],
+                [null, null]
             ],
             // normal
             [
                 [
-                    'HTTP_HOST'   => 'example1.com',
+                    'HTTP_HOST' => 'example1.com',
                     'SERVER_NAME' => 'example2.com',
                 ],
                 [
                     'http://example1.com',
                     'example1.com',
-                ],
+                ]
             ],
             // HTTP header missing
             [
@@ -296,52 +295,51 @@ class RequestTest extends TestCase
                 [
                     'http://example2.com',
                     'example2.com',
-                ],
+                ]
             ],
             // forwarded from untrusted server
             [
                 [
                     'HTTP_X_FORWARDED_HOST' => 'example3.com',
-                    'HTTP_HOST'             => 'example1.com',
-                    'SERVER_NAME'           => 'example2.com',
+                    'HTTP_HOST' => 'example1.com',
+                    'SERVER_NAME' => 'example2.com',
                 ],
                 [
                     'http://example1.com',
                     'example1.com',
-                ],
+                ]
             ],
             // forwarded from trusted proxy
             [
                 [
                     'HTTP_X_FORWARDED_HOST' => 'example3.com',
-                    'HTTP_HOST'             => 'example1.com',
-                    'SERVER_NAME'           => 'example2.com',
-                    'REMOTE_ADDR'           => '192.168.0.1',
+                    'HTTP_HOST' => 'example1.com',
+                    'SERVER_NAME' => 'example2.com',
+                    'REMOTE_ADDR' => '192.168.0.1',
                 ],
                 [
                     'http://example3.com',
                     'example3.com',
-                ],
+                ]
             ],
             // forwarded from trusted proxy
             [
                 [
                     'HTTP_X_FORWARDED_HOST' => 'example3.com, example2.com',
-                    'HTTP_HOST'             => 'example1.com',
-                    'SERVER_NAME'           => 'example2.com',
-                    'REMOTE_ADDR'           => '192.168.0.1',
+                    'HTTP_HOST' => 'example1.com',
+                    'SERVER_NAME' => 'example2.com',
+                    'REMOTE_ADDR' => '192.168.0.1',
                 ],
                 [
                     'http://example3.com',
                     'example3.com',
-                ],
+                ]
             ],
         ];
     }
 
     /**
      * @dataProvider getHostInfoDataProvider
-     *
      * @param array $server
      * @param array $expected
      */
@@ -350,7 +348,7 @@ class RequestTest extends TestCase
         $original = $_SERVER;
         $_SERVER = $server;
         $request = $this->factory->create([
-            '__class'      => Request::class,
+            '__class' => Request::class,
             'trustedHosts' => [
                 '192.168.0.0/24',
             ],
@@ -360,6 +358,7 @@ class RequestTest extends TestCase
         $this->assertEquals($expected[1], $request->getHostName());
         $_SERVER = $original;
     }
+
 
     public function testSetHostInfo()
     {
@@ -405,7 +404,7 @@ class RequestTest extends TestCase
         $request = new Request($this->app);
 
         $request->setServerParams([
-            'SERVER_NAME' => 'servername',
+            'SERVER_NAME' => 'servername'
         ]);
         $this->assertEquals('servername', $request->getServerName());
 
@@ -419,7 +418,7 @@ class RequestTest extends TestCase
         $request = new Request($this->app);
 
         $request->setServerParams([
-            'SERVER_PORT' => 33,
+            'SERVER_PORT' => 33
         ]);
         $this->assertEquals(33, $request->getServerPort());
 
@@ -439,52 +438,51 @@ class RequestTest extends TestCase
             [['HTTP_X_FORWARDED_PROTO' => 'http'], false],
             [[
                 'HTTP_X_FORWARDED_PROTO' => 'https',
-                'REMOTE_HOST'            => 'test.com',
+                'REMOTE_HOST' => 'test.com',
             ], false],
             [[
                 'HTTP_X_FORWARDED_PROTO' => 'https',
-                'REMOTE_HOST'            => 'othertest.com',
+                'REMOTE_HOST' => 'othertest.com',
             ], false],
             [[
                 'HTTP_X_FORWARDED_PROTO' => 'https',
-                'REMOTE_ADDR'            => '192.168.0.1',
+                'REMOTE_ADDR' => '192.168.0.1',
             ], true],
             [[
                 'HTTP_X_FORWARDED_PROTO' => 'https',
-                'REMOTE_ADDR'            => '192.169.0.1',
+                'REMOTE_ADDR' => '192.169.0.1',
             ], false],
             [['HTTP_FRONT_END_HTTPS' => 'on'], false],
             [['HTTP_FRONT_END_HTTPS' => 'off'], false],
             [[
                 'HTTP_FRONT_END_HTTPS' => 'on',
-                'REMOTE_HOST'          => 'test.com',
+                'REMOTE_HOST' => 'test.com',
             ], false],
             [[
                 'HTTP_FRONT_END_HTTPS' => 'on',
-                'REMOTE_HOST'          => 'othertest.com',
+                'REMOTE_HOST' => 'othertest.com',
             ], false],
             [[
                 'HTTP_FRONT_END_HTTPS' => 'on',
-                'REMOTE_ADDR'          => '192.168.0.1',
+                'REMOTE_ADDR' => '192.168.0.1',
             ], true],
             [[
                 'HTTP_FRONT_END_HTTPS' => 'on',
-                'REMOTE_ADDR'          => '192.169.0.1',
+                'REMOTE_ADDR' => '192.169.0.1',
             ], false],
         ];
     }
 
     /**
      * @dataProvider isSecureServerDataProvider
-     *
      * @param array $server
-     * @param bool  $expected
+     * @param bool $expected
      */
     public function testGetIsSecureConnection($server, $expected)
     {
         $original = $_SERVER;
         $request = $this->factory->create([
-            '__class'      => Request::class,
+            '__class' => Request::class,
             'trustedHosts' => [
                 '192.168.0.0/24',
             ],
@@ -501,34 +499,34 @@ class RequestTest extends TestCase
             [
                 [
                     'HTTP_X_FORWARDED_PROTO' => 'https',
-                    'HTTP_X_FORWARDED_FOR'   => '123.123.123.123',
-                    'REMOTE_ADDR'            => '192.168.0.1',
+                    'HTTP_X_FORWARDED_FOR' => '123.123.123.123',
+                    'REMOTE_ADDR' => '192.168.0.1',
                 ],
                 '123.123.123.123',
             ],
             [
                 [
                     'HTTP_X_FORWARDED_PROTO' => 'https',
-                    'HTTP_X_FORWARDED_FOR'   => '123.123.123.123',
-                    'REMOTE_ADDR'            => '192.169.1.1',
+                    'HTTP_X_FORWARDED_FOR' => '123.123.123.123',
+                    'REMOTE_ADDR' => '192.169.1.1',
                 ],
                 '192.169.1.1',
             ],
             [
                 [
                     'HTTP_X_FORWARDED_PROTO' => 'https',
-                    'HTTP_X_FORWARDED_FOR'   => '123.123.123.123',
-                    'REMOTE_HOST'            => 'untrusted.com',
-                    'REMOTE_ADDR'            => '192.169.1.1',
+                    'HTTP_X_FORWARDED_FOR' => '123.123.123.123',
+                    'REMOTE_HOST' => 'untrusted.com',
+                    'REMOTE_ADDR' => '192.169.1.1',
                 ],
                 '192.169.1.1',
             ],
             [
                 [
                     'HTTP_X_FORWARDED_PROTO' => 'https',
-                    'HTTP_X_FORWARDED_FOR'   => '192.169.1.1',
-                    'REMOTE_HOST'            => 'untrusted.com',
-                    'REMOTE_ADDR'            => '192.169.1.1',
+                    'HTTP_X_FORWARDED_FOR' => '192.169.1.1',
+                    'REMOTE_HOST' => 'untrusted.com',
+                    'REMOTE_ADDR' => '192.169.1.1',
                 ],
                 '192.169.1.1',
             ],
@@ -537,8 +535,7 @@ class RequestTest extends TestCase
 
     /**
      * @dataProvider getUserIPDataProvider
-     *
-     * @param array  $server
+     * @param array $server
      * @param string $expected
      */
     public function testGetUserIP($server, $expected)
@@ -546,7 +543,7 @@ class RequestTest extends TestCase
         $original = $_SERVER;
         $_SERVER = $server;
         $request = $this->factory->create([
-            '__class'      => Request::class,
+            '__class' => Request::class,
             'trustedHosts' => [
                 '192.168.0.0/24',
             ],
@@ -561,7 +558,7 @@ class RequestTest extends TestCase
         return [
             [
                 [
-                    'REQUEST_METHOD'              => 'DEFAULT',
+                    'REQUEST_METHOD' => 'DEFAULT',
                     'HTTP_X-HTTP-METHOD-OVERRIDE' => 'OVERRIDE',
                 ],
                 'OVERRIDE',
@@ -577,8 +574,7 @@ class RequestTest extends TestCase
 
     /**
      * @dataProvider getMethodDataProvider
-     *
-     * @param array  $server
+     * @param array $server
      * @param string $expected
      */
     public function testGetMethod($server, $expected)
@@ -611,9 +607,8 @@ class RequestTest extends TestCase
 
     /**
      * @dataProvider getIsAjaxDataProvider
-     *
      * @param array $server
-     * @param bool  $expected
+     * @param bool $expected
      */
     public function testGetIsAjax($server, $expected)
     {
@@ -654,22 +649,21 @@ class RequestTest extends TestCase
 
     /**
      * @dataProvider httpAuthorizationHeadersProvider
-     *
      * @param string $secret
-     * @param array  $expected
+     * @param array $expected
      */
     public function testHttpAuthCredentialsFromHttpAuthorizationHeader($secret, $expected)
     {
         $this->mockWebApplication();
         $request = new Request($this->app);
 
-        $request->setHeader('HTTP_AUTHORIZATION', 'Basic '.$secret);
+        $request->setHeader('HTTP_AUTHORIZATION', 'Basic ' . $secret);
         $this->assertSame($request->getAuthCredentials(), $expected);
         $this->assertSame($request->getAuthUser(), $expected[0]);
         $this->assertSame($request->getAuthPassword(), $expected[1]);
         $request->getHeaderCollection()->remove('HTTP_AUTHORIZATION');
 
-        $request->setHeader('REDIRECT_HTTP_AUTHORIZATION', 'Basic '.$secret);
+        $request->setHeader('REDIRECT_HTTP_AUTHORIZATION', 'Basic ' . $secret);
         $this->assertSame($request->getAuthCredentials(), $expected);
         $this->assertSame($request->getAuthUser(), $expected[0]);
         $this->assertSame($request->getAuthPassword(), $expected[1]);
@@ -684,7 +678,7 @@ class RequestTest extends TestCase
         $_SERVER['PHP_AUTH_PW'] = $pw;
 
         $request = new Request($this->app);
-        $request->setHeader('HTTP_AUTHORIZATION', 'Basic '.base64_encode('less-priority:than-PHP_AUTH_*'));
+        $request->setHeader('HTTP_AUTHORIZATION', 'Basic ' . base64_encode('less-priority:than-PHP_AUTH_*'));
 
         $this->assertSame($request->getAuthCredentials(), [$user, $pw]);
         $this->assertSame($request->getAuthUser(), $user);
@@ -710,14 +704,12 @@ class RequestTest extends TestCase
 
         try {
             $request->getParsedBody();
-        } catch (UnsupportedMediaTypeHttpException $noContentTypeException) {
-        }
+        } catch (UnsupportedMediaTypeHttpException $noContentTypeException) {}
         $this->assertTrue(isset($noContentTypeException));
 
         try {
             $request->withMethod('POST')->getParsedBody();
-        } catch (UnsupportedMediaTypeHttpException $postWithoutContentTypeException) {
-        }
+        } catch (UnsupportedMediaTypeHttpException $postWithoutContentTypeException) {}
         $this->assertTrue(isset($postWithoutContentTypeException));
     }
 
@@ -735,14 +727,12 @@ class RequestTest extends TestCase
 
         try {
             $request->withHeader('Content-Type', 'test/json')->getParsedBody();
-        } catch (UnsupportedMediaTypeHttpException $noContentException) {
-        }
+        } catch (UnsupportedMediaTypeHttpException $noContentException) {}
         $this->assertTrue(isset($noContentException));
     }
 
     /**
-     * Data provider for [[testDefaultUploadedFiles()]].
-     *
+     * Data provider for [[testDefaultUploadedFiles()]]
      * @return array test data.
      */
     public function dataProviderDefaultUploadedFiles()
@@ -756,21 +746,21 @@ class RequestTest extends TestCase
                 [
                     'avatar' => [
                         'tmp_name' => 'avatar.tmp',
-                        'name'     => 'my-avatar.png',
-                        'size'     => 90996,
-                        'type'     => 'image/png',
-                        'error'    => 0,
+                        'name' => 'my-avatar.png',
+                        'size' => 90996,
+                        'type' => 'image/png',
+                        'error' => 0,
                     ],
                 ],
                 [
                     'avatar' => new UploadedFile([
-                        'tempFilename'    => 'avatar.tmp',
-                        'clientFilename'  => 'my-avatar.png',
-                        'size'            => 90996,
+                        'tempFilename' => 'avatar.tmp',
+                        'clientFilename' => 'my-avatar.png',
+                        'size' => 90996,
                         'clientMediaType' => 'image/png',
-                        'error'           => 0,
-                    ]),
-                ],
+                        'error' => 0,
+                    ])
+                ]
             ],
             [
                 [
@@ -800,18 +790,18 @@ class RequestTest extends TestCase
                 [
                     'ItemFile' => [
                         0 => new UploadedFile([
-                            'clientFilename'  => 'file0.txt',
+                            'clientFilename' => 'file0.txt',
                             'clientMediaType' => 'type/0',
-                            'tempFilename'    => 'file0.tmp',
-                            'size'            => 1000,
-                            'error'           => 0,
+                            'tempFilename' => 'file0.tmp',
+                            'size' => 1000,
+                            'error' => 0,
                         ]),
                         1 => new UploadedFile([
-                            'clientFilename'  => 'file1.txt',
+                            'clientFilename' => 'file1.txt',
                             'clientMediaType' => 'type/1',
-                            'tempFilename'    => 'file1.tmp',
-                            'size'            => 1001,
-                            'error'           => 1,
+                            'tempFilename' => 'file1.tmp',
+                            'size' => 1001,
+                            'error' => 1,
                         ]),
                     ],
                 ],
@@ -821,27 +811,27 @@ class RequestTest extends TestCase
                     'my-form' => [
                         'name' => [
                             'details' => [
-                                'avatar' => 'my-avatar.png',
+                                'avatar' => 'my-avatar.png'
                             ],
                         ],
                         'tmp_name' => [
                             'details' => [
-                                'avatar' => 'avatar.tmp',
+                                'avatar' => 'avatar.tmp'
                             ],
                         ],
                         'size' => [
                             'details' => [
-                                'avatar' => 90996,
+                                'avatar' => 90996
                             ],
                         ],
                         'type' => [
                             'details' => [
-                                'avatar' => 'image/png',
+                                'avatar' => 'image/png'
                             ],
                         ],
                         'error' => [
                             'details' => [
-                                'avatar' => 0,
+                                'avatar' => 0
                             ],
                         ],
                     ],
@@ -850,15 +840,15 @@ class RequestTest extends TestCase
                     'my-form' => [
                         'details' => [
                             'avatar' => new UploadedFile([
-                                'tempFilename'    => 'avatar.tmp',
-                                'clientFilename'  => 'my-avatar.png',
+                                'tempFilename' => 'avatar.tmp',
+                                'clientFilename' => 'my-avatar.png',
                                 'clientMediaType' => 'image/png',
-                                'size'            => 90996,
-                                'error'           => 0,
-                            ]),
+                                'size' => 90996,
+                                'error' => 0,
+                            ])
                         ],
                     ],
-                ],
+                ]
             ],
         ];
     }
@@ -892,18 +882,18 @@ class RequestTest extends TestCase
         $request->setUploadedFiles([
             'ItemFile' => [
                 0 => new UploadedFile([
-                    'clientFilename'  => 'file0.txt',
+                    'clientFilename' => 'file0.txt',
                     'clientMediaType' => 'type/0',
-                    'tempFilename'    => 'file0.tmp',
-                    'size'            => 1000,
-                    'error'           => 0,
+                    'tempFilename' => 'file0.tmp',
+                    'size' => 1000,
+                    'error' => 0,
                 ]),
                 1 => new UploadedFile([
-                    'clientFilename'  => 'file1.txt',
+                    'clientFilename' => 'file1.txt',
                     'clientMediaType' => 'type/1',
-                    'tempFilename'    => 'file1.tmp',
-                    'size'            => 1001,
-                    'error'           => 1,
+                    'tempFilename' => 'file1.tmp',
+                    'size' => 1001,
+                    'error' => 1,
                 ]),
             ],
         ]);
@@ -929,18 +919,18 @@ class RequestTest extends TestCase
             'Item' => [
                 'file' => [
                     0 => new UploadedFile([
-                        'clientFilename'  => 'file0.txt',
+                        'clientFilename' => 'file0.txt',
                         'clientMediaType' => 'type/0',
-                        'tempFilename'    => 'file0.tmp',
-                        'size'            => 1000,
-                        'error'           => 0,
+                        'tempFilename' => 'file0.tmp',
+                        'size' => 1000,
+                        'error' => 0,
                     ]),
                     1 => new UploadedFile([
-                        'clientFilename'  => 'file1.txt',
+                        'clientFilename' => 'file1.txt',
                         'clientMediaType' => 'type/1',
-                        'tempFilename'    => 'file1.tmp',
-                        'size'            => 1001,
-                        'error'           => 1,
+                        'tempFilename' => 'file1.tmp',
+                        'size' => 1001,
+                        'error' => 1,
                     ]),
                 ],
             ],

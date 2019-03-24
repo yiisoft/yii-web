@@ -1,7 +1,6 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
- *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -20,8 +19,7 @@ class Post extends BaseObject
     {
         $this->id = $id;
         $this->title = $title;
-        if (!is_null($city)) {
-            $this->city = $city;
-        }
+        if(!is_null($city))
+        	$this->city = $city;
     }
 }

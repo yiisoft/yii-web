@@ -2,6 +2,7 @@
 
 namespace yii\web\router;
 
+
 interface UrlGeneratorInterface
 {
     public const TYPE_ABSOLUTE = 'absolute';

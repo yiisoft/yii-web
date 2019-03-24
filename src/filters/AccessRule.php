@@ -1,7 +1,6 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
- *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -22,7 +21,6 @@ use yii\web\User;
  * This class represents an access rule defined by the [[AccessControl]] action filter.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- *
  * @since 2.0
  */
 class AccessRule extends Component
@@ -33,7 +31,7 @@ class AccessRule extends Component
     public $allow;
     /**
      * @var array list of action IDs that this rule applies to. The comparison is case-sensitive.
-     *            If not set or empty, it means this rule applies to all actions.
+     * If not set or empty, it means this rule applies to all actions.
      */
     public $actions;
     /**
@@ -53,7 +51,7 @@ class AccessRule extends Component
     public $controllers;
     /**
      * @var array list of roles that this rule applies to (requires properly configured User component).
-     *            Two special roles are recognized, and they are checked via [[User::isGuest]]:
+     * Two special roles are recognized, and they are checked via [[User::isGuest]]:
      *
      * - `?`: matches a guest user (not authenticated yet)
      * - `@`: matches an authenticated user
@@ -64,17 +62,15 @@ class AccessRule extends Component
      * Note that it is preferred to check for permissions instead.
      *
      * If this property is not set or empty, it means this rule applies regardless of roles.
-     *
      * @see $permissions
      * @see $roleParams
      */
     public $roles;
-    /**
+    /** 
      * @var array list of RBAC (Role-Based Access Control) permissions that this rules applies to.
-     *            [[User::can()]] will be called to check access.
-     *
+     * [[User::can()]] will be called to check access.
+     * 
      * If this property is not set or empty, it means this rule applies regardless of permissions.
-     *
      * @since 2.0.12
      * @see $roles
      * @see $roleParams
@@ -82,7 +78,7 @@ class AccessRule extends Component
     public $permissions;
     /**
      * @var array|Closure parameters to pass to the [[User::can()]] function for evaluating
-     *                    user permissions in [[$roles]].
+     * user permissions in [[$roles]].
      *
      * If this is an array, it will be passed directly to [[User::can()]]. For example for passing an
      * ID from the current request, you may use the following:
@@ -116,23 +112,21 @@ class AccessRule extends Component
     public $roleParams = [];
     /**
      * @var array list of user IP addresses that this rule applies to. An IP address
-     *            can contain the wildcard `*` at the end so that it matches IP addresses with the same prefix.
-     *            For example, '192.168.*' matches all IP addresses in the segment '192.168.'.
-     *            If not set or empty, it means this rule applies to all IP addresses.
-     *
+     * can contain the wildcard `*` at the end so that it matches IP addresses with the same prefix.
+     * For example, '192.168.*' matches all IP addresses in the segment '192.168.'.
+     * If not set or empty, it means this rule applies to all IP addresses.
      * @see Request::userIP
      */
     public $ips;
     /**
      * @var array list of request methods (e.g. `GET`, `POST`) that this rule applies to.
-     *            If not set or empty, it means this rule applies to all request methods.
-     *
+     * If not set or empty, it means this rule applies to all request methods.
      * @see \yii\web\Request::method
      */
     public $verbs;
     /**
      * @var callable a callback that will be called to determine if the rule should be applied.
-     *               The signature of the callback should be as follows:
+     * The signature of the callback should be as follows:
      *
      * ```php
      * function ($rule, $action)
@@ -144,8 +138,8 @@ class AccessRule extends Component
     public $matchCallback;
     /**
      * @var callable a callback that will be called if this rule determines the access to
-     *               the current action should be denied. This is the case when this rule matches
-     *               and [[$allow]] is set to `false`.
+     * the current action should be denied. This is the case when this rule matches
+     * and [[$allow]] is set to `false`.
      *
      * If not set, the behavior will be determined by [[AccessControl]],
      * either using [[AccessControl::denyAccess()]]
@@ -158,10 +152,10 @@ class AccessRule extends Component
      * ```
      *
      * where `$rule` is this rule, and `$action` is the current [[Action|action]] object.
-     *
      * @see AccessControl::$denyCallback
      */
     public $denyCallback;
+
 
     public function __construct(array $config = [])
     {
@@ -170,11 +164,9 @@ class AccessRule extends Component
 
     /**
      * Checks whether the Web user is allowed to perform the specified action.
-     *
-     * @param Action     $action  the action to be performed
-     * @param User|false $user    the user object or `false` in case of detached User component
-     * @param Request    $request
-     *
+     * @param Action $action the action to be performed
+     * @param User|false $user the user object or `false` in case of detached User component
+     * @param Request $request
      * @return bool|null `true` if the user is allowed, `false` if the user is denied, `null` if the rule does not apply to the user
      */
     public function allows($action, $user, $request)
@@ -188,11 +180,12 @@ class AccessRule extends Component
         ) {
             return $this->allow ? true : false;
         }
+
+        return null;
     }
 
     /**
      * @param Action $action the action
-     *
      * @return bool whether the rule applies to the action
      */
     protected function matchAction($action)
@@ -202,7 +195,6 @@ class AccessRule extends Component
 
     /**
      * @param Controller $controller the controller
-     *
      * @return bool whether the rule applies to the controller
      */
     protected function matchController($controller)
@@ -223,10 +215,8 @@ class AccessRule extends Component
 
     /**
      * @param User $user the user object
-     *
-     * @throws InvalidConfigException if User component is detached
-     *
      * @return bool whether the rule applies to the role
+     * @throws InvalidConfigException if User component is detached
      */
     protected function matchRole($user)
     {
@@ -268,7 +258,6 @@ class AccessRule extends Component
 
     /**
      * @param string|null $ip the IP address
-     *
      * @return bool whether the rule applies to the IP address
      */
     protected function matchIP($ip)
@@ -294,7 +283,6 @@ class AccessRule extends Component
 
     /**
      * @param string $verb the request method.
-     *
      * @return bool whether the rule applies to the request
      */
     protected function matchVerb($verb)
@@ -304,7 +292,6 @@ class AccessRule extends Component
 
     /**
      * @param Action $action the action to be performed
-     *
      * @return bool whether the rule should be applied
      */
     protected function matchCustom($action)

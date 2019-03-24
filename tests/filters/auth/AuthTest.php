@@ -1,7 +1,6 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
- *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -9,22 +8,20 @@
 namespace yii\web\tests\filters\auth;
 
 use yii\base\Action;
-use yii\helpers\ArrayHelper;
-use yii\web\Controller;
 use yii\web\filters\auth\AuthMethod;
 use yii\web\filters\auth\HttpBasicAuth;
 use yii\web\filters\auth\HttpBearerAuth;
-use yii\web\filters\auth\HttpHeaderAuth;
 use yii\web\filters\auth\QueryParamAuth;
-use yii\web\tests\filters\stubs\UserIdentity;
-use yii\web\UnauthorizedHttpException;
+use yii\web\filters\auth\HttpHeaderAuth;
+use yii\helpers\ArrayHelper;
+use yii\web\Controller;
 use yii\web\User;
+use yii\web\UnauthorizedHttpException;
+use yii\web\tests\filters\stubs\UserIdentity;
 
 /**
  * @group filters
- *
  * @author Dmitry Naumenko <d.naumenko.a@gmail.com>
- *
  * @since 2.0.7
  */
 class AuthTest extends \yii\tests\TestCase
@@ -43,7 +40,7 @@ class AuthTest extends \yii\tests\TestCase
         ]);
         $this->container->setAll([
             'user' => [
-                '__class'       => User::class,
+                '__class' => User::class,
                 'identityClass' => UserIdentity::class,
             ],
         ]);
@@ -65,7 +62,6 @@ class AuthTest extends \yii\tests\TestCase
         /** @var TestAuthController $controller */
         $controller = $this->app->createController('test-auth')[0];
         $controller->authenticatorConfig = ArrayHelper::merge($filter, ['only' => ['filtered']]);
-
         try {
             $this->assertEquals($login, $controller->runAction('filtered'));
         } catch (UnauthorizedHttpException $e) {
@@ -77,7 +73,6 @@ class AuthTest extends \yii\tests\TestCase
         /** @var TestAuthController $controller */
         $controller = $this->app->createController('test-auth')[0];
         $controller->authenticatorConfig = ArrayHelper::merge($filter, ['optional' => ['filtered']]);
-
         try {
             $this->assertEquals($login, $controller->runAction('filtered'));
         } catch (UnauthorizedHttpException $e) {
@@ -89,7 +84,6 @@ class AuthTest extends \yii\tests\TestCase
         /** @var TestAuthController $controller */
         $controller = $this->app->createController('test-auth')[0];
         $controller->authenticatorConfig = ArrayHelper::merge($filter, ['except' => ['other']]);
-
         try {
             $this->assertEquals($login, $controller->runAction('filtered'));
         } catch (UnauthorizedHttpException $e) {
@@ -105,7 +99,6 @@ class AuthTest extends \yii\tests\TestCase
 
     /**
      * @dataProvider tokenProvider
-     *
      * @param string|null $token
      * @param string|null $login
      */
@@ -120,7 +113,6 @@ class AuthTest extends \yii\tests\TestCase
 
     /**
      * @dataProvider tokenProvider
-     *
      * @param string|null $token
      * @param string|null $login
      */
@@ -136,7 +128,6 @@ class AuthTest extends \yii\tests\TestCase
 
     /**
      * @dataProvider tokenProvider
-     *
      * @param string|null $token
      * @param string|null $login
      */
@@ -146,10 +137,12 @@ class AuthTest extends \yii\tests\TestCase
         $_SERVER['PHP_AUTH_PW'] = 'whatever, we are testers';
         $filter = [
             '__class' => HttpBasicAuth::class,
-            'auth'    => function ($username, $password) {
+            'auth' => function ($username, $password) {
                 if (preg_match('/\d$/', $username)) {
                     return UserIdentity::findIdentity($username);
                 }
+
+                return null;
             },
         ];
         $this->authOnly($token, $login, $filter, 'basic-auth');
@@ -159,7 +152,6 @@ class AuthTest extends \yii\tests\TestCase
 
     /**
      * @dataProvider tokenProvider
-     *
      * @param string|null $token
      * @param string|null $login
      */
@@ -172,7 +164,6 @@ class AuthTest extends \yii\tests\TestCase
 
     /**
      * @dataProvider tokenProvider
-     *
      * @param string|null $token
      * @param string|null $login
      */
@@ -197,7 +188,6 @@ class AuthTest extends \yii\tests\TestCase
 
     /**
      * @dataProvider authMethodProvider
-     *
      * @param string $authClass
      */
     public function testActive($authClass)
@@ -247,11 +237,10 @@ class AuthTest extends \yii\tests\TestCase
 
     public function testHeaders()
     {
-        $this->app->request->setHeader('Authorization', 'Bearer wrong_token');
+        $this->app->request->setHeader('Authorization', "Bearer wrong_token");
         $filter = ['__class' => HttpBearerAuth::class];
         $controller = $this->app->createController('test-auth')[0];
         $controller->authenticatorConfig = ArrayHelper::merge($filter, ['only' => ['filtered']]);
-
         try {
             $controller->runAction('filtered');
             $this->fail('Should throw UnauthorizedHttpException');
@@ -265,7 +254,6 @@ class AuthTest extends \yii\tests\TestCase
  * Class TestAuthController.
  *
  * @author Dmitry Naumenko <d.naumenko.a@gmail.com>
- *
  * @since 2.0.7
  */
 class TestAuthController extends Controller

@@ -1,7 +1,6 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
- *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -28,7 +27,7 @@ class AssetConverterTest extends \yii\tests\TestCase
     {
         parent::setUp();
         $this->mockApplication();
-        $this->tmpPath = $this->app->runtimePath.'/assetConverterTest_'.getmypid();
+        $this->tmpPath = $this->app->runtimePath . '/assetConverterTest_' . getmypid();
         if (!is_dir($this->tmpPath)) {
             mkdir($this->tmpPath, 0777, true);
         }
@@ -50,7 +49,7 @@ class AssetConverterTest extends \yii\tests\TestCase
     public function testConvert()
     {
         $tmpPath = $this->tmpPath;
-        file_put_contents($tmpPath.'/test.php', <<<EOF
+        file_put_contents($tmpPath . '/test.php', <<<EOF
 <?php
 
 echo "Hello World!\n";
@@ -62,8 +61,8 @@ EOF
         $converter->commands['php'] = ['txt', 'php {from} > {to}'];
         $this->assertEquals('test.txt', $converter->convert('test.php', $tmpPath));
 
-        $this->assertFileExists($tmpPath.'/test.txt', 'Failed asserting that asset output file exists.');
-        $this->assertStringEqualsFile($tmpPath.'/test.txt', "Hello World!\nHello Yii!");
+        $this->assertFileExists($tmpPath . '/test.txt', 'Failed asserting that asset output file exists.');
+        $this->assertStringEqualsFile($tmpPath . '/test.txt', "Hello World!\nHello Yii!");
     }
 
     /**
@@ -72,7 +71,7 @@ EOF
     public function testConvertOutdated()
     {
         $tmpPath = $this->tmpPath;
-        $srcFilename = $tmpPath.'/test.php';
+        $srcFilename = $tmpPath . '/test.php';
         file_put_contents($srcFilename, <<<'EOF'
 <?php
 
@@ -84,15 +83,15 @@ EOF
         $converter->commands['php'] = ['txt', 'php {from} > {to}'];
 
         $converter->convert('test.php', $tmpPath);
-        $initialConvertTime = file_get_contents($tmpPath.'/test.txt');
+        $initialConvertTime = file_get_contents($tmpPath . '/test.txt');
 
         usleep(1);
         $converter->convert('test.php', $tmpPath);
-        $this->assertStringEqualsFile($tmpPath.'/test.txt', $initialConvertTime);
+        $this->assertStringEqualsFile($tmpPath . '/test.txt', $initialConvertTime);
 
         touch($srcFilename, time() + 1000);
         $converter->convert('test.php', $tmpPath);
-        $this->assertNotEquals($initialConvertTime, file_get_contents($tmpPath.'/test.txt'));
+        $this->assertNotEquals($initialConvertTime, file_get_contents($tmpPath . '/test.txt'));
     }
 
     /**
@@ -101,7 +100,7 @@ EOF
     public function testForceConvert()
     {
         $tmpPath = $this->tmpPath;
-        file_put_contents($tmpPath.'/test.php', <<<'EOF'
+        file_put_contents($tmpPath . '/test.php', <<<'EOF'
 <?php
 
 echo microtime();
@@ -112,15 +111,15 @@ EOF
         $converter->commands['php'] = ['txt', 'php {from} > {to}'];
 
         $converter->convert('test.php', $tmpPath);
-        $initialConvertTime = file_get_contents($tmpPath.'/test.txt');
+        $initialConvertTime = file_get_contents($tmpPath . '/test.txt');
 
         usleep(1);
         $converter->convert('test.php', $tmpPath);
-        $this->assertStringEqualsFile($tmpPath.'/test.txt', $initialConvertTime);
+        $this->assertStringEqualsFile($tmpPath . '/test.txt', $initialConvertTime);
 
         $converter->forceConvert = true;
         $converter->convert('test.php', $tmpPath);
-        $this->assertNotEquals($initialConvertTime, file_get_contents($tmpPath.'/test.txt'));
+        $this->assertNotEquals($initialConvertTime, file_get_contents($tmpPath . '/test.txt'));
     }
 
     /**
@@ -129,7 +128,7 @@ EOF
     public function testCheckOutdatedCallback()
     {
         $tmpPath = $this->tmpPath;
-        $srcFilename = $tmpPath.'/test.php';
+        $srcFilename = $tmpPath . '/test.php';
         file_put_contents($srcFilename, <<<'EOF'
 <?php
 
@@ -141,18 +140,18 @@ EOF
         $converter->commands['php'] = ['txt', 'php {from} > {to}'];
 
         $converter->convert('test.php', $tmpPath);
-        $initialConvertTime = file_get_contents($tmpPath.'/test.txt');
+        $initialConvertTime = file_get_contents($tmpPath . '/test.txt');
 
-        $converter->isOutdatedCallback = function () {
+        $converter->isOutdatedCallback = function() {
             return false;
         };
         $converter->convert('test.php', $tmpPath);
-        $this->assertStringEqualsFile($tmpPath.'/test.txt', $initialConvertTime);
+        $this->assertStringEqualsFile($tmpPath . '/test.txt', $initialConvertTime);
 
-        $converter->isOutdatedCallback = function () {
+        $converter->isOutdatedCallback = function() {
             return true;
         };
         $converter->convert('test.php', $tmpPath);
-        $this->assertNotEquals($initialConvertTime, file_get_contents($tmpPath.'/test.txt'));
+        $this->assertNotEquals($initialConvertTime, file_get_contents($tmpPath . '/test.txt'));
     }
 }

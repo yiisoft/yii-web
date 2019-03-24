@@ -1,15 +1,14 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
- *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
 namespace yii\web\filters;
 
-use yii\base\ActionFilter;
 use yii\helpers\Yii;
+use yii\base\ActionFilter;
 use yii\web\Request;
 use yii\web\Response;
 use yii\web\TooManyRequestsHttpException;
@@ -36,7 +35,6 @@ use yii\web\TooManyRequestsHttpException;
  * do nothing if [[user]] is not set or does not implement [[RateLimitInterface]].
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- *
  * @since 2.0
  */
 class RateLimiter extends ActionFilter
@@ -51,7 +49,7 @@ class RateLimiter extends ActionFilter
     public $errorMessage = 'Rate limit exceeded.';
     /**
      * @var RateLimitInterface the user object that implements the RateLimitInterface.
-     *                         If not set, it will take the value of `Yii::getApp()->user->getIdentity(false)`.
+     * If not set, it will take the value of `Yii::getApp()->user->getIdentity(false)`.
      */
     public $user;
     /**
@@ -62,6 +60,7 @@ class RateLimiter extends ActionFilter
      * @var Response the response to be sent. If not set, the `response` application component will be used.
      */
     public $response;
+
 
     /**
      * {@inheritdoc}
@@ -95,12 +94,10 @@ class RateLimiter extends ActionFilter
 
     /**
      * Checks whether the rate limit exceeds.
-     *
-     * @param RateLimitInterface $user     the current user
-     * @param Request            $request
-     * @param Response           $response
-     * @param \yii\base\Action   $action   the action to be executed
-     *
+     * @param RateLimitInterface $user the current user
+     * @param Request $request
+     * @param Response $response
+     * @param \yii\base\Action $action the action to be executed
      * @throws TooManyRequestsHttpException if rate limit exceeds
      */
     public function checkRateLimit($user, $request, $response, $action)
@@ -118,7 +115,6 @@ class RateLimiter extends ActionFilter
         if ($allowance < 1) {
             $user->saveAllowance($request, $action, 0, $current);
             $this->addRateLimitHeaders($response, $limit, 0, $window);
-
             throw new TooManyRequestsHttpException($this->errorMessage);
         }
 
@@ -128,11 +124,10 @@ class RateLimiter extends ActionFilter
 
     /**
      * Adds the rate limit headers to the response.
-     *
      * @param Response $response
-     * @param int      $limit     the maximum number of allowed requests during a period
-     * @param int      $remaining the remaining number of allowed requests within the current period
-     * @param int      $reset     the number of seconds to wait before having maximum number of allowed requests again
+     * @param int $limit the maximum number of allowed requests during a period
+     * @param int $remaining the remaining number of allowed requests within the current period
+     * @param int $reset the number of seconds to wait before having maximum number of allowed requests again
      */
     public function addRateLimitHeaders($response, $limit, $remaining, $reset)
     {

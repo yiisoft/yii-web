@@ -1,16 +1,15 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
- *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
 namespace yii\web\filters;
 
+use yii\helpers\Yii;
 use yii\base\ActionFilter;
 use yii\helpers\StringHelper;
-use yii\helpers\Yii;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -63,14 +62,13 @@ use yii\web\NotFoundHttpException;
  * This filter should be used only if this configuration is not available or compromised.
  *
  * @author Paul Klimov <klimov.paul@gmail.com>
- *
  * @since 2.0.11
  */
 class HostControl extends ActionFilter
 {
     /**
      * @var array|\Closure|null list of host names, which are allowed.
-     *                          Each host can be specified as a wildcard pattern. For example:
+     * Each host can be specified as a wildcard pattern. For example:
      *
      * ```php
      * [
@@ -94,7 +92,7 @@ class HostControl extends ActionFilter
     public $allowedHosts;
     /**
      * @var callable a callback that will be called if the current host does not match [[allowedHosts]].
-     *               If not set, [[denyAccess()]] will be called.
+     * If not set, [[denyAccess()]] will be called.
      *
      * The signature of the callback should be as follows:
      *
@@ -110,13 +108,13 @@ class HostControl extends ActionFilter
     public $denyCallback;
     /**
      * @var string|null fallback host info (e.g. `http://www.yiiframework.com`) used when [[\yii\web\Request::$hostInfo|Request::$hostInfo]] is invalid.
-     *                  This value will replace [[\yii\web\Request::$hostInfo|Request::$hostInfo]] before [[$denyCallback]] is called to make sure that
-     *                  an invalid host will not be used for further processing. You can set it to `null` to leave [[\yii\web\Request::$hostInfo|Request::$hostInfo]] untouched.
-     *                  Default value is empty string (this will result creating relative URLs instead of absolute).
-     *
+     * This value will replace [[\yii\web\Request::$hostInfo|Request::$hostInfo]] before [[$denyCallback]] is called to make sure that
+     * an invalid host will not be used for further processing. You can set it to `null` to leave [[\yii\web\Request::$hostInfo|Request::$hostInfo]] untouched.
+     * Default value is empty string (this will result creating relative URLs instead of absolute).
      * @see \yii\web\Request::getHostInfo()
      */
     public $fallbackHostInfo = '';
+
 
     /**
      * {@inheritdoc}
@@ -162,9 +160,7 @@ class HostControl extends ActionFilter
      * The default implementation will display 404 page right away, terminating the program execution.
      * You may override this method, creating your own deny access handler. While doing so, make sure you
      * avoid usage of the current requested host name, creation of absolute URL links, caching page parts and so on.
-     *
      * @param \yii\base\Action $action the action to be executed.
-     *
      * @throws NotFoundHttpException
      */
     protected function denyAccess($action)

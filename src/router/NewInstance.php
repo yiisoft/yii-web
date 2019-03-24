@@ -1,5 +1,4 @@
 <?php
-
 namespace yii\web\router;
 
 final class NewInstance
@@ -15,7 +14,7 @@ final class NewInstance
 
     public function __invoke(...$arguments)
     {
-        $controller = new $this->class();
+        $controller = new $this->class;
         $controller->{$this->method}(...$arguments);
     }
 }

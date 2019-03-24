@@ -1,7 +1,6 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
- *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -14,9 +13,7 @@ use yii\web\IdentityInterface;
 
 /**
  * Class UserIdentity.
- *
  * @author Dmitry Naumenko <d.naumenko.a@gmail.com>
- *
  * @since 2.0.7
  */
 class UserIdentity extends Component implements IdentityInterface
@@ -42,7 +39,6 @@ class UserIdentity extends Component implements IdentityInterface
         if (in_array($id, static::$ids)) {
             $identitiy = new static();
             $identitiy->_id = $id;
-
             return $identitiy;
         }
     }
@@ -54,7 +50,6 @@ class UserIdentity extends Component implements IdentityInterface
             $identitiy = new static();
             $identitiy->_id = $id;
             $identitiy->_token = $token;
-
             return $identitiy;
         }
     }

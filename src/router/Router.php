@@ -1,5 +1,6 @@
 <?php
 
+
 namespace yii\web\router;
 
 use Psr\Http\Message\ServerRequestInterface;
@@ -20,7 +21,6 @@ class Router implements RouterInterface
                 // ignore
             }
         }
-
         throw new NoMatch($request);
     }
 
@@ -33,7 +33,6 @@ class Router implements RouterInterface
                 // ignore
             }
         }
-
         throw new NoRoute($name);
     }
 }

@@ -1,5 +1,4 @@
 <?php
-
 namespace yii\web;
 
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -9,7 +8,7 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * MiddlewareDispatcher.
+ * MiddlewareDispatcher
  */
 class MiddlewareDispatcher implements RequestHandlerInterface
 {

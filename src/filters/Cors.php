@@ -1,15 +1,14 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
- *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
 namespace yii\web\filters;
 
-use yii\base\ActionFilter;
 use yii\helpers\Yii;
+use yii\base\ActionFilter;
 use yii\web\Request;
 use yii\web\Response;
 
@@ -64,7 +63,6 @@ use yii\web\Response;
  * the [Guide on REST controllers](guide:rest-controllers#cors).
  *
  * @author Philippe Gaultier <pgaultier@gmail.com>
- *
  * @since 2.0
  */
 class Cors extends ActionFilter
@@ -85,13 +83,14 @@ class Cors extends ActionFilter
      * @var array Basic headers handled for the CORS requests.
      */
     public $cors = [
-        'Origin'                           => ['*'],
-        'Access-Control-Request-Method'    => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
-        'Access-Control-Request-Headers'   => ['*'],
+        'Origin' => ['*'],
+        'Access-Control-Request-Method' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
+        'Access-Control-Request-Headers' => ['*'],
         'Access-Control-Allow-Credentials' => null,
-        'Access-Control-Max-Age'           => 86400,
-        'Access-Control-Expose-Headers'    => [],
+        'Access-Control-Max-Age' => 86400,
+        'Access-Control-Expose-Headers' => [],
     ];
+
 
     /**
      * {@inheritdoc}
@@ -110,7 +109,6 @@ class Cors extends ActionFilter
         if ($this->request->isOptions && $this->request->hasHeader('Access-Control-Request-Method')) {
             // it is CORS preflight request, respond with 200 OK without further processing
             $this->response->setStatusCode(200);
-
             return false;
         }
 
@@ -118,8 +116,7 @@ class Cors extends ActionFilter
     }
 
     /**
-     * Override settings for specific action.
-     *
+     * Override settings for specific action
      * @param \yii\base\Action $action the action settings to override
      */
     public function overrideDefaultSettings($action)
@@ -137,7 +134,6 @@ class Cors extends ActionFilter
 
     /**
      * Extract CORS headers from the request.
-     *
      * @return array CORS headers to handle
      */
     public function extractHeaders()
@@ -155,9 +151,7 @@ class Cors extends ActionFilter
 
     /**
      * For each CORS headers create the specific response.
-     *
      * @param array $requestHeaders CORS headers we have detected
-     *
      * @return array CORS headers ready to be sent
      */
     public function prepareHeaders($requestHeaders)
@@ -206,15 +200,14 @@ class Cors extends ActionFilter
 
     /**
      * Handle classic CORS request to avoid duplicate code.
-     *
-     * @param string $type            the kind of headers we would handle
-     * @param array  $requestHeaders  CORS headers request by client
-     * @param array  $responseHeaders CORS response headers sent to the client
+     * @param string $type the kind of headers we would handle
+     * @param array $requestHeaders CORS headers request by client
+     * @param array $responseHeaders CORS response headers sent to the client
      */
     protected function prepareAllowHeaders($type, $requestHeaders, &$responseHeaders)
     {
-        $requestHeaderField = 'Access-Control-Request-'.$type;
-        $responseHeaderField = 'Access-Control-Allow-'.$type;
+        $requestHeaderField = 'Access-Control-Request-' . $type;
+        $responseHeaderField = 'Access-Control-Allow-' . $type;
         if (!isset($requestHeaders[$requestHeaderField], $this->cors[$requestHeaderField])) {
             return;
         }
@@ -231,9 +224,8 @@ class Cors extends ActionFilter
 
     /**
      * Adds the CORS headers to the response.
-     *
      * @param Response $response
-     * @param array    $headers  CORS headers which have been computed
+     * @param array $headers CORS headers which have been computed
      */
     public function addCorsHeaders($response, $headers)
     {
@@ -250,9 +242,7 @@ class Cors extends ActionFilter
      * Example:
      *  - X-PINGOTHER -> X-Pingother
      *  - X_PINGOTHER -> X-Pingother
-     *
      * @param string $string string to convert
-     *
      * @return string the result in "header" format
      */
     protected function headerize($string)
@@ -261,7 +251,6 @@ class Cors extends ActionFilter
         $headers = array_map(function ($element) {
             return str_replace(' ', '-', ucwords(strtolower(str_replace(['_', '-'], [' ', ' '], $element))));
         }, $headers);
-
         return implode(', ', $headers);
     }
 }

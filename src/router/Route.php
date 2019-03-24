@@ -1,9 +1,10 @@
 <?php
 
+
 namespace yii\web\router;
 
 /**
- * Route defines a mapping from URL to callback / name and vice versa.
+ * Route defines a mapping from URL to callback / name and vice versa
  */
 class Route
 {
@@ -29,7 +30,6 @@ class Route
 
     /**
      * TODO: should it be optional?
-     *
      * @var callable
      */
     private $callback;
@@ -53,7 +53,6 @@ class Route
         $new = new static();
         $new->methods = [Method::GET];
         $new->pattern = $pattern;
-
         return $new;
     }
 
@@ -62,7 +61,6 @@ class Route
         $new = new static();
         $new->methods = [Method::POST];
         $new->pattern = $pattern;
-
         return $new;
     }
 
@@ -71,7 +69,6 @@ class Route
         $new = new static();
         $new->methods = [Method::PUT];
         $new->pattern = $pattern;
-
         return $new;
     }
 
@@ -80,7 +77,6 @@ class Route
         $new = new static();
         $new->methods = [Method::DELETE];
         $new->pattern = $pattern;
-
         return $new;
     }
 
@@ -89,7 +85,6 @@ class Route
         $new = new static();
         $new->methods = [Method::PATCH];
         $new->pattern = $pattern;
-
         return $new;
     }
 
@@ -98,7 +93,6 @@ class Route
         $new = new static();
         $new->methods = [Method::HEAD];
         $new->pattern = $pattern;
-
         return $new;
     }
 
@@ -107,7 +101,6 @@ class Route
         $new = new static();
         $new->methods = [Method::OPTIONS];
         $new->pattern = $pattern;
-
         return $new;
     }
 
@@ -117,7 +110,6 @@ class Route
         $new = new static();
         $new->methods = $methods;
         $new->pattern = $pattern;
-
         return $new;
     }
 
@@ -126,7 +118,6 @@ class Route
         $new = new static();
         $new->methods = Method::ALL;
         $new->pattern = $pattern;
-
         return $new;
     }
 
@@ -134,7 +125,6 @@ class Route
     {
         $new = clone $this;
         $new->name = $name;
-
         return $new;
     }
 
@@ -142,37 +132,32 @@ class Route
     {
         $new = clone $this;
         $new->host = rtrim($host, '/');
-
         return $new;
     }
 
     /**
-     * Parameter validation rules indexed by parameter names.
+     * Parameter validation rules indexed by parameter names
      *
      * @param array $parameters
-     *
      * @return Route
      */
     public function parameters(array $parameters): self
     {
         $new = clone $this;
         $new->parameters = $parameters;
-
         return $new;
     }
 
     /**
-     * Parameter default values indexed by parameter names.
+     * Parameter default values indexed by parameter names
      *
      * @param array $defaults
-     *
      * @return Route
      */
     public function defaults(array $defaults): self
     {
         $new = clone $this;
         $new->defaults = $defaults;
-
         return $new;
     }
 
@@ -180,14 +165,12 @@ class Route
      * // TODO: should we allow adding middlewares here?
      *
      * @param callable $callback
-     *
      * @return Route
      */
     public function to(callable $callback): self
     {
         $new = clone $this;
         $new->callback = $callback;
-
         return $new;
     }
 
@@ -196,14 +179,14 @@ class Route
         $result = '';
 
         if ($this->name !== null) {
-            $result .= $this->name.' ';
+            $result .= $this->name . ' ';
         }
 
         if ($this->methods !== null) {
-            $result .= implode(',', $this->methods).' ';
+            $result .= implode(',', $this->methods) . ' ';
         }
         if ($this->host !== null && strrpos($this->pattern, $this->host) === false) {
-            $result .= $this->host.'/';
+            $result .= $this->host . '/';
         }
         $result .= $this->pattern;
 

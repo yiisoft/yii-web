@@ -1,7 +1,6 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
- *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -10,9 +9,9 @@ namespace yii\web;
 
 use yii\base\Action;
 use yii\base\InlineAction;
-use yii\exceptions\InvalidArgumentException;
 use yii\helpers\Url;
 use yii\helpers\Yii;
+use yii\exceptions\InvalidArgumentException;
 use yii\view\ViewContextInterface;
 
 /**
@@ -21,19 +20,17 @@ use yii\view\ViewContextInterface;
  * For more details and usage information on Controller, see the [guide article on controllers](guide:structure-controllers).
  *
  * read-only.
- *
  * @property View|\yii\web\View $view The view object that can be used to render views or view files.
  * @property string $viewPath The directory containing the view files for this controller.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- *
  * @since 2.0
  */
 class Controller extends \yii\base\Controller implements ViewContextInterface
 {
     /**
      * @var bool whether to enable CSRF validation for the actions in this controller.
-     *           CSRF validation is enabled only when both this property and [[\yii\web\Request::enableCsrfValidation]] are true.
+     * CSRF validation is enabled only when both this property and [[\yii\web\Request::enableCsrfValidation]] are true.
      */
     public $enableCsrfValidation = true;
     /**
@@ -42,9 +39,9 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
     public $actionParams = [];
     /**
      * @var null|string|false the name of the layout to be applied to this controller's views.
-     *                        This property mainly affects the behavior of [[render()]].
-     *                        Defaults to null, meaning the actual layout value should inherit that from [[module]]'s layout value.
-     *                        If false, no layout will be applied.
+     * This property mainly affects the behavior of [[render()]].
+     * Defaults to null, meaning the actual layout value should inherit that from [[module]]'s layout value.
+     * If false, no layout will be applied.
      */
     public $layout;
     /**
@@ -89,29 +86,23 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      *
      * If the layout name does not contain a file extension, it will use the default one `.php`.
      *
-     * @param string $view   the view name.
-     * @param array  $params the parameters (name-value pairs) that should be made available in the view.
-     *                       These parameters will not be available in the layout.
-     *
-     * @throws InvalidArgumentException if the view file or the layout file does not exist.
-     *
+     * @param string $view the view name.
+     * @param array $params the parameters (name-value pairs) that should be made available in the view.
+     * These parameters will not be available in the layout.
      * @return string the rendering result.
+     * @throws InvalidArgumentException if the view file or the layout file does not exist.
      */
     public function render($view, $params = [])
     {
         $content = $this->getView()->render($view, $params, $this);
-
         return $this->renderContent($content);
     }
 
     /**
      * Renders a static string by applying a layout.
-     *
      * @param string $content the static string being rendered
-     *
      * @return string the rendering result of the layout with the given static string as the `$content` variable.
-     *                If the layout is disabled, the string will be returned back.
-     *
+     * If the layout is disabled, the string will be returned back.
      * @since 2.0.1
      */
     public function renderContent($content)
@@ -127,13 +118,10 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
     /**
      * Renders a view without applying layout.
      * This method differs from [[render()]] in that it does not apply any layout.
-     *
-     * @param string $view   the view name. Please refer to [[render()]] on how to specify a view name.
-     * @param array  $params the parameters (name-value pairs) that should be made available in the view.
-     *
-     * @throws InvalidArgumentException if the view file does not exist.
-     *
+     * @param string $view the view name. Please refer to [[render()]] on how to specify a view name.
+     * @param array $params the parameters (name-value pairs) that should be made available in the view.
      * @return string the rendering result.
+     * @throws InvalidArgumentException if the view file does not exist.
      */
     public function renderPartial($view, $params = [])
     {
@@ -142,13 +130,10 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
 
     /**
      * Renders a view file.
-     *
-     * @param string $file   the view file to be rendered. This can be either a file path or a [path alias](guide:concept-aliases).
-     * @param array  $params the parameters (name-value pairs) that should be made available in the view.
-     *
-     * @throws InvalidArgumentException if the view file does not exist.
-     *
+     * @param string $file the view file to be rendered. This can be either a file path or a [path alias](guide:concept-aliases).
+     * @param array $params the parameters (name-value pairs) that should be made available in the view.
      * @return string the rendering result.
+     * @throws InvalidArgumentException if the view file does not exist.
      */
     public function renderFile($file, $params = [])
     {
@@ -163,9 +148,8 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      * For this reason, you should use this method instead of [[renderPartial()]] to render
      * a view to respond to an AJAX request.
      *
-     * @param string $view   the view name. Please refer to [[render()]] on how to specify a view name.
-     * @param array  $params the parameters (name-value pairs) that should be made available in the view.
-     *
+     * @param string $view the view name. Please refer to [[render()]] on how to specify a view name.
+     * @param array $params the parameters (name-value pairs) that should be made available in the view.
      * @return string the rendering result.
      */
     public function renderAjax($view, $params = [])
@@ -178,7 +162,6 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      * The [[render()]], [[renderPartial()]] and [[renderFile()]] methods will use
      * this view object to implement the actual view rendering.
      * If not set, it will default to the "view" application component.
-     *
      * @return View|\yii\web\View the view object that can be used to render views or view files.
      */
     public function getView()
@@ -192,7 +175,6 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
 
     /**
      * Sets the view object to be used by this controller.
-     *
      * @param View|\yii\web\View $view the view object that can be used to render views or view files.
      */
     public function setView($view)
@@ -204,13 +186,12 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      * Returns the directory containing view files for this controller.
      * The default implementation returns the directory named as controller [[id]] under the [[module]]'s
      * [[viewPath]] directory.
-     *
      * @return string the directory containing the view files for this controller.
      */
     public function getViewPath()
     {
         if ($this->_viewPath === null) {
-            $this->_viewPath = $this->module->getViewPath().DIRECTORY_SEPARATOR.$this->id;
+            $this->_viewPath = $this->module->getViewPath() . DIRECTORY_SEPARATOR . $this->id;
         }
 
         return $this->_viewPath;
@@ -218,11 +199,8 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
 
     /**
      * Sets the directory that contains the view files.
-     *
      * @param string $path the root directory of view files.
-     *
      * @throws InvalidArgumentException if the directory is invalid
-     *
      * @since 2.0.7
      */
     public function setViewPath($path)
@@ -232,13 +210,10 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
 
     /**
      * Finds the applicable layout file.
-     *
      * @param View $view the view object to render the layout file.
-     *
-     * @throws InvalidArgumentException if an invalid path alias is used to specify the layout.
-     *
      * @return string|bool the layout file path, or false if layout is not needed.
-     *                     Please refer to [[render()]] on how to specify this parameter.
+     * Please refer to [[render()]] on how to specify this parameter.
+     * @throws InvalidArgumentException if an invalid path alias is used to specify the layout.
      */
     public function findLayoutFile($view)
     {
@@ -261,17 +236,17 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
         if (strncmp($layout, '@', 1) === 0) {
             $file = $this->app->getAlias($layout);
         } elseif (strncmp($layout, '/', 1) === 0) {
-            $file = $this->app->getLayoutPath().DIRECTORY_SEPARATOR.substr($layout, 1);
+            $file = $this->app->getLayoutPath() . DIRECTORY_SEPARATOR . substr($layout, 1);
         } else {
-            $file = $module->getLayoutPath().DIRECTORY_SEPARATOR.$layout;
+            $file = $module->getLayoutPath() . DIRECTORY_SEPARATOR . $layout;
         }
 
         if (pathinfo($file, PATHINFO_EXTENSION) !== '') {
             return $file;
         }
-        $path = $file.'.'.$view->defaultExtension;
+        $path = $file . '.' . $view->defaultExtension;
         if ($view->defaultExtension !== 'php' && !is_file($path)) {
-            $path = $file.'.php';
+            $path = $file . '.php';
         }
 
         return $path;
@@ -290,9 +265,7 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      * ```
      *
      * @param mixed $data the data that should be formatted.
-     *
      * @return Response a response that is configured to send `$data` formatted as JSON.
-     *
      * @since 2.0.11
      * @see Response::$format
      * @see Response::FORMAT_JSON
@@ -303,7 +276,6 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
         $response = $this->app->getResponse();
         $response->format = Response::FORMAT_JSON;
         $response->data = $data;
-
         return $response;
     }
 
@@ -320,9 +292,7 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      * ```
      *
      * @param mixed $data the data that should be formatted.
-     *
      * @return Response a response that is configured to send `$data` formatted as XML.
-     *
      * @since 2.0.11
      * @see Response::$format
      * @see Response::FORMAT_XML
@@ -333,7 +303,6 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
         $response = $this->app->getResponse();
         $response->format = Response::FORMAT_XML;
         $response->data = $data;
-
         return $response;
     }
 
@@ -343,13 +312,10 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      * This method will check the parameter names that the action requires and return
      * the provided parameters according to the requirement. If there is any missing parameter,
      * an exception will be thrown.
-     *
      * @param Action $action the action to be bound with parameters
-     * @param array  $params the parameters to be bound to the action
-     *
-     * @throws BadRequestHttpException if there are missing or invalid parameters.
-     *
+     * @param array $params the parameters to be bound to the action
      * @return array the valid parameters that the action can run with.
+     * @throws BadRequestHttpException if there are missing or invalid parameters.
      */
     public function bindActionParams($action, $params)
     {
@@ -429,15 +395,16 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      *
      * Any relative URL that starts with a single forward slash "/" will be converted
      * into an absolute one by prepending it with the host info of the current request.
-     * @param int  $statusCode the HTTP status code. Defaults to 302.
-     *                         See <https://tools.ietf.org/html/rfc2616#section-10>
-     *                         for details about HTTP status code
-     * @param bool $checkAjax  whether to specially handle AJAX requests. Defaults to false,
-     *                         meaning a `Location` header will be sent, which when received as an AJAX response, may NOT cause
-     *                         browser redirection. If this is true, the current request is an AJAX request, then calling this method
-     *                         will cause the browser to redirect to the given URL.
-     *                         Takes effect only when request header `X-Ie-Redirect-Compatibility` is absent.
      *
+     * @param int $statusCode the HTTP status code. Defaults to 302.
+     * See <https://tools.ietf.org/html/rfc2616#section-10>
+     * for details about HTTP status code
+     *
+     * @param boolean $checkAjax whether to specially handle AJAX requests. Defaults to false,
+     * meaning a `Location` header will be sent, which when received as an AJAX response, may NOT cause
+     * browser redirection. If this is true, the current request is an AJAX request, then calling this method
+     * will cause the browser to redirect to the given URL.
+     * Takes effect only when request header `X-Ie-Redirect-Compatibility` is absent.
      * @return Response the current response object
      */
     public function redirect($url, $statusCode = 302, $checkAjax = true)
@@ -475,11 +442,9 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      * For this function to work you have to [[User::setReturnUrl()|set the return URL]] in appropriate places before.
      *
      * @param string|array $defaultUrl the default return URL in case it was not set previously.
-     *                                 If this is null and the return URL was not set previously, [[Application::homeUrl]] will be redirected to.
-     *                                 Please refer to [[User::setReturnUrl()]] on accepted format of the URL.
-     *
+     * If this is null and the return URL was not set previously, [[Application::homeUrl]] will be redirected to.
+     * Please refer to [[User::setReturnUrl()]] on accepted format of the URL.
      * @return Response the current response object
-     *
      * @see User::getReturnUrl()
      */
     public function goBack($defaultUrl = null)
@@ -499,12 +464,11 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      * ```
      *
      * @param string $anchor the anchor that should be appended to the redirection URL.
-     *                       Defaults to empty. Make sure the anchor starts with '#' if you want to specify it.
-     *
+     * Defaults to empty. Make sure the anchor starts with '#' if you want to specify it.
      * @return Response the response object itself
      */
     public function refresh($anchor = '')
     {
-        return $this->app->getResponse()->redirect($this->app->getRequest()->getUrl().$anchor);
+        return $this->app->getResponse()->redirect($this->app->getRequest()->getUrl() . $anchor);
     }
 }

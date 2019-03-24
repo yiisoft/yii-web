@@ -1,7 +1,6 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
- *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -10,10 +9,10 @@ namespace yii\web\tests;
 
 use yii\cache\ArrayCache;
 use yii\cache\Cache;
-use yii\tests\TestCase;
 use yii\web\Request;
 use yii\web\UrlManager;
 use yii\web\UrlRuleInterface;
+use yii\tests\TestCase;
 
 /**
  * This class implements the tests for URL parsing with "pretty" url format.
@@ -57,7 +56,7 @@ class UrlManagerParseUrlTest extends TestCase
 
         return $this->factory->create(array_merge([
             '__class' => UrlManager::class,
-            'cache'   => null,
+            'cache' => null,
         ], $config));
     }
 
@@ -120,7 +119,6 @@ class UrlManagerParseUrlTest extends TestCase
 
     /**
      * @dataProvider suffixProvider
-     *
      * @param string $suffix
      */
     public function testWithoutRulesWithSuffix($suffix)
@@ -153,8 +151,8 @@ class UrlManagerParseUrlTest extends TestCase
     {
         $config = [
             'rules' => [
-                'post/<id:\d+>'         => 'post/view',
-                'posts'                 => 'post/index',
+                'post/<id:\d+>' => 'post/view',
+                'posts' => 'post/index',
                 'book/<id:\d+>/<title>' => 'book/view',
             ],
         ];
@@ -181,8 +179,8 @@ class UrlManagerParseUrlTest extends TestCase
     {
         $config = [
             'rules' => [
-                'post/<id:\d+>'         => 'post/view',
-                'posts'                 => 'post/index',
+                'post/<id:\d+>' => 'post/view',
+                'posts' => 'post/index',
                 'book/<id:\d+>/<title>' => 'book/view',
             ],
         ];
@@ -208,15 +206,14 @@ class UrlManagerParseUrlTest extends TestCase
 
     /**
      * @dataProvider suffixProvider
-     *
      * @param string $suffix
      */
     public function testSimpleRulesWithSuffix($suffix)
     {
         $config = [
             'rules' => [
-                'post/<id:\d+>'         => 'post/view',
-                'posts'                 => 'post/index',
+                'post/<id:\d+>' => 'post/view',
+                'posts' => 'post/index',
                 'book/<id:\d+>/<title>' => 'book/view',
             ],
             'suffix' => $suffix,
@@ -254,15 +251,14 @@ class UrlManagerParseUrlTest extends TestCase
 
     /**
      * @dataProvider suffixProvider
-     *
      * @param string $suffix
      */
     public function testSimpleRulesWithSuffixStrict($suffix)
     {
         $config = [
             'rules' => [
-                'post/<id:\d+>'         => 'post/view',
-                'posts'                 => 'post/index',
+                'post/<id:\d+>' => 'post/view',
+                'posts' => 'post/index',
                 'book/<id:\d+>/<title>' => 'book/view',
             ],
             'suffix' => $suffix,
@@ -299,7 +295,11 @@ class UrlManagerParseUrlTest extends TestCase
         $this->assertFalse($result);
     }
 
+
+
     // TODO implement with hostinfo
+
+
 
     public function testParseRESTRequest()
     {
@@ -307,15 +307,15 @@ class UrlManagerParseUrlTest extends TestCase
 
         // pretty URL rules
         $manager = $this->factory->create([
-            '__class'         => UrlManager::class,
+            '__class' => UrlManager::class,
             'enablePrettyUrl' => true,
-            'showScriptName'  => false,
-            'cache'           => null,
-            'rules'           => [
+            'showScriptName' => false,
+            'cache' => null,
+            'rules' => [
                 'PUT,POST post/<id>/<title>' => 'post/create',
-                'DELETE post/<id>'           => 'post/delete',
-                'post/<id>/<title>'          => 'post/view',
-                'POST/GET'                   => 'post/get',
+                'DELETE post/<id>' => 'post/delete',
+                'post/<id>/<title>' => 'post/view',
+                'POST/GET' => 'post/get',
             ],
         ]);
         // matching pathinfo GET request
@@ -342,9 +342,9 @@ class UrlManagerParseUrlTest extends TestCase
         // createUrl should ignore REST rules
         $this->mockWebApplication([], null, [
             'request' => [
-                '__class'  => Request::class,
+                '__class' => Request::class,
                 'hostInfo' => 'http://localhost/',
-                'baseUrl'  => '/app',
+                'baseUrl' => '/app',
             ],
         ]);
         $this->assertEquals('/app/post/delete?id=123', $manager->createUrl(['post/delete', 'id' => 123]));
@@ -360,7 +360,7 @@ class UrlManagerParseUrlTest extends TestCase
         $this->assertInstanceOf(UrlRuleInterface::class, $firstRule);
 
         $manager->addRules([
-            'posts'                 => 'post/index',
+            'posts' => 'post/index',
             'book/<id:\d+>/<title>' => 'book/view',
         ]);
         $this->assertCount(3, $manager->rules);
@@ -376,7 +376,7 @@ class UrlManagerParseUrlTest extends TestCase
         $this->assertInstanceOf(UrlRuleInterface::class, $firstRule);
 
         $manager->addRules([
-            'posts'                 => 'post/index',
+            'posts' => 'post/index',
             'book/<id:\d+>/<title>' => 'book/view',
         ], false);
         $this->assertCount(3, $manager->rules);
@@ -402,14 +402,14 @@ class UrlManagerParseUrlTest extends TestCase
 
         $manager->addRules(['posts' => 'post/index']);
         $manager->addRules([
-            'book/<id:\d+>/<title>'  => 'book/view',
-            'book/<id:\d+>/<author>' => 'book/view',
+            'book/<id:\d+>/<title>' => 'book/view',
+            'book/<id:\d+>/<author>' => 'book/view'
         ]);
 
         $this->assertCount(4, $manager->rules);
         $this->assertSame($firstRule, $manager->rules[0]);
         $this->assertCount(3, $this->getInaccessibleProperty($arrayCache, '_cache'),
-            'The addRules() method was called twice, adding 3 new rules to the UrlManager, but we have only '.
+            'The addRules() method was called twice, adding 3 new rules to the UrlManager, but we have only ' .
             'two additional caches: one for each addRules() method call.'
         );
     }

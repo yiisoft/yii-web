@@ -1,21 +1,20 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
- *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
 namespace yii\middleware;
 
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
  * Callback wraps arbitrary PHP callback into object matching [[MiddlewareInterface]].
- * Usage example:.
+ * Usage example:
  *
  * ```php
  * $middleware = new CallbackMiddleware(function(ServerRequestInterface $request, RequestHandlerInterface $handler) {
@@ -38,13 +37,13 @@ class Callback implements MiddlewareInterface
 
     /**
      * CallbackMiddleware constructor.
-     *
      * @param callable $callback
      */
     public function __construct(callable $callback)
     {
         $this->callback = $callback;
     }
+
 
     /**
      * {@inheritdoc}

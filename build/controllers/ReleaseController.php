@@ -1,19 +1,18 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
- *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
 namespace yii\build\controllers;
 
-use yii\console\Controller;
+use yii\helpers\Yii;
 use yii\exceptions\Exception;
+use yii\console\Controller;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Console;
 use yii\helpers\FileHelper;
-use yii\helpers\Yii;
 
 /**
  * ReleaseController is there to help preparing releases.
@@ -39,7 +38,6 @@ use yii\helpers\Yii;
  * Be sure to check the help info for individual sub-commands:
  *
  * @author Carsten Brandt <mail@cebe.cc>
- *
  * @since 2.0
  */
 class ReleaseController extends Controller
@@ -63,6 +61,7 @@ class ReleaseController extends Controller
      */
     public $version;
 
+
     public function options($actionID)
     {
         $options = ['basePath'];
@@ -78,6 +77,7 @@ class ReleaseController extends Controller
         return array_merge(parent::options($actionID), $options);
     }
 
+
     public function beforeAction($action)
     {
         if (!$this->interactive) {
@@ -87,7 +87,6 @@ class ReleaseController extends Controller
             $this->basePath = \dirname(\dirname(__DIR__));
         }
         $this->basePath = rtrim($this->basePath, '\\/');
-
         return parent::beforeAction($action);
     }
 
@@ -103,7 +102,7 @@ class ReleaseController extends Controller
         ];
         $extensionPath = "{$this->basePath}/extensions";
         foreach (scandir($extensionPath) as $extension) {
-            if (ctype_alpha($extension) && is_dir($extensionPath.'/'.$extension)) {
+            if (ctype_alpha($extension) && is_dir($extensionPath . '/' . $extension)) {
                 $items[] = $extension;
             }
         }
@@ -112,9 +111,9 @@ class ReleaseController extends Controller
             foreach ($items as $item) {
                 $this->stdout("fetching tags for $item...");
                 if ($item === 'framework') {
-                    $this->gitFetchTags((string) $this->basePath);
+                    $this->gitFetchTags((string)$this->basePath);
                 } elseif (strncmp('app-', $item, 4) === 0) {
-                    $this->gitFetchTags("{$this->basePath}/apps/".substr($item, 4));
+                    $this->gitFetchTags("{$this->basePath}/apps/" . substr($item, 4));
                 } else {
                     $this->gitFetchTags("{$this->basePath}/extensions/$item");
                 }
@@ -129,10 +128,10 @@ class ReleaseController extends Controller
 
         // print version table
         $w = $this->minWidth(array_keys($versions));
-        $this->stdout(str_repeat(' ', $w + 2)."Current Version  Next Version\n", Console::BOLD);
+        $this->stdout(str_repeat(' ', $w + 2) . "Current Version  Next Version\n", Console::BOLD);
         foreach ($versions as $ext => $version) {
-            $this->stdout($ext.str_repeat(' ', $w + 3 - mb_strlen($ext)).$version.'');
-            $this->stdout(str_repeat(' ', 17 - mb_strlen($version)).$nextVersions[$ext]."\n");
+            $this->stdout($ext . str_repeat(' ', $w + 3 - mb_strlen($ext)) . $version . '');
+            $this->stdout(str_repeat(' ', 17 - mb_strlen($version)) . $nextVersions[$ext] . "\n");
         }
     }
 
@@ -188,7 +187,6 @@ class ReleaseController extends Controller
     {
         if (\count($what) > 1) {
             $this->stdout("Currently only one simultaneous release is supported.\n");
-
             return 1;
         }
 
@@ -224,7 +222,7 @@ class ReleaseController extends Controller
             $this->stdout("- are all new `@since` tags for this release version?\n");
         }
         $this->stdout("- other issues with code changes?\n\n    git diff -w $gitVersion.. ${gitDir}\n\n");
-        $travisUrl = reset($what) === 'framework' ? '' : '-'.reset($what);
+        $travisUrl = reset($what) === 'framework' ? '' : '-' . reset($what);
         $this->stdout("- are unit tests passing on travis? https://travis-ci.org/yiisoft/yii2$travisUrl/builds\n");
         $this->stdout("- also make sure the milestone on github is complete and no issues or PRs are left open.\n\n");
         $this->printWhatUrls($what, $versions);
@@ -232,7 +230,6 @@ class ReleaseController extends Controller
 
         if (!$this->confirm('When you continue, this tool will run cleanup jobs and update the changelog as well as other files (locally). Continue?', false)) {
             $this->stdout("Canceled.\n");
-
             return 1;
         }
 
@@ -240,7 +237,7 @@ class ReleaseController extends Controller
             if ($ext === 'framework') {
                 $this->releaseFramework("{$this->basePath}/framework", $newVersions['framework']);
             } elseif (strncmp('app-', $ext, 4) === 0) {
-                $this->releaseApplication(substr($ext, 4), "{$this->basePath}/apps/".substr($ext, 4), $newVersions[$ext]);
+                $this->releaseApplication(substr($ext, 4), "{$this->basePath}/apps/" . substr($ext, 4), $newVersions[$ext]);
             } else {
                 $this->releaseExtension($ext, "{$this->basePath}/extensions/$ext", $newVersions[$ext]);
             }
@@ -292,7 +289,6 @@ class ReleaseController extends Controller
 
         if (!$this->confirm('Continue?', false)) {
             $this->stdout("Canceled.\n");
-
             return 1;
         }
 
@@ -323,7 +319,6 @@ class ReleaseController extends Controller
     {
         if (\count($what) > 1) {
             $this->stdout("Currently only one simultaneous release is supported.\n");
-
             return 1;
         }
         $this->validateWhat($what, ['framework', 'ext'], false);
@@ -374,10 +369,9 @@ class ReleaseController extends Controller
     }
 
     /**
-     * @param array $what           list of items
-     * @param array $limit          list of things to allow, or empty to allow any, can be `app`, `framework`, `extension`
-     * @param bool  $ensureGitClean
-     *
+     * @param array $what list of items
+     * @param array $limit list of things to allow, or empty to allow any, can be `app`, `framework`, `extension`
+     * @param bool $ensureGitClean
      * @throws \yii\exceptions\Exception
      */
     protected function validateWhat(array $what, $limit = [], $ensureGitClean = true)
@@ -385,9 +379,9 @@ class ReleaseController extends Controller
         foreach ($what as $w) {
             if (strncmp('app-', $w, 4) === 0) {
                 if (!empty($limit) && !\in_array('app', $limit)) {
-                    throw new Exception('Only the following types are allowed: '.implode(', ', $limit)."\n");
+                    throw new Exception('Only the following types are allowed: ' . implode(', ', $limit) . "\n");
                 }
-                if (!is_dir($appPath = "{$this->basePath}/apps/".substr($w, 4))) {
+                if (!is_dir($appPath = "{$this->basePath}/apps/" . substr($w, 4))) {
                     throw new Exception("Application path does not exist: \"{$appPath}\"\n");
                 }
                 if ($ensureGitClean) {
@@ -395,7 +389,7 @@ class ReleaseController extends Controller
                 }
             } elseif ($w === 'framework') {
                 if (!empty($limit) && !\in_array('framework', $limit)) {
-                    throw new Exception('Only the following types are allowed: '.implode(', ', $limit)."\n");
+                    throw new Exception('Only the following types are allowed: ' . implode(', ', $limit) . "\n");
                 }
                 if (!is_dir($fwPath = "{$this->basePath}/framework")) {
                     throw new Exception("Framework path does not exist: \"{$this->basePath}/framework\"\n");
@@ -405,7 +399,7 @@ class ReleaseController extends Controller
                 }
             } else {
                 if (!empty($limit) && !\in_array('ext', $limit)) {
-                    throw new Exception('Only the following types are allowed: '.implode(', ', $limit)."\n");
+                    throw new Exception('Only the following types are allowed: ' . implode(', ', $limit) . "\n");
                 }
                 if (!is_dir($extPath = "{$this->basePath}/extensions/$w")) {
                     throw new Exception("Extension path for \"$w\" does not exist: \"{$this->basePath}/extensions/$w\"\n");
@@ -417,11 +411,12 @@ class ReleaseController extends Controller
         }
     }
 
+
     protected function releaseFramework($frameworkPath, $version)
     {
         $this->stdout("\n");
         $this->stdout($h = "Preparing framework release version $version", Console::BOLD);
-        $this->stdout("\n".str_repeat('-', \strlen($h))."\n\n", Console::BOLD);
+        $this->stdout("\n" . str_repeat('-', \strlen($h)) . "\n\n", Console::BOLD);
 
         if (!$this->confirm('Make sure you are on the right branch for this release and that it tracks the correct remote branch! Continue?')) {
             exit(1);
@@ -493,12 +488,14 @@ class ReleaseController extends Controller
         // TODO release applications
         // $this->composerSetStability($what, $version);
 
+
 //        $this->resortChangelogs($what, $version);
-        //        $this->closeChangelogs($what, $version);
-        //        $this->composerSetStability($what, $version);
-        //        if (in_array('framework', $what)) {
-        //            $this->updateYiiVersion($version);
-        //        }
+  //        $this->closeChangelogs($what, $version);
+  //        $this->composerSetStability($what, $version);
+  //        if (in_array('framework', $what)) {
+  //            $this->updateYiiVersion($version);
+  //        }
+
 
         // if done:
         //     * ./build/build release/done framework 2.0.0-dev 2.0.0-rc
@@ -508,6 +505,8 @@ class ReleaseController extends Controller
 //            if (in_array('framework', $what)) {
 //                $this->updateYiiVersion($devVersion);
 //            }
+
+
 
         // prepare next release
 
@@ -519,8 +518,9 @@ class ReleaseController extends Controller
         $this->stdout("done.\n", Console::FG_GREEN, Console::BOLD);
 
         $this->stdout('updating Yii version...');
-        $this->dryRun || $this->updateYiiVersion($frameworkPath, $nextVersion['framework'].'-dev');
+        $this->dryRun || $this->updateYiiVersion($frameworkPath, $nextVersion['framework'] . '-dev');
         $this->stdout("done.\n", Console::FG_GREEN, Console::BOLD);
+
 
         $this->stdout("\n");
         $this->runGit('git diff --color', $frameworkPath);
@@ -554,7 +554,7 @@ class ReleaseController extends Controller
     {
         $this->stdout("\n");
         $this->stdout($h = "Preparing release for application  $name  version $version", Console::BOLD);
-        $this->stdout("\n".str_repeat('-', \strlen($h))."\n\n", Console::BOLD);
+        $this->stdout("\n" . str_repeat('-', \strlen($h)) . "\n\n", Console::BOLD);
 
         if (!$this->confirm('Make sure you are on the right branch for this release and that it tracks the correct remote branch! Continue?')) {
             exit(1);
@@ -672,7 +672,7 @@ class ReleaseController extends Controller
     {
         $this->stdout("\n");
         $this->stdout($h = "Preparing release for extension  $name  version $version", Console::BOLD);
-        $this->stdout("\n".str_repeat('-', \strlen($h))."\n\n", Console::BOLD);
+        $this->stdout("\n" . str_repeat('-', \strlen($h)) . "\n\n", Console::BOLD);
 
         if (!$this->confirm('Make sure you are on the right branch for this release and that it tracks the correct remote branch! Continue?')) {
             exit(1);
@@ -749,20 +749,19 @@ class ReleaseController extends Controller
         $this->stdout("\n");
     }
 
+
     protected function runCommand($cmd, $path)
     {
         $this->stdout("running  $cmd  ...", Console::BOLD);
         if ($this->dryRun) {
             $this->stdout("dry run, command `$cmd` not executed.\n");
-
             return;
         }
         chdir($path);
         exec($cmd, $output, $ret);
         if ($ret != 0) {
             echo implode("\n", $output);
-
-            throw new Exception("Command \"$cmd\" failed with code ".$ret);
+            throw new Exception("Command \"$cmd\" failed with code " . $ret);
         }
         $this->stdout("\ndone.\n", Console::BOLD, Console::FG_GREEN);
     }
@@ -772,14 +771,13 @@ class ReleaseController extends Controller
         if ($this->confirm("Run `$cmd`?", true)) {
             if ($this->dryRun) {
                 $this->stdout("dry run, command `$cmd` not executed.\n");
-
                 return;
             }
             chdir($path);
             exec($cmd, $output, $ret);
             echo implode("\n", $output);
             if ($ret != 0) {
-                throw new Exception("Command \"$cmd\" failed with code ".$ret);
+                throw new Exception("Command \"$cmd\" failed with code " . $ret);
             }
             echo "\n";
         }
@@ -790,10 +788,10 @@ class ReleaseController extends Controller
         chdir($path);
         exec('git status --porcelain -uno', $changes, $ret);
         if ($ret != 0) {
-            throw new Exception('Command "git status --porcelain -uno" failed with code '.$ret);
+            throw new Exception('Command "git status --porcelain -uno" failed with code ' . $ret);
         }
         if (!empty($changes)) {
-            throw new Exception("You have uncommitted changes in $path: ".print_r($changes, true));
+            throw new Exception("You have uncommitted changes in $path: " . print_r($changes, true));
         }
     }
 
@@ -802,13 +800,14 @@ class ReleaseController extends Controller
         try {
             chdir($path);
         } catch (\yii\exceptions\ErrorException $e) {
-            throw new Exception('Failed to getch git tags in '.$path.': '.$e->getMessage());
+            throw new Exception('Failed to getch git tags in ' . $path . ': ' . $e->getMessage());
         }
         exec('git fetch --tags', $output, $ret);
         if ($ret != 0) {
-            throw new Exception('Command "git fetch --tags" failed with code '.$ret);
+            throw new Exception('Command "git fetch --tags" failed with code ' . $ret);
         }
     }
+
 
     protected function checkComposer($fwPath)
     {
@@ -817,13 +816,14 @@ class ReleaseController extends Controller
         }
     }
 
+
     protected function closeChangelogs($what, $version)
     {
         $v = str_replace('\\-', '[\\- ]', preg_quote($version, '/'));
-        $headline = $version.' '.date('F d, Y');
+        $headline = $version . ' ' . date('F d, Y');
         $this->sed(
-            '/'.$v.' under development\n(-+?)\n/',
-            $headline."\n".str_repeat('-', \strlen($headline))."\n",
+            '/' . $v . ' under development\n(-+?)\n/',
+            $headline . "\n" . str_repeat('-', \strlen($headline)) . "\n",
             $this->getChangelogs($what)
         );
     }
@@ -831,7 +831,7 @@ class ReleaseController extends Controller
     protected function openChangelogs($what, $version)
     {
         $headline = "\n$version under development\n";
-        $headline .= str_repeat('-', \strlen($headline) - 2)."\n\n- no changes in this release.\n";
+        $headline .= str_repeat('-', \strlen($headline) - 2) . "\n\n- no changes in this release.\n";
         foreach ($this->getChangelogs($what) as $file) {
             $lines = explode("\n", file_get_contents($file));
             $hl = [
@@ -856,10 +856,8 @@ class ReleaseController extends Controller
 
     /**
      * Extract changelog content for a specific version.
-     *
      * @param string $file
      * @param string $version
-     *
      * @return array
      */
     protected function splitChangelog($file, $version)
@@ -884,7 +882,7 @@ class ReleaseController extends Controller
             // add continued lines to the last item to keep them together
             if (!empty(${$state}) && trim($line) !== '' && strncmp($line, '- ', 2) !== 0) {
                 end(${$state});
-                ${$state}[key(${$state})] .= "\n".$line;
+                ${$state}[key(${$state})] .= "\n" . $line;
             } else {
                 ${$state}[] = $line;
             }
@@ -895,9 +893,7 @@ class ReleaseController extends Controller
 
     /**
      * Ensure sorting of the changelog lines.
-     *
      * @param string[] $changelog
-     *
      * @return string[]
      */
     protected function resortChangelog($changelog)
@@ -912,11 +908,10 @@ class ReleaseController extends Controller
         ArrayHelper::multisort($changelog, function ($line) use (&$i) {
             if (preg_match('/^- (Chg|Enh|Bug|New)( #\d+(, #\d+)*)?: .+/', $line, $m)) {
                 $o = ['Bug' => 'C', 'Enh' => 'D', 'Chg' => 'E', 'New' => 'F'];
-
-                return $o[$m[1]].' '.(!empty($m[2]) ? $m[2] : 'AAAA'.$i++);
+                return $o[$m[1]] . ' ' . (!empty($m[2]) ? $m[2] : 'AAAA' . $i++);
             }
 
-            return 'B'.$i++;
+            return 'B' . $i++;
         }, SORT_ASC, SORT_NATURAL);
 
         // re-add leading and trailing lines
@@ -939,12 +934,12 @@ class ReleaseController extends Controller
 
     protected function getFrameworkChangelog()
     {
-        return $this->basePath.'/framework/CHANGELOG.md';
+        return $this->basePath . '/framework/CHANGELOG.md';
     }
 
     protected function getExtensionChangelogs($what)
     {
-        return array_filter(glob($this->basePath.'/extensions/*/CHANGELOG.md'), function ($elem) use ($what) {
+        return array_filter(glob($this->basePath . '/extensions/*/CHANGELOG.md'), function ($elem) use ($what) {
             foreach ($what as $ext) {
                 if (strpos($elem, "extensions/$ext/CHANGELOG.md") !== false) {
                     return true;
@@ -959,13 +954,13 @@ class ReleaseController extends Controller
     {
         $apps = [];
         if (\in_array('app-advanced', $what)) {
-            $apps[] = $this->basePath.'/apps/advanced/composer.json';
+            $apps[] = $this->basePath . '/apps/advanced/composer.json';
         }
         if (\in_array('app-basic', $what)) {
-            $apps[] = $this->basePath.'/apps/basic/composer.json';
+            $apps[] = $this->basePath . '/apps/basic/composer.json';
         }
         if (\in_array('app-benchmark', $what)) {
-            $apps[] = $this->basePath.'/apps/benchmark/composer.json';
+            $apps[] = $this->basePath . '/apps/benchmark/composer.json';
         }
         if (empty($apps)) {
             return;
@@ -984,7 +979,7 @@ class ReleaseController extends Controller
 
         $this->sed(
             '/"minimum-stability": "(.+?)",/',
-            '"minimum-stability": "'.$stability.'",',
+            '"minimum-stability": "' . $stability . '",',
             $apps
         );
     }
@@ -994,7 +989,7 @@ class ReleaseController extends Controller
         $this->sed(
             '/function getVersion\(\)\n    \{\n        return \'(.+?)\';/',
             "function getVersion()\n    {\n        return '$version';",
-            $frameworkPath.'/BaseYii.php');
+            $frameworkPath . '/BaseYii.php');
     }
 
     protected function sed($pattern, $replace, $files)
@@ -1011,14 +1006,14 @@ class ReleaseController extends Controller
             if ($ext === 'framework') {
                 chdir("{$this->basePath}/framework");
             } elseif (strncmp('app-', $ext, 4) === 0) {
-                chdir("{$this->basePath}/apps/".substr($ext, 4));
+                chdir("{$this->basePath}/apps/" . substr($ext, 4));
             } else {
                 chdir("{$this->basePath}/extensions/$ext");
             }
             $tags = [];
             exec('git tag', $tags, $ret);
             if ($ret != 0) {
-                throw new Exception('Command "git tag" failed with code '.$ret);
+                throw new Exception('Command "git tag" failed with code ' . $ret);
             }
             rsort($tags, SORT_NATURAL); // TODO this can not deal with alpha/beta/rc...
             $versions[$ext] = reset($tags);

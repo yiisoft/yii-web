@@ -1,7 +1,6 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
- *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -9,12 +8,12 @@
 namespace yii\web\tests;
 
 use yii\helpers\Yii;
-use yii\tests\TestCase;
 use yii\web\NotFoundHttpException;
 use yii\web\Request;
 use yii\web\UrlManager;
 use yii\web\UrlNormalizer;
 use yii\web\UrlNormalizerRedirectException;
+use yii\tests\TestCase;
 
 /**
  * @group web
@@ -62,7 +61,6 @@ class UrlNormalizerTest extends TestCase
         // 404 error as default action
         $normalizer->action = UrlNormalizer::ACTION_NOT_FOUND;
         $expected = new NotFoundHttpException(Yii::t('yii', 'Page not found.'));
-
         try {
             $result = $normalizer->normalizeRoute($route);
             $this->fail('Expected throwing NotFoundHttpException');
@@ -73,7 +71,6 @@ class UrlNormalizerTest extends TestCase
         // 301 redirect as default action
         $normalizer->action = UrlNormalizer::ACTION_REDIRECT_PERMANENT;
         $expected = new UrlNormalizerRedirectException([$route[0]] + $route[1], 301);
-
         try {
             $result = $normalizer->normalizeRoute($route);
             $this->fail('Expected throwing UrlNormalizerRedirectException');
@@ -84,7 +81,6 @@ class UrlNormalizerTest extends TestCase
         // 302 redirect as default action
         $normalizer->action = UrlNormalizer::ACTION_REDIRECT_TEMPORARY;
         $expected = new UrlNormalizerRedirectException([$route[0]] + $route[1], 302);
-
         try {
             $result = $normalizer->normalizeRoute($route);
             $this->fail('Expected throwing UrlNormalizerRedirectException');
@@ -100,7 +96,6 @@ class UrlNormalizerTest extends TestCase
         $normalizer->action = function ($route, $normalizer) {
             $route[0] = 'site/redirect';
             $route['normalizeTrailingSlash'] = $normalizer->normalizeTrailingSlash;
-
             return $route;
         };
         $expected = $route;
@@ -113,7 +108,6 @@ class UrlNormalizerTest extends TestCase
             throw new NotFoundHttpException('Custom error message.');
         };
         $expected = new NotFoundHttpException('Custom error message.');
-
         try {
             $result = $normalizer->normalizeRoute($route);
             $this->fail('Expected throwing NotFoundHttpException');
@@ -130,12 +124,12 @@ class UrlNormalizerTest extends TestCase
     public function testUrlManager()
     {
         $config = [
-            '__class'         => UrlManager::class,
+            '__class' => UrlManager::class,
             'enablePrettyUrl' => true,
-            'cache'           => null,
-            'normalizer'      => $this->factory->create([
+            'cache' => null,
+            'normalizer' => $this->factory->create([
                 '__class' => \yii\web\UrlNormalizer::class,
-                'action'  => null,
+                'action' => null,
             ]),
         ];
         $request = new Request($this->app);
@@ -151,7 +145,7 @@ class UrlNormalizerTest extends TestCase
         $config['rules'] = [
             [
                 'pattern' => 'post/<id>/<title>',
-                'route'   => 'post/view',
+                'route' => 'post/view',
             ],
         ];
         $manager = $this->factory->create($config);

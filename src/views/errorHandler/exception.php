@@ -15,10 +15,10 @@
     <title><?php
         $name = $handler->getExceptionName($exception);
         if ($exception instanceof \yii\web\HttpException) {
-            echo (int) $exception->statusCode.' '.$handler->htmlEncode($name);
+            echo (int) $exception->statusCode . ' ' . $handler->htmlEncode($name);
         } else {
             if ($name !== null) {
-                echo $handler->htmlEncode($name.' – '.get_class($exception));
+                echo $handler->htmlEncode($name . ' – ' . get_class($exception));
             } else {
                 echo $handler->htmlEncode(get_class($exception));
             }
@@ -407,15 +407,15 @@ body.mousedown pre {
             </div>
             <h1><?php
                 if ($exception instanceof \yii\web\HttpException) {
-                    echo '<span>'.$handler->createHttpStatusLink($exception->statusCode, $handler->htmlEncode($exception->getName())).'</span>';
-                    echo ' &ndash; '.$handler->addTypeLinks(get_class($exception));
+                    echo '<span>' . $handler->createHttpStatusLink($exception->statusCode, $handler->htmlEncode($exception->getName())) . '</span>';
+                    echo ' &ndash; ' . $handler->addTypeLinks(get_class($exception));
                 } else {
                     $name = $handler->getExceptionName($exception);
                     if ($name !== null) {
-                        echo '<span>'.$handler->htmlEncode($name).'</span>';
-                        echo ' &ndash; '.$handler->addTypeLinks(get_class($exception));
+                        echo '<span>' . $handler->htmlEncode($name) . '</span>';
+                        echo ' &ndash; ' . $handler->addTypeLinks(get_class($exception));
                     } else {
-                        echo '<span>'.$handler->htmlEncode(get_class($exception)).'</span>';
+                        echo '<span>' . $handler->htmlEncode(get_class($exception)) . '</span>';
                     }
                 }
             ?></h1>

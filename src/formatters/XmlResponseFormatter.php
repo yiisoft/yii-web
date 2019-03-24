@@ -1,7 +1,6 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
- *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -22,7 +21,6 @@ use yii\helpers\StringHelper;
  * It is used by [[Response]] to format response data.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- *
  * @since 2.0
  */
 class XmlResponseFormatter extends Component implements ResponseFormatterInterface
@@ -49,28 +47,26 @@ class XmlResponseFormatter extends Component implements ResponseFormatterInterfa
     public $itemTag = 'item';
     /**
      * @var bool whether to interpret objects implementing the [[\Traversable]] interface as arrays.
-     *           Defaults to `true`.
-     *
+     * Defaults to `true`.
      * @since 2.0.7
      */
     public $useTraversableAsArray = true;
     /**
      * @var bool if object tags should be added
-     *
      * @since 2.0.11
      */
     public $useObjectTags = true;
 
+
     /**
      * Formats the specified response.
-     *
      * @param Response $response the response to be formatted.
      */
     public function format($response)
     {
         $encoding = $this->encoding === null ? $response->encoding : $this->encoding;
         if (stripos($this->contentType, 'charset') === false) {
-            $this->contentType .= '; charset='.$encoding;
+            $this->contentType .= '; charset=' . $encoding;
         }
         $response->setHeader('Content-Type', $this->contentType);
         if ($response->data !== null) {
@@ -88,7 +84,7 @@ class XmlResponseFormatter extends Component implements ResponseFormatterInterfa
 
     /**
      * @param DOMElement $element
-     * @param mixed      $data
+     * @param mixed $data
      */
     protected function buildXml($element, $data)
     {
@@ -105,12 +101,12 @@ class XmlResponseFormatter extends Component implements ResponseFormatterInterfa
                 } else {
                     $child = new DOMElement($this->getValidXmlElementName($name));
                     $element->appendChild($child);
-                    if (is_array($value) && isset($value['xml-attributes'])) {
-                        foreach ($value['xml-attributes'] as $attribute => $val) {
+                    if(is_array($value) && isset($value['xml-attributes'])){
+                        foreach($value['xml-attributes'] as $attribute => $val){
                             $child->setAttribute($attribute, $val);
                         }
                         $child->appendChild(new DOMText($this->formatScalarValue($value['value'])));
-                    } else {
+                    }else{
                         $child->appendChild(new DOMText($this->formatScalarValue($value)));
                     }
                 }
@@ -140,9 +136,7 @@ class XmlResponseFormatter extends Component implements ResponseFormatterInterfa
      * Formats scalar value to use in XML text node.
      *
      * @param int|string|bool|float $value a scalar value.
-     *
      * @return string string representation of the value.
-     *
      * @since 2.0.11
      */
     protected function formatScalarValue($value)
@@ -156,7 +150,6 @@ class XmlResponseFormatter extends Component implements ResponseFormatterInterfa
         if (is_float($value)) {
             return StringHelper::floatToString($value);
         }
-
         return (string) $value;
     }
 
@@ -167,9 +160,7 @@ class XmlResponseFormatter extends Component implements ResponseFormatterInterfa
      * Falls back to [[itemTag]] otherwise.
      *
      * @param mixed $name
-     *
      * @return string
-     *
      * @since 2.0.12
      */
     protected function getValidXmlElementName($name)
@@ -185,9 +176,7 @@ class XmlResponseFormatter extends Component implements ResponseFormatterInterfa
      * Checks if name is valid to be used in XML.
      *
      * @param mixed $name
-     *
      * @return bool
-     *
      * @see http://stackoverflow.com/questions/2519845/how-to-check-if-string-is-a-valid-xml-element-name/2519943#2519943
      * @since 2.0.12
      */
@@ -195,7 +184,6 @@ class XmlResponseFormatter extends Component implements ResponseFormatterInterfa
     {
         try {
             new DOMElement($name);
-
             return true;
         } catch (DOMException $e) {
             return false;

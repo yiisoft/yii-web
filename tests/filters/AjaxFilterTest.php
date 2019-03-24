@@ -1,19 +1,18 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
- *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
 namespace yii\web\tests\filters;
 
-use yii\base\Action;
 use yii\helpers\Yii;
-use yii\tests\TestCase;
-use yii\web\Controller;
+use yii\base\Action;
 use yii\web\filters\AjaxFilter;
+use yii\web\Controller;
 use yii\web\Request;
+use yii\tests\TestCase;
 
 /**
  * @group filters
@@ -22,7 +21,6 @@ class AjaxFilterTest extends TestCase
 {
     /**
      * @param bool $isAjax
-     *
      * @return Request
      */
     protected function mockRequest($isAjax)

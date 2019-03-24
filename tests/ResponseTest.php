@@ -1,7 +1,6 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
- *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -13,8 +12,8 @@ use Exception;
 use RuntimeException;
 use yii\helpers\StringHelper;
 use yii\web\HttpException;
-use yii\web\RangeNotSatisfiableHttpException;
 use yii\web\Response;
+use yii\web\RangeNotSatisfiableHttpException;
 
 /**
  * @group web
@@ -46,17 +45,16 @@ class ResponseTest extends \yii\tests\TestCase
 
     /**
      * @dataProvider rightRanges
-     *
      * @param string $rangeHeader
      * @param string $expectedHeader
-     * @param int    $length
+     * @param int $length
      * @param string $expectedContent
      */
     public function testSendFileRanges($rangeHeader, $expectedHeader, $length, $expectedContent)
     {
         $dataFile = $this->app->getAlias('@yii/tests/data/web/data.txt');
         $fullContent = file_get_contents($dataFile);
-        $_SERVER['HTTP_RANGE'] = 'bytes='.$rangeHeader;
+        $_SERVER['HTTP_RANGE'] = 'bytes=' . $rangeHeader;
         ob_start();
         $this->response->sendFile($dataFile)->send();
         $content = ob_get_clean();
@@ -64,7 +62,7 @@ class ResponseTest extends \yii\tests\TestCase
         $this->assertEquals($expectedContent, $content);
         $this->assertEquals(206, $this->response->statusCode);
         $this->assertEquals(['bytes'], $this->response->getHeader('Accept-Ranges'));
-        $this->assertEquals(['bytes '.$expectedHeader.'/'.StringHelper::byteLength($fullContent)], $this->response->getHeader('Content-Range'));
+        $this->assertEquals(['bytes ' . $expectedHeader . '/' . StringHelper::byteLength($fullContent)], $this->response->getHeader('Content-Range'));
         $this->assertEquals(['text/plain'], $this->response->getHeader('Content-Type'));
         $this->assertEquals(["$length"], $this->response->getHeader('Content-Length'));
     }
@@ -83,7 +81,6 @@ class ResponseTest extends \yii\tests\TestCase
 
     /**
      * @dataProvider wrongRanges
-     *
      * @param string $rangeHeader
      */
     public function testSendFileWrongRanges($rangeHeader)
@@ -91,7 +88,7 @@ class ResponseTest extends \yii\tests\TestCase
         $this->expectException(RangeNotSatisfiableHttpException::class);
 
         $dataFile = $this->app->getAlias('@yii/tests/data/web/data.txt');
-        $_SERVER['HTTP_RANGE'] = 'bytes='.$rangeHeader;
+        $_SERVER['HTTP_RANGE'] = 'bytes=' . $rangeHeader;
         $this->response->sendFile($dataFile);
     }
 
@@ -137,9 +134,8 @@ class ResponseTest extends \yii\tests\TestCase
 
     /**
      * @dataProvider dataProviderSetStatusCodeByException
-     *
      * @param \Exception $exception
-     * @param int        $statusCode
+     * @param int $statusCode
      */
     public function testSetStatusCodeByException($exception, $statusCode)
     {

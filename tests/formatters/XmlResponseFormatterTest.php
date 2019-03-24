@@ -1,7 +1,6 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
- *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -14,7 +13,6 @@ use yii\web\tests\stubs\Post;
 
 /**
  * @author Qiang Xue <qiang.xue@gmail.com>
- *
  * @since 2.0
  *
  * @group web
@@ -23,7 +21,6 @@ class XmlResponseFormatterTest extends FormatterTest
 {
     /**
      * @param array $options
-     *
      * @return XmlResponseFormatter
      */
     protected function getFormatterInstance($options = [])
@@ -38,7 +35,7 @@ class XmlResponseFormatterTest extends FormatterTest
     private function addXmlHead(array $data)
     {
         foreach ($data as &$item) {
-            $item[1] = $this->xmlHead.$item[1];
+            $item[1] = $this->xmlHead . $item[1];
         }
 
         return $data;
@@ -71,15 +68,15 @@ class XmlResponseFormatterTest extends FormatterTest
                 true,
             ], "<response><item>1</item><item>abc</item><item><item>2</item><item>def</item></item><item>true</item></response>\n"],
             [[
-                'a'    => 1,
-                'b'    => 'abc',
-                'c'    => [2, '<>'],
+                'a' => 1,
+                'b' => 'abc',
+                'c' => [2, '<>'],
                 'city' => [
-                    'value'          => 'New York',
+                    'value' => 'New York',
                     'xml-attributes' => [
-                        'type'       => 'metropolitan',
-                        'population' => '10000000',
-                    ],
+                        'type' => 'metropolitan',
+                        'population' => '10000000'
+                    ]
                 ],
                 false,
             ], "<response><a>1</a><b>abc</b><c><item>2</item><item>&lt;&gt;</item></c><city type=\"metropolitan\" population=\"10000000\">New York</city><item>false</item></response>\n"],
@@ -87,11 +84,11 @@ class XmlResponseFormatterTest extends FormatterTest
             // Checks if empty keys and keys not valid in XML are processed.
             // See https://github.com/yiisoft/yii2/pull/10346/
             [[
-                ''           => 1,
+                '' => 1,
                 '2015-06-18' => '2015-06-18',
-                'b:c'        => 'b:c',
-                'a b c'      => 'a b c',
-                'äøñ'        => 'äøñ',
+                'b:c' => 'b:c',
+                'a b c' => 'a b c',
+                'äøñ' => 'äøñ',
             ], "<response><item>1</item><item>2015-06-18</item><item>b:c</item><item>a b c</item><äøñ>äøñ</äøñ></response>\n"],
         ]);
     }
@@ -103,17 +100,17 @@ class XmlResponseFormatterTest extends FormatterTest
         $postsStack = new \SplStack();
 
         $postsStack->push(new Post(915, 'record1', [
-            'value'          => 'New York',
+            'value' => 'New York',
             'xml-attributes' => [
-                'type'       => 'metropolitan',
-                'population' => '10000000',
-            ],
+                'type' => 'metropolitan',
+                'population' => '10000000'
+            ]
         ]));
-        $expectedXmlForStack = '<Post><id>915</id><title>record1</title><city type="metropolitan" population="10000000">New York</city></Post>'.
+        $expectedXmlForStack = '<Post><id>915</id><title>record1</title><city type="metropolitan" population="10000000">New York</city></Post>' .
           $expectedXmlForStack;
 
         $postsStack->push(new Post(456, 'record2'));
-        $expectedXmlForStack = '<Post><id>456</id><title>record2</title><city></city></Post>'.
+        $expectedXmlForStack = '<Post><id>456</id><title>record2</title><city></city></Post>' .
           $expectedXmlForStack;
 
         $data = [
@@ -157,7 +154,7 @@ class XmlResponseFormatterTest extends FormatterTest
 
         $this->response->data = 1;
         $formatter->format($this->response);
-        $this->assertEquals($this->xmlHead."<$rootTag>1</$rootTag>\n", $this->response->content);
+        $this->assertEquals($this->xmlHead . "<$rootTag>1</$rootTag>\n", $this->response->content);
     }
 
     public function testRootTagRemoval()
@@ -168,7 +165,7 @@ class XmlResponseFormatterTest extends FormatterTest
 
         $this->response->data = 1;
         $formatter->format($this->response);
-        $this->assertEquals($this->xmlHead."1\n", $this->response->content);
+        $this->assertEquals($this->xmlHead . "1\n", $this->response->content);
     }
 
     public function testNoObjectTags()
@@ -179,6 +176,6 @@ class XmlResponseFormatterTest extends FormatterTest
 
         $this->response->data = new Post(123, 'abc');
         $formatter->format($this->response);
-        $this->assertEquals($this->xmlHead."<response><id>123</id><title>abc</title><city></city></response>\n", $this->response->content);
+        $this->assertEquals($this->xmlHead . "<response><id>123</id><title>abc</title><city></city></response>\n", $this->response->content);
     }
 }

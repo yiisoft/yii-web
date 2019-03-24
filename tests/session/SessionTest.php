@@ -1,15 +1,14 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
- *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
 namespace yii\web\tests\session;
 
-use yii\tests\TestCase;
 use yii\web\Session;
+use yii\tests\TestCase;
 
 /**
  * @group web
@@ -79,7 +78,7 @@ class SessionTest extends TestCase
     }
 
     /**
-     * Test set name. Also check set name twice and after open.
+     * Test set name. Also check set name twice and after open
      */
     public function testSetName()
     {
