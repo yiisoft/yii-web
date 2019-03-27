@@ -63,6 +63,7 @@
         "source": "https://github.com/yiisoft/yii-web"
     },
     "require": {
+        "php": ">=7.0",
         "yiisoft/yii-core": "^3.0@dev",
         "yiisoft/view": "^3.0@dev",
         "psr/http-message": "^1.0"

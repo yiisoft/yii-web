@@ -333,6 +333,18 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
             if (array_key_exists($name, $params)) {
                 if ($param->isArray()) {
                     $args[] = $actionParams[$name] = (array) $params[$name];
+                } elseif ($param->getType() && $param->getType()->getName() === 'int') {
+                    try {
+                        $args[] = $actionParams[$name] = static::filterParamInt($params[$name]);
+                    } catch (\TypeError $e) {
+                        throw new BadRequestHttpException(Yii::t('yii', 'Invalid data received for parameter "{param}".', [
+                            'param' => $name,
+                        ]));
+                    } catch (\Exception $e) {
+                        throw new BadRequestHttpException(Yii::t('yii', 'Invalid data received for parameter "{param}".', [
+                            'param' => $name,
+                        ]));
+                    }
                 } elseif (!is_array($params[$name])) {
                     $args[] = $actionParams[$name] = $params[$name];
                 } else {
@@ -470,5 +482,16 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
     public function refresh($anchor = '')
     {
         return $this->app->getResponse()->redirect($this->app->getRequest()->getUrl() . $anchor);
+    }
+    
+    /**
+     * Filtering request parameters for int type
+     *
+     * @param int $value Request parameter value
+     * @return int Processing result
+     */
+    private static function filterParamInt(int $value): int
+    {
+        return $value;
     }
 }
