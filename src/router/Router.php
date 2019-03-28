@@ -34,11 +34,11 @@ class Router implements RouterInterface
         throw new NoMatch($request);
     }
 
-    public function generate(string $name, array $parameters = [], string $type = self::TYPE_ABSOLUTE): string
+    public function generate(string $name, ServerRequestInterface $request, array $parameters = [], string $type = self::TYPE_ABSOLUTE): string
     {
         foreach ($this->groups as $group) {
             try {
-                return $group->generate($name, $parameters, $type);
+                return $group->generate($name, $request, $parameters, $type);
             } catch (NoRoute $e) {
                 // ignore
             }

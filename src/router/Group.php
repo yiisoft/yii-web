@@ -232,7 +232,7 @@ class Group implements RouterInterface
         }
     }
 
-    public function generate(string $name, array $parameters = [], string $type = self::TYPE_ABSOLUTE): string
+    public function generate(string $name, ServerRequestInterface $request, array $parameters = [], string $type = self::TYPE_ABSOLUTE): string
     {
         if (!isset($this->namedRoutes[$name])) {
             throw new NoRoute($name);
