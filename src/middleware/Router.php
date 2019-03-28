@@ -31,7 +31,6 @@ class Router implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-
         try {
             $match = $this->matcher->match($request);
             $matchHandler = $match->getHandler();
