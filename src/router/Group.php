@@ -61,7 +61,7 @@ class Group implements RouterInterface
                 continue;
             }
 
-            if (!preg_match($this->getRegex($route), rtrim($request->getUri(), '/'), $matches)) {
+            if (!preg_match($this->getRegex($route), rtrim($request->getUri()->getPath(), '/'), $matches)) {
                 continue;
             }
 
