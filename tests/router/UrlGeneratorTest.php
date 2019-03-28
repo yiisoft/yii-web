@@ -3,7 +3,6 @@
 
 namespace yii\web\tests\router;
 
-
 use PHPUnit\Framework\TestCase;
 use yii\web\router\Group;
 use yii\web\router\NoRoute;
@@ -23,12 +22,12 @@ class UrlGeneratorTest extends TestCase
 
         $this->expectException(NoRoute::class);
         $generator->generate('missing');
-
     }
 
     public function testGenerateStatic()
     {
-        $handler = function() {};
+        $handler = function () {
+        };
         $generator = $this->getGenerator([
             Route::get('/home')->to($handler)->name('home')
         ]);
