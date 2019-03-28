@@ -179,7 +179,7 @@ class Route
         $result = '';
 
         if ($this->name !== null) {
-            $result .= $this->name . ' ';
+            $result .= '[' . $this->name . '] ';
         }
 
         if ($this->methods !== null) {

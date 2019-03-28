@@ -242,9 +242,13 @@ class Group implements RouterInterface
 
         $parameters = array_merge($route->getDefaults(), $parameters);
 
+        return $route->getPattern();
+
+        // TODO: implement proper generation
+
         // match the route part first
-        if ($route !== $route->route) {
-            if ($this->_routeRule !== null && preg_match($this->_routeRule, $route, $matches)) {
+        if ($route !== $route->getPattern()) {
+            if ($this->getRegex($route) !== null && preg_match($this->getRegex($route), $name, $matches)) {
                 $matches = $this->substitutePlaceholderNames($route, $matches);
                 foreach ($this->_routeParams as $name => $token) {
                     if (isset($this->defaults[$name]) && strcmp($this->defaults[$name], $matches[$name]) === 0) {
