@@ -6,24 +6,29 @@ namespace yii\web\tests\router;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
 use yii\web\router\Group;
-use yii\web\router\Match;
 use yii\web\router\NoHandler;
 use yii\web\router\NoMatch;
 use yii\web\router\Route;
+use yii\web\router\UrlMatcherInterface;
 
-class GroupTest extends TestCase
+class UrlMatcherTest extends TestCase
 {
+    private function getMatcher(array $routes): UrlMatcherInterface
+    {
+        return new Group($routes);
+    }
+
     public function testMethodMismatch()
     {
         $request = new ServerRequest('GET', '/');
 
-        $group = new Group([
+        $matcher = $this->getMatcher([
             Route::post('/')
         ]);
 
 
         $this->expectException(NoMatch::class);
-        $group->match($request);
+        $matcher->match($request);
     }
 
     public function testHostMismatch()
@@ -33,23 +38,23 @@ class GroupTest extends TestCase
         $uri = $uri->withHost('https://example.com/');
         $request = $request->withUri($uri);
 
-        $group = new Group([
+        $matcher = $this->getMatcher([
             Route::get('/')->host('https://yiiframework.com/'),
         ]);
 
         $this->expectException(NoMatch::class);
-        $group->match($request);
+        $matcher->match($request);
     }
 
     public function testMatchWithNoHandler()
     {
         $request = new ServerRequest('GET', '/');
-        $group = new Group([
+        $matcher = $this->getMatcher([
             Route::get('/')
         ]);
 
         $this->expectException(NoHandler::class);
-        $group->match($request);
+        $matcher->match($request);
     }
 
     public function testStaticMatch()
@@ -57,11 +62,11 @@ class GroupTest extends TestCase
         $handler = function () {
         };
         $request = new ServerRequest('GET', '/');
-        $group = new Group([
+        $matcher = $this->getMatcher([
             Route::get('/')->to($handler)
         ]);
 
-        $match = $group->match($request);
+        $match = $matcher->match($request);
         $this->assertSame($handler, $match->getHandler());
         $this->assertEmpty($match->getParameters());
         $this->assertNull($match->getName());

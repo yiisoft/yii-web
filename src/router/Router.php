@@ -12,6 +12,16 @@ class Router implements RouterInterface
      */
     private $groups;
 
+    /**
+     * Router constructor.
+     * @param Group[] $groups
+     */
+    public function __construct(array $groups)
+    {
+        $this->groups = $groups;
+    }
+
+
     public function match(ServerRequestInterface $request): Match
     {
         foreach ($this->groups as $group) {
