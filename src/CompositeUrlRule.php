@@ -47,7 +47,6 @@ abstract class CompositeUrlRule extends BaseObject implements UrlRuleInterface, 
         if (!empty($config)) {
             AbstractContainer::configure($this, $config);
         }
-        $this->init();
     }
 
     /**
