@@ -11,11 +11,6 @@ return [
         '__class' => yii\web\Application::class,
     ],
 
-    'assetManager' => [
-        '__class'   => yii\web\AssetManager::class,
-        'basePath'  => '@public/assets',
-        'baseUrl'   => '@web/assets',
-    ],
     'urlManager' => [
         '__class' => yii\web\UrlManager::class,
     ],
