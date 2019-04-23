@@ -13,7 +13,7 @@ use yii\cache\ArrayCache;
 use yii\cache\Cache;
 use yii\cache\dependencies\ExpressionDependency;
 use yii\web\filters\PageCache;
-use yii\helpers\ArrayHelper;
+use Yiisoft\Arrays\ArrayHelper;
 use yii\helpers\Json;
 use yii\web\Controller;
 use yii\http\Cookie;

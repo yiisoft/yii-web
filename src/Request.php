@@ -13,7 +13,7 @@ use Psr\Http\Message\UploadedFileInterface;
 use Psr\Http\Message\UriInterface;
 use yii\exceptions\InvalidConfigException;
 use yii\di\Instance;
-use yii\helpers\ArrayHelper;
+use Yiisoft\Arrays\ArrayHelper;
 use yii\helpers\Yii;
 use yii\http\Cookie;
 use yii\http\CookieCollection;

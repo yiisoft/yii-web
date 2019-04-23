@@ -10,7 +10,7 @@ namespace yii\web\filters\auth;
 use yii\helpers\Yii;
 use yii\base\Action;
 use yii\base\ActionFilter;
-use yii\helpers\StringHelper;
+use Yiisoft\Strings\StringHelper;
 use yii\web\Request;
 use yii\web\Response;
 use yii\web\UnauthorizedHttpException;

@@ -13,7 +13,7 @@ use yii\db\ConnectionInterface;
 use yii\db\PdoValue;
 use yii\db\Query;
 use yii\di\Instance;
-use yii\helpers\ArrayHelper;
+use Yiisoft\Arrays\ArrayHelper;
 
 /**
  * DbSession extends [[Session]] by using database as session data storage.
