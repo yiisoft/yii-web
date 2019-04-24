@@ -7,7 +7,7 @@
 
 namespace yii\web\tests\stubs;
 
-use yii\rbac\Rule;
+use Yiisoft\Rbac\Rule;
 
 /**
  * Checks if authorID matches userID passed via params.

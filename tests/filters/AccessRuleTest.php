@@ -16,7 +16,7 @@ use yii\web\User;
 use yii\web\tests\filters\stubs\MockAuthManager;
 use yii\web\tests\filters\stubs\UserIdentity;
 use yii\web\tests\stubs\AuthorRule;
-use yii\rbac\DenyAll;
+use Yiisoft\Rbac\DenyAll;
 
 /**
  * @group filters
@@ -81,7 +81,7 @@ class AccessRuleTest extends \yii\tests\TestCase
     }
 
     /**
-     * @return \yii\rbac\BaseManager
+     * @return \Yiisoft\Rbac\BaseManager
      */
     protected function mockAuthManager()
     {
