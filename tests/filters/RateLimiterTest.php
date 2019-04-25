@@ -10,7 +10,7 @@ namespace yii\web\tests\filters;
 use Prophecy\Argument;
 use yii\helpers\Yii;
 use yii\web\filters\RateLimiter;
-use Yii\Log\Logger;
+use Yiisoft\Log\Logger;
 use yii\web\Request;
 use yii\web\Response;
 use yii\web\User;
