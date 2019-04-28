@@ -7,8 +7,8 @@
 
 namespace yii\web\tests;
 
-use yii\cache\ArrayCache;
-use yii\cache\Cache;
+use Yiisoft\Cache\ArrayCache;
+use Yiisoft\Cache\Cache;
 use yii\web\Request;
 use yii\web\UrlManager;
 use yii\web\UrlRuleInterface;

@@ -11,7 +11,7 @@ use yii\base\Application;
 use yii\base\Component;
 use yii\di\Initiable;
 use yii\exceptions\InvalidConfigException;
-use yii\cache\CacheInterface;
+use Yiisoft\Cache\CacheInterface;
 use yii\helpers\Url;
 use yii\helpers\Yii;
 
@@ -127,7 +127,7 @@ class UrlManager extends Component implements Initiable
      * you should only assign it with a cache object.
      * Set this property to `false` if you do not want to cache the URL rules.
      *
-     * Cache entries are stored for the time set by [[\yii\cache\Cache::$defaultDuration|$defaultDuration]] in
+     * Cache entries are stored for the time set by [[\Yiisoft\Cache\Cache::$defaultDuration|$defaultDuration]] in
      * the cache configuration, which is unlimited by default. You may want to tune this value if your [[rules]]
      * change frequently.
      */

@@ -8,12 +8,12 @@
 namespace yii\web\tests;
 
 use yii\helpers\Yii;
-use yii\cache\ArrayCache;
+use Yiisoft\Cache\ArrayCache;
 use yii\web\UrlManager;
 use yii\web\UrlRule;
 use yii\web\tests\stubs\CachedUrlRule;
 use yii\tests\TestCase;
-use yii\cache\FileCache;
+use Yiisoft\Cache\FileCache;
 
 /**
  * This class implements the tests for URL creation with "pretty" url format.

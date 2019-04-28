@@ -8,7 +8,7 @@
 namespace yii\web;
 
 use yii\helpers\Yii;
-use yii\cache\CacheInterface;
+use Yiisoft\Cache\CacheInterface;
 use yii\di\Instance;
 
 /**

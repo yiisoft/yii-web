@@ -7,7 +7,7 @@
 
 namespace yii\web\tests;
 
-use yii\cache\FileCache;
+use Yiisoft\Cache\FileCache;
 use yii\view\Theme;
 use yii\web\Request;
 use yii\web\View;
