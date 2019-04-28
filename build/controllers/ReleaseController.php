@@ -9,7 +9,7 @@ namespace yii\build\controllers;
 
 use yii\helpers\Yii;
 use yii\exceptions\Exception;
-use yii\console\Controller;
+use Yiisoft\Yii\Console\Controller;
 use Yiisoft\Arrays\ArrayHelper;
 use yii\helpers\Console;
 use yii\helpers\FileHelper;
