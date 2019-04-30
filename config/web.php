@@ -60,8 +60,4 @@ return [
         '__class' => yii\web\AssetManager::class,
     ],
 
-    /// TODO: move to swiftmailer
-    'mailer' => [
-        '__class' => yii\swiftmailer\Mailer::class,
-    ],
 ];
