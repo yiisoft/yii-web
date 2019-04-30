@@ -11,7 +11,7 @@ use Psr\Http\Message\ResponseInterface;
 use yii\exceptions\InvalidArgumentException;
 use yii\exceptions\InvalidConfigException;
 use yii\helpers\FileHelper;
-use Yiisoft\Helpers\InflectorHelper;
+use Yiisoft\Inflector\InflectorHelper;
 use Yiisoft\Strings\StringHelper;
 use yii\helpers\Url;
 use yii\helpers\Yii;
