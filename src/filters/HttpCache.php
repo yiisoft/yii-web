@@ -28,7 +28,7 @@ use yii\base\ActionFilter;
  *             '__class' => \yii\web\filters\HttpCache::class,
  *             'only' => ['index'],
  *             'lastModified' => function ($action, $params) {
- *                 $q = new \yii\db\Query();
+ *                 $q = new \Yiisoft\Db\Query();
  *                 return $q->from('user')->max('updated_at');
  *             },
  * //            'etagSeed' => function ($action, $params) {

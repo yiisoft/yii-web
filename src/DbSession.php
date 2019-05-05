@@ -9,9 +9,9 @@ namespace yii\web;
 
 use yii\helpers\Yii;
 use yii\exceptions\InvalidConfigException;
-use yii\db\ConnectionInterface;
-use yii\db\PdoValue;
-use yii\db\Query;
+use Yiisoft\Db\ConnectionInterface;
+use Yiisoft\Db\PdoValue;
+use Yiisoft\Db\Query;
 use yii\di\Instance;
 use Yiisoft\Arrays\ArrayHelper;
 
