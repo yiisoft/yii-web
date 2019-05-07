@@ -11,7 +11,7 @@ use Psr\Http\Message\ResponseInterface;
 use yii\exceptions\InvalidArgumentException;
 use yii\exceptions\InvalidConfigException;
 use yii\helpers\FileHelper;
-use Yiisoft\Inflector\InflectorHelper;
+use Yiisoft\Strings\Inflector;
 use Yiisoft\Strings\StringHelper;
 use yii\helpers\Url;
 use yii\helpers\Yii;
@@ -802,7 +802,7 @@ class Response extends \yii\base\Response implements ResponseInterface
         $fallbackName = str_replace(
             ['%', '/', '\\', '"'],
             ['_', '_', '_', '\\"'],
-            InflectorHelper::transliterate($attachmentName, InflectorHelper::TRANSLITERATE_LOOSE)
+            Inflector::transliterate($attachmentName, Inflector::TRANSLITERATE_LOOSE)
         );
         $utfName = rawurlencode(str_replace(['%', '/', '\\'], '', $attachmentName));
 

@@ -67,7 +67,6 @@
         "yiisoft/view": "^3.0@dev",
         "yiisoft/strings": "^3.0@dev",
         "yiisoft/arrays": "^3.0@dev",
-        "yiisoft/inflector": "^3.0@dev",
         "psr/http-message": "^1.0"
     },
     "require-dev": {
