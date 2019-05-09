@@ -3,12 +3,14 @@
 use yii\di\Reference;
 
 return [
-    'aliases' => [
-        '@web' => '/',
-    ],
-
     'app' => [
         '__class' => yii\web\Application::class,
+        'bootstrap' => [
+            'web-alias' => function($app) {
+                /* @var $app \yii\web\Application */
+                $app->setAlias('@web', $app->getRequest()->getBaseUrl());
+            },
+        ],
     ],
 
     'urlManager' => [
