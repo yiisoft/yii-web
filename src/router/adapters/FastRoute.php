@@ -136,8 +136,7 @@ EOT;
         RouteCollector $router = null,
         callable $dispatcherFactory = null,
         array $config = null
-    )
-    {
+    ) {
         if (null === $router) {
             $router = $this->createRouter();
         }
