@@ -1,7 +1,7 @@
 <?php
 
 
-namespace yii\middleware;
+namespace yii\web\middleware;
 
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;

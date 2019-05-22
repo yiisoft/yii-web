@@ -3,10 +3,16 @@
 
 namespace yii\web\router;
 
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+use yii\web\middleware\Callback;
+
 /**
  * Route defines a mapping from URL to callback / name and vice versa
  */
-class Route
+class Route implements MiddlewareInterface
 {
     /**
      * @var string
@@ -29,10 +35,9 @@ class Route
     private $host;
 
     /**
-     * TODO: should it be optional?
-     * @var callable
+     * @var MiddlewareInterface
      */
-    private $callback;
+    private $middleware;
 
     /**
      * @var array
@@ -106,17 +111,16 @@ class Route
 
     public static function methods(array $methods, string $pattern): self
     {
-        // TODO: should we validate methods?
         $new = new static();
         $new->methods = $methods;
         $new->pattern = $pattern;
         return $new;
     }
 
-    public static function allMethods(string $pattern): self
+    public static function anyMethod(string $pattern): self
     {
         $new = new static();
-        $new->methods = Method::ALL;
+        $new->methods = Method::ANY;
         $new->pattern = $pattern;
         return $new;
     }
@@ -161,16 +165,18 @@ class Route
         return $new;
     }
 
-    /**
-     * // TODO: should we allow adding middlewares here?
-     *
-     * @param callable $callback
-     * @return Route
-     */
-    public function to(callable $callback): self
+    public function to($middleware): self
     {
         $new = clone $this;
-        $new->callback = $callback;
+        if (is_callable($middleware)) {
+            $middleware = new Callback($middleware);
+        }
+
+        if (!$middleware instanceof MiddlewareInterface) {
+            throw new \InvalidArgumentException('Parameter should be either a PSR middleware of a callable.');
+        }
+
+        $new->middleware = $middleware;
         return $new;
     }
 
@@ -197,56 +203,42 @@ class Route
         return $result;
     }
 
-    public function getName(): ?string
+    public function getName(): string
     {
+        if ($this->name === null) {
+            return implode(', ', $this->methods) . ' ' . $this->pattern;
+        }
+
         return $this->name;
     }
 
-    /**
-     * @return array
-     */
     public function getMethods(): array
     {
         return $this->methods;
     }
 
-    /**
-     * @return string
-     */
     public function getPattern(): string
     {
         return $this->pattern;
     }
 
-    /**
-     * @return string
-     */
     public function getHost(): ?string
     {
         return $this->host;
     }
 
-    /**
-     * @return callable
-     */
-    public function getCallback(): ?callable
-    {
-        return $this->callback;
-    }
-
-    /**
-     * @return array
-     */
     public function getParameters(): array
     {
         return $this->parameters;
     }
 
-    /**
-     * @return array
-     */
     public function getDefaults(): array
     {
         return $this->defaults;
+    }
+
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    {
+        return $this->middleware->process($request, $handler);
     }
 }

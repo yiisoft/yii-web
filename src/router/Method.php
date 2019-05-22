@@ -13,7 +13,7 @@ final class Method
     public const HEAD = 'HEAD';
     public const OPTIONS = 'OPTIONS';
 
-    public const ALL = [
+    public const ANY = [
         self::GET,
         self::POST,
         self::PUT,

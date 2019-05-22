@@ -6,7 +6,7 @@ namespace yii\web\tests\router;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
 use yii\web\router\Group;
-use yii\web\router\Match;
+use yii\web\router\MatchingResult;
 use yii\web\router\NoHandler;
 use yii\web\router\NoMatch;
 use yii\web\router\Route;
@@ -83,7 +83,7 @@ class UrlMatcherTest extends TestCase
         return [
             [
                 'book/123/this+is+sample',
-                new Match($handler, ['id' => '123', 'title' => 'this+is+sample'], 'book/view')
+                new MatchingResult($handler, ['id' => '123', 'title' => 'this+is+sample'], 'book/view')
             ],
             [
                 // trailing slash is significant, no match
@@ -104,7 +104,7 @@ class UrlMatcherTest extends TestCase
     /**
      * @dataProvider patternMatchProvider
      */
-    public function testPatternMatch(string $path, ?Match $expectedMatch)
+    public function testPatternMatch(string $path, ?MatchingResult $expectedMatch)
     {
         $handler = function () {
             // does not matter
