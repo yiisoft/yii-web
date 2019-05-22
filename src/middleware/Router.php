@@ -7,7 +7,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use yii\web\router\MatchingResult;
 use yii\web\router\UrlMatcherInterface;
 
 class Router implements MiddlewareInterface
@@ -22,7 +21,10 @@ class Router implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $result = $this->matcher->match($request);
-        $request = $request->withAttribute(MatchingResult::class, $result);
+
+        if ($result === null) {
+            return $handler->handle($request);
+        }
 
         if ($result->isSuccess()) {
             foreach ($result->parameters() as $parameter => $value) {
@@ -30,6 +32,6 @@ class Router implements MiddlewareInterface
             }
         }
 
-        return $handler->handle($request);
+        return $result->process($request, $handler);
     }
 }
