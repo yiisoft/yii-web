@@ -9,7 +9,7 @@ namespace yii\web;
 
 use yii\base\BaseObject;
 use yii\di\Initiable;
-use yii\helpers\ArrayHelper;
+use Yiisoft\Arrays\ArrayHelper;
 use yii\helpers\Url;
 use yii\helpers\Yii;
 

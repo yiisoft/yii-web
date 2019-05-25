@@ -13,7 +13,7 @@ use yii\base\Component;
 use yii\base\Controller;
 use yii\di\AbstractContainer;
 use yii\exceptions\InvalidConfigException;
-use yii\helpers\StringHelper;
+use Yiisoft\Strings\StringHelper;
 use yii\web\Request;
 use yii\web\User;
 

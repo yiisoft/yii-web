@@ -13,7 +13,7 @@ use yii\web\filters\auth\HttpBasicAuth;
 use yii\web\filters\auth\HttpBearerAuth;
 use yii\web\filters\auth\QueryParamAuth;
 use yii\web\filters\auth\HttpHeaderAuth;
-use yii\helpers\ArrayHelper;
+use Yiisoft\Arrays\ArrayHelper;
 use yii\web\Controller;
 use yii\web\User;
 use yii\web\UnauthorizedHttpException;

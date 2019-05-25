@@ -9,17 +9,17 @@ namespace yii\web\tests\filters;
 
 use yii\helpers\Yii;
 use yii\base\Action;
-use yii\cache\ArrayCache;
-use yii\cache\Cache;
-use yii\cache\dependencies\ExpressionDependency;
+use Yiisoft\Cache\ArrayCache;
+use Yiisoft\Cache\Cache;
+use Yiisoft\Cache\Dependencies\ExpressionDependency;
 use yii\web\filters\PageCache;
-use yii\helpers\ArrayHelper;
+use Yiisoft\Arrays\ArrayHelper;
 use yii\helpers\Json;
 use yii\web\Controller;
 use yii\http\Cookie;
 use yii\view\Theme;
 use yii\web\View;
-use yii\cache\tests\unit\CacheTestCase;
+use Yiisoft\Cache\Tests\CacheTestCase;
 use yii\tests\TestCase;
 
 /**

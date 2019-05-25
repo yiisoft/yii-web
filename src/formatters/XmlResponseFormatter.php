@@ -11,9 +11,9 @@ use DOMDocument;
 use DOMElement;
 use DOMException;
 use DOMText;
-use yii\base\Arrayable;
 use yii\base\Component;
-use yii\helpers\StringHelper;
+use Yiisoft\Arrays\Arrayable;
+use Yiisoft\Strings\StringHelper;
 
 /**
  * XmlResponseFormatter formats the given data into an XML response content.

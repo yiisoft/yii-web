@@ -9,8 +9,8 @@ namespace yii\web;
 
 use yii\helpers\Yii;
 use yii\base\BaseObject;
-use yii\helpers\ArrayHelper;
-use yii\helpers\StringHelper;
+use Yiisoft\Arrays\ArrayHelper;
+use Yiisoft\Strings\StringHelper;
 use yii\http\ResourceStream;
 
 /**

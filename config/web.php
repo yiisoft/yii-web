@@ -11,11 +11,6 @@ return [
         '__class' => yii\web\Application::class,
     ],
 
-    'assetManager' => [
-        '__class'   => yii\web\AssetManager::class,
-        'basePath'  => '@public/assets',
-        'baseUrl'   => '@web/assets',
-    ],
     'urlManager' => [
         '__class' => yii\web\UrlManager::class,
     ],
@@ -65,8 +60,4 @@ return [
         '__class' => yii\web\AssetManager::class,
     ],
 
-    /// TODO: move to swiftmailer
-    'mailer' => [
-        '__class' => yii\swiftmailer\Mailer::class,
-    ],
 ];

@@ -156,7 +156,7 @@ class ErrorHandler extends \yii\base\ErrorHandler
                 $array['file'] = $exception->getFile();
                 $array['line'] = $exception->getLine();
                 $array['stack-trace'] = explode("\n", $exception->getTraceAsString());
-                if ($exception instanceof \yii\db\Exception) {
+                if ($exception instanceof \Yiisoft\Db\Exception) {
                     $array['error-info'] = $exception->errorInfo;
                 }
             }

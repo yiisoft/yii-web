@@ -8,10 +8,9 @@
 namespace yii\web\tests\session;
 
 use yii\helpers\Yii;
-use yii\db\Connection;
-use yii\db\Query;
+use Yiisoft\Db\Connection;
+use Yiisoft\Db\Query;
 use yii\web\DbSession;
-use yii\console\tests\unit\controllers\EchoMigrateController;
 use yii\tests\TestCase;
 
 /**

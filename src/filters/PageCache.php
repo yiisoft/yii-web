@@ -9,8 +9,8 @@ namespace yii\web\filters;
 
 use yii\base\Action;
 use yii\base\ActionFilter;
-use yii\cache\CacheInterface;
-use yii\cache\dependencies\Dependency;
+use Yiisoft\Cache\CacheInterface;
+use Yiisoft\Cache\Dependencies\Dependency;
 use yii\helpers\Yii;
 use yii\view\DynamicContentAwareInterface;
 use yii\view\DynamicContentAwareTrait;
@@ -36,7 +36,7 @@ use yii\web\Response;
  *             'only' => ['index'],
  *             'duration' => 60,
  *             'dependency' => [
- *                 '__class' => \yii\cache\dependencies\DbDependency::class,
+ *                 '__class' => \Yiisoft\Cache\Dependencies\DbDependency::class,
  *                 'sql' => 'SELECT COUNT(*) FROM post',
  *             ],
  *             'variations' => [
@@ -85,7 +85,7 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
      *
      * ```php
      * [
-     *     '__class' => \yii\cache\dependencies\DbDependency::class,
+     *     '__class' => \Yiisoft\Cache\Dependencies\DbDependency::class,
      *     'sql' => 'SELECT MAX(updated_at) FROM post',
      * ]
      * ```

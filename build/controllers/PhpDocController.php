@@ -8,7 +8,7 @@
 namespace yii\build\controllers;
 
 use yii\helpers\Yii;
-use yii\console\Controller;
+use Yiisoft\Yii\Console\Controller;
 use yii\helpers\Console;
 use yii\helpers\FileHelper;
 use yii\helpers\Json;
@@ -520,7 +520,7 @@ class PhpDocController extends Controller
             return false;
         }
 
-        if ($ref->isSubclassOf('yii\db\BaseActiveRecord')) {
+        if ($ref->isSubclassOf('Yiisoft\Db\BaseActiveRecord')) {
             $this->stderr("[INFO] Skipping class $className as it is an ActiveRecord class, property handling is not supported yet.\n", Console::FG_BLUE, Console::BOLD);
             return false;
         }

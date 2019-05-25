@@ -10,7 +10,7 @@ namespace yii\web\tests;
 use Error;
 use Exception;
 use RuntimeException;
-use yii\helpers\StringHelper;
+use Yiisoft\Strings\StringHelper;
 use yii\web\HttpException;
 use yii\web\Response;
 use yii\web\RangeNotSatisfiableHttpException;

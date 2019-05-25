@@ -8,7 +8,7 @@
 namespace yii\web;
 
 use yii\exceptions\InvalidConfigException;
-use yii\helpers\ArrayHelper;
+use Yiisoft\Arrays\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Yii;
 use yii\view\BodyEvent;
