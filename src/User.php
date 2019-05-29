@@ -12,7 +12,7 @@ use yii\base\Component;
 use yii\exceptions\InvalidConfigException;
 use yii\exceptions\InvalidValueException;
 use yii\http\Cookie;
-use Yiisoft\Rbac\CheckAccessInterface;
+use Yiisoft\Access\CheckAccessInterface;
 use yii\helpers\Yii;
 use yii\di\Initiable;
 
@@ -704,7 +704,7 @@ class User extends Component implements Initiable
      * When this parameter is true (default), if the access check of an operation was performed
      * before, its result will be directly returned when calling this method to check the same
      * operation. If this parameter is false, this method will always call
-     * [[\Yiisoft\Rbac\CheckAccessInterface::checkAccess()]] to obtain the up-to-date access result. Note that this
+     * [[\Yiisoft\Access\CheckAccessInterface::checkAccess()]] to obtain the up-to-date access result. Note that this
      * caching is effective only within the same request and only works when `$params = []`.
      * @return bool whether the user can perform the operation as specified by the given permission.
      */

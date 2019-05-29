@@ -1,22 +1,16 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
-
 namespace yii\web\tests\filters;
 
 use Closure;
 use yii\base\Action;
+use yii\web\tests\filters\stubs\DenyAll;
+use Yiisoft\Access\CheckAccessInterface;
 use yii\web\filters\AccessRule;
 use yii\web\Controller;
 use yii\web\Request;
 use yii\web\User;
-use yii\web\tests\filters\stubs\MockAuthManager;
+use yii\web\tests\filters\stubs\AccessChecker;
 use yii\web\tests\filters\stubs\UserIdentity;
-use yii\web\tests\stubs\AuthorRule;
-use Yiisoft\Rbac\DenyAll;
 
 /**
  * @group filters
@@ -49,21 +43,12 @@ class AccessRuleTest extends \yii\tests\TestCase
         return $request;
     }
 
-    /**
-     * @param string $userid optional user id
-     * @return User
-     */
-    protected function mockUser($userid = null, $accessChecker = null)
+    protected function mockUser(CheckAccessInterface $accessChecker, $userid = null)
     {
-        $user = $this->factory->create(array_filter([
-            '__class' => User::class,
-            '__construct()' => array_filter([
-                'app' => $this->app,
-                'accessChecker' => $accessChecker,
-            ]),
-            'identityClass' => UserIdentity::class,
-            'enableAutoLogin' => false,
-        ]));
+        $user = new User($this->app, $accessChecker);
+        $user->identityClass = UserIdentity::class;
+        $user->enableAutoLogin = false;
+
         if ($userid !== null) {
             $user->setIdentity(UserIdentity::findIdentity($userid));
         }
@@ -80,48 +65,23 @@ class AccessRuleTest extends \yii\tests\TestCase
         return new Action('test', $controller);
     }
 
-    /**
-     * @return \Yiisoft\Rbac\BaseManager
-     */
-    protected function mockAuthManager()
+    protected function mockAccessChecker(): CheckAccessInterface
     {
-        $auth = new MockAuthManager();
-        // add "createPost" permission
-        $createPost = $auth->createPermission('createPost');
-        $createPost->description = 'Create a post';
-        $auth->add($createPost);
+        $auth = new AccessChecker();
 
-        // add "updatePost" permission
-        $updatePost = $auth->createPermission('updatePost');
-        $updatePost->description = 'Update post';
-        $auth->add($updatePost);
+        // admin
+        $auth->addPermissions('user1', [
+            'createPost',
+            'updatePost'
+        ]);
 
-        // add "updateOwnPost" permission
-        $updateOwnPost = $auth->createPermission('updateOwnPost');
-        $updateOwnPost->description = 'Update post';
-        $updateRule = new AuthorRule();
-        $auth->add($updateRule);
-        $updateOwnPost->ruleName = $updateRule->name;
-        $auth->add($updateOwnPost);
-        $auth->addChild($updateOwnPost, $updatePost);
-
-        // add "author" role and give this role the "createPost" permission
-        $author = $auth->createRole('author');
-        $auth->add($author);
-        $auth->addChild($author, $createPost);
-        $auth->addChild($author, $updateOwnPost);
-
-        // add "admin" role and give this role the "updatePost" permission
-        // as well as the permissions of the "author" role
-        $admin = $auth->createRole('admin');
-        $auth->add($admin);
-        $auth->addChild($admin, $updatePost);
-        $auth->addChild($admin, $author);
-
-        // Assign roles to users. 1 and 2 are IDs returned by IdentityInterface::getId()
-        // usually implemented in your User model.
-        $auth->assign($author, 'user2');
-        $auth->assign($admin, 'user1');
+        // author
+        $auth->addPermissions('user2', [
+            'createPost',
+            'updatePost' => function ($userId, array $parameters) {
+                return $parameters['authorID'] === $userId;
+            },
+        ]);
 
         return $auth;
     }
@@ -215,7 +175,7 @@ class AccessRuleTest extends \yii\tests\TestCase
     }
 
     /**
-     * Data provider for testMatchRole.
+     * Data provider for testMatchPermission.
      *
      * @return array or arrays
      *           the id of the action
@@ -223,7 +183,7 @@ class AccessRuleTest extends \yii\tests\TestCase
      *           test user id
      *           expected match result (true, false, null)
      */
-    public function matchRoleProvider()
+    public function matchPermissionProvider()
     {
         return [
             ['create', true,  'user1',   [], true],
@@ -272,29 +232,29 @@ class AccessRuleTest extends \yii\tests\TestCase
     /**
      * Test that a user matches certain roles.
      *
-     * @dataProvider matchRoleProvider
-     * @param string $actionid the action id
+     * @dataProvider matchPermissionProvider
+     * @param string $actionId the action id
      * @param bool $allow whether the rule should allow access
      * @param string $userid the userid to check
-     * @param array|Closure $roleParams params for $roleParams
+     * @param array|Closure $permissionParameters params for $roleParams
      * @param bool $expected the expected result or null
      */
-    public function testMatchRole($actionid, $allow, $userid, $roleParams, $expected)
+    public function testMatchPermission($actionId, $allow, $userid, $permissionParameters, $expected)
     {
         $action = $this->mockAction();
-        $auth = $this->mockAuthManager();
+        $accessChecker = $this->mockAccessChecker();
         $request = $this->mockRequest();
 
         $rule = new AccessRule([
             'allow' => $allow,
-            'roles' => [$actionid === 'create' ? 'createPost' : 'updatePost'],
-            'actions' => [$actionid],
-            'roleParams' => $roleParams,
+            'permissions' => [$actionId === 'create' ? 'createPost' : 'updatePost'],
+            'actions' => [$actionId],
+            'permissionParameters' => $permissionParameters,
         ]);
 
-        $action->id = $actionid;
+        $action->id = $actionId;
 
-        $user = $this->mockUser($userid, $auth);
+        $user = $this->mockUser($accessChecker, $userid);
         $this->assertEquals($expected, $rule->allows($action, $user, $request));
     }
 
@@ -310,7 +270,7 @@ class AccessRuleTest extends \yii\tests\TestCase
 
         $rule = new AccessRule([
             'allow' => true,
-            'roles' => ['@'],
+            'permissions' => ['@'],
         ]);
 
         $this->expectException('yii\exceptions\InvalidConfigException');
@@ -321,24 +281,26 @@ class AccessRuleTest extends \yii\tests\TestCase
     {
         $action = $this->mockAction();
         $request = $this->mockRequest();
-        $authenticated = $this->mockUser('user1');
-        $guest = $this->mockUser('unknown');
+        $accessChecker = $this->mockAccessChecker();
+
+        $authenticated = $this->mockUser($accessChecker, 'user1');
+        $guest = $this->mockUser($accessChecker, 'unknown');
 
         $rule = new AccessRule();
         $rule->allow = true;
-        $rule->roleParams = function () {
+        $rule->permissionParameters = function () {
             $this->assertTrue(false, 'Should not be executed');
         };
 
-        $rule->roles = ['@'];
+        $rule->permissions = ['@'];
         $this->assertTrue($rule->allows($action, $authenticated, $request));
         $this->assertNull($rule->allows($action, $guest, $request));
 
-        $rule->roles = ['?'];
+        $rule->permissions = ['?'];
         $this->assertNull($rule->allows($action, $authenticated, $request));
         $this->assertTrue($rule->allows($action, $guest, $request));
 
-        $rule->roles = ['?', '@'];
+        $rule->permissions = ['?', '@'];
         $this->assertTrue($rule->allows($action, $authenticated, $request));
         $this->assertTrue($rule->allows($action, $guest, $request));
     }
@@ -358,27 +320,23 @@ class AccessRuleTest extends \yii\tests\TestCase
         $request = $this->mockRequest('GET');
         $this->assertTrue($rule->allows($action, $user, $request));
 
-        $rule->roles = ['allowed_role_1', 'allowed_role_2'];
+        $rule->permissions = ['allowed_role_1', 'allowed_role_2'];
         $this->assertNull($rule->allows($action, $user, $request));
 
-        $rule->roles = [];
         $rule->permissions = ['allowed_permission_1', 'allowed_permission_2'];
         $this->assertNull($rule->allows($action, $user, $request));
 
-        $rule->roles = ['allowed_role_1', 'allowed_role_2'];
-        $rule->permissions = ['allowed_permission_1', 'allowed_permission_2'];
+        $rule->permissions = ['allowed_role_1', 'allowed_role_2', 'allowed_permission_1', 'allowed_permission_2'];
         $this->assertNull($rule->allows($action, $user, $request));
 
         $user->method('can')->willReturn(true);
-        $rule->roles = ['allowed_role_1', 'allowed_role_2'];
+        $rule->permissions = ['allowed_role_1', 'allowed_role_2'];
         $this->assertTrue($rule->allows($action, $user, $request));
 
-        $rule->roles = [];
         $rule->permissions = ['allowed_permission_1', 'allowed_permission_2'];
         $this->assertTrue($rule->allows($action, $user, $request));
 
-        $rule->roles = ['allowed_role_1', 'allowed_role_2'];
-        $rule->permissions = ['allowed_permission_1', 'allowed_permission_2'];
+        $rule->permissions = ['allowed_role_1', 'allowed_role_2', 'allowed_permission_1', 'allowed_permission_2'];
         $this->assertTrue($rule->allows($action, $user, $request));
     }
 
