@@ -50,30 +50,15 @@ class AccessRule extends Component
      */
     public $controllers;
     /**
-     * @var array list of roles that this rule applies to (requires properly configured User component).
-     * Two special roles are recognized, and they are checked via [[User::isGuest]]:
+     * @var array list of permissions that this rules applies to.
+     * [[User::can()]] will be called to check access.
      *
+     * Two special permissions are recognized, and they are checked via [[User::isGuest]]
      * - `?`: matches a guest user (not authenticated yet)
      * - `@`: matches an authenticated user
      *
-     * If you are using RBAC (Role-Based Access Control), you may also specify role names.
-     * In this case, [[User::can()]] will be called to check access.
-     *
-     * Note that it is preferred to check for permissions instead.
-     *
-     * If this property is not set or empty, it means this rule applies regardless of roles.
-     * @see $permissions
-     * @see $roleParams
-     */
-    public $roles;
-    /**
-     * @var array list of RBAC (Role-Based Access Control) permissions that this rules applies to.
-     * [[User::can()]] will be called to check access.
-     *
      * If this property is not set or empty, it means this rule applies regardless of permissions.
-     * @since 2.0.12
-     * @see $roles
-     * @see $roleParams
+     * @see $permissionParameters
      */
     public $permissions;
     /**
@@ -106,10 +91,9 @@ class AccessRule extends Component
      *
      * A reference to the [[AccessRule]] instance will be passed to the closure as the first parameter.
      *
-     * @see $roles
-     * @since 2.0.12
+     * @see $permissions
      */
-    public $roleParams = [];
+    public $permissionParameters = [];
     /**
      * @var array list of user IP addresses that this rule applies to. An IP address
      * can contain the wildcard `*` at the end so that it matches IP addresses with the same prefix.
@@ -215,16 +199,12 @@ class AccessRule extends Component
 
     /**
      * @param User $user the user object
-     * @return bool whether the rule applies to the role
+     * @return bool whether the rule applies to the permission
      * @throws InvalidConfigException if User component is detached
      */
     protected function matchRole($user)
     {
-        $items = empty($this->roles) ? [] : $this->roles;
-
-        if (!empty($this->permissions)) {
-            $items = array_merge($items, $this->permissions);
-        }
+        $items = empty($this->permissions) ? [] : $this->permissions;
 
         if (empty($items)) {
             return true;
@@ -244,10 +224,10 @@ class AccessRule extends Component
                     return true;
                 }
             } else {
-                if (!isset($roleParams)) {
-                    $roleParams = $this->roleParams instanceof Closure ? call_user_func($this->roleParams, $this) : $this->roleParams;
+                if (!isset($permissionParameters)) {
+                    $permissionParameters = $this->permissionParameters instanceof Closure ? call_user_func($this->permissionParameters, $this) : $this->permissionParameters;
                 }
-                if ($user->can($item, $roleParams)) {
+                if ($user->can($item, $permissionParameters)) {
                     return true;
                 }
             }

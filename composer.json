@@ -62,7 +62,6 @@
         "irc": "irc://irc.freenode.net/yii",
         "source": "https://github.com/yiisoft/yii-web"
     },
-    "minimum-stability": "dev",
     "require": {
         "psr/container": "1.0.0",
         "psr/container-implementation": "1.0.0",
@@ -76,19 +75,20 @@
         "yiisoft/router": "^3.0@dev",
         "yiisoft/strings": "^3.0@dev",
         "yiisoft/view": "^3.0@dev",
-        "yiisoft/yii-core": "^3.0@dev"
+        "yiisoft/yii-core": "^3.0@dev",
+        "yiisoft/access": "^3.0@dev"
     },
     "require-dev": {
         "hiqdev/composer-config-plugin": "^1.0@dev",
         "yiisoft/di": "^3.0@dev",
         "yiisoft/log": "^3.0@dev",
-        "yiisoft/rbac": "^3.0@dev",
         "yiisoft/cache": "^3.0@dev",
         "yiisoft/yii-console": "^3.0@dev",
         "yiisoft/db": "^3.0@dev",
         "yiisoft/db-mysql": "^3.0@dev",
         "yiisoft/db-pgsql": "^3.0@dev",
         "yiisoft/db-sqlite": "^3.0@dev",
+        "yiisoft/var-dumper": "^3.0@dev",
         "ezyang/htmlpurifier": "~4.6",
         "phpunit/phpunit": "^7.3",
         "cebe/indent": "~1.0.2",

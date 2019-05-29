@@ -19,17 +19,16 @@ function time()
 namespace yii\web\tests;
 
 use yii\helpers\Yii;
-use yii\base\BaseObject;
 use yii\di\Reference;
 use yii\http\Cookie;
 use yii\http\CookieCollection;
-use Yiisoft\Rbac\CheckAccessInterface;
-use Yiisoft\Rbac\PhpManager;
+use Yiisoft\Access\CheckAccessInterface;
 use yii\web\Request;
 use yii\web\Response;
 use yii\web\ForbiddenHttpException;
 use yii\web\User;
 use yii\tests\TestCase;
+use \yii\web\tests\filters\stubs\AccessChecker;
 
 /**
  * @group web
@@ -61,22 +60,15 @@ class UserTest extends TestCase
                 'identityClass' => UserIdentity::class,
                 'authTimeout' => 10,
             ],
-            CheckAccessInterface::class => Reference::to('authManager'),
-            'authManager' => [
-                '__class' => PhpManager::class,
-                '__construct()' => [
-                    'dir' => Yii::getAlias('@runtime'),
-                ],
-            ],
+            CheckAccessInterface::class => function () {
+                $accessChecker = new AccessChecker();
+                $accessChecker->addPermissions('user1', [
+                    'rUser',
+                    'doSomething'
+                ]);
+            }
         ];
         $this->mockWebApplication([], null, $services);
-
-        $am = $this->app->authManager;
-        $am->removeAll();
-        $am->add($role = $am->createPermission('rUser'));
-        $am->add($perm = $am->createPermission('doSomething'));
-        $am->addChild($role, $perm);
-        $am->assign($role, 'user1');
 
         $this->app->session->removeAll();
         static::$time = \time();
@@ -337,10 +329,7 @@ class UserTest extends TestCase
                 'identityClass' => UserIdentity::class,
             ],
             'authManager' => [
-                '__class' => PhpManager::class,
-                '__construct()' => [
-                    'dir' => Yii::getAlias('@runtime'),
-                ],
+                '__class' => AccessChecker::class,
             ],
         ];
 
@@ -419,14 +408,6 @@ class MockResponse extends Response
         global $cookiesMock;
 
         return $cookiesMock;
-    }
-}
-
-class AccessChecker extends BaseObject implements CheckAccessInterface
-{
-    public function checkAccess($userId, $permissionName, $params = [])
-    {
-        // Implement checkAccess() method.
     }
 }
 
