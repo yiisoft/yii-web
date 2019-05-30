@@ -63,12 +63,20 @@
         "source": "https://github.com/yiisoft/yii-web"
     },
     "require": {
-        "yiisoft/yii-core": "^3.0@dev",
-        "yiisoft/view": "^3.0@dev",
-        "yiisoft/strings": "^3.0@dev",
+        "psr/container": "1.0.0",
+        "psr/container-implementation": "1.0.0",
+        "psr/http-factory": "^1.0",
+        "psr/http-factory-implementation": "1.0",
+        "psr/http-message": "^1.0",
+        "psr/http-message-implementation": "1.0",
+        "psr/http-server-handler": "^1.0",
+        "psr/http-server-middleware": "^1.0",
         "yiisoft/arrays": "^3.0@dev",
-        "yiisoft/access": "^3.0@dev",
-        "psr/http-message": "^1.0"
+        "yiisoft/router": "^3.0@dev",
+        "yiisoft/strings": "^3.0@dev",
+        "yiisoft/view": "^3.0@dev",
+        "yiisoft/yii-core": "^3.0@dev",
+        "yiisoft/access": "^3.0@dev"
     },
     "require-dev": {
         "hiqdev/composer-config-plugin": "^1.0@dev",
@@ -84,7 +92,9 @@
         "ezyang/htmlpurifier": "~4.6",
         "phpunit/phpunit": "^7.3",
         "cebe/indent": "~1.0.2",
-        "friendsofphp/php-cs-fixer": "^2.2"
+        "friendsofphp/php-cs-fixer": "^2.2",
+        "nyholm/psr7": "^1.0",
+        "yiisoft/router-fastroute": "^3.0@dev"
     },
     "suggest": {
         "yiisoft/yii2-coding-standards": "you can use this package to check for code style issues when contributing to yii"
