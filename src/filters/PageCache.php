@@ -67,12 +67,9 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
      */
     public $varyByRoute = true;
     /**
-     * @var CacheInterface|array|string the cache object or the application component ID of the cache object.
-     * After the PageCache object is created, if you want to change this property,
-     * you should only assign it with a cache object.
-     * Starting from version 2.0.2, this can also be a configuration array for creating the object.
+     * @var CacheInterface the cache object.
      */
-    public $cache = 'cache';
+    private $cache;
     /**
      * @var int number of seconds that the data can remain valid in cache.
      * Use `0` to indicate that the cached data will never expire.
@@ -130,6 +127,10 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
      */
     public $cacheHeaders = true;
 
+    public function __construct(CacheInterface $cache)
+    {
+        $this->cache = $cache;
+    }
 
     /**
      * This method is invoked right before an action is to be executed (after all possible filters.)
