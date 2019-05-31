@@ -144,8 +144,6 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
             return true;
         }
 
-        $this->cache = Yii::ensureObject($this->cache, CacheInterface::class);
-
         if (is_array($this->dependency)) {
             $this->dependency = Yii::createObject($this->dependency);
         }
