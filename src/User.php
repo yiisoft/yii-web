@@ -9,12 +9,10 @@ namespace yii\web;
 
 use yii\base\Application;
 use yii\base\Component;
-use yii\exceptions\InvalidConfigException;
 use yii\exceptions\InvalidValueException;
 use yii\http\Cookie;
 use Yiisoft\Access\CheckAccessInterface;
 use yii\helpers\Yii;
-use yii\di\Initiable;
 
 /**
  * User is the class for the `user` application component that manages the user authentication status.
@@ -60,10 +58,11 @@ use yii\di\Initiable;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class User extends Component implements Initiable
+class User extends Component
 {
     /**
      * @var string the class name of the [[identity]] object.
+     * TODO: it is mandatory!
      */
     public $identityClass;
     /**
@@ -93,6 +92,7 @@ class User extends Component implements Initiable
     /**
      * @var array the configuration of the identity cookie. This property is used only when [[enableAutoLogin]] is `true`.
      * @see Cookie
+     * TODO: User::identityCookie must contain the "name" element, check for it
      */
     public $identityCookie = ['name' => '_identity', 'httpOnly' => true];
     /**
@@ -153,19 +153,6 @@ class User extends Component implements Initiable
     {
         $this->app = $app;
         $this->accessChecker = $accessChecker;
-    }
-
-    /**
-     * Initializes the application component.
-     */
-    public function init(): void
-    {
-        if ($this->identityClass === null) {
-            throw new InvalidConfigException('User::identityClass must be set.');
-        }
-        if ($this->enableAutoLogin && !isset($this->identityCookie['name'])) {
-            throw new InvalidConfigException('User::identityCookie must contain the "name" element.');
-        }
     }
 
     private $_identity = false;
