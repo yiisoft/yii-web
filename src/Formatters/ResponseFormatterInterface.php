@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\formatters;
+namespace Yiisoft\Web\Formatters;
 
 /**
  * ResponseFormatterInterface specifies the interface needed to format a response before it is sent out.

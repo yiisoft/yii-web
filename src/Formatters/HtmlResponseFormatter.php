@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\formatters;
+namespace Yiisoft\Web\Formatters;
 
 use yii\base\Component;
 
