@@ -114,12 +114,12 @@
     },
     "autoload": {
         "psr-4": {
-            "yii\\web\\": "src"
+            "Yiisoft\\Web\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "yii\\web\\tests\\": "tests",
+            "Yiisoft\\Web\\Tests\\": "tests",
             "Yiisoft\\Cache\\Tests\\": "vendor/yiisoft/cache/tests"
         }
     }
