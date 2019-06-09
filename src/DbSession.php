@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web;
+namespace Yiisoft\Web;
 
 use yii\helpers\Yii;
 use yii\exceptions\InvalidConfigException;
@@ -26,7 +26,7 @@ use Yiisoft\Arrays\ArrayHelper;
  *
  * ```php
  * 'session' => [
- *     '__class' => \yii\web\DbSession::class,
+ *     '__class' => \Yiisoft\Web\DbSession::class,
  *     // 'db' => 'mydb',
  *     // 'sessionTable' => 'my_session',
  * ]

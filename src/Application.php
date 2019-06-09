@@ -5,9 +5,9 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web;
+namespace Yiisoft\Web;
 
-use yii\web\emitter\EmitterInterface;
+use Yiisoft\Web\Emitter\EmitterInterface;
 
 /**
  * Application is the entry point for a web application.
@@ -19,17 +19,17 @@ class Application
     /**
      * @var ServerRequestFactory
      */
-    private $requestFactory;
+    private $_requestFactory;
 
     /**
      * @var MiddlewareDispatcher
      */
-    private $dispatcher;
+    private $_dispatcher;
 
     /**
      * @var EmitterInterface
      */
-    private $emitter;
+    private $_emitter;
 
     /**
      * Application constructor.
@@ -39,15 +39,15 @@ class Application
      */
     public function __construct(ServerRequestFactory $requestFactory, MiddlewareDispatcher $dispatcher, EmitterInterface $emitter)
     {
-        $this->requestFactory = $requestFactory;
-        $this->dispatcher = $dispatcher;
-        $this->emitter = $emitter;
+        $this->_requestFactory = $requestFactory;
+        $this->_dispatcher = $dispatcher;
+        $this->_emitter = $emitter;
     }
 
     public function run(): bool
     {
-        $request = $this->requestFactory->createFromGlobals();
-        $response = $this->dispatcher->handle($request);
-        return $this->emitter->emit($response);
+        $request = $this->_requestFactory->createFromGlobals();
+        $response = $this->_dispatcher->handle($request);
+        return $this->_emitter->emit($response);
     }
 }

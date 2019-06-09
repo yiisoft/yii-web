@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web;
+namespace Yiisoft\Web;
 
 /**
  * SessionIterator implements an [[\Iterator|iterator]] for traversing session variables managed by [[Session]].

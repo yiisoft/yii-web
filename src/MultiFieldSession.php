@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web;
+namespace Yiisoft\Web;
 
 /**
  * MultiFieldSession is the base class for session storage implementations with multi-field data storage support.

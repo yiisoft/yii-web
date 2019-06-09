@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web;
+namespace Yiisoft\Web;
 
 /**
  * MethodNotAllowedHttpException represents a "Method Not Allowed" HTTP exception with status code 405.

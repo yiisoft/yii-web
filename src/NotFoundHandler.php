@@ -1,6 +1,6 @@
 <?php
 
-namespace yii\web;
+namespace Yiisoft\Web;
 
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -12,7 +12,7 @@ class NotFoundHandler implements RequestHandlerInterface
     /**
      * @var ResponseFactoryInterface
      */
-    private $responseFactory;
+    private $_responseFactory;
 
     /**
      * NotFoundHandler constructor.
@@ -20,7 +20,7 @@ class NotFoundHandler implements RequestHandlerInterface
      */
     public function __construct(ResponseFactoryInterface $responseFactory)
     {
-        $this->responseFactory = $responseFactory;
+        $this->_responseFactory = $responseFactory;
     }
 
     /**
@@ -31,7 +31,7 @@ class NotFoundHandler implements RequestHandlerInterface
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $path = $request->getUri()->getPath();
-        $response = $this->responseFactory->createResponse(404);
+        $response = $this->_responseFactory->createResponse(404);
         $response->getBody()->write("We were unable to find the page $path.");
         return $response;
     }

@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web;
+namespace Yiisoft\Web;
 
 use yii\helpers\Yii;
 use yii\base\BaseObject;
@@ -25,7 +25,7 @@ use yii\http\ResourceStream;
  *     'components' => [
  *         'request' => [
  *             'parsers' => [
- *                 'multipart/form-data' => 'yii\web\MultipartFormDataParser'
+ *                 'multipart/form-data' => 'Yiisoft\Web\MultipartFormDataParser'
  *             ],
  *         ],
  *         // ...

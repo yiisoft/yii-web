@@ -1,6 +1,5 @@
 <?php
 
-
 namespace yii\http;
 
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -11,11 +10,11 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class ExceptionHandler implements MiddlewareInterface
 {
-    private $responseFactory;
+    private $_responseFactory;
 
     public function __construct(ResponseFactoryInterface $responseFactory)
     {
-        $this->responseFactory = $responseFactory;
+        $this->_responseFactory = $responseFactory;
     }
 
     /**
@@ -30,7 +29,7 @@ class ExceptionHandler implements MiddlewareInterface
         try {
             return $handler->handle($request);
         } catch (\Throwable $e) {
-            $response = $this->responseFactory->createResponse(500);
+            $response = $this->_responseFactory->createResponse(500);
             $response->getBody()->write($e->getMessage());
             return $response;
         }

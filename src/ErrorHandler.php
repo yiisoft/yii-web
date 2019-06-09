@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web;
+namespace Yiisoft\Web;
 
 use yii\exceptions\ErrorException;
 use yii\exceptions\Exception;
@@ -48,19 +48,19 @@ class ErrorHandler extends \yii\base\ErrorHandler
     /**
      * @var string the path of the view file for rendering exceptions without call stack information.
      */
-    public $errorView = '@yii/web/views/errorHandler/error.php';
+    public $errorView = '@Yiisoft/Web/Views/ErrorHandler/Error.php';
     /**
      * @var string the path of the view file for rendering exceptions.
      */
-    public $exceptionView = '@yii/web/views/errorHandler/exception.php';
+    public $exceptionView = '@Yiisoft/Web/Views/ErrorHandler/Exception.php';
     /**
      * @var string the path of the view file for rendering exceptions and errors call stack element.
      */
-    public $callStackItemView = '@yii/web/views/errorHandler/callStackItem.php';
+    public $callStackItemView = '@Yiisoft/Web/Views/ErrorHandler/CallStackItem.php';
     /**
      * @var string the path of the view file for rendering previous exceptions.
      */
-    public $previousExceptionView = '@yii/web/views/errorHandler/previousException.php';
+    public $previousExceptionView = '@Yiisoft/Web/Views/ErrorHandler/PreviousException.php';
     /**
      * @var array list of the PHP predefined variables that should be displayed on the error page.
      * Note that a variable must be accessible via `$GLOBALS`. Otherwise it won't be displayed.

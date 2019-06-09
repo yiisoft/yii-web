@@ -5,14 +5,14 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web;
+namespace Yiisoft\Web;
 
 use yii\base\Action;
 use yii\base\InlineAction;
 use yii\helpers\Url;
 use yii\helpers\Yii;
 use yii\exceptions\InvalidArgumentException;
-use yii\view\ViewContextInterface;
+use Yiisoft\View\ViewContextInterface;
 
 /**
  * Controller is the base class of web controllers.
@@ -20,7 +20,7 @@ use yii\view\ViewContextInterface;
  * For more details and usage information on Controller, see the [guide article on controllers](guide:structure-controllers).
  *
  * read-only.
- * @property View|\yii\web\View $view The view object that can be used to render views or view files.
+ * @property View|\Yiisoft\Web\View $view The view object that can be used to render views or view files.
  * @property string $viewPath The directory containing the view files for this controller.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -30,7 +30,7 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
 {
     /**
      * @var bool whether to enable CSRF validation for the actions in this controller.
-     * CSRF validation is enabled only when both this property and [[\yii\web\Request::enableCsrfValidation]] are true.
+     * CSRF validation is enabled only when both this property and [[\Yiisoft\Web\Request::enableCsrfValidation]] are true.
      */
     public $enableCsrfValidation = true;
     /**
@@ -162,7 +162,7 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      * The [[render()]], [[renderPartial()]] and [[renderFile()]] methods will use
      * this view object to implement the actual view rendering.
      * If not set, it will default to the "view" application component.
-     * @return View|\yii\web\View the view object that can be used to render views or view files.
+     * @return View|\Yiisoft\Web\View the view object that can be used to render views or view files.
      */
     public function getView()
     {
@@ -175,7 +175,7 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
 
     /**
      * Sets the view object to be used by this controller.
-     * @param View|\yii\web\View $view the view object that can be used to render views or view files.
+     * @param View|\Yiisoft\Web\View $view the view object that can be used to render views or view files.
      */
     public function setView($view)
     {

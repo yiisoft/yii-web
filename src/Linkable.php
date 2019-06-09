@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web;
+namespace Yiisoft\Web;
 
 /**
  * Linkable is the interface that should be implemented by classes that typically represent locatable resources.

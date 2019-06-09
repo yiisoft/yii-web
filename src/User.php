@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web;
+namespace Yiisoft\Web;
 
 use yii\base\Application;
 use yii\base\Component;
@@ -32,7 +32,7 @@ use yii\helpers\Yii;
  * a user. The logic of how to authenticate a user should be done in the class implementing [[IdentityInterface]].
  * You are also required to set [[identityClass]] with the name of this class.
  *
- * User is configured as an application component in [[\yii\web\Application]] by default.
+ * User is configured as an application component in [[\Yiisoft\Web\Application]] by default.
  * You can access that instance via `Yii::getApp()->user`.
  *
  * You can modify its configuration by adding an array to your application config under `components`
@@ -272,7 +272,7 @@ class User extends Component
      * If authentication fails or [[login()]] is unsuccessful, it will return null.
      * @param string $token the access token
      * @param mixed $type the type of the token. The value of this parameter depends on the implementation.
-     * For example, [[\yii\web\filters\auth\HttpBearerAuth]] will set this parameter to be `yii\web\filters\auth\HttpBearerAuth`.
+     * For example, [[\Yiisoft\Web\filters\auth\HttpBearerAuth]] will set this parameter to be `Yiisoft\Web\filters\auth\HttpBearerAuth`.
      * @return IdentityInterface|null the identity associated with the given access token. Null is returned if
      * the access token is invalid or [[login()]] is unsuccessful.
      */

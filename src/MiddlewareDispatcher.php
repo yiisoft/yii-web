@@ -1,12 +1,13 @@
 <?php
-namespace yii\web;
+
+namespace Yiisoft\Web;
 
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use yii\web\middleware\Callback;
+use Yiisoft\Web\Middleware\Callback;
 
 /**
  * MiddlewareDispatcher
@@ -16,12 +17,12 @@ class MiddlewareDispatcher implements RequestHandlerInterface
     /**
      * @var MiddlewareInterface[]
      */
-    private $middlewares;
+    private $_middlewares;
 
     /**
      * @var RequestHandlerInterface
      */
-    private $fallbackHanlder;
+    private $_fallbackHanlder;
 
     public function __construct(array $middlewares, ResponseFactoryInterface $responseFactory, RequestHandlerInterface $fallbackHandler = null)
     {
@@ -33,24 +34,24 @@ class MiddlewareDispatcher implements RequestHandlerInterface
             if (is_callable($middleware)) {
                 $middleware = new Callback($middleware);
             }
-            $this->middlewares[] = $middleware;
+            $this->_middlewares[] = $middleware;
         }
 
-        $this->fallbackHanlder = $fallbackHandler ?? new NotFoundHandler($responseFactory);
+        $this->_fallbackHanlder = $fallbackHandler ?? new NotFoundHandler($responseFactory);
     }
 
     public function add(MiddlewareInterface $middleware)
     {
-        $this->middlewares[] = $middleware;
+        $this->_middlewares[] = $middleware;
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         // Last middleware in the queue has called on the request handler
-        if (\count($this->middlewares) === 0) {
-            return $this->fallbackHanlder->handle($request);
+        if (\count($this->_middlewares) === 0) {
+            return $this->_fallbackHanlder->handle($request);
         }
 
-        return array_shift($this->middlewares)->process($request, $this);
+        return array_shift($this->_middlewares)->process($request, $this);
     }
 }

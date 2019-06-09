@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web;
+namespace Yiisoft\Web;
 
 use yii\base\Application;
 use yii\base\Component;
@@ -93,7 +93,7 @@ class Session extends Component implements \IteratorAggregate, \ArrayAccess, \Co
     /**
      * @var $frozenSessionData array|null is used for saving session between recreations due to session parameters update.
      */
-    private $frozenSessionData;
+    private $_frozenSessionData;
 
     /**
      * @var Application
@@ -929,7 +929,7 @@ class Session extends Component implements \IteratorAggregate, \ArrayAccess, \Co
     {
         if ($this->getIsActive()) {
             if (isset($_SESSION)) {
-                $this->frozenSessionData = $_SESSION;
+                $this->_frozenSessionData = $_SESSION;
             }
             $this->close();
             Yii::info('Session frozen', __METHOD__);
@@ -942,7 +942,7 @@ class Session extends Component implements \IteratorAggregate, \ArrayAccess, \Co
      */
     protected function unfreeze()
     {
-        if (null !== $this->frozenSessionData) {
+        if (null !== $this->_frozenSessionData) {
             YII_DEBUG ? session_start() : @session_start();
 
             if ($this->getIsActive()) {
@@ -953,8 +953,8 @@ class Session extends Component implements \IteratorAggregate, \ArrayAccess, \Co
                 Yii::error($message, __METHOD__);
             }
 
-            $_SESSION = $this->frozenSessionData;
-            $this->frozenSessionData = null;
+            $_SESSION = $this->_frozenSessionData;
+            $this->_frozenSessionData = null;
         }
     }
 

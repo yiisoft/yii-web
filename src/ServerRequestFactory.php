@@ -1,7 +1,6 @@
 <?php
 
-
-namespace yii\web;
+namespace Yiisoft\Web;
 
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -13,10 +12,10 @@ use Psr\Http\Message\UriInterface;
 
 final class ServerRequestFactory
 {
-    private $serverRequestFactory;
-    private $uriFactory;
-    private $uploadedFileFactory;
-    private $streamFactory;
+    private $_serverRequestFactory;
+    private $_uriFactory;
+    private $_uploadedFileFactory;
+    private $_streamFactory;
 
 
     public function __construct(
@@ -25,10 +24,10 @@ final class ServerRequestFactory
         UploadedFileFactoryInterface $uploadedFileFactory,
         StreamFactoryInterface $streamFactory
     ) {
-        $this->serverRequestFactory = $serverRequestFactory;
-        $this->uriFactory = $uriFactory;
-        $this->uploadedFileFactory = $uploadedFileFactory;
-        $this->streamFactory = $streamFactory;
+        $this->_serverRequestFactory = $serverRequestFactory;
+        $this->_uriFactory = $uriFactory;
+        $this->_uploadedFileFactory = $uploadedFileFactory;
+        $this->_streamFactory = $streamFactory;
     }
 
     public function createFromGlobals(): ServerRequestInterface
@@ -63,7 +62,7 @@ final class ServerRequestFactory
 
         $uri = $this->getUri($server, $headers);
 
-        $request = $this->serverRequestFactory->createServerRequest($method, $uri, $server);
+        $request = $this->_serverRequestFactory->createServerRequest($method, $uri, $server);
 
         foreach ($headers as $name => $value) {
             $request = $request->withAddedHeader($name, $value);
@@ -86,9 +85,9 @@ final class ServerRequestFactory
         }
 
         if (\is_resource($body)) {
-            $body = $this->streamFactory->createStreamFromResource($body);
+            $body = $this->_streamFactory->createStreamFromResource($body);
         } elseif (\is_string($body)) {
-            $body = $this->streamFactory->createStream($body);
+            $body = $this->_streamFactory->createStream($body);
         } elseif (!$body instanceof StreamInterface) {
             throw new \InvalidArgumentException('Body parameter for ServerRequestFactory::createFromParameters() must be instance of StreamInterface, resource or null.');
         }
@@ -99,7 +98,7 @@ final class ServerRequestFactory
 
     private function getUri(array $server, array $headers): UriInterface
     {
-        $uri = $this->uriFactory->createUri();
+        $uri = $this->_uriFactory->createUri();
 
         if (isset($server['HTTPS'])) {
             $uri = $uri->withScheme($server['HTTPS'] === 'on' ? 'https' : 'http');
@@ -177,12 +176,12 @@ final class ServerRequestFactory
             }
         } else {
             try {
-                $stream = $this->streamFactory->createStreamFromFile($tempNames);
+                $stream = $this->_streamFactory->createStreamFromFile($tempNames);
             } catch (\RuntimeException $e) {
-                $stream = $this->streamFactory->createStream();
+                $stream = $this->_streamFactory->createStream();
             }
 
-            $files = $this->uploadedFileFactory->createUploadedFile(
+            $files = $this->_uploadedFileFactory->createUploadedFile(
                 $stream,
                 (int)$sizes,
                 (int)$errors,
