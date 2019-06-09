@@ -5,30 +5,30 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\tests\session;
+namespace Yiisoft\Web\Tests\Session;
 
 use yii\helpers\Yii;
 use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Cache\Cache;
-use yii\web\CacheSession;
+use Yiisoft\Web\CacheSession;
 
 /**
  * @group web
  */
 class CacheSessionTest extends \yii\tests\TestCase
 {
-    private $cache;
+    private $_cache;
 
     protected function setUp()
     {
         parent::setUp();
         $this->mockApplication();
-        $this->cache = new Cache(new ArrayCache());
+        $this->_cache = new Cache(new ArrayCache());
     }
 
     public function testCacheSession()
     {
-        $session = new CacheSession($this->cache);
+        $session = new CacheSession($this->_cache);
 
         $session->writeSession('test', 'sessionData');
         $this->assertEquals('sessionData', $session->readSession('test'));
@@ -47,7 +47,7 @@ class CacheSessionTest extends \yii\tests\TestCase
      */
     public function testNotWrittenSessionDestroying()
     {
-        $session = new CacheSession($this->cache);
+        $session = new CacheSession($this->_cache);
 
         $session->set('foo', 'bar');
         $this->assertEquals('bar', $session->get('foo'));

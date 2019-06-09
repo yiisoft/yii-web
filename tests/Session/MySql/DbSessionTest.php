@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\tests\session\mysql;
+namespace Yiisoft\Web\Tests\Session\MySql;
 
 /**
  * Class DbSessionTest.
@@ -15,7 +15,7 @@ namespace yii\web\tests\session\mysql;
  * @group db
  * @group mysql
  */
-class DbSessionTest extends \yii\web\tests\session\AbstractDbSessionTest
+class DbSessionTest extends \Yiisoft\Web\Tests\Session\AbstractDbSessionTest
 {
     protected function getDriverNames()
     {

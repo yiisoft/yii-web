@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\tests\session\sqlite;
+namespace Yiisoft\Web\Tests\Session\SqLite;
 
 use yii\helpers\Yii;
 
@@ -17,7 +17,7 @@ use yii\helpers\Yii;
  * @group db
  * @group sqlite
  */
-class DbSessionTest extends \yii\web\tests\session\AbstractDbSessionTest
+class DbSessionTest extends \Yiisoft\Web\Tests\Session\AbstractDbSessionTest
 {
     protected function setUp()
     {

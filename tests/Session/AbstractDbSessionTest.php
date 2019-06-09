@@ -5,12 +5,12 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\tests\session;
+namespace Yiisoft\Web\Tests\Session;
 
 use yii\helpers\Yii;
 use Yiisoft\Db\Connection;
 use Yiisoft\Db\Query;
-use yii\web\DbSession;
+use Yiisoft\Web\DbSession;
 use yii\tests\TestCase;
 
 /**
