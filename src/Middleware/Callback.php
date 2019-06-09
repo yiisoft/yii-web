@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\middleware;
+namespace Yiisoft\Web\Middleware;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -33,7 +33,7 @@ class Callback implements MiddlewareInterface
     /**
      * @var callable a PHP callback matching signature of [[MiddlewareInterface::process()]].
      */
-    private $callback;
+    private $_callback;
 
     /**
      * CallbackMiddleware constructor.
@@ -41,7 +41,7 @@ class Callback implements MiddlewareInterface
      */
     public function __construct(callable $callback)
     {
-        $this->callback = $callback;
+        $this->_callback = $callback;
     }
 
 
@@ -50,6 +50,6 @@ class Callback implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        return \call_user_func($this->callback, $request, $handler);
+        return \call_user_func($this->_callback, $request, $handler);
     }
 }
