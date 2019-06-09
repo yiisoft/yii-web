@@ -5,14 +5,14 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\tests\filters\auth;
+namespace Yiisoft\Web\Tests\Filters\Auth;
 
-use yii\web\filters\auth\AuthMethod;
-use yii\web\filters\auth\CompositeAuth;
-use yii\web\filters\auth\HttpBearerAuth;
-use yii\web\Controller;
-use yii\web\User;
-use yii\web\tests\UserIdentity;
+use Yiisoft\Web\Filters\Auth\AuthMethod;
+use Yiisoft\Web\Filters\Auth\CompositeAuth;
+use Yiisoft\Web\Filters\Auth\HttpBearerAuth;
+use Yiisoft\Web\Controller;
+use Yiisoft\Web\User;
+use Yiisoft\Web\Tests\UserIdentity;
 
 /**
  * @author Ezekiel Fernandez <ezekiel_p_fernandez@yahoo.com>

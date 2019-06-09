@@ -5,12 +5,12 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\tests\filters;
+namespace Yiisoft\Web\Tests\Filters;
 
 use yii\base\Action;
 use yii\exceptions\ExitException;
-use yii\web\filters\HostControl;
-use yii\web\Controller;
+use Yiisoft\Web\Filters\HostControl;
+use Yiisoft\Web\Controller;
 use yii\tests\TestCase;
 
 /**
@@ -153,7 +153,7 @@ class HostControlTest extends TestCase
 
     public function testErrorHandlerWithDefaultHost()
     {
-        $this->expectException('yii\web\NotFoundHttpException');
+        $this->expectException('Yiisoft\Web\NotFoundHttpException');
         $this->expectExceptionMessage('Page not found.');
 
         $filter = new HostControl();

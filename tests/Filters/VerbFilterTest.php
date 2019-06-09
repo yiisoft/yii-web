@@ -5,14 +5,14 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\tests\filters;
+namespace Yiisoft\Web\Tests\Filters;
 
 use yii\base\Action;
 use yii\base\ActionEvent;
-use yii\web\filters\VerbFilter;
-use yii\web\Controller;
-use yii\web\MethodNotAllowedHttpException;
-use yii\web\Request;
+use Yiisoft\Web\Filters\VerbFilter;
+use Yiisoft\Web\Controller;
+use Yiisoft\Web\MethodNotAllowedHttpException;
+use Yiisoft\Web\Request;
 use yii\tests\TestCase;
 
 /**

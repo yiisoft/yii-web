@@ -5,13 +5,13 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\tests\filters;
+namespace Yiisoft\Web\Tests\Filters;
 
 use yii\helpers\Yii;
 use yii\base\Action;
-use yii\web\filters\Cors;
-use yii\web\Controller;
-use yii\web\Request;
+use Yiisoft\Web\Filters\Cors;
+use Yiisoft\Web\Controller;
+use Yiisoft\Web\Request;
 use yii\tests\TestCase;
 
 /**

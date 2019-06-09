@@ -1,5 +1,6 @@
 <?php
-namespace yii\web\tests\filters\stubs;
+
+namespace Yiisoft\Web\Tests\Filters\Stubs;
 
 use Yiisoft\Access\CheckAccessInterface;
 

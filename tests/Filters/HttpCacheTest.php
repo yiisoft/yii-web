@@ -5,10 +5,10 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\tests\filters;
+namespace Yiisoft\Web\Tests\Filters;
 
 use yii\helpers\Yii;
-use yii\web\filters\HttpCache;
+use Yiisoft\Web\Filters\HttpCache;
 
 /**
  * @group filters
@@ -45,7 +45,7 @@ class HttpCacheTest extends \yii\tests\TestCase
     }
 
     /**
-     * @covers \yii\web\filters\HttpCache::validateCache
+     * @covers \Yiisoft\Web\Filters\HttpCache::validateCache
      */
     public function testValidateCache()
     {
@@ -82,7 +82,7 @@ class HttpCacheTest extends \yii\tests\TestCase
     }
 
     /**
-     * @covers \yii\web\filters\HttpCache::generateEtag
+     * @covers \Yiisoft\Web\Filters\HttpCache::generateEtag
      */
     public function testGenerateEtag()
     {

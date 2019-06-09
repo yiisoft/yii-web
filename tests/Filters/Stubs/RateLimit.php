@@ -5,10 +5,10 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\tests\filters\stubs;
+namespace Yiisoft\Web\Tests\Filters\Stubs;
 
 use yii\base\BaseObject;
-use yii\web\filters\RateLimitInterface;
+use Yiisoft\Web\Filters\RateLimitInterface;
 
 class RateLimit extends BaseObject implements RateLimitInterface
 {

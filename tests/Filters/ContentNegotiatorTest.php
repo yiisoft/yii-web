@@ -5,13 +5,13 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\tests\filters;
+namespace Yiisoft\Web\Tests\Filters;
 
 use yii\base\Action;
-use yii\web\filters\ContentNegotiator;
-use yii\web\Controller;
-use yii\web\Request;
-use yii\web\Response;
+use Yiisoft\Web\Filters\ContentNegotiator;
+use Yiisoft\Web\Controller;
+use Yiisoft\Web\Request;
+use Yiisoft\Web\Response;
 use yii\tests\TestCase;
 
 /**
@@ -55,7 +55,7 @@ class ContentNegotiatorTest extends TestCase
     }
 
     /**
-     * @expectedException yii\web\BadRequestHttpException
+     * @expectedException Yiisoft\Web\BadRequestHttpException
      * @expectedExceptionMessageRegExp |Invalid data received for GET parameter '.+'|
      */
     public function testWhenFormatGETParamIsArray()

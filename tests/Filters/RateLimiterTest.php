@@ -5,17 +5,17 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\tests\filters;
+namespace Yiisoft\Web\Tests\Filters;
 
 use Prophecy\Argument;
 use yii\helpers\Yii;
-use yii\web\filters\RateLimiter;
+use Yiisoft\Web\Filters\RateLimiter;
 use Yiisoft\Log\Logger;
-use yii\web\Request;
-use yii\web\Response;
-use yii\web\User;
-use yii\web\tests\filters\stubs\RateLimit;
-use yii\web\tests\filters\stubs\UserIdentity;
+use Yiisoft\Web\Request;
+use Yiisoft\Web\Response;
+use Yiisoft\Web\User;
+use Yiisoft\Web\Tests\Filters\Stubs\RateLimit;
+use Yiisoft\Web\Tests\Filters\Stubs\UserIdentity;
 use yii\tests\TestCase;
 
 /**
@@ -23,13 +23,13 @@ use yii\tests\TestCase;
  */
 class RateLimiterTest extends TestCase
 {
-    private $originalLogger;
+    private $_originalLogger;
 
     protected function setUp()
     {
         parent::setUp();
 
-        $this->originalLogger = $this->container->getDefinition('logger');
+        $this->_originalLogger = $this->container->getDefinition('logger');
         /* @var $logger Logger|\Prophecy\ObjectProphecy */
         $logger = $this->prophesize(Logger::class);
         $logger
@@ -45,7 +45,7 @@ class RateLimiterTest extends TestCase
     protected function tearDown()
     {
         parent::tearDown();
-        $this->container->set('logger', $this->originalLogger);
+        $this->container->set('logger', $this->_originalLogger);
     }
 
     public function testInitFilledRequest()
@@ -127,7 +127,7 @@ class RateLimiterTest extends TestCase
             ->setAllowance([1, time() + 2]);
         $rateLimiter = $this->factory->create(RateLimiter::class);
 
-        $this->expectException(\yii\web\TooManyRequestsHttpException::class);
+        $this->expectException(\Yiisoft\Web\TooManyRequestsHttpException::class);
         $rateLimiter->checkRateLimit($rateLimit, $this->app->request, $this->app->response, 'testAction');
     }
 

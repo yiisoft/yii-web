@@ -1,16 +1,17 @@
 <?php
-namespace yii\web\tests\filters;
+
+namespace Yiisoft\Web\Tests\Filters;
 
 use Closure;
 use yii\base\Action;
-use yii\web\tests\filters\stubs\DenyAll;
+use Yiisoft\Web\Tests\Filters\Stubs\DenyAll;
 use Yiisoft\Access\CheckAccessInterface;
-use yii\web\filters\AccessRule;
-use yii\web\Controller;
-use yii\web\Request;
-use yii\web\User;
-use yii\web\tests\filters\stubs\AccessChecker;
-use yii\web\tests\filters\stubs\UserIdentity;
+use Yiisoft\Web\Filters\AccessRule;
+use Yiisoft\Web\Controller;
+use Yiisoft\Web\Request;
+use Yiisoft\Web\User;
+use Yiisoft\Web\Tests\Filters\Stubs\AccessChecker;
+use Yiisoft\Web\Tests\Filters\Stubs\UserIdentity;
 
 /**
  * @group filters

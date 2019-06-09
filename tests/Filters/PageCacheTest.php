@@ -5,20 +5,20 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\tests\filters;
+namespace Yiisoft\Web\Tests\Filters;
 
 use yii\helpers\Yii;
 use yii\base\Action;
 use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Cache\Cache;
 use Yiisoft\Cache\Dependencies\ExpressionDependency;
-use yii\web\filters\PageCache;
+use Yiisoft\Web\Filters\PageCache;
 use Yiisoft\Arrays\ArrayHelper;
 use yii\helpers\Json;
-use yii\web\Controller;
+use Yiisoft\Web\Controller;
 use yii\http\Cookie;
-use yii\view\Theme;
-use yii\web\View;
+use Yiisoft\View\Theme;
+use Yiisoft\Web\View;
 use Yiisoft\Cache\Tests\CacheTestCase;
 use yii\tests\TestCase;
 

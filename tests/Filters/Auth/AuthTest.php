@@ -5,19 +5,19 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\tests\filters\auth;
+namespace Yiisoft\Web\Tests\Filters\Auth;
 
 use yii\base\Action;
-use yii\web\filters\auth\AuthMethod;
-use yii\web\filters\auth\HttpBasicAuth;
-use yii\web\filters\auth\HttpBearerAuth;
-use yii\web\filters\auth\QueryParamAuth;
-use yii\web\filters\auth\HttpHeaderAuth;
+use Yiisoft\Web\Filters\Auth\AuthMethod;
+use Yiisoft\Web\Filters\Auth\HttpBasicAuth;
+use Yiisoft\Web\Filters\Auth\HttpBearerAuth;
+use Yiisoft\Web\Filters\Auth\QueryParamAuth;
+use Yiisoft\Web\Filters\Auth\HttpHeaderAuth;
 use Yiisoft\Arrays\ArrayHelper;
-use yii\web\Controller;
-use yii\web\User;
-use yii\web\UnauthorizedHttpException;
-use yii\web\tests\filters\stubs\UserIdentity;
+use Yiisoft\Web\Controller;
+use Yiisoft\Web\User;
+use Yiisoft\Web\UnauthorizedHttpException;
+use Yiisoft\Web\Tests\Filters\Stubs\UserIdentity;
 
 /**
  * @group filters
@@ -179,10 +179,10 @@ class AuthTest extends \yii\tests\TestCase
     public function authMethodProvider()
     {
         return [
-            [\yii\web\filters\auth\CompositeAuth::class],
-            [\yii\web\filters\auth\HttpBearerAuth::class],
-            [\yii\web\filters\auth\QueryParamAuth::class],
-            [\yii\web\filters\auth\HttpHeaderAuth::class],
+            [\Yiisoft\Web\filters\auth\CompositeAuth::class],
+            [\Yiisoft\Web\filters\auth\HttpBearerAuth::class],
+            [\Yiisoft\Web\filters\auth\QueryParamAuth::class],
+            [\Yiisoft\Web\filters\auth\HttpHeaderAuth::class],
         ];
     }
 
@@ -198,7 +198,7 @@ class AuthTest extends \yii\tests\TestCase
         $method = $reflection->getMethod('isActive');
         $method->setAccessible(true);
 
-        $controller = new \yii\web\Controller('test', $this->app);
+        $controller = new \Yiisoft\Web\Controller('test', $this->app);
 
         // active by default
         $this->assertTrue($method->invokeArgs($filter, [new Action('index', $controller)]));

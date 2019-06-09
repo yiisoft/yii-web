@@ -5,14 +5,14 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\tests\filters\auth;
+namespace Yiisoft\Web\Tests\Filters\Auth;
 
 use yii\base\Action;
-use yii\web\filters\auth\AuthMethod;
-use yii\web\Controller;
-use yii\web\tests\filters\stubs\UserIdentity;
+use Yiisoft\Web\Filters\Auth\AuthMethod;
+use Yiisoft\Web\Controller;
+use Yiisoft\Web\Tests\Filters\Stubs\UserIdentity;
 use yii\tests\TestCase;
-use yii\web\User;
+use Yiisoft\Web\User;
 
 class AuthMethodTest extends TestCase
 {
@@ -75,7 +75,7 @@ class AuthMethodTest extends TestCase
         $filter = $this->createFilter(function () {
             return null;
         });
-        $this->expectException('yii\web\UnauthorizedHttpException');
+        $this->expectException('Yiisoft\Web\UnauthorizedHttpException');
         $this->assertTrue($filter->beforeAction($action));
     }
 

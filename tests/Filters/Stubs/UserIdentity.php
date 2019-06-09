@@ -5,11 +5,11 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\tests\filters\stubs;
+namespace Yiisoft\Web\Tests\Filters\Stubs;
 
 use yii\base\Component;
 use yii\exceptions\NotSupportedException;
-use yii\web\IdentityInterface;
+use Yiisoft\Web\IdentityInterface;
 
 /**
  * Class UserIdentity.
