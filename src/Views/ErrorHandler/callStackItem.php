@@ -8,7 +8,7 @@
 /* @var $begin int */
 /* @var $end int */
 /* @var $args array */
-/* @var $handler \yii\web\ErrorHandler */
+/* @var $handler \Yiisoft\Web\ErrorHandler */
 ?>
 <li class="<?= ($index === 1 || !$handler->isCoreFile($file)) ? 'application' : '' ?> call-stack-item"
     data-line="<?= (int) ($line - $begin) ?>">
