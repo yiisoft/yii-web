@@ -5,11 +5,11 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\tests\formatters;
+namespace Yiisoft\Web\Tests\Formatters;
 
-use yii\web\formatters\XmlResponseFormatter;
-use yii\web\tests\stubs\ModelStub;
-use yii\web\tests\stubs\Post;
+use Yiisoft\Web\Formatters\XmlResponseFormatter;
+use Yiisoft\Web\Tests\Stubs\ModelStub;
+use Yiisoft\Web\Tests\Stubs\Post;
 
 /**
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -30,12 +30,12 @@ class XmlResponseFormatterTest extends FormatterTest
         return $this->factory->create($options);
     }
 
-    private $xmlHead = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+    private $_xmlHead = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
     private function addXmlHead(array $data)
     {
         foreach ($data as &$item) {
-            $item[1] = $this->xmlHead . $item[1];
+            $item[1] = $this->_xmlHead . $item[1];
         }
 
         return $data;
@@ -154,7 +154,7 @@ class XmlResponseFormatterTest extends FormatterTest
 
         $this->response->data = 1;
         $formatter->format($this->response);
-        $this->assertEquals($this->xmlHead . "<$rootTag>1</$rootTag>\n", $this->response->content);
+        $this->assertEquals($this->_xmlHead . "<$rootTag>1</$rootTag>\n", $this->response->content);
     }
 
     public function testRootTagRemoval()
@@ -165,7 +165,7 @@ class XmlResponseFormatterTest extends FormatterTest
 
         $this->response->data = 1;
         $formatter->format($this->response);
-        $this->assertEquals($this->xmlHead . "1\n", $this->response->content);
+        $this->assertEquals($this->_xmlHead . "1\n", $this->response->content);
     }
 
     public function testNoObjectTags()
@@ -176,6 +176,6 @@ class XmlResponseFormatterTest extends FormatterTest
 
         $this->response->data = new Post(123, 'abc');
         $formatter->format($this->response);
-        $this->assertEquals($this->xmlHead . "<response><id>123</id><title>abc</title><city></city></response>\n", $this->response->content);
+        $this->assertEquals($this->_xmlHead . "<response><id>123</id><title>abc</title><city></city></response>\n", $this->response->content);
     }
 }

@@ -5,11 +5,11 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\tests\formatters;
+namespace Yiisoft\Web\Tests\Formatters;
 
-use yii\web\formatters\JsonResponseFormatter;
-use yii\web\tests\stubs\ModelStub;
-use yii\web\tests\stubs\Post;
+use Yiisoft\Web\Formatters\JsonResponseFormatter;
+use Yiisoft\Web\Tests\Stubs\ModelStub;
+use Yiisoft\Web\Tests\Stubs\Post;
 
 /**
  * @author Alexander Makarov <sam@rmcreative.ru>

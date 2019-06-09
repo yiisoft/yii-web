@@ -5,10 +5,10 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\tests\formatters;
+namespace Yiisoft\Web\Tests\Formatters;
 
-use yii\web\Response;
-use yii\web\ResponseFormatterInterface;
+use Yiisoft\Web\Response;
+use Yiisoft\Web\ResponseFormatterInterface;
 
 abstract class FormatterTest extends \yii\tests\TestCase
 {
