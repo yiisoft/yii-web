@@ -1,5 +1,5 @@
 /**
- * Database schema required by \yii\web\DbSession.
+ * Database schema required by \Yiisoft\Web\DbSession.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Misbahul D Munir <misbahuldmunir@gmail.com>
