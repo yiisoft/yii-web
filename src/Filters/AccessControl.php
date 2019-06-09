@@ -5,14 +5,14 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\filters;
+namespace Yiisoft\Web\Filters;
 
 use yii\base\Action;
 use yii\base\ActionFilter;
 use yii\base\Application;
 use yii\di\Instance;
-use yii\web\ForbiddenHttpException;
-use yii\web\User;
+use Yiisoft\Web\ForbiddenHttpException;
+use Yiisoft\Web\User;
 
 /**
  * AccessControl provides simple access control based on a set of rules.
@@ -31,7 +31,7 @@ use yii\web\User;
  * {
  *     return [
  *         'access' => [
- *             '__class' => \yii\web\filters\AccessControl::class,
+ *             '__class' => \Yiisoft\Web\filters\AccessControl::class,
  *             'only' => ['create', 'update'],
  *             'rules' => [
  *                 // deny all POST requests

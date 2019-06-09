@@ -5,16 +5,16 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\filters\auth;
+namespace Yiisoft\Web\Filters\Auth;
 
 use yii\helpers\Yii;
 use yii\base\Action;
 use yii\base\ActionFilter;
 use Yiisoft\Strings\StringHelper;
-use yii\web\Request;
-use yii\web\Response;
-use yii\web\UnauthorizedHttpException;
-use yii\web\User;
+use Yiisoft\Web\Request;
+use Yiisoft\Web\Response;
+use Yiisoft\Web\UnauthorizedHttpException;
+use Yiisoft\Web\User;
 
 /**
  * AuthMethod is a base class implementing the [[AuthInterface]] interface.

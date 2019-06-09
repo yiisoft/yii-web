@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\filters\auth;
+namespace Yiisoft\Web\Filters\Auth;
 
 use yii\helpers\Yii;
 use yii\exceptions\InvalidConfigException;
@@ -23,10 +23,10 @@ use yii\exceptions\InvalidConfigException;
  * {
  *     return [
  *         'compositeAuth' => [
- *             '__class' => \yii\web\filters\auth\CompositeAuth::class,
+ *             '__class' => \Yiisoft\Web\filters\auth\CompositeAuth::class,
  *             'authMethods' => [
- *                 \yii\web\filters\auth\HttpBasicAuth::class,
- *                 \yii\web\filters\auth\QueryParamAuth::class,
+ *                 \Yiisoft\Web\filters\auth\HttpBasicAuth::class,
+ *                 \Yiisoft\Web\filters\auth\QueryParamAuth::class,
  *             ],
  *         ],
  *     ];
@@ -44,7 +44,7 @@ class CompositeAuth extends AuthMethod
      *
      * If this property is empty, no authentication will be performed.
      *
-     * Note that an auth method class must implement the [[\yii\web\filters\auth\AuthInterface]] interface.
+     * Note that an auth method class must implement the [[\Yiisoft\Web\filters\auth\AuthInterface]] interface.
      */
     public $authMethods = [];
 
@@ -66,7 +66,7 @@ class CompositeAuth extends AuthMethod
             if (!$auth instanceof AuthInterface) {
                 $this->authMethods[$i] = $auth = Yii::createObject($auth);
                 if (!$auth instanceof AuthInterface) {
-                    throw new InvalidConfigException(get_class($auth) . ' must implement yii\web\filters\auth\AuthInterface');
+                    throw new InvalidConfigException(get_class($auth) . ' must implement Yiisoft\Web\filters\auth\AuthInterface');
                 }
             }
 

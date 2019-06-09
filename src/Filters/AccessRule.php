@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\filters;
+namespace Yiisoft\Web\Filters;
 
 use Closure;
 use yii\base\Action;
@@ -14,8 +14,8 @@ use yii\base\Controller;
 use yii\di\AbstractContainer;
 use yii\exceptions\InvalidConfigException;
 use Yiisoft\Strings\StringHelper;
-use yii\web\Request;
-use yii\web\User;
+use Yiisoft\Web\Request;
+use Yiisoft\Web\User;
 
 /**
  * This class represents an access rule defined by the [[AccessControl]] action filter.
@@ -105,7 +105,7 @@ class AccessRule extends Component
     /**
      * @var array list of request methods (e.g. `GET`, `POST`) that this rule applies to.
      * If not set or empty, it means this rule applies to all request methods.
-     * @see \yii\web\Request::method
+     * @see \Yiisoft\Web\Request::method
      */
     public $verbs;
     /**

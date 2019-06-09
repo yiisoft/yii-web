@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\filters;
+namespace Yiisoft\Web\Filters;
 
 use yii\base\Action;
 use yii\base\ActionFilter;
@@ -15,7 +15,7 @@ use yii\helpers\Yii;
 use yii\view\DynamicContentAwareInterface;
 use yii\view\DynamicContentAwareTrait;
 use yii\view\View;
-use yii\web\Response;
+use Yiisoft\Web\Response;
 
 /**
  * PageCache implements server-side caching of whole pages.
@@ -32,7 +32,7 @@ use yii\web\Response;
  * {
  *     return [
  *         'pageCache' => [
- *             '__class' => \yii\web\filters\PageCache::class,
+ *             '__class' => \Yiisoft\Web\filters\PageCache::class,
  *             'only' => ['index'],
  *             'duration' => 60,
  *             'dependency' => [
@@ -69,7 +69,7 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
     /**
      * @var CacheInterface the cache object.
      */
-    private $cache;
+    private $_cache;
     /**
      * @var int number of seconds that the data can remain valid in cache.
      * Use `0` to indicate that the cached data will never expire.
@@ -129,7 +129,7 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
 
     public function __construct(CacheInterface $cache)
     {
-        $this->cache = $cache;
+        $this->_cache = $cache;
     }
 
     /**
@@ -149,7 +149,7 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
         }
 
         $response = Yii::getApp()->getResponse();
-        $data = $this->cache->get($this->calculateCacheKey());
+        $data = $this->_cache->get($this->calculateCacheKey());
         if (!is_array($data) || !isset($data['cacheVersion']) || $data['cacheVersion'] !== static::PAGE_CACHE_VERSION) {
             $this->getView()->pushDynamicContent($this);
             ob_start();
@@ -241,7 +241,7 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
         }
         $this->insertResponseCollectionIntoData($response, 'headers', $data);
         $this->insertResponseCollectionIntoData($response, 'cookies', $data);
-        $this->cache->set($this->calculateCacheKey(), $data, $this->duration, $this->dependency);
+        $this->_cache->set($this->calculateCacheKey(), $data, $this->duration, $this->dependency);
         $data['content'] = $this->updateDynamicContent($data['content'], $this->getDynamicPlaceholders());
         echo $data['content'];
     }
@@ -290,11 +290,11 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
         return array_merge($key, (array)$this->variations);
     }
 
-    protected $_view;
+    protected $view;
 
     public function setView(View $view): self
     {
-        $this->_view = $view;
+        $this->view = $view;
 
         return $this;
     }
@@ -304,10 +304,10 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
      */
     public function getView()
     {
-        if ($this->_view === null) {
-            $this->_view = Yii::getApp()->getView();
+        if ($this->view === null) {
+            $this->view = Yii::getApp()->getView();
         }
 
-        return $this->_view;
+        return $this->view;
     }
 }

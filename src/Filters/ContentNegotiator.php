@@ -5,15 +5,15 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\filters;
+namespace Yiisoft\Web\Filters;
 
 use yii\helpers\Yii;
 use yii\base\ActionFilter;
 use yii\base\BootstrapInterface;
-use yii\web\BadRequestHttpException;
-use yii\web\NotAcceptableHttpException;
-use yii\web\Request;
-use yii\web\Response;
+use Yiisoft\Web\BadRequestHttpException;
+use Yiisoft\Web\NotAcceptableHttpException;
+use Yiisoft\Web\Request;
+use Yiisoft\Web\Response;
 
 /**
  * ContentNegotiator supports response format negotiation and application language negotiation.
@@ -34,12 +34,12 @@ use yii\web\Response;
  *
  * ```php
  * // in application configuration
- * use yii\web\Response;
+ * use Yiisoft\Web\Response;
  *
  * return [
  *     'bootstrap' => [
  *         [
- *             '__class' => \yii\web\filters\ContentNegotiator::class,
+ *             '__class' => \Yiisoft\Web\filters\ContentNegotiator::class,
  *             'formats' => [
  *                 'application/json' => Response::FORMAT_JSON,
  *                 'application/xml' => Response::FORMAT_XML,
@@ -58,13 +58,13 @@ use yii\web\Response;
  * specific actions if you configure the `only` or `except` property of the filter.
  *
  * ```php
- * use yii\web\Response;
+ * use Yiisoft\Web\Response;
  *
  * public function behaviors()
  * {
  *     return [
  *         [
- *             '__class' => \yii\web\filters\ContentNegotiator::class,
+ *             '__class' => \Yiisoft\Web\filters\ContentNegotiator::class,
  *             'only' => ['view', 'index'],  // in a controller
  *             // if in a module, use the following IDs for user actions
  *             // 'only' => ['user/view', 'user/index']
@@ -104,7 +104,7 @@ class ContentNegotiator extends ActionFilter implements BootstrapInterface
     /**
      * @var array list of supported response formats. The keys are MIME types (e.g. `application/json`)
      * while the values are the corresponding formats (e.g. `html`, `json`) which must be supported
-     * as declared in [[\yii\web\Response::$formatters]].
+     * as declared in [[\Yiisoft\Web\Response::$formatters]].
      *
      * If this property is empty or not set, response format negotiation will be skipped.
      */

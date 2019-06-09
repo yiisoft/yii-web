@@ -5,11 +5,11 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\filters;
+namespace Yiisoft\Web\Filters;
 
 use yii\base\ActionEvent;
 use yii\base\Behavior;
-use yii\web\MethodNotAllowedHttpException;
+use Yiisoft\Web\MethodNotAllowedHttpException;
 
 /**
  * VerbFilter is an action filter that filters by HTTP request methods.
@@ -26,7 +26,7 @@ use yii\web\MethodNotAllowedHttpException;
  * {
  *     return [
  *         'verbs' => [
- *             '__class' => \yii\web\filters\VerbFilter::class,
+ *             '__class' => \Yiisoft\Web\filters\VerbFilter::class,
  *             'actions' => [
  *                 'index'  => ['GET'],
  *                 'view'   => ['GET'],

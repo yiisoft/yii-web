@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\filters\auth;
+namespace Yiisoft\Web\Filters\Auth;
 
 /**
  * HttpBasicAuth is an action filter that supports the HTTP Basic authentication method.
@@ -17,13 +17,13 @@ namespace yii\web\filters\auth;
  * {
  *     return [
  *         'basicAuth' => [
- *             '__class' => \yii\web\filters\auth\HttpBasicAuth::class,
+ *             '__class' => \Yiisoft\Web\filters\auth\HttpBasicAuth::class,
  *         ],
  *     ];
  * }
  * ```
  *
- * The default implementation of HttpBasicAuth uses the [[\yii\web\User::loginByAccessToken()|loginByAccessToken()]]
+ * The default implementation of HttpBasicAuth uses the [[\Yiisoft\Web\User::loginByAccessToken()|loginByAccessToken()]]
  * method of the `user` application component and only passes the user name. This implementation is used
  * for authenticating API clients.
  *
@@ -34,7 +34,7 @@ namespace yii\web\filters\auth;
  * {
  *     return [
  *         'basicAuth' => [
- *             '__class' => \yii\web\filters\auth\HttpBasicAuth::class,
+ *             '__class' => \Yiisoft\Web\filters\auth\HttpBasicAuth::class,
  *             'auth' => function ($username, $password) {
  *                 $user = User::find()->where(['username' => $username])->one();
  *                 if ($user->verifyPassword($password)) {
@@ -81,7 +81,7 @@ class HttpBasicAuth extends AuthMethod
      * ```
      *
      * If this property is not set, the username information will be considered as an access token
-     * while the password information will be ignored. The [[\yii\web\User::loginByAccessToken()]]
+     * while the password information will be ignored. The [[\Yiisoft\Web\User::loginByAccessToken()]]
      * method will be called to authenticate and login the user.
      */
     public $auth;

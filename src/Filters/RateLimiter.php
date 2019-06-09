@@ -5,13 +5,13 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\filters;
+namespace Yiisoft\Web\Filters;
 
 use yii\helpers\Yii;
 use yii\base\ActionFilter;
-use yii\web\Request;
-use yii\web\Response;
-use yii\web\TooManyRequestsHttpException;
+use Yiisoft\Web\Request;
+use Yiisoft\Web\Response;
+use Yiisoft\Web\TooManyRequestsHttpException;
 
 /**
  * RateLimiter implements a rate limiting algorithm based on the [leaky bucket algorithm](http://en.wikipedia.org/wiki/Leaky_bucket).
@@ -23,7 +23,7 @@ use yii\web\TooManyRequestsHttpException;
  * {
  *     return [
  *         'rateLimiter' => [
- *             '__class' => \yii\web\filters\RateLimiter::class,
+ *             '__class' => \Yiisoft\Web\filters\RateLimiter::class,
  *         ],
  *     ];
  * }

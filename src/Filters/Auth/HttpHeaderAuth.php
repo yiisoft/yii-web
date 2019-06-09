@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\filters\auth;
+namespace Yiisoft\Web\Filters\Auth;
 
 /**
  * HttpHeaderAuth is an action filter that supports HTTP authentication through HTTP Headers.
@@ -17,13 +17,13 @@ namespace yii\web\filters\auth;
  * {
  *     return [
  *         'basicAuth' => [
- *             '__class' => \yii\web\filters\auth\HttpHeaderAuth::class,
+ *             '__class' => \Yiisoft\Web\filters\auth\HttpHeaderAuth::class,
  *         ],
  *     ];
  * }
  * ```
  *
- * The default implementation of HttpHeaderAuth uses the [[\yii\web\User::loginByAccessToken()|loginByAccessToken()]]
+ * The default implementation of HttpHeaderAuth uses the [[\Yiisoft\Web\User::loginByAccessToken()|loginByAccessToken()]]
  * method of the `user` application component and passes the value of the `X-Api-Key` header. This implementation is used
  * for authenticating API clients.
  *

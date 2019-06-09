@@ -5,12 +5,12 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\filters;
+namespace Yiisoft\Web\Filters;
 
 use yii\helpers\Yii;
 use yii\base\ActionFilter;
-use yii\web\BadRequestHttpException;
-use yii\web\Request;
+use Yiisoft\Web\BadRequestHttpException;
+use Yiisoft\Web\Request;
 
 /**
  * AjaxFilter allow to limit access only for ajax requests.
@@ -20,7 +20,7 @@ use yii\web\Request;
  * {
  *     return [
  *         [
- *             '__class' => 'yii\web\filters\AjaxFilter',
+ *             '__class' => 'Yiisoft\Web\filters\AjaxFilter',
  *             'only' => ['index']
  *         ],
  *     ];

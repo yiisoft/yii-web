@@ -5,12 +5,12 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\filters;
+namespace Yiisoft\Web\Filters;
 
 use yii\helpers\Yii;
 use yii\base\ActionFilter;
 use Yiisoft\Strings\StringHelper;
-use yii\web\NotFoundHttpException;
+use Yiisoft\Web\NotFoundHttpException;
 
 /**
  * HostControl provides simple control over requested host name.
@@ -23,7 +23,7 @@ use yii\web\NotFoundHttpException;
  * ```php
  * return [
  *     'as hostControl' => [
- *         '__class' => \yii\web\filters\HostControl::class,
+ *         '__class' => \Yiisoft\Web\filters\HostControl::class,
  *         'allowedHosts' => [
  *             'example.com',
  *             '*.example.com',
@@ -36,8 +36,8 @@ use yii\web\NotFoundHttpException;
  * Controller configuration example:
  *
  * ```php
- * use yii\web\Controller;
- * use yii\web\filters\HostControl;
+ * use Yiisoft\Web\Controller;
+ * use Yiisoft\Web\filters\HostControl;
  *
  * class SiteController extends Controller
  * {
@@ -107,11 +107,11 @@ class HostControl extends ActionFilter
      */
     public $denyCallback;
     /**
-     * @var string|null fallback host info (e.g. `http://www.yiiframework.com`) used when [[\yii\web\Request::$hostInfo|Request::$hostInfo]] is invalid.
-     * This value will replace [[\yii\web\Request::$hostInfo|Request::$hostInfo]] before [[$denyCallback]] is called to make sure that
-     * an invalid host will not be used for further processing. You can set it to `null` to leave [[\yii\web\Request::$hostInfo|Request::$hostInfo]] untouched.
+     * @var string|null fallback host info (e.g. `http://www.yiiframework.com`) used when [[\Yiisoft\Web\Request::$hostInfo|Request::$hostInfo]] is invalid.
+     * This value will replace [[\Yiisoft\Web\Request::$hostInfo|Request::$hostInfo]] before [[$denyCallback]] is called to make sure that
+     * an invalid host will not be used for further processing. You can set it to `null` to leave [[\Yiisoft\Web\Request::$hostInfo|Request::$hostInfo]] untouched.
      * Default value is empty string (this will result creating relative URLs instead of absolute).
-     * @see \yii\web\Request::getHostInfo()
+     * @see \Yiisoft\Web\Request::getHostInfo()
      */
     public $fallbackHostInfo = '';
 

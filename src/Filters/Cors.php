@@ -5,12 +5,12 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\filters;
+namespace Yiisoft\Web\Filters;
 
 use yii\helpers\Yii;
 use yii\base\ActionFilter;
-use yii\web\Request;
-use yii\web\Response;
+use Yiisoft\Web\Request;
+use Yiisoft\Web\Response;
 
 /**
  * Cors filter implements [Cross Origin Resource Sharing](http://en.wikipedia.org/wiki/Cross-origin_resource_sharing).
@@ -25,7 +25,7 @@ use yii\web\Response;
  * {
  *     return [
  *         'corsFilter' => [
- *             '__class' => \yii\web\filters\Cors::class,
+ *             '__class' => \Yiisoft\Web\filters\Cors::class,
  *         ],
  *     ];
  * }
@@ -39,7 +39,7 @@ use yii\web\Response;
  * {
  *     return [
  *         'corsFilter' => [
- *             '__class' => \yii\web\filters\Cors::class,
+ *             '__class' => \Yiisoft\Web\filters\Cors::class,
  *             'cors' => [
  *                 // restrict access to
  *                 'Origin' => ['http://www.myserver.com', 'https://www.myserver.com'],
