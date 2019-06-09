@@ -9,10 +9,10 @@ namespace yii\tests\web;
 
 use yii\http\MemoryStream;
 use yii\http\UploadedFile;
-use yii\web\Request;
-use yii\web\UnsupportedMediaTypeHttpException;
+use Yiisoft\Web\Request;
+use Yiisoft\Web\UnsupportedMediaTypeHttpException;
 use yii\tests\TestCase;
-use yii\web\UrlManager;
+use Yiisoft\Web\UrlManager;
 
 /**
  * @group web

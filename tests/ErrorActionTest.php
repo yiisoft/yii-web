@@ -5,15 +5,15 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\tests;
+namespace Yiisoft\Web\tests;
 
 use yii\helpers\Yii;
 use yii\exceptions\InvalidConfigException;
 use yii\exceptions\UserException;
 use yii\tests\TestCase;
 use yii\view\ViewNotFoundException;
-use yii\web\Controller;
-use yii\web\ErrorAction;
+use Yiisoft\Web\Controller;
+use Yiisoft\Web\ErrorAction;
 
 /**
  * @group web
@@ -98,7 +98,7 @@ Exception: InvalidArgumentException', $controller->runAction('error'));
         $this->assertEquals('Name: Not Found (#404)
 Code: 404
 Message: Page not found.
-Exception: yii\web\NotFoundHttpException', $this->getController()->runAction('error'));
+Exception: Yiisoft\Web\NotFoundHttpException', $this->getController()->runAction('error'));
     }
 
     public function testDefaultView()
@@ -129,11 +129,11 @@ Exception: yii\web\NotFoundHttpException', $this->getController()->runAction('er
 
 class TestController extends Controller
 {
-    private $actionConfig;
+    private $_actionConfig;
 
     public function setActionConfig($config = [])
     {
-        $this->actionConfig = $config;
+        $this->_actionConfig = $config;
     }
 
     public function actions()
@@ -142,7 +142,7 @@ class TestController extends Controller
             'error' => array_merge([
                 '__class' => ErrorAction::class,
                 'view' => '@yii/tests/data/views/error.php',
-            ], $this->actionConfig),
+            ], $this->_actionConfig),
         ];
     }
 }

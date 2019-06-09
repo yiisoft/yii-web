@@ -5,10 +5,10 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\tests;
+namespace Yiisoft\Web\Tests;
 
 use yii\base\InlineAction;
-use yii\web\Response;
+use Yiisoft\Web\Response;
 use yii\tests\TestCase;
 
 /**
@@ -43,7 +43,7 @@ class ControllerTest extends TestCase
             'example' => 'data',
         ];
         $result = $this->controller->asJson($data);
-        $this->assertInstanceOf('yii\web\Response', $result);
+        $this->assertInstanceOf('Yiisoft\Web\Response', $result);
         $this->assertSame($this->app->response, $result, 'response should be the same as $this->app->response');
         $this->assertEquals(Response::FORMAT_JSON, $result->format);
         $this->assertEquals($data, $result->data);
@@ -56,7 +56,7 @@ class ControllerTest extends TestCase
             'example' => 'data',
         ];
         $result = $this->controller->asXml($data);
-        $this->assertInstanceOf('yii\web\Response', $result);
+        $this->assertInstanceOf('Yiisoft\Web\Response', $result);
         $this->assertSame($this->app->response, $result, 'response should be the same as $this->app->response');
         $this->assertEquals(Response::FORMAT_XML, $result->format);
         $this->assertEquals($data, $result->data);
