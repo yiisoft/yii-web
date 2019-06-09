@@ -188,7 +188,7 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      * [[viewPath]] directory.
      * @return string the directory containing the view files for this controller.
      */
-    public function getViewPath()
+    public function getViewPath(): string
     {
         if ($this->_viewPath === null) {
             $this->_viewPath = $this->module->getViewPath() . DIRECTORY_SEPARATOR . $this->id;
