@@ -145,7 +145,7 @@ class User extends Component
      */
     public $acceptableRedirectTypes = ['text/html', 'application/xhtml+xml'];
 
-    private $_access = [];
+    private $access = [];
 
     protected $app;
 
@@ -155,7 +155,7 @@ class User extends Component
         $this->accessChecker = $accessChecker;
     }
 
-    private $_identity = false;
+    private $identity = false;
 
     /**
      * Returns the identity object associated with the currently logged-in user.
@@ -170,16 +170,16 @@ class User extends Component
      */
     public function getIdentity($autoRenew = true)
     {
-        if ($this->_identity === false) {
+        if ($this->identity === false) {
             if ($this->enableSession && $autoRenew) {
                 try {
-                    $this->_identity = null;
+                    $this->identity = null;
                     $this->renewAuthStatus();
                 } catch (\Exception $e) {
-                    $this->_identity = false;
+                    $this->identity = false;
                     throw $e;
                 } catch (\Throwable $e) {
-                    $this->_identity = false;
+                    $this->identity = false;
                     throw $e;
                 }
             } else {
@@ -187,7 +187,7 @@ class User extends Component
             }
         }
 
-        return $this->_identity;
+        return $this->identity;
     }
 
     /**
@@ -203,10 +203,10 @@ class User extends Component
     public function setIdentity($identity)
     {
         if ($identity instanceof IdentityInterface) {
-            $this->_identity = $identity;
-            $this->_access = [];
+            $this->identity = $identity;
+            $this->access = [];
         } elseif ($identity === null) {
-            $this->_identity = null;
+            $this->identity = null;
         } else {
             throw new InvalidValueException('The identity object must implement IdentityInterface.');
         }
@@ -697,12 +697,12 @@ class User extends Component
      */
     public function can($permissionName, $params = [], $allowCaching = true)
     {
-        if ($allowCaching && empty($params) && isset($this->_access[$permissionName])) {
-            return $this->_access[$permissionName];
+        if ($allowCaching && empty($params) && isset($this->access[$permissionName])) {
+            return $this->access[$permissionName];
         }
         $access = $this->accessChecker->checkAccess($this->getId(), $permissionName, $params);
         if ($allowCaching && empty($params)) {
-            $this->_access[$permissionName] = $access;
+            $this->access[$permissionName] = $access;
         }
 
         return $access;

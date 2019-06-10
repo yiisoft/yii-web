@@ -12,7 +12,7 @@ class NotFoundHandler implements RequestHandlerInterface
     /**
      * @var ResponseFactoryInterface
      */
-    private $_responseFactory;
+    private $responseFactory;
 
     /**
      * NotFoundHandler constructor.
@@ -20,7 +20,7 @@ class NotFoundHandler implements RequestHandlerInterface
      */
     public function __construct(ResponseFactoryInterface $responseFactory)
     {
-        $this->_responseFactory = $responseFactory;
+        $this->responseFactory = $responseFactory;
     }
 
     /**
@@ -31,7 +31,7 @@ class NotFoundHandler implements RequestHandlerInterface
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $path = $request->getUri()->getPath();
-        $response = $this->_responseFactory->createResponse(404);
+        $response = $this->responseFactory->createResponse(404);
         $response->getBody()->write("We were unable to find the page $path.");
         return $response;
     }

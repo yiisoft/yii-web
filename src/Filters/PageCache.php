@@ -69,7 +69,7 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
     /**
      * @var CacheInterface the cache object.
      */
-    private $_cache;
+    private $cache;
     /**
      * @var int number of seconds that the data can remain valid in cache.
      * Use `0` to indicate that the cached data will never expire.
@@ -129,7 +129,7 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
 
     public function __construct(CacheInterface $cache)
     {
-        $this->_cache = $cache;
+        $this->cache = $cache;
     }
 
     /**
@@ -149,7 +149,7 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
         }
 
         $response = Yii::getApp()->getResponse();
-        $data = $this->_cache->get($this->calculateCacheKey());
+        $data = $this->cache->get($this->calculateCacheKey());
         if (!is_array($data) || !isset($data['cacheVersion']) || $data['cacheVersion'] !== static::PAGE_CACHE_VERSION) {
             $this->getView()->pushDynamicContent($this);
             ob_start();
@@ -241,7 +241,7 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
         }
         $this->insertResponseCollectionIntoData($response, 'headers', $data);
         $this->insertResponseCollectionIntoData($response, 'cookies', $data);
-        $this->_cache->set($this->calculateCacheKey(), $data, $this->duration, $this->dependency);
+        $this->cache->set($this->calculateCacheKey(), $data, $this->duration, $this->dependency);
         $data['content'] = $this->updateDynamicContent($data['content'], $this->getDynamicPlaceholders());
         echo $data['content'];
     }

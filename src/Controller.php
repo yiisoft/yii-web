@@ -47,11 +47,11 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
     /**
      * @var View the view object that can be used to render views or view files.
      */
-    private $_view;
+    private $view;
     /**
      * @var string the root directory that contains view files for this controller.
      */
-    private $_viewPath;
+    private $viewPath;
 
     /**
      * Renders a view and applies layout if available.
@@ -166,11 +166,11 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      */
     public function getView()
     {
-        if ($this->_view === null) {
-            $this->_view = $this->app->getView();
+        if ($this->view === null) {
+            $this->view = $this->app->getView();
         }
 
-        return $this->_view;
+        return $this->view;
     }
 
     /**
@@ -179,7 +179,7 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      */
     public function setView($view)
     {
-        $this->_view = $view;
+        $this->view = $view;
     }
 
     /**
@@ -190,11 +190,11 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      */
     public function getViewPath(): string
     {
-        if ($this->_viewPath === null) {
-            $this->_viewPath = $this->module->getViewPath() . DIRECTORY_SEPARATOR . $this->id;
+        if ($this->viewPath === null) {
+            $this->viewPath = $this->module->getViewPath() . DIRECTORY_SEPARATOR . $this->id;
         }
 
-        return $this->_viewPath;
+        return $this->viewPath;
     }
 
     /**
@@ -205,7 +205,7 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      */
     public function setViewPath($path)
     {
-        $this->_viewPath = $this->app->getAlias($path);
+        $this->viewPath = $this->app->getAlias($path);
     }
 
     /**

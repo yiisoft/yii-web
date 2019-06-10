@@ -19,17 +19,17 @@ class Application
     /**
      * @var ServerRequestFactory
      */
-    private $_requestFactory;
+    private $requestFactory;
 
     /**
      * @var MiddlewareDispatcher
      */
-    private $_dispatcher;
+    private $dispatcher;
 
     /**
      * @var EmitterInterface
      */
-    private $_emitter;
+    private $emitter;
 
     /**
      * Application constructor.
@@ -39,15 +39,15 @@ class Application
      */
     public function __construct(ServerRequestFactory $requestFactory, MiddlewareDispatcher $dispatcher, EmitterInterface $emitter)
     {
-        $this->_requestFactory = $requestFactory;
-        $this->_dispatcher = $dispatcher;
-        $this->_emitter = $emitter;
+        $this->requestFactory = $requestFactory;
+        $this->dispatcher = $dispatcher;
+        $this->emitter = $emitter;
     }
 
     public function run(): bool
     {
-        $request = $this->_requestFactory->createFromGlobals();
-        $response = $this->_dispatcher->handle($request);
-        return $this->_emitter->emit($response);
+        $request = $this->requestFactory->createFromGlobals();
+        $response = $this->dispatcher->handle($request);
+        return $this->emitter->emit($response);
     }
 }

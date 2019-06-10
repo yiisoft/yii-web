@@ -10,13 +10,13 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class IpFilter implements MiddlewareInterface
 {
-    private $_allowedIp;
-    private $_responseFactory;
+    private $allowedIp;
+    private $responseFactory;
 
     public function __construct(string $allowedIp, ResponseFactoryInterface $responseFactory)
     {
-        $this->_allowedIp = $allowedIp;
-        $this->_responseFactory = $responseFactory;
+        $this->allowedIp = $allowedIp;
+        $this->responseFactory = $responseFactory;
     }
 
     /**
@@ -28,8 +28,8 @@ class IpFilter implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        if ($request->getServerParams()['REMOTE_ADDR'] !== $this->_allowedIp) {
-            $response = $this->_responseFactory->createResponse(403);
+        if ($request->getServerParams()['REMOTE_ADDR'] !== $this->allowedIp) {
+            $response = $this->responseFactory->createResponse(403);
             $response->getBody()->write('Access denied!');
             return $response;
         }

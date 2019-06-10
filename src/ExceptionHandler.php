@@ -10,11 +10,11 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class ExceptionHandler implements MiddlewareInterface
 {
-    private $_responseFactory;
+    private $responseFactory;
 
     public function __construct(ResponseFactoryInterface $responseFactory)
     {
-        $this->_responseFactory = $responseFactory;
+        $this->responseFactory = $responseFactory;
     }
 
     /**
@@ -29,7 +29,7 @@ class ExceptionHandler implements MiddlewareInterface
         try {
             return $handler->handle($request);
         } catch (\Throwable $e) {
-            $response = $this->_responseFactory->createResponse(500);
+            $response = $this->responseFactory->createResponse(500);
             $response->getBody()->write($e->getMessage());
             return $response;
         }

@@ -97,7 +97,7 @@ class JsonResponseFormatter extends Component implements ResponseFormatterInterf
             $this->contentType .= '; charset=UTF-8';
         }
         $response->setHeader('Content-Type', $this->contentType);
-  
+
         if ($this->useJsonp) {
             $this->formatJsonp($response);
         } else {
