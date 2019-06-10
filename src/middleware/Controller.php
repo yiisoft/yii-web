@@ -1,5 +1,5 @@
 <?php
-namespace yii\web\middleware;
+namespace Yiisoft\Web\Middleware;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
