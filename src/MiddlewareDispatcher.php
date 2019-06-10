@@ -21,7 +21,7 @@ class MiddlewareDispatcher implements RequestHandlerInterface
     /**
      * @var RequestHandlerInterface
      */
-    private $fallbackHanlder;
+    private $fallbackHandler;
 
     public function __construct(array $middlewares, ResponseFactoryInterface $responseFactory, RequestHandlerInterface $fallbackHandler = null)
     {
@@ -36,7 +36,7 @@ class MiddlewareDispatcher implements RequestHandlerInterface
             $this->middlewares[] = $middleware;
         }
 
-        $this->fallbackHanlder = $fallbackHandler ?? new NotFoundHandler($responseFactory);
+        $this->fallbackHandler = $fallbackHandler ?? new NotFoundHandler($responseFactory);
     }
 
     public function add(MiddlewareInterface $middleware)
@@ -48,7 +48,7 @@ class MiddlewareDispatcher implements RequestHandlerInterface
     {
         // Last middleware in the queue has called on the request handler
         if (\count($this->middlewares) === 0) {
-            return $this->fallbackHanlder->handle($request);
+            return $this->fallbackHandler->handle($request);
         }
 
         return array_shift($this->middlewares)->process($request, $this);
