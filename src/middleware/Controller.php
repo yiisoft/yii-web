@@ -32,4 +32,9 @@ class Controller implements MiddlewareInterface
         // TODO: should we support method injection at all?
         return $controller->{$this->method}($request, $handler);
     }
+
+    public static function __set_state(array $properties): self
+    {
+        return new self($properties['class'], $properties['method']);
+    }
 }

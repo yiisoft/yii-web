@@ -52,4 +52,9 @@ class Callback implements MiddlewareInterface
     {
         return \call_user_func($this->callback, $request, $handler);
     }
+
+    public static function __set_state(array $properties): self
+    {
+        return new self($properties['callback']);
+    }
 }
