@@ -8,56 +8,41 @@ return [
     ],
 
     'app' => [
-        '__class' => yii\web\Application::class,
-    ],
-
-    'urlManager' => [
-        '__class' => yii\web\UrlManager::class,
-    ],
-    'urlNormalizer' => [
-        '__class' => yii\web\UrlNormalizer::class,
-    ],
-    'view' => [
-        '__class' => yii\web\View::class,
+        '__class' => Yiisoft\Web\Application::class,
     ],
 //    'request' => [
-//        '__class' => yii\web\Request::class,
+//        '__class' => Yiisoft\Web\Request::class,
 //        'cookieValidationKey' => $params['request.cookieValidationKey'],
 //    ],
 //    'response' => [
-//        '__class' => yii\web\Response::class,
+//        '__class' => Yiisoft\Web\Response::class,
 //        'formatters' => [
-//            yii\web\Response::FORMAT_HTML => [
-//                '__class' => yii\web\formatters\HtmlResponseFormatter::class,
+//            Yiisoft\Web\Response::FORMAT_HTML => [
+//                '__class' => Yiisoft\Web\formatters\HtmlResponseFormatter::class,
 //            ],
-//            yii\web\Response::FORMAT_XML => [
-//                '__class' => yii\web\formatters\XmlResponseFormatter::class,
+//            Yiisoft\Web\Response::FORMAT_XML => [
+//                '__class' => Yiisoft\Web\formatters\XmlResponseFormatter::class,
 //            ],
-//            yii\web\Response::FORMAT_JSON => [
-//                '__class' => yii\web\formatters\JsonResponseFormatter::class,
+//            Yiisoft\Web\Response::FORMAT_JSON => [
+//                '__class' => Yiisoft\Web\formatters\JsonResponseFormatter::class,
 //            ],
-//            yii\web\Response::FORMAT_JSONP => [
-//                '__class' => yii\web\formatters\JsonResponseFormatter::class,
+//            Yiisoft\Web\Response::FORMAT_JSONP => [
+//                '__class' => Yiisoft\Web\formatters\JsonResponseFormatter::class,
 //                'useJsonp' => true,
 //            ],
 //        ],
 //    ],
     'session' => [
-        '__class' => yii\web\Session::class,
+        '__class' => Yiisoft\Web\Session::class,
     ],
 
-    \yii\web\User::class => \yii\di\Reference::to('user'),
+    \Yiisoft\Web\User::class => Reference::to('user'),
     'user' => [
-        '__class' => yii\web\User::class,
+        '__class' => Yiisoft\Web\User::class,
     ],
 
     'errorHandler' => [
-        '__class' => yii\web\ErrorHandler::class,
+        '__class' => Yiisoft\Web\ErrorHandler::class,
         'errorAction' => 'site/error',
     ],
-
-    'assetManager' => [
-        '__class' => yii\web\AssetManager::class,
-    ],
-
 ];
