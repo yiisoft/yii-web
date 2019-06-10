@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web;
+namespace Yiisoft\Web;
 
 use yii\base\Application;
 use yii\base\Component;
@@ -89,7 +89,7 @@ class Session extends Component implements \IteratorAggregate, \ArrayAccess, \Co
      * Array may have the following possible keys: 'lifetime', 'path', 'domain', 'secure', 'httponly'
      * @see http://www.php.net/manual/en/function.session-set-cookie-params.php
      */
-    private $_cookieParams = ['httponly' => true];
+    private $cookieParams = ['httponly' => true];
     /**
      * @var $frozenSessionData array|null is used for saving session between recreations due to session parameters update.
      */
@@ -223,7 +223,7 @@ class Session extends Component implements \IteratorAggregate, \ArrayAccess, \Co
         return session_status() === PHP_SESSION_ACTIVE;
     }
 
-    private $_hasSessionId;
+    private $hasSessionId;
 
     /**
      * Returns a value indicating whether the current request has sent the session ID.
@@ -234,20 +234,20 @@ class Session extends Component implements \IteratorAggregate, \ArrayAccess, \Co
      */
     public function getHasSessionId()
     {
-        if ($this->_hasSessionId === null) {
+        if ($this->hasSessionId === null) {
             $name = $this->getName();
             $request = $this->app->getRequest();
             // unable to use `Request::$cookies` since CSRF protection feature exclude the session one from them
             if (!empty($_COOKIE[$name]) && ini_get('session.use_cookies')) {
-                $this->_hasSessionId = true;
+                $this->hasSessionId = true;
             } elseif (!ini_get('session.use_only_cookies') && ini_get('session.use_trans_sid')) {
-                $this->_hasSessionId = $request->get($name) != '';
+                $this->hasSessionId = $request->get($name) != '';
             } else {
-                $this->_hasSessionId = false;
+                $this->hasSessionId = false;
             }
         }
 
-        return $this->_hasSessionId;
+        return $this->hasSessionId;
     }
 
     /**
@@ -258,7 +258,7 @@ class Session extends Component implements \IteratorAggregate, \ArrayAccess, \Co
      */
     public function setHasSessionId($value)
     {
-        $this->_hasSessionId = $value;
+        $this->hasSessionId = $value;
     }
 
     /**
@@ -361,7 +361,7 @@ class Session extends Component implements \IteratorAggregate, \ArrayAccess, \Co
      */
     public function getCookieParams()
     {
-        return array_merge(session_get_cookie_params(), array_change_key_case($this->_cookieParams));
+        return array_merge(session_get_cookie_params(), array_change_key_case($this->cookieParams));
     }
 
     /**
@@ -374,7 +374,7 @@ class Session extends Component implements \IteratorAggregate, \ArrayAccess, \Co
      */
     public function setCookieParams(array $value)
     {
-        $this->_cookieParams = $value;
+        $this->cookieParams = $value;
     }
 
     /**

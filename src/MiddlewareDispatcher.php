@@ -1,12 +1,13 @@
 <?php
-namespace yii\web;
+
+namespace Yiisoft\Web;
 
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use yii\web\middleware\Callback;
+use Yiisoft\Web\Middleware\Callback;
 
 /**
  * MiddlewareDispatcher

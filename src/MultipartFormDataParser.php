@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web;
+namespace Yiisoft\Web;
 
 use yii\helpers\Yii;
 use yii\base\BaseObject;
@@ -25,7 +25,7 @@ use yii\http\ResourceStream;
  *     'components' => [
  *         'request' => [
  *             'parsers' => [
- *                 'multipart/form-data' => 'yii\web\MultipartFormDataParser'
+ *                 'multipart/form-data' => 'Yiisoft\Web\MultipartFormDataParser'
  *             ],
  *         ],
  *         // ...
@@ -73,11 +73,11 @@ class MultipartFormDataParser extends BaseObject implements RequestParserInterfa
     /**
      * @var int upload file max size in bytes.
      */
-    private $_uploadFileMaxSize;
+    private $uploadFileMaxSize;
     /**
      * @var int maximum upload files count.
      */
-    private $_uploadFileMaxCount;
+    private $uploadFileMaxCount;
 
 
     /**
@@ -85,11 +85,11 @@ class MultipartFormDataParser extends BaseObject implements RequestParserInterfa
      */
     public function getUploadFileMaxSize()
     {
-        if ($this->_uploadFileMaxSize === null) {
-            $this->_uploadFileMaxSize = $this->getByteSize(ini_get('upload_max_filesize'));
+        if ($this->uploadFileMaxSize === null) {
+            $this->uploadFileMaxSize = $this->getByteSize(ini_get('upload_max_filesize'));
         }
 
-        return $this->_uploadFileMaxSize;
+        return $this->uploadFileMaxSize;
     }
 
     /**
@@ -97,7 +97,7 @@ class MultipartFormDataParser extends BaseObject implements RequestParserInterfa
      */
     public function setUploadFileMaxSize($uploadFileMaxSize)
     {
-        $this->_uploadFileMaxSize = $uploadFileMaxSize;
+        $this->uploadFileMaxSize = $uploadFileMaxSize;
     }
 
     /**
@@ -105,11 +105,11 @@ class MultipartFormDataParser extends BaseObject implements RequestParserInterfa
      */
     public function getUploadFileMaxCount()
     {
-        if ($this->_uploadFileMaxCount === null) {
-            $this->_uploadFileMaxCount = ini_get('max_file_uploads');
+        if ($this->uploadFileMaxCount === null) {
+            $this->uploadFileMaxCount = ini_get('max_file_uploads');
         }
 
-        return $this->_uploadFileMaxCount;
+        return $this->uploadFileMaxCount;
     }
 
     /**
@@ -117,7 +117,7 @@ class MultipartFormDataParser extends BaseObject implements RequestParserInterfa
      */
     public function setUploadFileMaxCount($uploadFileMaxCount)
     {
-        $this->_uploadFileMaxCount = $uploadFileMaxCount;
+        $this->uploadFileMaxCount = $uploadFileMaxCount;
     }
 
     /**

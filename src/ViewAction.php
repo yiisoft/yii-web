@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web;
+namespace Yiisoft\Web;
 
 use yii\helpers\Yii;
 use yii\base\Action;
@@ -35,10 +35,10 @@ class ViewAction extends Action
      */
     public $viewParam = 'view';
     /**
-     * @var string the name of the default view when [[\yii\web\ViewAction::$viewParam]] GET parameter is not provided
+     * @var string the name of the default view when [[\Yiisoft\Web\ViewAction::$viewParam]] GET parameter is not provided
      * by user. Defaults to 'index'. This should be in the format of 'path/to/view', similar to that given in the
      * GET parameter.
-     * @see \yii\web\ViewAction::$viewPrefix
+     * @see \Yiisoft\Web\ViewAction::$viewPrefix
      */
     public $defaultView = 'index';
     /**

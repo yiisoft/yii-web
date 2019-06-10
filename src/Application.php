@@ -5,9 +5,9 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web;
+namespace Yiisoft\Web;
 
-use yii\web\emitter\EmitterInterface;
+use Yiisoft\Web\Emitter\EmitterInterface;
 
 /**
  * Application is the entry point for a web application.

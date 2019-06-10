@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web;
+namespace Yiisoft\Web;
 
 /**
  * IdentityInterface is the interface that should be implemented by a class providing identity information.
@@ -61,7 +61,7 @@ interface IdentityInterface
      * Finds an identity by the given token.
      * @param mixed $token the token to be looked for
      * @param mixed $type the type of the token. The value of this parameter depends on the implementation.
-     * For example, [[\yii\web\filters\auth\HttpBearerAuth]] will set this parameter to be `yii\web\filters\auth\HttpBearerAuth`.
+     * For example, [[\Yiisoft\Web\filters\auth\HttpBearerAuth]] will set this parameter to be `Yiisoft\Web\filters\auth\HttpBearerAuth`.
      * @return IdentityInterface the identity object that matches the given token.
      * Null should be returned if such an identity cannot be found
      * or the identity is not in an active state (disabled, deleted, etc.)

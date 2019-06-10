@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web;
+namespace Yiisoft\Web;
 
 use yii\helpers\Yii;
 use Yiisoft\Cache\CacheInterface;
@@ -26,7 +26,7 @@ use yii\di\Instance;
  *
  * ```php
  * 'session' => [
- *     '__class' => \yii\web\CacheSession::class,
+ *     '__class' => \Yiisoft\Web\CacheSession::class,
  *     // 'cache' => 'mycache',
  * ]
  * ```

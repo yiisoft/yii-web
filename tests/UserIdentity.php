@@ -1,9 +1,10 @@
 <?php
-namespace yii\web\tests;
+
+namespace Yiisoft\Web\Tests;
 
 use yii\base\Component;
 use yii\exceptions\NotSupportedException;
-use yii\web\IdentityInterface;
+use Yiisoft\Web\IdentityInterface;
 
 class UserIdentity extends Component implements IdentityInterface
 {

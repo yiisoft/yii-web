@@ -1,6 +1,5 @@
 <?php
 
-
 namespace yii\http;
 
 use Psr\Http\Message\ResponseFactoryInterface;

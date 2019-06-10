@@ -5,14 +5,14 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web;
+namespace Yiisoft\Web;
 
 use yii\base\Action;
 use yii\base\InlineAction;
 use yii\helpers\Url;
 use yii\helpers\Yii;
 use yii\exceptions\InvalidArgumentException;
-use yii\view\ViewContextInterface;
+use Yiisoft\View\ViewContextInterface;
 
 /**
  * Controller is the base class of web controllers.
@@ -20,7 +20,7 @@ use yii\view\ViewContextInterface;
  * For more details and usage information on Controller, see the [guide article on controllers](guide:structure-controllers).
  *
  * read-only.
- * @property View|\yii\web\View $view The view object that can be used to render views or view files.
+ * @property View|\Yiisoft\Web\View $view The view object that can be used to render views or view files.
  * @property string $viewPath The directory containing the view files for this controller.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -30,7 +30,7 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
 {
     /**
      * @var bool whether to enable CSRF validation for the actions in this controller.
-     * CSRF validation is enabled only when both this property and [[\yii\web\Request::enableCsrfValidation]] are true.
+     * CSRF validation is enabled only when both this property and [[\Yiisoft\Web\Request::enableCsrfValidation]] are true.
      */
     public $enableCsrfValidation = true;
     /**
@@ -47,11 +47,11 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
     /**
      * @var View the view object that can be used to render views or view files.
      */
-    private $_view;
+    private $view;
     /**
      * @var string the root directory that contains view files for this controller.
      */
-    private $_viewPath;
+    private $viewPath;
 
     /**
      * Renders a view and applies layout if available.
@@ -162,24 +162,24 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      * The [[render()]], [[renderPartial()]] and [[renderFile()]] methods will use
      * this view object to implement the actual view rendering.
      * If not set, it will default to the "view" application component.
-     * @return View|\yii\web\View the view object that can be used to render views or view files.
+     * @return View|\Yiisoft\Web\View the view object that can be used to render views or view files.
      */
     public function getView()
     {
-        if ($this->_view === null) {
-            $this->_view = $this->app->getView();
+        if ($this->view === null) {
+            $this->view = $this->app->getView();
         }
 
-        return $this->_view;
+        return $this->view;
     }
 
     /**
      * Sets the view object to be used by this controller.
-     * @param View|\yii\web\View $view the view object that can be used to render views or view files.
+     * @param View|\Yiisoft\Web\View $view the view object that can be used to render views or view files.
      */
     public function setView($view)
     {
-        $this->_view = $view;
+        $this->view = $view;
     }
 
     /**
@@ -188,13 +188,13 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      * [[viewPath]] directory.
      * @return string the directory containing the view files for this controller.
      */
-    public function getViewPath()
+    public function getViewPath(): string
     {
-        if ($this->_viewPath === null) {
-            $this->_viewPath = $this->module->getViewPath() . DIRECTORY_SEPARATOR . $this->id;
+        if ($this->viewPath === null) {
+            $this->viewPath = $this->module->getViewPath() . DIRECTORY_SEPARATOR . $this->id;
         }
 
-        return $this->_viewPath;
+        return $this->viewPath;
     }
 
     /**
@@ -205,7 +205,7 @@ class Controller extends \yii\base\Controller implements ViewContextInterface
      */
     public function setViewPath($path)
     {
-        $this->_viewPath = $this->app->getAlias($path);
+        $this->viewPath = $this->app->getAlias($path);
     }
 
     /**

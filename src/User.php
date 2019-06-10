@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web;
+namespace Yiisoft\Web;
 
 use yii\base\Application;
 use yii\base\Component;
@@ -32,7 +32,7 @@ use yii\helpers\Yii;
  * a user. The logic of how to authenticate a user should be done in the class implementing [[IdentityInterface]].
  * You are also required to set [[identityClass]] with the name of this class.
  *
- * User is configured as an application component in [[\yii\web\Application]] by default.
+ * User is configured as an application component in [[\Yiisoft\Web\Application]] by default.
  * You can access that instance via `Yii::getApp()->user`.
  *
  * You can modify its configuration by adding an array to your application config under `components`
@@ -145,7 +145,7 @@ class User extends Component
      */
     public $acceptableRedirectTypes = ['text/html', 'application/xhtml+xml'];
 
-    private $_access = [];
+    private $access = [];
 
     protected $app;
 
@@ -155,7 +155,7 @@ class User extends Component
         $this->accessChecker = $accessChecker;
     }
 
-    private $_identity = false;
+    private $identity = false;
 
     /**
      * Returns the identity object associated with the currently logged-in user.
@@ -170,16 +170,16 @@ class User extends Component
      */
     public function getIdentity($autoRenew = true)
     {
-        if ($this->_identity === false) {
+        if ($this->identity === false) {
             if ($this->enableSession && $autoRenew) {
                 try {
-                    $this->_identity = null;
+                    $this->identity = null;
                     $this->renewAuthStatus();
                 } catch (\Exception $e) {
-                    $this->_identity = false;
+                    $this->identity = false;
                     throw $e;
                 } catch (\Throwable $e) {
-                    $this->_identity = false;
+                    $this->identity = false;
                     throw $e;
                 }
             } else {
@@ -187,7 +187,7 @@ class User extends Component
             }
         }
 
-        return $this->_identity;
+        return $this->identity;
     }
 
     /**
@@ -203,10 +203,10 @@ class User extends Component
     public function setIdentity($identity)
     {
         if ($identity instanceof IdentityInterface) {
-            $this->_identity = $identity;
-            $this->_access = [];
+            $this->identity = $identity;
+            $this->access = [];
         } elseif ($identity === null) {
-            $this->_identity = null;
+            $this->identity = null;
         } else {
             throw new InvalidValueException('The identity object must implement IdentityInterface.');
         }
@@ -272,7 +272,7 @@ class User extends Component
      * If authentication fails or [[login()]] is unsuccessful, it will return null.
      * @param string $token the access token
      * @param mixed $type the type of the token. The value of this parameter depends on the implementation.
-     * For example, [[\yii\web\filters\auth\HttpBearerAuth]] will set this parameter to be `yii\web\filters\auth\HttpBearerAuth`.
+     * For example, [[\Yiisoft\Web\filters\auth\HttpBearerAuth]] will set this parameter to be `Yiisoft\Web\filters\auth\HttpBearerAuth`.
      * @return IdentityInterface|null the identity associated with the given access token. Null is returned if
      * the access token is invalid or [[login()]] is unsuccessful.
      */
@@ -697,12 +697,12 @@ class User extends Component
      */
     public function can($permissionName, $params = [], $allowCaching = true)
     {
-        if ($allowCaching && empty($params) && isset($this->_access[$permissionName])) {
-            return $this->_access[$permissionName];
+        if ($allowCaching && empty($params) && isset($this->access[$permissionName])) {
+            return $this->access[$permissionName];
         }
         $access = $this->accessChecker->checkAccess($this->getId(), $permissionName, $params);
         if ($allowCaching && empty($params)) {
-            $this->_access[$permissionName] = $access;
+            $this->access[$permissionName] = $access;
         }
 
         return $access;

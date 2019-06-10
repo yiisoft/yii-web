@@ -5,15 +5,15 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\tests;
+namespace Yiisoft\Web\Tests;
 
 use Error;
 use Exception;
 use RuntimeException;
 use Yiisoft\Strings\StringHelper;
-use yii\web\HttpException;
-use yii\web\Response;
-use yii\web\RangeNotSatisfiableHttpException;
+use Yiisoft\Web\HttpException;
+use Yiisoft\Web\Response;
+use Yiisoft\Web\RangeNotSatisfiableHttpException;
 
 /**
  * @group web

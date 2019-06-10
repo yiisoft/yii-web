@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web;
+namespace Yiisoft\Web;
 
 /**
  * Mock for the time() function for web classes.
@@ -13,22 +13,22 @@ namespace yii\web;
  */
 function time()
 {
-    return \yii\web\tests\UserTest::$time ?: \time();
+    return \Yiisoft\Web\tests\UserTest::$time ?: \time();
 }
 
-namespace yii\web\tests;
+namespace Yiisoft\Web\tests;
 
 use yii\helpers\Yii;
 use yii\di\Reference;
 use yii\http\Cookie;
 use yii\http\CookieCollection;
 use Yiisoft\Access\CheckAccessInterface;
-use yii\web\Request;
-use yii\web\Response;
-use yii\web\ForbiddenHttpException;
-use yii\web\User;
+use Yiisoft\Web\Request;
+use Yiisoft\Web\Response;
+use Yiisoft\Web\ForbiddenHttpException;
+use Yiisoft\Web\User;
 use yii\tests\TestCase;
-use \yii\web\tests\filters\stubs\AccessChecker;
+use \Yiisoft\Web\Tests\Filters\Stubs\AccessChecker;
 
 /**
  * @group web
@@ -360,7 +360,7 @@ class UserTest extends TestCase
     public function testGetIdentityException()
     {
         $this->mockWebApplication();
-        $session = $this->getMockBuilder(\yii\web\Session::class)
+        $session = $this->getMockBuilder(\Yiisoft\Web\Session::class)
             ->setConstructorArgs([$this->app])
             ->setMethods(['getHasSessionId', 'get'])
             ->getMock();
@@ -411,7 +411,7 @@ class MockResponse extends Response
     }
 }
 
-class ExceptionIdentity extends \yii\web\tests\filters\stubs\UserIdentity
+class ExceptionIdentity extends \Yiisoft\Web\tests\filters\stubs\UserIdentity
 {
     public static function findIdentity($id)
     {

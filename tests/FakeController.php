@@ -5,9 +5,9 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\tests;
+namespace Yiisoft\Web\Tests;
 
-use yii\web\Controller;
+use Yiisoft\Web\Controller;
 
 /**
  * @author Misbahul D Munir <misbahuldmunir@gmail.com>

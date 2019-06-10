@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web;
+namespace Yiisoft\Web;
 
 use yii\base\Action;
 use yii\exceptions\Exception;
@@ -24,7 +24,7 @@ use yii\helpers\Yii;
  * public function actions()
  * {
  *     return [
- *         'error' => ['__class' => \yii\web\ErrorAction::class,
+ *         'error' => ['__class' => \Yiisoft\Web\ErrorAction::class,
  *     ];
  * }
  * ```
@@ -79,7 +79,7 @@ class ErrorAction extends Action
      * @see [[findException()]] to know default way of obtaining exception.
      * @since 2.0.11
      */
-    protected $_exception;
+    protected $exception;
 
 
     /**
@@ -125,11 +125,11 @@ class ErrorAction extends Action
      */
     public function getException(): \Throwable
     {
-        if ($this->_exception === null) {
-            $this->_exception = $this->findException();
+        if ($this->exception === null) {
+            $this->exception = $this->findException();
         }
 
-        return $this->_exception;
+        return $this->exception;
     }
 
     /**
@@ -188,7 +188,7 @@ class ErrorAction extends Action
     }
 
     /**
-     * Gets exception from the [[yii\web\ErrorHandler|ErrorHandler]] component.
+     * Gets exception from the [[Yiisoft\Web\ErrorHandler|ErrorHandler]] component.
      * In case there is no exception in the component, treat as the action has been invoked
      * not from error handler, but by direct route, so '404 Not Found' error will be displayed.
      * @return \Throwable

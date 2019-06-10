@@ -5,14 +5,14 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web\tests;
+namespace Yiisoft\Web\Tests;
 
 use yii\helpers\Yii;
-use yii\web\NotFoundHttpException;
-use yii\web\Request;
-use yii\web\UrlManager;
-use yii\web\UrlNormalizer;
-use yii\web\UrlNormalizerRedirectException;
+use Yiisoft\Web\NotFoundHttpException;
+use Yiisoft\Web\Request;
+use Yiisoft\Web\UrlManager;
+use Yiisoft\Web\UrlNormalizer;
+use Yiisoft\Web\UrlNormalizerRedirectException;
 use yii\tests\TestCase;
 
 /**
@@ -128,7 +128,7 @@ class UrlNormalizerTest extends TestCase
             'enablePrettyUrl' => true,
             'cache' => null,
             'normalizer' => $this->factory->create([
-                '__class' => \yii\web\UrlNormalizer::class,
+                '__class' => \Yiisoft\Web\UrlNormalizer::class,
                 'action' => null,
             ]),
         ];

@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\web;
+namespace Yiisoft\Web;
 
 use yii\exceptions\InvalidArgumentException;
 use yii\helpers\Json;
@@ -18,7 +18,7 @@ use yii\helpers\Json;
  * ```php
  * 'request' => [
  *     'parsers' => [
- *         'application/json' => \yii\web\JsonParser::class,
+ *         'application/json' => \Yiisoft\Web\JsonParser::class,
  *     ]
  * ]
  * ```
