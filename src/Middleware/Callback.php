@@ -7,10 +7,12 @@
 
 namespace Yiisoft\Web\Middleware;
 
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Yiisoft\Injector\Injector;
 
 /**
  * Callback wraps arbitrary PHP callback into object matching [[MiddlewareInterface]].
@@ -35,13 +37,16 @@ class Callback implements MiddlewareInterface
      */
     private $callback;
 
+    private $container;
+
     /**
      * CallbackMiddleware constructor.
      * @param callable $callback
      */
-    public function __construct(callable $callback)
+    public function __construct(callable $callback, ContainerInterface $container)
     {
         $this->callback = $callback;
+        $this->container = $container;
     }
 
 
@@ -50,11 +55,11 @@ class Callback implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        return \call_user_func($this->callback, $request, $handler);
+        return (new Injector($this->container))->invoke($this->callback, [$request, $handler]);
     }
 
-    public static function __set_state(array $properties): self
+    public static function __set_state(array $state): self
     {
-        return new self($properties['callback']);
+        return new self($state['callback'], $state['container']);
     }
 }

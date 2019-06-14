@@ -2,6 +2,7 @@
 
 namespace Yiisoft\Web;
 
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -24,7 +25,7 @@ class MiddlewareDispatcher implements RequestHandlerInterface
      */
     private $fallbackHandler;
 
-    public function __construct(array $middlewares, ResponseFactoryInterface $responseFactory, RequestHandlerInterface $fallbackHandler = null)
+    public function __construct(array $middlewares, ContainerInterface $container, RequestHandlerInterface $fallbackHandler = null)
     {
         if ($middlewares === []) {
             throw new \InvalidArgumentException('Middlewares should be defined.');
@@ -32,10 +33,13 @@ class MiddlewareDispatcher implements RequestHandlerInterface
 
         foreach ($middlewares as $middleware) {
             if (is_callable($middleware)) {
-                $middleware = new Callback($middleware);
+                $middleware = new Callback($middleware, $container);
             }
             $this->middlewares[] = $middleware;
         }
+
+        /* @var \Psr\Http\Message\ResponseFactoryInterface $responseFactory */
+        $responseFactory = $container->get(ResponseFactoryInterface::class);
 
         $this->fallbackHandler = $fallbackHandler ?? new NotFoundHandler($responseFactory);
     }

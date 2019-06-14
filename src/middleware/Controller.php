@@ -6,6 +6,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Yiisoft\Injector\Injector;
 
 class Controller implements MiddlewareInterface
 {
@@ -20,7 +21,6 @@ class Controller implements MiddlewareInterface
         $this->container = $container;
     }
 
-
     /**
      * Process an incoming server request.
      *
@@ -32,11 +32,12 @@ class Controller implements MiddlewareInterface
     {
         $controller = $this->container->get($this->class);
         // TODO: should we support method injection at all?
-        return $controller->{$this->method}($request, $handler);
+        // return $controller->{$this->method}($request, $handler);
+        return (new Injector($this->container))->invoke([$controller, $this->method], [$request, $handler]);
     }
 
-    public static function __set_state(array $properties): self
+    public static function __set_state(array $state): self
     {
-        return new self($properties['class'], $properties['method'], $properties['container']);
+        return new self($state['class'], $state['method'], $state['container']);
     }
 }
