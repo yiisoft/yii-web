@@ -25,17 +25,21 @@ class MiddlewareDispatcher implements RequestHandlerInterface
      */
     private $fallbackHandler;
 
+    /**
+     * @var ContainerInterface
+     */
+    private $container;
+
     public function __construct(array $middlewares, ContainerInterface $container, RequestHandlerInterface $fallbackHandler = null)
     {
         if ($middlewares === []) {
             throw new \InvalidArgumentException('Middlewares should be defined.');
         }
 
+        $this->container = $container;
+
         foreach ($middlewares as $middleware) {
-            if (is_callable($middleware)) {
-                $middleware = new Callback($middleware, $container);
-            }
-            $this->middlewares[] = $middleware;
+            $this->add($middleware);
         }
 
         /* @var \Psr\Http\Message\ResponseFactoryInterface $responseFactory */
@@ -44,9 +48,20 @@ class MiddlewareDispatcher implements RequestHandlerInterface
         $this->fallbackHandler = $fallbackHandler ?? new NotFoundHandler($responseFactory);
     }
 
-    public function add(MiddlewareInterface $middleware)
+    private function addCallable(callable $callback): void
     {
-        $this->middlewares[] = $middleware;
+        $this->middlewares[] = new Callback($callback, $this->container);
+    }
+
+    public function add($middleware): void
+    {
+        if (is_callable($middleware)) {
+            $this->addCallable($middleware);
+        } elseif ($middleware instanceof MiddlewareInterface) {
+            $this->middlewares[] = $middleware;
+        } else {
+            throw new \InvalidArgumentException('Middleware should be either callable or MiddlewareInterface instance. ' . get_class($middleware) . ' given.');
+        }
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
