@@ -1,6 +1,5 @@
 <?php
-
-namespace Yiisoft\Web;
+namespace Yiisoft\Yii\Web;
 
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -8,7 +7,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Yiisoft\Web\Middleware\Callback;
+use Yiisoft\Yii\Web\Middleware\Callback;
 
 /**
  * MiddlewareDispatcher

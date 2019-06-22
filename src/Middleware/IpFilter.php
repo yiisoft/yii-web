@@ -1,6 +1,6 @@
 <?php
 
-namespace Yiisoft\Web\Middleware;
+namespace Yiisoft\Yii\Web\Middleware;
 
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;

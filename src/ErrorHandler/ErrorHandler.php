@@ -1,5 +1,5 @@
 <?php
-namespace Yiisoft\Web\ErrorHandler;
+namespace Yiisoft\Yii\Web\ErrorHandler;
 
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;

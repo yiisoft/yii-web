@@ -1,13 +1,7 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
+namespace Yiisoft\Yii\Web;
 
-namespace Yiisoft\Web;
-
-use Yiisoft\Web\Emitter\EmitterInterface;
+use Yiisoft\Yii\Web\Emitter\EmitterInterface;
 
 /**
  * Application is the entry point for a web application.

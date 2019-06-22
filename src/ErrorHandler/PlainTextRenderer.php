@@ -1,7 +1,5 @@
 <?php
-
-
-namespace Yiisoft\Web\ErrorHandler;
+namespace Yiisoft\Yii\Web\ErrorHandler;
 
 class PlainTextRenderer implements ErrorRenderer
 {

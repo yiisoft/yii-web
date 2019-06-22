@@ -1,5 +1,5 @@
 <?php
-namespace Yiisoft\Web\ErrorHandler;
+namespace Yiisoft\Yii\Web\ErrorHandler;
 
 class HtmlRenderer implements ErrorRenderer
 {

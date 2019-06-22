@@ -1,6 +1,6 @@
 <?php
 
-namespace Yiisoft\Web\Emitter;
+namespace Yiisoft\Yii\Web\Emitter;
 
 use Psr\Http\Message\ResponseInterface;
 

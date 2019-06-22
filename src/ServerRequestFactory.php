@@ -1,6 +1,6 @@
 <?php
 
-namespace Yiisoft\Web;
+namespace Yiisoft\Yii\Web;
 
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
