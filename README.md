@@ -17,7 +17,6 @@ This [Yii Framework] extension allows easy creation of web applications.
 [![Build Status](https://img.shields.io/travis/yiisoft/yii-web.svg)](http://travis-ci.org/yiisoft/yii-web)
 [![Code Coverage](https://scrutinizer-ci.com/g/yiisoft/yii-web/badges/coverage.png?s=31d80f1036099e9d6a3e4d7738f6b000b3c3d10e)](https://scrutinizer-ci.com/g/yiisoft/yii-web/)
 [![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/yiisoft/yii-web/badges/quality-score.png?s=b1074a1ff6d0b214d54fa5ab7abbb90fc092471d)](https://scrutinizer-ci.com/g/yiisoft/yii-web/)
-[![Code Climate](https://img.shields.io/codeclimate/github/yiisoft/yii-web.svg)](https://codeclimate.com/github/yiisoft/yii-web)
 
 Installation
 ------------
