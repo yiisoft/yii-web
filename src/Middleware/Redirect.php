@@ -60,8 +60,7 @@ final class Redirect implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if ($this->route === null && $this->uri === null) {
-            // TODO: should we throw exception instead?
-            return $handler->handle($request);
+            throw new \InvalidArgumentException('Either toUrl() or toRoute() should be used.');
         }
 
         $uri = $this->uri;
