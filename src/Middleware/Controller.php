@@ -21,18 +21,9 @@ class Controller implements MiddlewareInterface
         $this->container = $container;
     }
 
-    /**
-     * Process an incoming server request.
-     *
-     * Processes an incoming server request in order to produce a response.
-     * If unable to produce the response itself, it may delegate to the provided
-     * request handler to do so.
-     */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $controller = $this->container->get($this->class);
-        // TODO: should we support method injection at all?
-        // return $controller->{$this->method}($request, $handler);
         return (new Injector($this->container))->invoke([$controller, $this->method], [$request, $handler]);
     }
 
