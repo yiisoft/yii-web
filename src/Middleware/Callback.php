@@ -30,30 +30,16 @@ class Callback implements MiddlewareInterface
      * @var callable a PHP callback matching signature of [[MiddlewareInterface::process()]].
      */
     private $callback;
-
     private $container;
 
-    /**
-     * CallbackMiddleware constructor.
-     * @param callable $callback
-     */
     public function __construct(callable $callback, ContainerInterface $container)
     {
         $this->callback = $callback;
         $this->container = $container;
     }
 
-
-    /**
-     * {@inheritdoc}
-     */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         return (new Injector($this->container))->invoke($this->callback, [$request, $handler]);
-    }
-
-    public static function __set_state(array $state): self
-    {
-        return new self($state['callback'], $state['container']);
     }
 }
