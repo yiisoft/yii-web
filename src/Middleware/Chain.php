@@ -34,8 +34,7 @@ class Chain implements MiddlewareInterface
      */
     private function wrap(MiddlewareInterface $middleware, RequestHandlerInterface $handler): RequestHandlerInterface
     {
-        return new class($middleware, $handler) implements RequestHandlerInterface
-        {
+        return new class($middleware, $handler) implements RequestHandlerInterface {
             private $middleware;
             private $handler;
 
