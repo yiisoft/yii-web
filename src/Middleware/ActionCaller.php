@@ -32,9 +32,4 @@ class ActionCaller implements MiddlewareInterface
         $controller = $this->container->get($this->class);
         return (new Injector($this->container))->invoke([$controller, $this->method], [$request, $handler]);
     }
-
-    public static function __set_state(array $state): self
-    {
-        return new self($state['class'], $state['method'], $state['container']);
-    }
 }
