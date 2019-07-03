@@ -9,7 +9,11 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Injector\Injector;
 
 /**
- * WebActionsCaller maps a route like /post/{action} to methods of class instance specified named as "action" parameter
+ * WebActionsCaller maps a route like /post/{action} to methods of
+ * a class instance specified named as "action" parameter.
+ *
+ * Dependencies are automatically injected into both method
+ * and constructor based on types specified.
  */
 class WebActionsCaller implements MiddlewareInterface
 {

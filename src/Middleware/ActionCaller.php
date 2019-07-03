@@ -8,7 +8,13 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Injector\Injector;
 
-class Controller implements MiddlewareInterface
+/**
+ * ActionCaller maps a route to specified class instance and method.
+ *
+ * Dependencies are automatically injected into both method
+ * and constructor based on types specified.
+ */
+class ActionCaller implements MiddlewareInterface
 {
     private $class;
     private $method;
