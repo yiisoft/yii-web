@@ -5,8 +5,7 @@ namespace Yiisoft\Yii\Web\Emitter;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * SapiEmitter sends response using PHP Server API
- * @package yii\http\emitter
+ * SapiEmitter sends a response using PHP Server API
  */
 class SapiEmitter implements EmitterInterface
 {

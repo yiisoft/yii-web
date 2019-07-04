@@ -65,7 +65,7 @@ class MiddlewareDispatcher implements RequestHandlerInterface
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        // Last middleware in the queue has called on the request handler
+        // Last middleware in the queue has been called on the request handler
         if (\count($this->middlewares) === 0) {
             return $this->fallbackHandler->handle($request);
         }
