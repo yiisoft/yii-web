@@ -1,7 +1,7 @@
 <?php
 namespace Yiisoft\Yii\Web\ErrorHandler;
 
-class HtmlRenderer implements ErrorRenderer
+class HtmlRenderer implements ErrorRendererInterface
 {
     public function render(\Throwable $e): string
     {

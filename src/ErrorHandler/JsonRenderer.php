@@ -1,7 +1,7 @@
 <?php
 namespace Yiisoft\Yii\Web\ErrorHandler;
 
-class JsonRenderer implements ErrorRenderer
+class JsonRenderer implements ErrorRendererInterface
 {
     public function render(\Throwable $e): string
     {
