@@ -165,7 +165,6 @@ final class ServerRequestFactory
      * @param mixed $types file types provided by PHP
      * @param mixed $sizes file sizes provided by PHP
      * @param mixed $errors uploading issues provided by PHP
-     * @since 3.0.0
      */
     private function populateUploadedFileRecursive(&$files, $names, $tempNames, $types, $sizes, $errors): void
     {
