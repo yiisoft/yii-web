@@ -1,7 +1,7 @@
 <?php
 namespace Yiisoft\Yii\Web\ErrorHandler;
 
-class XmlRenderer implements ErrorRenderer
+class XmlRenderer implements ErrorRendererInterface
 {
     public function render(\Throwable $e): string
     {
