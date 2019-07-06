@@ -14,6 +14,10 @@ use Yiisoft\Injector\Injector;
  *
  * Dependencies are automatically injected into both method
  * and constructor based on types specified.
+ *
+ * ```php
+ * Route::anyMethod('/test/{action:\w+}')->to(new WebActionsCaller(TestController::class, $container)),
+ * ```
  */
 class WebActionsCaller implements MiddlewareInterface
 {
