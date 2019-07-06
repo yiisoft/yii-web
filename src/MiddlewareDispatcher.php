@@ -41,7 +41,6 @@ class MiddlewareDispatcher implements RequestHandlerInterface
             $this->add($middleware);
         }
 
-        /* @var \Psr\Http\Message\ResponseFactoryInterface $responseFactory */
         $responseFactory = $container->get(ResponseFactoryInterface::class);
 
         $this->fallbackHandler = $fallbackHandler ?? new NotFoundHandler($responseFactory);
