@@ -6,7 +6,6 @@ use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Yii\Web\Cookie;
 
-
 class CookieTest extends TestCase
 {
     private function getCookieHeader(Cookie $cookie): string
