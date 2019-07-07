@@ -82,7 +82,7 @@ class Cookie
     {
         // @see https://tools.ietf.org/html/rfc6265#section-4
         // @see https://tools.ietf.org/html/rfc2616#section-2.2
-        if (!preg_match('~[a-z0-9._\-]+~i', $name)) {
+        if (!preg_match('~^[a-z0-9._\-]+$~i', $name)) {
             throw new \InvalidArgumentException("The cookie name \"$name\" contains invalid characters.");
         }
 
