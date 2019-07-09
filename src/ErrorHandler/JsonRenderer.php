@@ -1,6 +1,9 @@
 <?php
 namespace Yiisoft\Yii\Web\ErrorHandler;
 
+/**
+ * Formats exception into JSON string
+ */
 class JsonRenderer implements ErrorRendererInterface
 {
     public function render(\Throwable $e): string
