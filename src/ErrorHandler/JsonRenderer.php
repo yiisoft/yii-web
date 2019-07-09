@@ -4,17 +4,17 @@ namespace Yiisoft\Yii\Web\ErrorHandler;
 /**
  * Formats exception into JSON string
  */
-class JsonRenderer implements ExceptionRendererInterface
+class JsonRenderer extends ThrowableRenderer
 {
-    public function render(\Throwable $e): string
+    public function render(\Throwable $t): string
     {
         return json_encode([
-            'type' => get_class($e),
-            'message' => $e->getMessage(),
-            'code' => $e->getCode(),
-            'file' => $e->getFile(),
-            'line' => $e->getLine(),
-            'trace' => $e->getTrace(),
+            'type' => get_class($t),
+            'message' => $t->getMessage(),
+            'code' => $t->getCode(),
+            'file' => $t->getFile(),
+            'line' => $t->getLine(),
+            'trace' => $t->getTrace(),
         ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 }

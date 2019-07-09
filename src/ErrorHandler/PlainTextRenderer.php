@@ -1,12 +1,10 @@
 <?php
 namespace Yiisoft\Yii\Web\ErrorHandler;
 
-class PlainTextRenderer implements ExceptionRendererInterface
+class PlainTextRenderer extends ThrowableRenderer
 {
-    public function render(\Throwable $e): string
+    public function render(\Throwable $t): string
     {
-        return "Exception '" . get_class($e) . "' with message '{$e->getMessage()}' \n\nin "
-            . $e->getFile() . ':' . $e->getLine() . "\n\n"
-            . "Stack trace:\n" . $e->getTraceAsString();
+        return  $this->convertThrowableToVerboseString($t);
     }
 }

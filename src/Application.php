@@ -2,6 +2,7 @@
 namespace Yiisoft\Yii\Web;
 
 use Yiisoft\Yii\Web\Emitter\EmitterInterface;
+use Yiisoft\Yii\Web\ErrorHandler\ErrorHandler;
 
 /**
  * Application is the entry point for a web application.
@@ -31,11 +32,13 @@ class Application
      * @param MiddlewareDispatcher $dispatcher
      * @param EmitterInterface $emitter
      */
-    public function __construct(ServerRequestFactory $requestFactory, MiddlewareDispatcher $dispatcher, EmitterInterface $emitter)
+    public function __construct(ServerRequestFactory $requestFactory, MiddlewareDispatcher $dispatcher, EmitterInterface $emitter, ErrorHandler $errorHandler)
     {
         $this->requestFactory = $requestFactory;
         $this->dispatcher = $dispatcher;
         $this->emitter = $emitter;
+
+        $errorHandler->register();
     }
 
     public function run(): bool
