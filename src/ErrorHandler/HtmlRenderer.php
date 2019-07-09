@@ -1,24 +1,21 @@
 <?php
-
 namespace Yiisoft\Yii\Web\ErrorHandler;
 
-use http\Exception\RuntimeException;
 use Yiisoft\VarDumper\VarDumper;
 use Yiisoft\Yii\Web\Info;
 
-class HtmlRenderer implements ExceptionRendererInterface
+class HtmlRenderer extends ThrowableRenderer
 {
     // TODO expose config
-    private const MAX_SOURCE_LINES = 19;
-    private const MAX_TRACE_LINES = 13;
+    private $maxSourceLines = 19;
+    private $maxTraceLines = 13;
 
-    private $displayVars = ['_GET', '_POST', '_FILES', '_COOKIE', '_SESSION'];
     private $traceLine = '{html}';
 
-    public function render(\Throwable $e): string
+    public function render(\Throwable $t): string
     {
         return $this->renderTemplate('exception', [
-            'exception' => $e,
+            'throwable' => $t,
         ]);
     }
 
@@ -31,7 +28,7 @@ class HtmlRenderer implements ExceptionRendererInterface
     {
         $path = __DIR__ . '/templates/' . $template . '.php';
         if (!file_exists($path)) {
-            throw new RuntimeException("$template not found at $path");
+            throw new \RuntimeException("$template not found at $path");
         }
 
         $renderer = function () use ($path, $params) {
@@ -57,15 +54,15 @@ class HtmlRenderer implements ExceptionRendererInterface
 
     /**
      * Renders the previous exception stack for a given Exception.
-     * @param \Throwable $exception the exception whose precursors should be rendered.
+     * @param \Throwable $t the exception whose precursors should be rendered.
      * @return string HTML content of the rendered previous exceptions.
      * Empty string if there are none.
      * @throws \Throwable
      */
-    private function renderPreviousExceptions(\Throwable $exception)
+    private function renderPreviousExceptions(\Throwable $t)
     {
-        if (($previous = $exception->getPrevious()) !== null) {
-            return $this->renderTemplate('previousException', ['exception' => $previous]);
+        if (($previous = $t->getPrevious()) !== null) {
+            return $this->renderTemplate('previousException', ['throwable' => $previous]);
         }
         return '';
     }
@@ -91,7 +88,7 @@ class HtmlRenderer implements ExceptionRendererInterface
             if ($line < 0 || $lines === false || ($lineCount = count($lines)) < $line) {
                 return '';
             }
-            $half = (int)(($index === 1 ? self::MAX_SOURCE_LINES : self::MAX_TRACE_LINES) / 2);
+            $half = (int)(($index === 1 ? $this->maxSourceLines : $this->maxTraceLines) / 2);
             $begin = $line - $half > 0 ? $line - $half : 0;
             $end = $line + $half < $lineCount ? $line + $half : $lineCount - 1;
         }
@@ -110,15 +107,15 @@ class HtmlRenderer implements ExceptionRendererInterface
 
     /**
      * Renders call stack.
-     * @param \Throwable $exception exception to get call stack from
+     * @param \Throwable $t exception to get call stack from
      * @return string HTML content of the rendered call stack.
      * @throws \Throwable
      */
-    private function renderCallStack(\Throwable $exception)
+    private function renderCallStack(\Throwable $t)
     {
         $out = '<ul>';
-        $out .= $this->renderCallStackItem($exception->getFile(), $exception->getLine(), null, null, [], 1);
-        for ($i = 0, $trace = $exception->getTrace(), $length = count($trace); $i < $length; ++$i) {
+        $out .= $this->renderCallStackItem($t->getFile(), $t->getLine(), null, null, [], 1);
+        for ($i = 0, $trace = $t->getTrace(), $length = count($trace); $i < $length; ++$i) {
             $file = !empty($trace[$i]['file']) ? $trace[$i]['file'] : null;
             $line = !empty($trace[$i]['line']) ? $trace[$i]['line'] : null;
             $class = !empty($trace[$i]['class']) ? $trace[$i]['class'] : null;
@@ -250,20 +247,20 @@ class HtmlRenderer implements ExceptionRendererInterface
     }
 
     /**
-     * Renders the global variables of the request.
-     * List of global variables is defined in [[displayVars]].
+     * Renders the information about request.
      * @return string the rendering result
-     * @see displayVars
      */
     private function renderRequest(): string
     {
-        $request = '';
-        foreach ($this->displayVars as $name) {
-            if (!empty($GLOBALS[$name])) {
-                $request .= '$' . $name . ' = ' . VarDumper::export($GLOBALS[$name]) . ";\n\n";
-            }
+        if ($this->request === null) {
+            return '';
         }
-        return '<pre>' . $this->htmlEncode(rtrim($request, "\n")) . '</pre>';
+
+        $output = '';
+
+        // TODO: form string from PSR-7 request
+
+        return '<pre>' . $this->htmlEncode(rtrim($output, "\n")) . '</pre>';
     }
 
 
