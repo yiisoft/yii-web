@@ -60,7 +60,7 @@ final class ServerRequestFactory
             throw new \RuntimeException('Unable to determine HTTP request method.');
         }
 
-        $uri = $this->getUri($server, $headers);
+        $uri = $this->getUri($server);
 
         $request = $this->serverRequestFactory->createServerRequest($method, $uri, $server);
 
@@ -96,7 +96,7 @@ final class ServerRequestFactory
         return $request->withBody($body);
     }
 
-    private function getUri(array $server, array $headers): UriInterface
+    private function getUri(array $server): UriInterface
     {
         $uri = $this->uriFactory->createUri();
 
@@ -133,6 +133,9 @@ final class ServerRequestFactory
     {
         if (\function_exists('getallheaders')) {
             $headers = getallheaders();
+            if ($headers === false) {
+                $headers = [];
+            }
         } else {
             $headers = [];
             foreach ($_SERVER as $name => $value) {
