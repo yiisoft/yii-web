@@ -140,7 +140,7 @@ class HtmlRenderer implements ErrorRendererInterface
      */
     private function isCoreFile(?string $file): bool
     {
-        return $file === null || strpos(realpath($file), Info::getFrameworkPath() . DIRECTORY_SEPARATOR) === 0;
+        return $file === null || strpos(realpath($file), Info::frameworkPath() . DIRECTORY_SEPARATOR) === 0;
     }
 
     /**
@@ -301,6 +301,6 @@ class HtmlRenderer implements ErrorRendererInterface
      */
     public function createFrameworkVersionLink(): string
     {
-        return '<a href="http://github.com/yiisoft/yii2/" target="_blank">' . $this->htmlEncode(Info::getVersion()) . '</a>';
+        return '<a href="http://github.com/yiisoft/yii2/" target="_blank">' . $this->htmlEncode(Info::frameworkVersion()) . '</a>';
     }
 }
