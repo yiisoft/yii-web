@@ -13,7 +13,7 @@ class TagRequest implements MiddlewareInterface
 {
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $handler->handle($request->withAttribute('requestTag', $this->getRequestTag()));
+        return $handler->handle($request->withAttribute('requestTag', $this->getRequestTag()));
     }
 
     protected function getRequestTag(): string
