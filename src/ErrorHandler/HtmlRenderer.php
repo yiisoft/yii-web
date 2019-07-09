@@ -4,6 +4,7 @@ namespace Yiisoft\Yii\Web\ErrorHandler;
 
 use http\Exception\RuntimeException;
 use Yiisoft\VarDumper\VarDumper;
+use Yiisoft\Yii\Web\Info;
 
 class HtmlRenderer implements ErrorRendererInterface
 {
@@ -55,11 +56,12 @@ class HtmlRenderer implements ErrorRendererInterface
 
     /**
      * Renders the previous exception stack for a given Exception.
-     * @param \Exception $exception the exception whose precursors should be rendered.
+     * @param \Throwable $exception the exception whose precursors should be rendered.
      * @return string HTML content of the rendered previous exceptions.
      * Empty string if there are none.
+     * @throws \Throwable
      */
-    private function renderPreviousExceptions($exception)
+    private function renderPreviousExceptions(\Throwable $exception)
     {
         if (($previous = $exception->getPrevious()) !== null) {
             return $this->renderTemplate('previousException', ['exception' => $previous]);
@@ -77,7 +79,7 @@ class HtmlRenderer implements ErrorRendererInterface
      * @param int $index number of the call stack element.
      * @return string HTML content of the rendered call stack element.
      */
-    private function renderCallStackItem($file, $line, $class, $method, $args, $index): string
+    private function renderCallStackItem(string $file, ?int $line, ?string $class, ?string $method, array $args, int $index): string
     {
         $lines = [];
         $begin = $end = 0;
@@ -106,11 +108,10 @@ class HtmlRenderer implements ErrorRendererInterface
 
     /**
      * Renders call stack.
-     * @param \Exception|\ParseError $exception exception to get call stack from
+     * @param \Throwable $exception exception to get call stack from
      * @return string HTML content of the rendered call stack.
-     * @since 2.0.12
      */
-    private function renderCallStack($exception)
+    private function renderCallStack(\Throwable $exception)
     {
         $out = '<ul>';
         $out .= $this->renderCallStackItem($exception->getFile(), $exception->getLine(), null, null, [], 1);
@@ -134,22 +135,21 @@ class HtmlRenderer implements ErrorRendererInterface
      * @param string $file name to be checked.
      * @return bool whether given name of the file belongs to the framework.
      */
-    private function isCoreFile($file)
+    private function isCoreFile(?string $file): bool
     {
-        return false;
-        //return $file === null || strpos(realpath($file), YII2_PATH . DIRECTORY_SEPARATOR) === 0;
+        return $file === null || strpos(realpath($file), Info::getFrameworkPath() . DIRECTORY_SEPARATOR) === 0;
     }
 
     /**
      * Adds informational links to the given PHP type/class.
      * @param string $code type/class name to be linkified.
      * @return string linkified with HTML type/class name.
+     * @throws \ReflectionException
      */
-    private function addTypeLinks($code)
+    private function addTypeLinks(string $code): string
     {
         if (preg_match('/(.*?)::([^(]+)/', $code, $matches)) {
-            $class = $matches[1];
-            $method = $matches[2];
+            [,$class,$method] = $matches;
             $text = $this->htmlEncode($class) . '::' . $this->htmlEncode($method);
         } else {
             $class = $code;
@@ -183,13 +183,13 @@ class HtmlRenderer implements ErrorRendererInterface
      * @return string|null the informational link URL.
      * @see addTypeLinks()
      */
-    private function getTypeUrl($class, $method)
+    private function getTypeUrl(?string $class, ?string $method): ?string
     {
-        if (strncmp($class, 'yii\\', 4) !== 0) {
+        if (strncmp($class, 'Yiisoft\\', 8) !== 0) {
             return null;
         }
         $page = $this->htmlEncode(strtolower(str_replace('\\', '-', $class)));
-        $url = "http://www.yiiframework.com/doc-2.0/$page.html";
+        $url = "http://www.yiiframework.com/doc-3.0/$page.html";
         if ($method) {
             $url .= "#$method()-detail";
         }
@@ -202,7 +202,7 @@ class HtmlRenderer implements ErrorRendererInterface
      * @param array $args arguments array to be converted
      * @return string string representation of the arguments array
      */
-    private function argumentsToString($args)
+    private function argumentsToString(array $args): string
     {
         $count = 0;
         $isAssoc = $args !== array_values($args);
@@ -252,7 +252,7 @@ class HtmlRenderer implements ErrorRendererInterface
      * @return string the rendering result
      * @see displayVars
      */
-    private function renderRequest()
+    private function renderRequest(): string
     {
         $request = '';
         foreach ($this->displayVars as $name) {
@@ -269,7 +269,7 @@ class HtmlRenderer implements ErrorRendererInterface
      * and its full name.
      * @return string server software information hyperlink.
      */
-    private function createServerInformationLink()
+    private function createServerInformationLink(): string
     {
         $serverUrls = [
             'http://httpd.apache.org/' => ['apache'],
@@ -296,8 +296,8 @@ class HtmlRenderer implements ErrorRendererInterface
      * of the framework and version number text.
      * @return string framework version information hyperlink.
      */
-    public function createFrameworkVersionLink()
+    public function createFrameworkVersionLink(): string
     {
-        return '<a href="http://github.com/yiisoft/yii2/" target="_blank">' . $this->htmlEncode('3.0.0') . '</a>';
+        return '<a href="http://github.com/yiisoft/yii2/" target="_blank">' . $this->htmlEncode(Info::getVersion()) . '</a>';
     }
 }
