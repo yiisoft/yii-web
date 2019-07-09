@@ -6,7 +6,7 @@ use http\Exception\RuntimeException;
 use Yiisoft\VarDumper\VarDumper;
 use Yiisoft\Yii\Web\Info;
 
-class HtmlRenderer implements ErrorRendererInterface
+class HtmlRenderer implements ExceptionRendererInterface
 {
     // TODO expose config
     private const MAX_SOURCE_LINES = 19;

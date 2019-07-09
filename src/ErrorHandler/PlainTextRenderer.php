@@ -1,7 +1,7 @@
 <?php
 namespace Yiisoft\Yii\Web\ErrorHandler;
 
-class PlainTextRenderer implements ErrorRendererInterface
+class PlainTextRenderer implements ExceptionRendererInterface
 {
     public function render(\Throwable $e): string
     {
