@@ -75,7 +75,6 @@ class ErrorHandler
             $this->log($t);
             return $renderer->render($t);
         } catch (\Throwable $t) {
-
             return nl2br($t);
         }
     }
