@@ -1,11 +1,9 @@
 <?php
 /* @var $exception \Yiisoft\Web\HttpException|\Exception */
-/* @var $handler \Yiisoft\Web\ErrorHandler */
-if ($exception instanceof \Yiisoft\Web\HttpException) {
-    $code = $exception->statusCode;
-} else {
-    $code = $exception->getCode();
-}
+/* @var $this \Yiisoft\Yii\Web\ErrorHandler\HtmlRenderer */
+
+$code = $exception->getCode();
+
 $name = $handler->getExceptionName($exception);
 if ($name === null) {
     $name = 'Error';
