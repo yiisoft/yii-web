@@ -8,11 +8,12 @@ use Yiisoft\Yii\Web\Info;
 
 class HtmlRenderer implements ErrorRendererInterface
 {
+    // TODO expose config
     private const MAX_SOURCE_LINES = 19;
     private const MAX_TRACE_LINES = 13;
 
-    public $displayVars = ['_GET', '_POST', '_FILES', '_COOKIE', '_SESSION'];
-    public $traceLine = '{html}';
+    private $displayVars = ['_GET', '_POST', '_FILES', '_COOKIE', '_SESSION'];
+    private $traceLine = '{html}';
 
     public function render(\Throwable $e): string
     {
@@ -40,7 +41,7 @@ class HtmlRenderer implements ErrorRendererInterface
 
         $obInitialLevel = ob_get_level();
         ob_start();
-        ob_implicit_flush(false);
+        ob_implicit_flush(0);
         try {
             $renderer->bindTo($this)();
             return ob_get_clean();
@@ -78,6 +79,7 @@ class HtmlRenderer implements ErrorRendererInterface
      * @param array $args array of method arguments.
      * @param int $index number of the call stack element.
      * @return string HTML content of the rendered call stack element.
+     * @throws \Throwable
      */
     private function renderCallStackItem(string $file, ?int $line, ?string $class, ?string $method, array $args, int $index): string
     {
@@ -110,6 +112,7 @@ class HtmlRenderer implements ErrorRendererInterface
      * Renders call stack.
      * @param \Throwable $exception exception to get call stack from
      * @return string HTML content of the rendered call stack.
+     * @throws \Throwable
      */
     private function renderCallStack(\Throwable $exception)
     {
