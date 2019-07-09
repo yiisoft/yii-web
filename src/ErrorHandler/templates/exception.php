@@ -1,5 +1,6 @@
 <?php
-/* @var $exception \Exception */
+/* @var $exception \Throwable */
+/* @var $this \Yiisoft\Yii\Web\ErrorHandler\HtmlRenderer */
 ?>
 <!doctype html>
 <html lang="en">
