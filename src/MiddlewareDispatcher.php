@@ -17,7 +17,7 @@ class MiddlewareDispatcher implements RequestHandlerInterface
     /**
      * @var MiddlewareInterface[]
      */
-    private $middlewares;
+    private $middlewares = [];
 
     /**
      * @var RequestHandlerInterface
