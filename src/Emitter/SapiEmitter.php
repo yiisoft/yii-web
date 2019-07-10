@@ -30,7 +30,7 @@ class SapiEmitter implements EmitterInterface
             'HTTP/%s %d%s',
             $response->getProtocolVersion(),
             $status,
-            ($reason ? ' ' . $reason : '')
+            ($reason !== '' ? ' ' . $reason : '')
         ), true, $status);
 
         echo $response->getBody();
