@@ -4,7 +4,7 @@ namespace Yiisoft\Yii\Web\ErrorHandler;
 /**
  * Formats exception into XML string
  */
-class XmlRenderer implements ThrowableRendererInterface
+class XmlRenderer extends ThrowableRenderer
 {
     public function render(\Throwable $t): string
     {
