@@ -28,7 +28,7 @@ abstract class ThrowableRenderer implements ThrowableRendererInterface
      */
     protected $request;
 
-    protected function getThrowableName(\Throwable $t)
+    protected function getThrowableName(\Throwable $t): string
     {
         $name = get_class($t);
 
