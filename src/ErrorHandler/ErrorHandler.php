@@ -101,7 +101,7 @@ class ErrorHandler
      */
     public function register(): void
     {
-        ini_set('display_errors', false);
+        $this->disableDisplayErrors();
         set_exception_handler([$this, 'handleThrowable']);
         set_error_handler([$this, 'handleError']);
 
@@ -109,6 +109,13 @@ class ErrorHandler
             $this->memoryReserve = str_repeat('x', $this->memoryReserveSize);
         }
         register_shutdown_function([$this, 'handleFatalError']);
+    }
+
+    private function disableDisplayErrors(): void
+    {
+        if (function_exists('ini_set')) {
+            ini_set('display_errors', '0');
+        }
     }
 
     /**
