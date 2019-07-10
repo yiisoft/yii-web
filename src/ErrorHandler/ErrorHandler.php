@@ -131,7 +131,7 @@ class ErrorHandler
     {
         unset($this->memoryReserve);
         $error = error_get_last();
-        if ($this->isFatalError($error)) {
+        if ($error !== null && $this->isFatalError($error)) {
             $exception = new \ErrorException($error['message'], 0, $error['type'], $error['file'], $error['line']);
             $this->handleThrowable($exception);
             exit(1);
