@@ -129,7 +129,7 @@ class ErrorHandler
 
     public function handleFatalError(): void
     {
-        unset($this->_memoryReserve);
+        unset($this->memoryReserve);
         $error = error_get_last();
         if ($this->isFatalError($error)) {
             $exception = new \ErrorException($error['message'], 0, $error['type'], $error['file'], $error['line']);
