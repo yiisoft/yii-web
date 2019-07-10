@@ -143,18 +143,19 @@ class HtmlRenderer extends ThrowableRenderer
     /**
      * Adds informational links to the given PHP type/class.
      * @param string $code type/class name to be linkified.
+     * @param string $title custom title to use
      * @return string linkified with HTML type/class name.
      * @throws \ReflectionException
      */
-    private function addTypeLinks(string $code): string
+    private function addTypeLinks(string $code, string $title = null): string
     {
         if (preg_match('/(.*?)::([^(]+)/', $code, $matches)) {
             [,$class,$method] = $matches;
-            $text = $this->htmlEncode($class) . '::' . $this->htmlEncode($method);
+            $text = $title ? $this->htmlEncode($title) : $this->htmlEncode($class) . '::' . $this->htmlEncode($method);
         } else {
             $class = $code;
             $method = null;
-            $text = $this->htmlEncode($class);
+            $text = $title ? $this->htmlEncode($title) : $this->htmlEncode($class);
         }
         $url = null;
         $shouldGenerateLink = true;
