@@ -78,7 +78,7 @@ class HtmlRenderer extends ThrowableRenderer
      * @return string HTML content of the rendered call stack element.
      * @throws \Throwable
      */
-    private function renderCallStackItem(string $file, ?int $line, ?string $class, ?string $method, array $args, int $index): string
+    private function renderCallStackItem(?string $file, ?int $line, ?string $class, ?string $method, array $args, int $index): string
     {
         $lines = [];
         $begin = $end = 0;
