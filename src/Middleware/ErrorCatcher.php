@@ -42,7 +42,9 @@ class ErrorCatcher implements MiddlewareInterface
     private function handleException(\Throwable $e, ServerRequestInterface $request): ResponseInterface
     {
         $contentType = $this->getContentType($request);
-        $content = $this->errorHandler->handleCaughtThrowable($e, $this->getRenderer($contentType));
+        $renderer = $this->getRenderer($contentType);
+        $renderer->setRequest($request);
+        $content = $this->errorHandler->handleCaughtThrowable($e, $renderer);
 
         $response = $this->responseFactory->createResponse(500)
             ->withHeader('Content-type', $contentType);

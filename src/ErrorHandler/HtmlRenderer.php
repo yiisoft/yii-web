@@ -256,9 +256,23 @@ class HtmlRenderer extends ThrowableRenderer
             return '';
         }
 
+        $request = $this->request;
+
         $output = '';
 
-        // TODO: form string from PSR-7 request
+        $output .= $request->getMethod() . ' ' .  $request->getUri() . "\n\n";
+
+        foreach ($request->getHeaders() as $name => $values) {
+            if ($name === 'Host') {
+                continue;
+            }
+
+            foreach ($values as $value) {
+                $output .= "$name = $value\n";
+            }
+        }
+
+        $output .= "\n" . $request->getBody()->getContents() . "\n\n";
 
         return '<pre>' . $this->htmlEncode(rtrim($output, "\n")) . '</pre>';
     }
