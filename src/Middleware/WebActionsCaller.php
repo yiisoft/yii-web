@@ -19,7 +19,7 @@ use Yiisoft\Injector\Injector;
  * Route::anyMethod('/test/{action:\w+}')->to(new WebActionsCaller(TestController::class, $container)),
  * ```
  */
-class WebActionsCaller implements MiddlewareInterface
+final class WebActionsCaller implements MiddlewareInterface
 {
     private $class;
     private $container;

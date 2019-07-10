@@ -7,7 +7,7 @@ use Psr\Http\Message\ResponseInterface;
 /**
  * SapiEmitter sends a response using PHP Server API
  */
-class SapiEmitter implements EmitterInterface
+final class SapiEmitter implements EmitterInterface
 {
     public function emit(ResponseInterface $response): bool
     {

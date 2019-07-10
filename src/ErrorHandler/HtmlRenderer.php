@@ -4,7 +4,7 @@ namespace Yiisoft\Yii\Web\ErrorHandler;
 use Yiisoft\VarDumper\VarDumper;
 use Yiisoft\Yii\Web\Info;
 
-class HtmlRenderer extends ThrowableRenderer
+final class HtmlRenderer extends ThrowableRenderer
 {
     // TODO expose config
     private $maxSourceLines = 19;

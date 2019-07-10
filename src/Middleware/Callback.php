@@ -24,7 +24,7 @@ use Yiisoft\Injector\Injector;
  *
  * @see MiddlewareInterface
  */
-class Callback implements MiddlewareInterface
+final class Callback implements MiddlewareInterface
 {
     /**
      * @var callable a PHP callback matching signature of [[MiddlewareInterface::process()]].

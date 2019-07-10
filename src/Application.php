@@ -9,7 +9,7 @@ use Yiisoft\Yii\Web\ErrorHandler\ErrorHandler;
  *
  * For more details and usage information on Application, see the [guide article on applications](guide:structure-applications).
  */
-class Application
+final class Application
 {
     /**
      * @var ServerRequestFactory

@@ -9,7 +9,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 /**
  * Tags request with a random value that could be later used for identifying it.
  */
-class TagRequest implements MiddlewareInterface
+final class TagRequest implements MiddlewareInterface
 {
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {

@@ -4,7 +4,7 @@ namespace Yiisoft\Yii\Web\ErrorHandler;
 
 use Psr\Log\LoggerInterface;
 
-class ErrorHandler
+final class ErrorHandler
 {
     /**
      * @var int the size of the reserved memory. A portion of memory is pre-allocated so that
