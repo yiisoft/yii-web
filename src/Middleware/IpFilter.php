@@ -7,7 +7,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-class IpFilter implements MiddlewareInterface
+final class IpFilter implements MiddlewareInterface
 {
     private $allowedIp;
     private $responseFactory;

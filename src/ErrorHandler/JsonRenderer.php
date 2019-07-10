@@ -4,7 +4,7 @@ namespace Yiisoft\Yii\Web\ErrorHandler;
 /**
  * Formats exception into JSON string
  */
-class JsonRenderer extends ThrowableRenderer
+final class JsonRenderer extends ThrowableRenderer
 {
     public function render(\Throwable $t): string
     {

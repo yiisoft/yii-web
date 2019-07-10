@@ -12,7 +12,7 @@ use Psr\Http\Message\ResponseInterface;
  * Use if you need to execute middlewares before or after the middleware
  * you already have.
  */
-class Chain implements MiddlewareInterface
+final class Chain implements MiddlewareInterface
 {
     private $middlewares;
 

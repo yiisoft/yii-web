@@ -18,7 +18,7 @@ use Yiisoft\Yii\Web\ErrorHandler\XmlRenderer;
  * ErrorCatcher catches all throwables from the next middlewares and renders it
  * accoring to the content type passed by the client.
  */
-class ErrorCatcher implements MiddlewareInterface
+final class ErrorCatcher implements MiddlewareInterface
 {
     private $responseFactory;
     private $errorHandler;

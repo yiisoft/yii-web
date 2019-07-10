@@ -14,7 +14,7 @@ use Yiisoft\Injector\Injector;
  * Dependencies are automatically injected into both method
  * and constructor based on types specified.
  */
-class ActionCaller implements MiddlewareInterface
+final class ActionCaller implements MiddlewareInterface
 {
     private $class;
     private $method;

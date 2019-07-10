@@ -6,7 +6,7 @@ use Psr\Http\Message\ResponseInterface;
 /**
  * Cookie helps adding Set-Cookie header response in order to set cookie
  */
-class Cookie
+final class Cookie
 {
     /**
      * SameSite policy Lax will prevent the cookie from being sent by the browser in all cross-site browsing context

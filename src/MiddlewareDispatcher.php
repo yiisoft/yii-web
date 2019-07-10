@@ -12,7 +12,7 @@ use Yiisoft\Yii\Web\Middleware\Callback;
 /**
  * MiddlewareDispatcher
  */
-class MiddlewareDispatcher implements RequestHandlerInterface
+final class MiddlewareDispatcher implements RequestHandlerInterface
 {
     /**
      * @var MiddlewareInterface[]
