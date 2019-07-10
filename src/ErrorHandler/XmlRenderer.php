@@ -8,7 +8,7 @@ class XmlRenderer extends ThrowableRenderer
 {
     public function render(\Throwable $t): string
     {
-        $out = '<' . '?xml version="1.0" encoding="UTF-8" standalone="yes" ?' . ">\n";
+        $out = '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>';
         $out .= "<error>\n";
         $out .= $this->tag('type', get_class($t));
         $out .= $this->tag('message', $this->cdata($t->getMessage()));

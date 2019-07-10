@@ -41,10 +41,9 @@ abstract class ThrowableRenderer implements ThrowableRendererInterface
 
     protected function convertThrowableToVerboseString(\Throwable $t): string
     {
-        $message = $this->getThrowableName($t) . " with message '{$t->getMessage()}' \n\nin "
+        return $this->getThrowableName($t) . " with message '{$t->getMessage()}' \n\nin "
             . $t->getFile() . ':' . $t->getLine() . "\n\n"
             . "Stack trace:\n" . $t->getTraceAsString();
-        return $message;
     }
 
     public function setRequest(ServerRequestInterface $request): void
