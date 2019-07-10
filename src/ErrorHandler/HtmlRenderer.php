@@ -31,7 +31,7 @@ final class HtmlRenderer extends ThrowableRenderer
             throw new \RuntimeException("$template not found at $path");
         }
 
-        $renderer = function () use ($path, $params) {
+        $renderer = function () use ($path, $params): void {
             extract($params, EXTR_OVERWRITE);
             require $path;
         };
@@ -59,7 +59,7 @@ final class HtmlRenderer extends ThrowableRenderer
      * Empty string if there are none.
      * @throws \Throwable
      */
-    private function renderPreviousExceptions(\Throwable $t)
+    private function renderPreviousExceptions(\Throwable $t): string
     {
         if (($previous = $t->getPrevious()) !== null) {
             return $this->renderTemplate('previousException', ['throwable' => $previous]);
@@ -111,7 +111,7 @@ final class HtmlRenderer extends ThrowableRenderer
      * @return string HTML content of the rendered call stack.
      * @throws \Throwable
      */
-    private function renderCallStack(\Throwable $t)
+    private function renderCallStack(\Throwable $t): string
     {
         $out = '<ul>';
         $out .= $this->renderCallStackItem($t->getFile(), $t->getLine(), null, null, [], 1);

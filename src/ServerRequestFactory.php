@@ -169,7 +169,7 @@ final class ServerRequestFactory
      * @param mixed $sizes file sizes provided by PHP
      * @param mixed $errors uploading issues provided by PHP
      */
-    private function populateUploadedFileRecursive(&$files, $names, $tempNames, $types, $sizes, $errors): void
+    private function populateUploadedFileRecursive(array &$files, $names, $tempNames, $types, $sizes, $errors): void
     {
         if (\is_array($names)) {
             foreach ($names as $i => $name) {
