@@ -7,7 +7,8 @@ use Yiisoft\Yii\Web\ErrorHandler\ThrowableRendererInterface;
 return [
     Aliases::class => [
         '__class'   => Aliases::class,
-        '@root'     => dirname(__DIR__, 2),
+        // @root needs to be redefined in the application config
+        '@root'     => dirname(__DIR__),
         '@vendor'   => '@root/vendor',
         '@public'   => '@root/public',
         '@runtime'  => '@root/runtime',
