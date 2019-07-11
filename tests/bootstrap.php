@@ -1,8 +1,4 @@
 <?php
-use hiqdev\composer\config\Builder;
-use yii\helpers\Yii;
-use Yiisoft\Di\Container;
-
 // ensure we get report on all possible php errors
 error_reporting(E_ALL);
 
@@ -16,8 +12,4 @@ $_SERVER['SCRIPT_FILENAME'] = __FILE__;
     }
 
     require_once $composerAutoload;
-
-    $container = new Container(require Builder::path('tests'));
-
-    Yii::setContainer($container);
 })();
