@@ -1,6 +1,5 @@
 <?php
 use Yiisoft\Aliases\Aliases;
-use Yiisoft\Yii\Web\Application;
 use Yiisoft\Yii\Web\ErrorHandler\HtmlRenderer;
 use Yiisoft\Yii\Web\ErrorHandler\ThrowableRendererInterface;
 
@@ -15,10 +14,6 @@ return [
         '@bower'    => '@vendor/bower-asset',
         '@npm'      => '@vendor/npm-asset',
         '@web' => '/',
-    ],
-
-    'app' => [
-        '__class' => Application::class,
     ],
 
     ThrowableRendererInterface::class => HtmlRenderer::class,
