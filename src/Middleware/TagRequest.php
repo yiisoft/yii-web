@@ -16,7 +16,7 @@ final class TagRequest implements MiddlewareInterface
         return $handler->handle($request->withAttribute('requestTag', $this->getRequestTag()));
     }
 
-    protected function getRequestTag(): string
+    private function getRequestTag(): string
     {
         return dechex(microtime(true) * 1000000);
     }
