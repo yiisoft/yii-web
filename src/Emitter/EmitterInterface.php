@@ -9,6 +9,8 @@ use Psr\Http\Message\ResponseInterface;
  */
 interface EmitterInterface
 {
+    public function withoutBody(): self;
+
     /**
      * @param ResponseInterface $response
      * @return bool whether the response have been outputted successfully
