@@ -37,6 +37,14 @@ final class SapiEmitter implements EmitterInterface
         ), true, $status);
 
         if ($this->shouldOutputBody($response)) {
+            $contentLength = $response->getBody()->getSize();
+            if ($response->hasHeader('Content-Length')) {
+                $contentLengthHeader = $response->getHeader('Content-Length');
+                $contentLength = array_shift($contentLengthHeader);
+            }
+
+            header(sprintf('Content-Length: %s', $contentLength), true, $status);
+
             echo $response->getBody();
         }
 
