@@ -9,7 +9,9 @@ use Psr\Http\Message\ResponseInterface;
  */
 final class SapiEmitter implements EmitterInterface
 {
-    private $withoutBody = false;
+    private const NO_BODY_RESPONSE_CODES = [204, 205, 304];
+
+    private $shouldOutputBody = true;
 
     public function emit(ResponseInterface $response): bool
     {
@@ -26,7 +28,6 @@ final class SapiEmitter implements EmitterInterface
         }
 
         $reason = $response->getReasonPhrase();
-        $status = $response->getStatusCode();
 
         header(sprintf(
             'HTTP/%s %d%s',
@@ -35,17 +36,22 @@ final class SapiEmitter implements EmitterInterface
             ($reason !== '' ? ' ' . $reason : '')
         ), true, $status);
 
-        if (!$this->withoutBody) {
+        if ($this->shouldOutputBody($response)) {
             echo $response->getBody();
         }
 
         return true;
     }
 
+    private function shouldOutputBody(ResponseInterface $response): bool
+    {
+        return $this->shouldOutputBody && !\in_array($response->getStatusCode(), self::NO_BODY_RESPONSE_CODES, true);
+    }
+
     public function withoutBody(): EmitterInterface
     {
         $new = clone $this;
-        $new->withoutBody = true;
+        $new->shouldOutputBody = false;
         return $new;
     }
 }
