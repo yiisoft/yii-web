@@ -1,6 +1,7 @@
 <?php
 namespace Yiisoft\Yii\Web;
 
+use Yiisoft\Router\Method;
 use Yiisoft\Yii\Web\Emitter\EmitterInterface;
 use Yiisoft\Yii\Web\ErrorHandler\ErrorHandler;
 
@@ -45,6 +46,12 @@ final class Application
     {
         $request = $this->requestFactory->createFromGlobals();
         $response = $this->dispatcher->handle($request);
-        return $this->emitter->emit($response);
+
+        $emitter = $this->emitter;
+        if ($request->getMethod() === Method::HEAD) {
+            $emitter = $emitter->withoutBody();
+        }
+
+        return $emitter->emit($response);
     }
 }
