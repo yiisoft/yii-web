@@ -1,6 +1,7 @@
 <?php
 namespace Yiisoft\Yii\Web\ErrorHandler;
 
+use Alexkart\CurlBuilder\Command;
 use Yiisoft\VarDumper\VarDumper;
 use Yiisoft\Yii\Web\Info;
 
@@ -276,6 +277,13 @@ final class HtmlRenderer extends ThrowableRenderer
         $output .= "\n" . $request->getBody()->getContents() . "\n\n";
 
         return '<pre>' . $this->htmlEncode(rtrim($output, "\n")) . '</pre>';
+    }
+
+    public function renderCurl(): string
+    {
+        $command = new Command();
+        $command->setUrl($this->request->getUri());
+        return $command->build();
     }
 
 
