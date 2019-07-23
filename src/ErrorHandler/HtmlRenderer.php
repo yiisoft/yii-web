@@ -1,7 +1,8 @@
 <?php
+
 namespace Yiisoft\Yii\Web\ErrorHandler;
 
-use Yiisoft\VarDumper\VarDumper;
+use Alexkart\CurlBuilder\Command;
 use Yiisoft\Yii\Web\Info;
 
 final class HtmlRenderer extends ThrowableRenderer
@@ -150,7 +151,7 @@ final class HtmlRenderer extends ThrowableRenderer
     private function addTypeLinks(string $code, string $title = null): string
     {
         if (preg_match('/(.*?)::([^(]+)/', $code, $matches)) {
-            [,$class,$method] = $matches;
+            [, $class, $method] = $matches;
             $text = $title ? $this->htmlEncode($title) : $this->htmlEncode($class) . '::' . $this->htmlEncode($method);
         } else {
             $class = $code;
@@ -261,7 +262,7 @@ final class HtmlRenderer extends ThrowableRenderer
 
         $output = '';
 
-        $output .= $request->getMethod() . ' ' .  $request->getUri() . "\n";
+        $output .= $request->getMethod() . ' ' . $request->getUri() . "\n";
 
         foreach ($request->getHeaders() as $name => $values) {
             if ($name === 'Host') {
@@ -276,6 +277,17 @@ final class HtmlRenderer extends ThrowableRenderer
         $output .= "\n" . $request->getBody() . "\n\n";
 
         return '<pre>' . $this->htmlEncode(rtrim($output, "\n")) . '</pre>';
+    }
+
+    private function renderCurl(): string
+    {
+        try {
+            $output = (new Command())->setRequest($this->request)->build();
+        } catch (\Throwable $e) {
+            $output = 'Error generating curl command: ' . $e->getMessage();
+        }
+
+        return $output;
     }
 
 
