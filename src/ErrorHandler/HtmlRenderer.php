@@ -273,7 +273,7 @@ final class HtmlRenderer extends ThrowableRenderer
             }
         }
 
-        $output .= "\n" . $request->getBody()->getContents() . "\n\n";
+        $output .= "\n" . $request->getBody() . "\n\n";
 
         return '<pre>' . $this->htmlEncode(rtrim($output, "\n")) . '</pre>';
     }
