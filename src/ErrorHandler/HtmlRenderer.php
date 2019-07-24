@@ -261,7 +261,7 @@ final class HtmlRenderer extends ThrowableRenderer
 
         $output = '';
 
-        $output .= $request->getMethod() . ' ' .  $request->getUri() . "\n\n";
+        $output .= $request->getMethod() . ' ' .  $request->getUri() . "\n";
 
         foreach ($request->getHeaders() as $name => $values) {
             if ($name === 'Host') {
@@ -269,7 +269,7 @@ final class HtmlRenderer extends ThrowableRenderer
             }
 
             foreach ($values as $value) {
-                $output .= "$name = $value\n";
+                $output .= "$name: $value\n";
             }
         }
 
