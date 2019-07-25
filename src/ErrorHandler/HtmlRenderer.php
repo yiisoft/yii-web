@@ -287,7 +287,7 @@ final class HtmlRenderer extends ThrowableRenderer
             $output = 'Error generating curl command: ' . $e->getMessage();
         }
 
-        return $output;
+        return $this->htmlEncode($output);
     }
 
 
