@@ -100,8 +100,10 @@ final class ServerRequestFactory
     {
         $uri = $this->uriFactory->createUri();
 
-        if (isset($server['HTTPS'])) {
-            $uri = $uri->withScheme($server['HTTPS'] === 'on' ? 'https' : 'http');
+        if (isset($server['HTTPS']) && !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
+            $uri = $uri->withScheme('https');
+        } else {
+            $uri = $uri->withScheme('http');
         }
 
         if (isset($server['HTTP_HOST'])) {
