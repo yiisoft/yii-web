@@ -12,6 +12,4 @@ class PhpSession implements SessionInterface
     {
         $_SESSION[$key] = $value;
     }
-
-
 }
