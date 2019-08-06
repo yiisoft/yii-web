@@ -97,6 +97,14 @@ final class Cookie
         return $new;
     }
 
+    public function validFor(\DateInterval $dateInterval): self
+    {
+        $expireDateTime = (new \DateTimeImmutable())->add($dateInterval);
+        $new = clone $this;
+        $new->expire = (int)$expireDateTime->format('U');
+        return $new;
+    }
+
     public function expireAt(\DateTimeInterface $dateTime): self
     {
         $new = clone $this;
