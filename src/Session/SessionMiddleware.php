@@ -9,22 +9,12 @@ use Yiisoft\Yii\Web\Cookie;
 
 class SessionMiddleware implements MiddlewareInterface
 {
-    private const COOKIE_NAME = 'sid';
-
-    private const LIFETIME_TWO_WEEKS = 1209600;
-
-    private $cookieTtl = self::LIFETIME_TWO_WEEKS;
-
-    /**
-     * @var SessionInterface
-     */
     private $session;
 
-    public function __construct(SessionInterface $session)
+    public function __construct(Session $session)
     {
         $this->session = $session;
     }
-
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -40,22 +30,28 @@ class SessionMiddleware implements MiddlewareInterface
 
     private function commitSession(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        if (!$this->session->isStarted()) {
+        if (!$this->session->isActive()) {
             return $response;
         }
 
-        $this->session->commit();
+        $this->session->close();
 
         $currentSid = $this->session->getID();
 
+        $cookieParameters = $this->session->getCookieParameters();
+
         // SID changed, neeed to send new cookie
         if ($this->getSidFromRequest($request) !== $currentSid) {
-            $sessionCookie = (new Cookie(self::COOKIE_NAME, $currentSid))
-                ->validFor(new \DateInterval('PT' . $this->cookieTtl . 'S'))
-                ->path('/')
-                ->domain($request->getUri()->getHost())
-                ->httpOnly(true)
-                ->secure(true);
+            $sessionCookie = (new Cookie($this->session->getName(), $currentSid))
+                ->path($cookieParameters['path'])
+                ->domain($cookieParameters['domain'] ?? $request->getUri()->getHost())
+                ->httpOnly($cookieParameters['httponly'])
+                ->secure($cookieParameters['secure'])
+                ->sameSite($cookieParameters['samesite'] ?? '');
+
+            if ($cookieParameters['lifetime'] > 0) {
+                $sessionCookie = $sessionCookie->validFor(new \DateInterval('PT' . $cookieParameters['lifetime'] . 'S'));
+            }
 
             return $sessionCookie->addToResponse($response);
         }
@@ -66,6 +62,6 @@ class SessionMiddleware implements MiddlewareInterface
     private function getSidFromRequest(ServerRequestInterface $request): ?string
     {
         $cookies = $request->getCookieParams();
-        return $cookies[self::COOKIE_NAME] ?? null;
+        return $cookies[$this->session->getName()] ?? null;
     }
 }
