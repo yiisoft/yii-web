@@ -5,7 +5,7 @@ namespace Yiisoft\Yii\Web\Session;
 /**
  * Session provides session data management and the related configurations.
  */
-class Session
+class Session implements SessionInterface
 {
     private const DEFAULT_OPTIONS = [
         'use_cookies' => 1,
@@ -34,34 +34,18 @@ class Session
         }
     }
 
-    /**
-     * Read value from session
-     *
-     * @param string $key
-     * @param mixed $default
-     * @return mixed
-     */
     public function get(string $key, $default = null)
     {
         $this->open();
         return $_SESSION[$key] ?? $default;
     }
 
-    /**
-     * Write value into session
-     *
-     * @param string $key
-     * @param mixed $value
-     */
     public function set(string $key, $value): void
     {
         $this->open();
         $_SESSION[$key] = $value;
     }
 
-    /**
-     * Write session and close it
-     */
     public function close(): void
     {
         if ($this->isActive()) {
@@ -73,9 +57,6 @@ class Session
         }
     }
 
-    /**
-     * Start sesion if it is not started yet
-     */
     public function open(): void
     {
         if ($this->isActive()) {
@@ -89,26 +70,17 @@ class Session
         }
     }
 
-    /**
-     * @return bool if session is started
-     */
     public function isActive(): bool
     {
         return session_status() === PHP_SESSION_ACTIVE;
     }
 
-    /**
-     * @return string|null current session ID or null if there is no started session
-     */
     public function getId(): ?string
     {
         $id = session_id();
         return $id === '' ? null : $id;
     }
 
-    /**
-     * Regenerate session ID keeping data
-     */
     public function regenerateId(): void
     {
         if ($this->isActive()) {
@@ -120,9 +92,6 @@ class Session
         }
     }
 
-    /**
-     * Discard session changes and close session
-     */
     public function discard(): void
     {
         if ($this->isActive()) {
@@ -130,28 +99,17 @@ class Session
         }
     }
 
-    /**
-     * @return string session name
-     */
     public function getName(): string
     {
         return session_name();
     }
 
-    /**
-     * @return array all session data
-     */
     public function all(): array
     {
         $this->open();
         return $_SESSION;
     }
 
-    /**
-     * Remove value from session
-     *
-     * @param string $key
-     */
     public function remove(string $key): void
     {
         $this->open();
@@ -163,24 +121,12 @@ class Session
         return null;
     }
 
-    /**
-     * Check if session has a value with a given key
-     *
-     * @param string $key
-     * @return bool
-     */
     public function has(string $key): bool
     {
         $this->open();
         return isset($_SESSION[$key]);
     }
 
-    /**
-     * Read value and remove it afterwards
-     *
-     * @param string $key
-     * @return mixed
-     */
     public function pull(string $key)
     {
         $value = $this->get($key);
@@ -188,18 +134,12 @@ class Session
         return $value;
     }
 
-    /**
-     * Remove session data from runtime
-     */
     public function clear(): void
     {
         $this->open();
         $_SESSION = [];
     }
 
-    /**
-     * Remove session data from runtime and session storage
-     */
     public function destroy(): void
     {
         if ($this->isActive()) {

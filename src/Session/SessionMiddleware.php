@@ -11,7 +11,7 @@ class SessionMiddleware implements MiddlewareInterface
 {
     private $session;
 
-    public function __construct(Session $session)
+    public function __construct(SessionInterface $session)
     {
         $this->session = $session;
     }
