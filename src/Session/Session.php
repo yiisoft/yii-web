@@ -114,11 +114,8 @@ class Session implements SessionInterface
     {
         $this->open();
         if (isset($_SESSION[$key])) {
-            $value = $_SESSION[$key];
             unset($_SESSION[$key]);
-            return $value;
         }
-        return null;
     }
 
     public function has(string $key): bool
