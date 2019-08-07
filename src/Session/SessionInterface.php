@@ -2,7 +2,6 @@
 
 namespace Yiisoft\Yii\Web\Session;
 
-
 interface SessionInterface
 {
     /**
