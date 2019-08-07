@@ -41,12 +41,23 @@ class SessionMiddleware implements MiddlewareInterface
         // SID changed, neeed to send new cookie
         if ($this->getSidFromRequest($request) !== $currentSid) {
             $cookieParameters = $this->session->getCookieParameters();
+
+            $cookieDomain = $cookieParameters['domain'];
+            if (empty($cookieDomain)) {
+                $cookieDomain = $request->getUri()->getHost();
+            }
+
+            $useSecureCookie = $cookieParameters['secure'];
+            if ($useSecureCookie && $request->getUri()->getScheme() !== 'https') {
+                throw new SessionException('"cookie_secure" is on but connection is not secure. Either set Session "cookie_secure" option to "0" or make connection secure');
+            }
+
             $sessionCookie = (new Cookie($this->session->getName(), $currentSid))
                 ->path($cookieParameters['path'])
-                ->domain($cookieParameters['domain'] ?? $request->getUri()->getHost())
+                ->domain($cookieDomain)
                 ->httpOnly($cookieParameters['httponly'])
-                ->secure($cookieParameters['secure'])
-                ->sameSite($cookieParameters['samesite'] ?? '');
+                ->secure($useSecureCookie)
+                ->sameSite($cookieParameters['samesite'] ?? Cookie::SAME_SITE_LAX);
 
             if ($cookieParameters['lifetime'] > 0) {
                 $sessionCookie = $sessionCookie->validFor(new \DateInterval('PT' . $cookieParameters['lifetime'] . 'S'));
