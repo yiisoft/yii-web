@@ -38,10 +38,9 @@ class SessionMiddleware implements MiddlewareInterface
 
         $currentSid = $this->session->getID();
 
-        $cookieParameters = $this->session->getCookieParameters();
-
         // SID changed, neeed to send new cookie
         if ($this->getSidFromRequest($request) !== $currentSid) {
+            $cookieParameters = $this->session->getCookieParameters();
             $sessionCookie = (new Cookie($this->session->getName(), $currentSid))
                 ->path($cookieParameters['path'])
                 ->domain($cookieParameters['domain'] ?? $request->getUri()->getHost())
