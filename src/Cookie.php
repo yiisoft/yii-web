@@ -45,9 +45,9 @@ final class Cookie
 
     /**
      * @var int the timestamp at which the cookie expires. This is the server timestamp.
-     * Defaults to null, meaning "until the browser is closed".
+     * Defaults to 0, meaning "until the browser is closed".
      */
-    private $expire;
+    private $expire = 0;
 
     /**
      * @var string the path on the server in which the cookie will be available on. The default is '/'.
@@ -156,22 +156,22 @@ final class Cookie
         $headerValue = $this->name . '=' . urlencode($this->value);
 
         if ($this->expire !== 0) {
-            $headerValue .= '; expires=' . gmdate('D, d-M-Y H:i:s T', $this->expire);
+            $headerValue .= '; Expires=' . gmdate('D, d-M-Y H:i:s T', $this->expire);
         }
         if (empty($this->path) === false) {
-            $headerValue .= '; path=' . $this->path;
+            $headerValue .= '; Path=' . $this->path;
         }
         if (empty($this->domain) === false) {
-            $headerValue .= '; domain=' . $this->domain;
+            $headerValue .= '; Domain=' . $this->domain;
         }
         if ($this->secure) {
-            $headerValue .= '; secure';
+            $headerValue .= '; Secure';
         }
         if ($this->httpOnly) {
-            $headerValue .= '; httponly';
+            $headerValue .= '; HttpOnly';
         }
         if ($this->sameSite !== '') {
-            $headerValue .= '; samesite=' . $this->sameSite;
+            $headerValue .= '; SameSite=' . $this->sameSite;
         }
 
         return $response->withAddedHeader('Set-Cookie', $headerValue);
