@@ -12,11 +12,14 @@ class Session implements SessionInterface
         'cookie_secure' => 1,
         'use_only_cookies' => 1,
         'cookie_httponly' => 1,
-        'strict_mode' => 1,
+        'use_strict_mode' => 1,
         'sid_bits_per_character' => 6,
         'sid_length' => 48,
-        'cookie_samesite' => 'Lax',
         'cache_limiter' => 'nocache',
+    ];
+
+    private const DEFAULT_OPTIONS_73 = [
+        'cookie_samesite' => 'Lax',
     ];
 
     private $options;
@@ -27,7 +30,11 @@ class Session implements SessionInterface
             session_set_save_handler($handler);
         }
 
-        $this->options = array_merge(self::DEFAULT_OPTIONS, $options);
+        $defaultOptions = self::DEFAULT_OPTIONS;
+        if (PHP_VERSION_ID >= 73000) {
+            $defaultOptions = array_merge($defaultOptions, self::DEFAULT_OPTIONS_73);
+        }
+        $this->options = array_merge($defaultOptions, $options);
 
         if ($this->isActive()) {
             throw new \RuntimeException('Session is already started');
