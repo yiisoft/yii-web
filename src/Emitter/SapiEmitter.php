@@ -17,6 +17,7 @@ final class SapiEmitter implements EmitterInterface
     {
         $status = $response->getStatusCode();
 
+        header_remove();
         foreach ($response->getHeaders() as $header => $values) {
             foreach ($values as $value) {
                 header(sprintf(
