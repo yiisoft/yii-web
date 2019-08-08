@@ -92,52 +92,52 @@ final class Cookie
 
     public function domain(string $domain): self
     {
-        $new = clone $this;
-        $new->domain = $domain;
-        return $new;
+        $cookie = clone $this;
+        $cookie->domain = $domain;
+        return $cookie;
     }
 
     public function validFor(\DateInterval $dateInterval): self
     {
         $expireDateTime = (new \DateTimeImmutable())->add($dateInterval);
-        $new = clone $this;
-        $new->expire = (int)$expireDateTime->format('U');
-        return $new;
+        $cookie = clone $this;
+        $cookie->expire = (int)$expireDateTime->format('U');
+        return $cookie;
     }
 
     public function expireAt(\DateTimeInterface $dateTime): self
     {
-        $new = clone $this;
-        $new->expire = (int)$dateTime->format('U');
-        return $new;
+        $cookie = clone $this;
+        $cookie->expire = (int)$dateTime->format('U');
+        return $cookie;
     }
 
     public function expireWhenBrowserIsClosed(): self
     {
-        $new = clone $this;
-        $new->expire = null;
-        return $new;
+        $cookie = clone $this;
+        $cookie->expire = null;
+        return $cookie;
     }
 
     public function path(string $path): self
     {
-        $new = clone $this;
-        $new->path = $path;
-        return $new;
+        $cookie = clone $this;
+        $cookie->path = $path;
+        return $cookie;
     }
 
     public function secure(bool $secure): self
     {
-        $new = clone $this;
-        $new->secure = $secure;
-        return $new;
+        $cookie = clone $this;
+        $cookie->secure = $secure;
+        return $cookie;
     }
 
     public function httpOnly(bool $httpOnly): self
     {
-        $new = clone $this;
-        $new->httpOnly = $httpOnly;
-        return $new;
+        $cookie = clone $this;
+        $cookie->httpOnly = $httpOnly;
+        return $cookie;
     }
 
     public function sameSite(string $sameSite): self
@@ -146,9 +146,9 @@ final class Cookie
             throw new \InvalidArgumentException('sameSite should be either Lax or Strict');
         }
 
-        $new = clone $this;
-        $new->sameSite = $sameSite;
-        return $new;
+        $cookie = clone $this;
+        $cookie->sameSite = $sameSite;
+        return $cookie;
     }
 
     public function addToResponse(ResponseInterface $response): ResponseInterface
