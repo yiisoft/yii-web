@@ -15,6 +15,4 @@ class AutoLoginMiddleware
     {
         $this->user = $user;
     }
-
-
 }
