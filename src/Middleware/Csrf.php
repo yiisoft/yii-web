@@ -39,7 +39,7 @@ final class Csrf implements MiddlewareInterface
 
         try {
             $response = $handler->handle($request);
-            $response = $this->addToResponse($response, $token);
+            $response = $this->addTokenToResponse($response, $token);
         } catch (\Throwable $e) {
             throw new $e;
         }
@@ -47,7 +47,7 @@ final class Csrf implements MiddlewareInterface
         return $this->validateCsrfToken($request, $response);
     }
 
-    private function addToResponse(ResponseInterface $response, $token): ResponseInterface
+    private function addTokenToResponse(ResponseInterface $response, $token): ResponseInterface
     {
 
         if ($this->enableCookie) {
