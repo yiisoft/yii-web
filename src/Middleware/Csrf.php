@@ -87,7 +87,7 @@ final class Csrf implements MiddlewareInterface
         }
 
         $unmaskedToken = $this->getTokenFromRequest($request);
-        if ($trueToken !== $unmaskedToken) {
+        if (empty($unmaskedToken) || $trueToken !== $unmaskedToken) {
             $response = $this->responseFactory->createResponse(400);
             $response->getBody()->write('Unable to verify your data submission.');
             return $response;
@@ -96,11 +96,11 @@ final class Csrf implements MiddlewareInterface
         return $response;
     }
 
-    private function getTokenFromRequest(ServerRequestInterface $request)
+    private function getTokenFromRequest(ServerRequestInterface $request): ?string
     {
         $post = $request->getParsedBody();
-        $token = null;
 
+        $token = null;
         if (isset($post[$this->name])) {
             $token = $post[$this->name];
         }
@@ -109,6 +109,7 @@ final class Csrf implements MiddlewareInterface
             $headers = $request->getHeader(self::CSRF_HEADER);
             $token = \reset($headers);
         }
+
         return TokenMasker::unmask($token);
     }
 }
