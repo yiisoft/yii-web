@@ -32,15 +32,22 @@ final class Csrf implements MiddlewareInterface
     {
         $token = $this->getCsrfToken($request);
 
+        if (!$this->validateCsrfToken($request, $token)) {
+            $response = $this->responseFactory->createResponse(400);
+            $response->getBody()->write('Unable to verify your data submission.');
+            return $response;
+        }
+
         if (empty($token)) {
             $token = Random::string();
         }
+
         $request = $request->withAttribute('csrf_token', TokenMasker::mask($token));
 
         $response = $handler->handle($request);
         $response = $this->addTokenToResponse($response, $token);
 
-        return $this->validateCsrfToken($request, $response);
+        return $response;
     }
 
     public function setName($name)
@@ -74,23 +81,22 @@ final class Csrf implements MiddlewareInterface
         return $cookies[$this->name] ?? null;
     }
 
-    private function validateCsrfToken(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    private function validateCsrfToken(ServerRequestInterface $request, ?string $trueToken): bool
     {
-        $trueToken = $this->getCsrfToken($request);
         $method = $request->getMethod();
 
         if (\in_array($method, [Method::GET, Method::HEAD, Method::OPTIONS], true)) {
-            return $response;
+            return true;
         }
 
         $unmaskedToken = $this->getTokenFromRequest($request);
+
         if (empty($unmaskedToken) || !hash_equals($unmaskedToken, $trueToken)) {
-            $response = $this->responseFactory->createResponse(400);
-            $response->getBody()->write('Unable to verify your data submission.');
-            return $response;
+
+            return false;
         }
 
-        return $response;
+        return true;
     }
 
     private function getTokenFromRequest(ServerRequestInterface $request): ?string
