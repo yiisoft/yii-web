@@ -87,7 +87,7 @@ final class Csrf implements MiddlewareInterface
         }
 
         $unmaskedToken = $this->getTokenFromRequest($request);
-        if (empty($unmaskedToken) || $trueToken !== $unmaskedToken) {
+        if (empty($unmaskedToken) || !hash_equals($unmaskedToken, $trueToken)) {
             $response = $this->responseFactory->createResponse(400);
             $response->getBody()->write('Unable to verify your data submission.');
             return $response;
