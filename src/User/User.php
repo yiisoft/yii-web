@@ -323,7 +323,7 @@ class User
      */
     protected function renewAuthStatus(): void
     {
-        $id = $this->session->getId() !== null || $this->session->isActive() ? $this->session->get(self::SESSION_AUTH_ID) : null;
+        $id = $this->session->get(self::SESSION_AUTH_ID);
         if ($id === null) {
             $identity = new GuestIdentity();
         } else {
