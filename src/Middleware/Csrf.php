@@ -50,17 +50,17 @@ final class Csrf implements MiddlewareInterface
         return $response;
     }
 
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function setCookieParams($params)
+    public function setCookieParams(array $params): void
     {
         $this->cookieParams = $params;
     }
 
-    private function addTokenToResponse(ResponseInterface $response, $token): ResponseInterface
+    private function addTokenToResponse(ResponseInterface $response, string $token): ResponseInterface
     {
 
         $cookieParameters = \array_merge($this->session->getCookieParameters(), $this->cookieParams);
