@@ -74,6 +74,9 @@ final class MiddlewareDispatcher implements RequestHandlerInterface
         return $this->middlewares[$this->pointer++]->process($request, $this);
     }
 
+    /**
+     * Prepare dispatcher to handle another request
+     */
     public function reset(): void
     {
         $this->pointer = 0;
