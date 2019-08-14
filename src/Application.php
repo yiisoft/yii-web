@@ -39,12 +39,7 @@ final class Application
     public function handle(ServerRequestInterface $request): bool
     {
         $response = $this->dispatcher->handle($request);
-
-        $emitter = $this->emitter;
-        if ($request->getMethod() === Method::HEAD) {
-            $emitter = $emitter->withoutBody();
-        }
-
-        return $emitter->emit($response);
+        $this->dispatcher->reset();
+        return $this->emitter->emit($response, $request->getMethod() === Method::HEAD);
     }
 }

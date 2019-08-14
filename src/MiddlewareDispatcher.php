@@ -14,6 +14,8 @@ use Yiisoft\Yii\Web\Middleware\Callback;
  */
 final class MiddlewareDispatcher implements RequestHandlerInterface
 {
+    private $pointer = 0;
+
     /**
      * @var MiddlewareInterface[]
      */
@@ -65,10 +67,15 @@ final class MiddlewareDispatcher implements RequestHandlerInterface
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         // Last middleware in the queue has been called on the request handler
-        if (\count($this->middlewares) === 0) {
+        if ($this->pointer === \count($this->middlewares)) {
             return $this->fallbackHandler->handle($request);
         }
 
-        return array_shift($this->middlewares)->process($request, $this);
+        return $this->middlewares[$this->pointer++]->process($request, $this);
+    }
+
+    public function reset(): void
+    {
+        $this->pointer = 0;
     }
 }
