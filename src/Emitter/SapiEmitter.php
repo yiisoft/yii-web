@@ -11,9 +11,7 @@ final class SapiEmitter implements EmitterInterface
 {
     private const NO_BODY_RESPONSE_CODES = [204, 205, 304];
 
-    private $shouldOutputBody = true;
-
-    public function emit(ResponseInterface $response): bool
+    public function emit(ResponseInterface $response, bool $withoutBody = false): bool
     {
         $status = $response->getStatusCode();
 
@@ -37,7 +35,7 @@ final class SapiEmitter implements EmitterInterface
             ($reason !== '' ? ' ' . $reason : '')
         ), true, $status);
 
-        if ($this->shouldOutputBody($response)) {
+        if ($withoutBody === false && $this->shouldOutputBody($response)) {
             $contentLength = $response->getBody()->getSize();
             if ($response->hasHeader('Content-Length')) {
                 $contentLengthHeader = $response->getHeader('Content-Length');
@@ -54,13 +52,6 @@ final class SapiEmitter implements EmitterInterface
 
     private function shouldOutputBody(ResponseInterface $response): bool
     {
-        return $this->shouldOutputBody && !\in_array($response->getStatusCode(), self::NO_BODY_RESPONSE_CODES, true);
-    }
-
-    public function withoutBody(): EmitterInterface
-    {
-        $new = clone $this;
-        $new->shouldOutputBody = false;
-        return $new;
+        return !\in_array($response->getStatusCode(), self::NO_BODY_RESPONSE_CODES, true);
     }
 }
