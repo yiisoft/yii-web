@@ -18,6 +18,7 @@ final class Csrf implements MiddlewareInterface
     public const CSRF_HEADER = 'X-CSRF-Token';
 
     private $name = '_csrf';
+    private $requestParam = 'csrf_token';
     private $cookieParams = ['httpOnly' => true];
     private $responseFactory;
     private $session;
@@ -40,7 +41,7 @@ final class Csrf implements MiddlewareInterface
             return $response;
         }
 
-        $request = $request->withAttribute('csrf_token', TokenMasker::mask($token));
+        $request = $request->withAttribute($this->requestParam, TokenMasker::mask($token));
 
         $response = $handler->handle($request);
         $response = $this->addTokenToResponse($response, $token);
@@ -51,6 +52,11 @@ final class Csrf implements MiddlewareInterface
     public function setName(string $name): void
     {
         $this->name = $name;
+    }
+
+    public function setRequestParam(string $name): void
+    {
+        $this->requestParam = $name;
     }
 
     public function setCookieParams(array $params): void
