@@ -9,11 +9,10 @@ use Psr\Http\Message\ResponseInterface;
  */
 interface EmitterInterface
 {
-    public function withoutBody(): self;
-
     /**
      * @param ResponseInterface $response
+     * @param bool $withoutBody if body should be omitted
      * @return bool whether the response have been outputted successfully
      */
-    public function emit(ResponseInterface $response): bool;
+    public function emit(ResponseInterface $response, bool $withoutBody = false): bool;
 }
