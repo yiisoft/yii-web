@@ -10,16 +10,16 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Router\Method;
 use Yiisoft\Security\Random;
 use Yiisoft\Security\TokenMasker;
-use Yiisoft\Yii\Web\Cookie;
 use Yiisoft\Yii\Web\Session\SessionInterface;
 
 final class Csrf implements MiddlewareInterface
 {
-    public const CSRF_HEADER = 'X-CSRF-Token';
+    public const HEADER_NAME = 'X-CSRF-Token';
+    public const SESSION_NAME = '_csrf';
+    public const REQUEST_NAME = 'csrf_token';
 
-    private $name = '_csrf';
-    private $requestParam = 'csrf_token';
-    private $cookieParams = ['httpOnly' => true];
+    private $name = self::SESSION_NAME;
+    private $requestParam = self::REQUEST_NAME;
     private $responseFactory;
     private $session;
 
@@ -31,7 +31,7 @@ final class Csrf implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $token = $this->getCsrfToken($request);
+        $token = $this->getToken();
 
         if (!$this->validateCsrfToken($request, $token)) {
             $this->session->remove($this->name);
@@ -41,10 +41,10 @@ final class Csrf implements MiddlewareInterface
             return $response;
         }
 
-        $request = $request->withAttribute($this->requestParam, TokenMasker::mask($token));
+        $this->session->set($this->name, $token);
 
+        $request = $request->withAttribute($this->requestParam, TokenMasker::mask($token));
         $response = $handler->handle($request);
-        $response = $this->addTokenToResponse($response, $token);
 
         return $response;
     }
@@ -59,30 +59,14 @@ final class Csrf implements MiddlewareInterface
         $this->requestParam = $name;
     }
 
-    public function setCookieParams(array $params): void
+    private function getToken(): ?string
     {
-        $this->cookieParams = $params;
-    }
-
-    private function addTokenToResponse(ResponseInterface $response, string $token): ResponseInterface
-    {
-
-        $cookieParameters = \array_merge($this->session->getCookieParameters(), $this->cookieParams);
-
-        $sessionCookie = (new Cookie($this->name, $token))
-            ->path($cookieParameters['path'])
-            ->domain($cookieParameters['domain'])
-            ->httpOnly($cookieParameters['httponly'])
-            ->secure($cookieParameters['secure'])
-            ->sameSite($cookieParameters['samesite']);
-
-        return $sessionCookie->addToResponse($response);
-    }
-
-    private function getCsrfToken(ServerRequestInterface $request): ?string
-    {
-        $cookies = $request->getCookieParams();
-        return $cookies[$this->name] ?? Random::string();
+        $token = $this->session->get($this->name);
+        if (!empty($token)) {
+            return $token;
+        } else {
+            return Random::string();
+        }
     }
 
     private function validateCsrfToken(ServerRequestInterface $request, ?string $trueToken): bool
@@ -112,7 +96,7 @@ final class Csrf implements MiddlewareInterface
         }
 
         if ($token === null) {
-            $headers = $request->getHeader(self::CSRF_HEADER);
+            $headers = $request->getHeader(self::HEADER_NAME);
             $token = \reset($headers);
         }
 
