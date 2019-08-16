@@ -14,12 +14,12 @@ use Yiisoft\Yii\Web\Session\SessionInterface;
 
 final class Csrf implements MiddlewareInterface
 {
+    public const NAME = '_csrf';
     public const HEADER_NAME = 'X-CSRF-Token';
-    public const SESSION_NAME = '_csrf';
     public const REQUEST_NAME = 'csrf_token';
 
-    private $name = self::SESSION_NAME;
-    private $requestParam = self::REQUEST_NAME;
+    private $name = self::NAME;
+    private $requestName = self::REQUEST_NAME;
     private $responseFactory;
     private $session;
 
@@ -43,7 +43,7 @@ final class Csrf implements MiddlewareInterface
 
         $this->session->set($this->name, $token);
 
-        $request = $request->withAttribute($this->requestParam, TokenMasker::mask($token));
+        $request = $request->withAttribute($this->requestName, TokenMasker::mask($token));
         $response = $handler->handle($request);
 
         return $response;
@@ -54,9 +54,9 @@ final class Csrf implements MiddlewareInterface
         $this->name = $name;
     }
 
-    public function setRequestParam(string $name): void
+    public function setRequestName(string $name): void
     {
-        $this->requestParam = $name;
+        $this->requestName = $name;
     }
 
     private function getToken(): ?string
