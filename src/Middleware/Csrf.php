@@ -62,9 +62,8 @@ final class Csrf implements MiddlewareInterface
         $token = $this->session->get($this->name);
         if (empty($token)) {
             $token = Random::string();
+            $this->session->set($this->name, $token);
         }
-
-        $this->session->set($this->name, $token);
 
         return $token;
     }
