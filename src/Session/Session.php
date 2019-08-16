@@ -120,9 +120,7 @@ class Session implements SessionInterface
     public function remove(string $key): void
     {
         $this->open();
-        if (isset($_SESSION[$key])) {
-            unset($_SESSION[$key]);
-        }
+        unset($_SESSION[$key]);
     }
 
     public function has(string $key): bool
