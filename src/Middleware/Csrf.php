@@ -7,6 +7,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Yiisoft\Json\Json;
 use Yiisoft\Router\Method;
 use Yiisoft\Security\Random;
 use Yiisoft\Security\TokenMasker;
@@ -41,12 +42,9 @@ final class Csrf implements MiddlewareInterface
             return $response;
         }
 
-        $this->session->set($this->name, $token);
-
         $request = $request->withAttribute($this->requestName, TokenMasker::mask($token));
-        $response = $handler->handle($request);
 
-        return $response;
+        return $handler->handle($request);
     }
 
     public function setName(string $name): void
@@ -62,11 +60,13 @@ final class Csrf implements MiddlewareInterface
     private function getToken(): ?string
     {
         $token = $this->session->get($this->name);
-        if (!empty($token)) {
-            return $token;
-        } else {
-            return Random::string();
+        if (empty($token)) {
+            $token = Random::string();
         }
+
+        $this->session->set($this->name, $token);
+
+        return $token;
     }
 
     private function validateCsrfToken(ServerRequestInterface $request, ?string $trueToken): bool
@@ -79,23 +79,20 @@ final class Csrf implements MiddlewareInterface
 
         $unmaskedToken = $this->getTokenFromRequest($request);
 
-        if (empty($unmaskedToken) || !hash_equals($unmaskedToken, $trueToken)) {
-            return false;
-        }
-
-        return true;
+        return !empty($unmaskedToken) && hash_equals($unmaskedToken, $trueToken);
     }
 
     private function getTokenFromRequest(ServerRequestInterface $request): ?string
     {
-        $post = $request->getParsedBody();
-
-        $token = null;
-        if (isset($post[$this->name])) {
-            $token = $post[$this->name];
+        if ($request->getMethod() === Method::POST) {
+            $post = $request->getParsedBody();
+        } else {
+            $post = Json::decode($request->getBody(), true);
         }
 
-        if ($token === null) {
+        $token = $post[$this->name] ?? null;
+
+        if (empty($token)) {
             $headers = $request->getHeader(self::HEADER_NAME);
             $token = \reset($headers);
         }

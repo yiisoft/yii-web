@@ -33,7 +33,8 @@
         "yiisoft/injector": "^3.0@dev",
         "yiisoft/aliases": "^3.0@dev",
         "alexkart/curl-builder": "^1.0",
-        "yiisoft/security": "^3.0@dev"
+        "yiisoft/security": "^3.0@dev",
+        "yiisoft/json": "^3.0@dev"
     },
     "require-dev": {
         "hiqdev/composer-config-plugin": "^1.0@dev",
