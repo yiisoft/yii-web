@@ -7,7 +7,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Yiisoft\Json\Json;
 use Yiisoft\Router\Method;
 use Yiisoft\Security\Random;
 use Yiisoft\Security\TokenMasker;
@@ -83,12 +82,7 @@ final class Csrf implements MiddlewareInterface
 
     private function getTokenFromRequest(ServerRequestInterface $request): ?string
     {
-        if ($request->getMethod() === Method::POST) {
-            $post = $request->getParsedBody();
-        } else {
-            $post = Json::decode($request->getBody(), true);
-        }
-
+        $post = $request->getParsedBody();
         $token = $post[$this->name] ?? null;
 
         if (empty($token)) {
