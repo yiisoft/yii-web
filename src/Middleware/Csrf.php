@@ -14,7 +14,7 @@ use Yiisoft\Yii\Web\Session\SessionInterface;
 
 final class Csrf implements MiddlewareInterface
 {
-    public const NAME = '_csrf';
+    private const NAME = '_csrf';
     public const HEADER_NAME = 'X-CSRF-Token';
     public const REQUEST_NAME = 'csrf_token';
 
