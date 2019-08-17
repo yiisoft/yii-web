@@ -82,9 +82,9 @@ final class Csrf implements MiddlewareInterface
 
     private function getTokenFromRequest(ServerRequestInterface $request): ?string
     {
-        $post = $request->getParsedBody();
-        $token = $post[$this->name] ?? null;
+        $parsedBody = $request->getParsedBody();
 
+        $token = $parsedBody[$this->name] ?? null;
         if (empty($token)) {
             $headers = $request->getHeader(self::HEADER_NAME);
             $token = \reset($headers);
