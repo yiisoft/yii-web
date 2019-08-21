@@ -17,7 +17,6 @@ final class ServerRequestFactory
     private $uploadedFileFactory;
     private $streamFactory;
 
-
     public function __construct(
         ServerRequestFactoryInterface $serverRequestFactory,
         UriFactoryInterface $uriFactory,
@@ -34,7 +33,7 @@ final class ServerRequestFactory
     {
         return $this->createFromParameters(
             $_SERVER,
-            self::getHeadersFromGlobals(),
+            $this->getHeadersFromGlobals(),
             $_COOKIE,
             $_GET,
             $_POST,
@@ -92,7 +91,6 @@ final class ServerRequestFactory
             throw new \InvalidArgumentException('Body parameter for ServerRequestFactory::createFromParameters() must be instance of StreamInterface, resource or null.');
         }
 
-
         return $request->withBody($body);
     }
 
@@ -131,7 +129,7 @@ final class ServerRequestFactory
         return $uri;
     }
 
-    private static function getHeadersFromGlobals(): array
+    private function getHeadersFromGlobals(): array
     {
         if (\function_exists('getallheaders')) {
             $headers = getallheaders();
