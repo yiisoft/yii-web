@@ -3,6 +3,7 @@
 
 namespace Yiisoft\Yii\Web\Tests\Session;
 
+use Nyholm\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 use PHPUnit_Framework_MockObject_MockObject;
 use Psr\Http\Message\ServerRequestInterface;
@@ -105,29 +106,34 @@ class SessionMiddlewareTest extends TestCase
             ->method('getHost')
             ->willReturn('domain');
 
-        $this->setUpRequestHandlerMock();
+        $response = new Response();
+        $this->setUpRequestHandlerMock($response);
         $this->sessionMiddleware->process($this->requestMock, $this->requestHandlerMock);
     }
 
-    private function setUpRequestHandlerMock()
+    /**
+     * @test
+     */
+    public function processDoesNotAlterResponseIfSessionIsNotActive()
     {
-        $responseMock = $this->getResponseMock();
+        $this->setUpSessionMock(true, false);
+        $this->setUpRequestMock();
+
+        $response = new Response();
+        $this->setUpRequestHandlerMock($response);
+
+        $result = $this->sessionMiddleware->process($this->requestMock, $this->requestHandlerMock);
+        $this->assertEquals($response, $result);
+    }
+
+    private function setUpRequestHandlerMock(ResponseInterface $response)
+    {
         $this->requestHandlerMock
             ->expects($this->once())
             ->method('handle')
-            ->willReturn($responseMock);
+            ->willReturn($response);
     }
-
-    private function getResponseMock()
-    {
-        $responseMock = $this->createMock(ResponseInterface::class);
-        $responseMock
-            ->expects($this->any())
-            ->method('withAddedHeader')
-            ->willReturn($responseMock);
-        return $responseMock;
-    }
-
+    
     private function setUpSessionMock(bool $cookieDomainProvided = true, bool $isActive = true)
     {
         $this->sessionMock
