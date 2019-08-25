@@ -31,8 +31,11 @@ final class MiddlewareDispatcher implements RequestHandlerInterface
      */
     private $container;
 
-    public function __construct(array $middlewares, ContainerInterface $container, RequestHandlerInterface $fallbackHandler = null)
-    {
+    public function __construct(
+        array $middlewares,
+        ContainerInterface $container,
+        RequestHandlerInterface $fallbackHandler = null
+    ) {
         if ($middlewares === []) {
             throw new \InvalidArgumentException('Middlewares should be defined.');
         }
@@ -66,8 +69,7 @@ final class MiddlewareDispatcher implements RequestHandlerInterface
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        // Last middleware in the queue has been called on the request handler
-        if ($this->pointer === \count($this->middlewares)) {
+        if ($this->isLastMiddlewareCalled()) {
             return $this->fallbackHandler->handle($request);
         }
 
@@ -80,5 +82,13 @@ final class MiddlewareDispatcher implements RequestHandlerInterface
     public function reset(): void
     {
         $this->pointer = 0;
+    }
+
+    /**
+     * Last middleware in the queue has been called on the request handler
+     */
+    private function isLastMiddlewareCalled(): bool
+    {
+        return $this->pointer === \count($this->middlewares);
     }
 }

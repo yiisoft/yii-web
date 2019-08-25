@@ -25,14 +25,14 @@ class CookieTest extends TestCase
     {
         $cookie = new Cookie('test', 42);
 
-        $this->assertSame('test=42; expires=Thu, 01-Jan-1970 00:00:00 GMT; path=/; secure; httponly; samesite=Lax', $this->getCookieHeader($cookie));
+        $this->assertSame('test=42; Path=/; Secure; HttpOnly; SameSite=Lax', $this->getCookieHeader($cookie));
     }
 
     public function testDomain(): void
     {
         $cookie = (new Cookie('test', 42))->domain('yiiframework.com');
 
-        $this->assertSame('test=42; expires=Thu, 01-Jan-1970 00:00:00 GMT; path=/; domain=yiiframework.com; secure; httponly; samesite=Lax', $this->getCookieHeader($cookie));
+        $this->assertSame('test=42; Path=/; Domain=yiiframework.com; Secure; HttpOnly; SameSite=Lax', $this->getCookieHeader($cookie));
     }
 
     public function testExpireAt(): void
@@ -43,35 +43,35 @@ class CookieTest extends TestCase
 
         $cookie = (new Cookie('test', 42))->expireAt($expireDateTime);
 
-        $this->assertSame("test=42; expires=$formattedDateTime; path=/; secure; httponly; samesite=Lax", $this->getCookieHeader($cookie));
+        $this->assertSame("test=42; Expires=$formattedDateTime; Path=/; Secure; HttpOnly; SameSite=Lax", $this->getCookieHeader($cookie));
     }
 
     public function testExpireWhenBrowserIsClosed(): void
     {
         $cookie = (new Cookie('test', 42))->expireWhenBrowserIsClosed();
 
-        $this->assertSame('test=42; expires=Thu, 01-Jan-1970 00:00:00 GMT; path=/; secure; httponly; samesite=Lax', $this->getCookieHeader($cookie));
+        $this->assertSame('test=42; Path=/; Secure; HttpOnly; SameSite=Lax', $this->getCookieHeader($cookie));
     }
 
     public function testPath(): void
     {
         $cookie = (new Cookie('test', 42))->path('/test');
 
-        $this->assertSame('test=42; expires=Thu, 01-Jan-1970 00:00:00 GMT; path=/test; secure; httponly; samesite=Lax', $this->getCookieHeader($cookie));
+        $this->assertSame('test=42; Path=/test; Secure; HttpOnly; SameSite=Lax', $this->getCookieHeader($cookie));
     }
 
     public function testSecure(): void
     {
         $cookie = (new Cookie('test', 42))->secure(false);
 
-        $this->assertSame('test=42; expires=Thu, 01-Jan-1970 00:00:00 GMT; path=/; httponly; samesite=Lax', $this->getCookieHeader($cookie));
+        $this->assertSame('test=42; Path=/; HttpOnly; SameSite=Lax', $this->getCookieHeader($cookie));
     }
 
     public function testHttpOnly(): void
     {
         $cookie = (new Cookie('test', 42))->httpOnly(false);
 
-        $this->assertSame('test=42; expires=Thu, 01-Jan-1970 00:00:00 GMT; path=/; secure; samesite=Lax', $this->getCookieHeader($cookie));
+        $this->assertSame('test=42; Path=/; Secure; SameSite=Lax', $this->getCookieHeader($cookie));
     }
 
     public function testInvalidSameSite(): void
@@ -85,6 +85,6 @@ class CookieTest extends TestCase
     {
         $cookie = (new Cookie('test', 42))->sameSite('');
 
-        $this->assertSame('test=42; expires=Thu, 01-Jan-1970 00:00:00 GMT; path=/; secure; httponly', $this->getCookieHeader($cookie));
+        $this->assertSame('test=42; Path=/; Secure; HttpOnly', $this->getCookieHeader($cookie));
     }
 }
