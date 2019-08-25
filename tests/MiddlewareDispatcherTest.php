@@ -40,10 +40,10 @@ class MiddlewareDispatcherTest extends TestCase
         parent::setUp();
         $this->containerMock = $this->createMock(ContainerInterface::class);
         $this->fallbackHandlerMock = $this->createMock(RequestHandlerInterface::class);
-        $this->middlewareMocks = array (
+        $this->middlewareMocks = [
             $this->createMock(MiddlewareInterface::class),
             $this->createMock(MiddlewareInterface::class)
-        );
+        ];
         $this->middlewareDispatcher = new MiddlewareDispatcher($this->middlewareMocks, $this->containerMock, $this->fallbackHandlerMock);
     }
 

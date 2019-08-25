@@ -16,14 +16,14 @@ use Yiisoft\Yii\Web\Session\SessionMiddleware;
 
 class SessionMiddlewareTest extends TestCase
 {
-    const COOKIE_PARAMETERS = array (
+    const COOKIE_PARAMETERS = [
         'path' => 'examplePath',
         'domain' => 'exampleDomain',
         'httponly' => 'httponly',
         'samesite' => 'Strict',
         'lifetime' => 3600,
         'secure' => true,
-    );
+    ];
 
     const CURRENT_SID = 'exampleCurrentSidValue';
     const REQUEST_SID = 'exampleRequestSidValue';
@@ -133,7 +133,7 @@ class SessionMiddlewareTest extends TestCase
             ->method('handle')
             ->willReturn($response);
     }
-    
+
     private function setUpSessionMock(bool $cookieDomainProvided = true, bool $isActive = true)
     {
         $this->sessionMock
