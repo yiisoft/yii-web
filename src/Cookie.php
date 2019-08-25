@@ -115,7 +115,7 @@ final class Cookie
     public function expireWhenBrowserIsClosed(): self
     {
         $new = clone $this;
-        $new->expire = null;
+        $new->expire = 0;
         return $new;
     }
 

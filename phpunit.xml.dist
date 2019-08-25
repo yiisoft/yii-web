@@ -3,15 +3,28 @@
     backupGlobals="true"
     colors="true"
     verbose="true"
+    failOnRisky="true"
+    failOnWarning="true"
     convertErrorsToExceptions="true"
     convertNoticesToExceptions="true"
     convertWarningsToExceptions="true"
     stopOnFailure="false"
-    printerClass="yii\tests\ResultPrinter">
+    executionOrder="random"
+    resolveDependencies="true">
 
     <testsuites>
-        <testsuite name="Yii Web Extension Test Suite">
+        <testsuite name="Yii Web Test Suite">
             <directory>./tests</directory>
         </testsuite>
     </testsuites>
+
+    <filter>
+        <whitelist>
+            <directory>./</directory>
+            <exclude>
+                <directory>./tests</directory>
+                <directory>./vendor</directory>
+            </exclude>
+        </whitelist>
+    </filter>
 </phpunit>
