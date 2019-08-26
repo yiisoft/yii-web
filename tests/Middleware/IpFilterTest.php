@@ -14,11 +14,11 @@ use PHPUnit_Framework_MockObject_MockObject;
 
 class IpFilterTest extends TestCase
 {
-    const REQUEST_PARAMS = [
+    private const REQUEST_PARAMS = [
         'REMOTE_ADDR' => '8.8.8.8',
     ];
 
-    const ALLOWED_IP = '1.1.1.1';
+    private const ALLOWED_IP = '1.1.1.1';
 
     /**
      * @var ResponseFactory|PHPUnit_Framework_MockObject_MockObject

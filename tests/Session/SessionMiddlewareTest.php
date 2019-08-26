@@ -25,9 +25,9 @@ class SessionMiddlewareTest extends TestCase
         'secure' => true,
     ];
 
-    const CURRENT_SID = 'exampleCurrentSidValue';
-    const REQUEST_SID = 'exampleRequestSidValue';
-    const SESSION_NAME = 'exampleSessionName';
+    private const CURRENT_SID = 'exampleCurrentSidValue';
+    private const REQUEST_SID = 'exampleRequestSidValue';
+    private const SESSION_NAME = 'exampleSessionName';
 
     /**
      * @var RequestHandlerInterface|PHPUnit_Framework_MockObject_MockObject
