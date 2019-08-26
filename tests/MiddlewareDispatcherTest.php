@@ -50,6 +50,19 @@ class MiddlewareDispatcherTest extends TestCase
     /**
      * @test
      */
+    public function constructThrowsExceptionWhenMiddlewaresAreNotDefined()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        new MiddlewareDispatcher(
+            [],
+            $this->containerMock,
+            $this->fallbackHandlerMock
+        );
+    }
+
+    /**
+     * @test
+     */
     public function addThrowsInvalidArgumentExceptionWhenMiddlewareIsNotOfCorrectType()
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -83,24 +96,7 @@ class MiddlewareDispatcherTest extends TestCase
     /**
      * @test
      */
-    public function handleCallsFallbackHandlerWhenPointerValueEqualsMiddlewareQueueSize()
-    {
-        $request = $this->createMock(ServerRequestInterface::class);
-        $this->middlewareDispatcher->handle($request); //pointer is incremented to 1
-        $this->middlewareDispatcher->handle($request); //pointer is incremented to 2
-
-        $this->fallbackHandlerMock
-            ->expects($this->once())
-            ->method('handle')
-            ->with($request);
-
-        $this->middlewareDispatcher->handle($request); //pointer value equals middleware queue size (2)
-    }
-
-    /**
-     * @test
-     */
-    public function handleCallsConsecutiveMiddlewareFromQueueToProcessRequest()
+    public function handleCallsMiddlewareFromQueueToProcessRequest()
     {
         $request = $this->createMock(ServerRequestInterface::class);
         $this->fallbackHandlerMock
@@ -108,12 +104,11 @@ class MiddlewareDispatcherTest extends TestCase
             ->method('handle')
             ->with($request);
 
-        foreach ($this->middlewareMocks as $middlewareMock) {
-            $middlewareMock
-                ->expects($this->once())
-                ->method('process')
-                ->with($request, $this->middlewareDispatcher);
-            $this->middlewareDispatcher->handle($request);
-        }
+        $this->middlewareMocks[0]
+            ->expects($this->once())
+            ->method('process')
+            ->with($request, $this->middlewareDispatcher);
+
+        $this->middlewareDispatcher->handle($request);
     }
 }
