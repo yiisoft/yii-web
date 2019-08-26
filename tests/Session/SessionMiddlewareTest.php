@@ -16,7 +16,7 @@ use Yiisoft\Yii\Web\Session\SessionMiddleware;
 
 class SessionMiddlewareTest extends TestCase
 {
-    const COOKIE_PARAMETERS = [
+    private const COOKIE_PARAMETERS = [
         'path' => 'examplePath',
         'domain' => 'exampleDomain',
         'httponly' => 'httponly',
