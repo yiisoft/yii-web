@@ -172,11 +172,13 @@ class SessionMiddlewareTest extends TestCase
             ->method('getUri')
             ->willReturn($this->uriMock);
 
-        $cookieParams[self::SESSION_NAME] = self::CURRENT_SID;
+        $requestCookieParams = [
+            self::SESSION_NAME => self::REQUEST_SID,
+        ];
         $this->requestMock
             ->expects($this->any())
             ->method('getCookieParams')
-            ->willReturn(self::REQUEST_SID);
+            ->willReturn($requestCookieParams);
     }
 
     private function setUpUriMock(string $uriScheme)
