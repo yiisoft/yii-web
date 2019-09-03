@@ -31,6 +31,12 @@ final class MiddlewareDispatcher implements RequestHandlerInterface
      */
     private $container;
 
+    /**
+     * MiddlewareDispatcher constructor.
+     * @param array $middlewares
+     * @param ContainerInterface $container
+     * @param RequestHandlerInterface|null $fallbackHandler
+     */
     public function __construct(
         array $middlewares,
         ContainerInterface $container,
@@ -51,11 +57,17 @@ final class MiddlewareDispatcher implements RequestHandlerInterface
         $this->fallbackHandler = $fallbackHandler ?? new NotFoundHandler($responseFactory);
     }
 
+    /**
+     * @param callable $callback
+     */
     private function addCallable(callable $callback): void
     {
         $this->middlewares[] = new Callback($callback, $this->container);
     }
 
+    /**
+     * @param $middleware
+     */
     public function add($middleware): void
     {
         if (is_callable($middleware)) {
@@ -67,6 +79,10 @@ final class MiddlewareDispatcher implements RequestHandlerInterface
         }
     }
 
+    /**
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface
+     */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         if ($this->isLastMiddlewareCalled()) {

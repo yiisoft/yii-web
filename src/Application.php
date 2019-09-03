@@ -36,6 +36,10 @@ final class Application
         $errorHandler->register();
     }
 
+    /**
+     * @param ServerRequestInterface $request
+     * @return bool
+     */
     public function handle(ServerRequestInterface $request): bool
     {
         $response = $this->dispatcher->handle($request);

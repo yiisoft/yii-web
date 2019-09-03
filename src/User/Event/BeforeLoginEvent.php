@@ -20,16 +20,25 @@ class BeforeLoginEvent
         $this->isValid = false;
     }
 
+    /**
+     * @return bool
+     */
     public function isValid(): bool
     {
         return $this->isValid;
     }
 
+    /**
+     * @return IdentityInterface
+     */
     public function getIdentity(): IdentityInterface
     {
         return $this->identity;
     }
 
+    /**
+     * @return int
+     */
     public function getDuration(): int
     {
         return $this->duration;

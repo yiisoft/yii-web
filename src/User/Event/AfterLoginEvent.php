@@ -14,11 +14,17 @@ class AfterLoginEvent
         $this->duration = $duration;
     }
 
+    /**
+     * @return IdentityInterface
+     */
     public function getIdentity(): IdentityInterface
     {
         return $this->identity;
     }
 
+    /**
+     * @return int
+     */
     public function getDuration(): int
     {
         return $this->duration;

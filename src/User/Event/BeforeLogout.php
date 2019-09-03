@@ -19,11 +19,17 @@ class BeforeLogout
         $this->isValid = false;
     }
 
+    /**
+     * @return bool
+     */
     public function isValid(): bool
     {
         return $this->isValid;
     }
 
+    /**
+     * @return IdentityInterface
+     */
     public function getIdentity(): IdentityInterface
     {
         return $this->identity;

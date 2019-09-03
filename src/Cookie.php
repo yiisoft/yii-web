@@ -1,6 +1,11 @@
 <?php
 namespace Yiisoft\Yii\Web;
 
+use DateInterval;
+use DateTimeImmutable;
+use DateTimeInterface;
+use Exception;
+use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -78,18 +83,27 @@ final class Cookie
      */
     private $sameSite = self::SAME_SITE_LAX;
 
+    /**
+     * Cookie constructor.
+     * @param string $name
+     * @param string $value
+     */
     public function __construct(string $name, string $value)
     {
         // @see https://tools.ietf.org/html/rfc6265#section-4
         // @see https://tools.ietf.org/html/rfc2616#section-2.2
         if (!preg_match('~^[a-z0-9._\-]+$~i', $name)) {
-            throw new \InvalidArgumentException("The cookie name \"$name\" contains invalid characters.");
+            throw new InvalidArgumentException("The cookie name \"$name\" contains invalid characters.");
         }
 
         $this->name = $name;
         $this->value = $value;
     }
 
+    /**
+     * @param string $domain
+     * @return Cookie
+     */
     public function domain(string $domain): self
     {
         $new = clone $this;
@@ -97,21 +111,33 @@ final class Cookie
         return $new;
     }
 
-    public function validFor(\DateInterval $dateInterval): self
+    /**
+     * @param DateInterval $dateInterval
+     * @return Cookie
+     * @throws Exception
+     */
+    public function validFor(DateInterval $dateInterval): self
     {
-        $expireDateTime = (new \DateTimeImmutable())->add($dateInterval);
+        $expireDateTime = (new DateTimeImmutable())->add($dateInterval);
         $new = clone $this;
         $new->expire = (int)$expireDateTime->format('U');
         return $new;
     }
 
-    public function expireAt(\DateTimeInterface $dateTime): self
+    /**
+     * @param DateTimeInterface $dateTime
+     * @return Cookie
+     */
+    public function expireAt(DateTimeInterface $dateTime): self
     {
         $new = clone $this;
         $new->expire = (int)$dateTime->format('U');
         return $new;
     }
 
+    /**
+     * @return Cookie
+     */
     public function expireWhenBrowserIsClosed(): self
     {
         $new = clone $this;
@@ -119,6 +145,10 @@ final class Cookie
         return $new;
     }
 
+    /**
+     * @param string $path
+     * @return Cookie
+     */
     public function path(string $path): self
     {
         $new = clone $this;
@@ -126,6 +156,10 @@ final class Cookie
         return $new;
     }
 
+    /**
+     * @param bool $secure
+     * @return Cookie
+     */
     public function secure(bool $secure): self
     {
         $new = clone $this;
@@ -133,6 +167,10 @@ final class Cookie
         return $new;
     }
 
+    /**
+     * @param bool $httpOnly
+     * @return Cookie
+     */
     public function httpOnly(bool $httpOnly): self
     {
         $new = clone $this;
@@ -140,10 +178,14 @@ final class Cookie
         return $new;
     }
 
+    /**
+     * @param string $sameSite
+     * @return Cookie
+     */
     public function sameSite(string $sameSite): self
     {
         if (!in_array($sameSite, [self::SAME_SITE_LAX, self::SAME_SITE_STRICT, self::SAME_SITE_NONE], true)) {
-            throw new \InvalidArgumentException('sameSite should be either Lax or Strict');
+            throw new InvalidArgumentException('sameSite should be either Lax or Strict');
         }
 
         $new = clone $this;
@@ -151,6 +193,10 @@ final class Cookie
         return $new;
     }
 
+    /**
+     * @param ResponseInterface $response
+     * @return ResponseInterface
+     */
     public function addToResponse(ResponseInterface $response): ResponseInterface
     {
         $headerValue = $this->name . '=' . urlencode($this->value);

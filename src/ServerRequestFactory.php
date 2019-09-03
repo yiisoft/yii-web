@@ -2,6 +2,7 @@
 
 namespace Yiisoft\Yii\Web;
 
+use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
@@ -9,6 +10,14 @@ use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileFactoryInterface;
 use Psr\Http\Message\UriFactoryInterface;
 use Psr\Http\Message\UriInterface;
+use RuntimeException;
+use function explode;
+use function fopen;
+use function function_exists;
+use function is_array;
+use function is_resource;
+use function is_string;
+use function preg_match;
 
 final class ServerRequestFactory
 {
@@ -38,7 +47,7 @@ final class ServerRequestFactory
             $_GET,
             $_POST,
             $_FILES,
-            \fopen('php://input', 'r') ?: null
+            fopen('php://input', 'rb') ?: null
         );
     }
 
@@ -56,7 +65,7 @@ final class ServerRequestFactory
     {
         $method = $server['REQUEST_METHOD'] ?? null;
         if ($method === null) {
-            throw new \RuntimeException('Unable to determine HTTP request method.');
+            throw new RuntimeException('Unable to determine HTTP request method.');
         }
 
         $uri = $this->getUri($server);
@@ -83,12 +92,12 @@ final class ServerRequestFactory
             return $request;
         }
 
-        if (\is_resource($body)) {
+        if (is_resource($body)) {
             $body = $this->streamFactory->createStreamFromResource($body);
-        } elseif (\is_string($body)) {
+        } elseif (is_string($body)) {
             $body = $this->streamFactory->createStream($body);
         } elseif (!$body instanceof StreamInterface) {
-            throw new \InvalidArgumentException('Body parameter for ServerRequestFactory::createFromParameters() must be instance of StreamInterface, resource or null.');
+            throw new InvalidArgumentException('Body parameter for ServerRequestFactory::createFromParameters() must be instance of StreamInterface, resource or null.');
         }
 
         return $request->withBody($body);
@@ -105,7 +114,7 @@ final class ServerRequestFactory
         }
 
         if (isset($server['HTTP_HOST'])) {
-            if (1 === \preg_match('/^(.+)\:(\d+)$/', $server['HTTP_HOST'], $matches)) {
+            if (1 === preg_match('/^(.+)\:(\d+)$/', $server['HTTP_HOST'], $matches)) {
                 $uri = $uri->withHost($matches[1])->withPort($matches[2]);
             } else {
                 $uri = $uri->withHost($server['HTTP_HOST']);
@@ -119,7 +128,7 @@ final class ServerRequestFactory
         }
 
         if (isset($server['REQUEST_URI'])) {
-            $uri = $uri->withPath(\explode('?', $server['REQUEST_URI'])[0]);
+            $uri = $uri->withPath(explode('?', $server['REQUEST_URI'])[0]);
         }
 
         if (isset($server['QUERY_STRING'])) {
@@ -131,7 +140,7 @@ final class ServerRequestFactory
 
     private function getHeadersFromGlobals(): array
     {
-        if (\function_exists('getallheaders')) {
+        if (function_exists('getallheaders')) {
             $headers = getallheaders();
             if ($headers === false) {
                 $headers = [];
@@ -171,7 +180,7 @@ final class ServerRequestFactory
      */
     private function populateUploadedFileRecursive(array &$files, $names, $tempNames, $types, $sizes, $errors): void
     {
-        if (\is_array($names)) {
+        if (is_array($names)) {
             foreach ($names as $i => $name) {
                 $files[$i] = [];
                 $this->populateUploadedFileRecursive($files[$i], $name, $tempNames[$i], $types[$i], $sizes[$i], $errors[$i]);
@@ -179,7 +188,7 @@ final class ServerRequestFactory
         } else {
             try {
                 $stream = $this->streamFactory->createStreamFromFile($tempNames);
-            } catch (\RuntimeException $e) {
+            } catch (RuntimeException $e) {
                 $stream = $this->streamFactory->createStream();
             }
 

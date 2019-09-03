@@ -1,10 +1,10 @@
 <?php
 namespace Yiisoft\Yii\Web\Middleware;
 
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseInterface;
 
 /**
  * Chain executes middlewares in the order they are added to constructor.
@@ -21,6 +21,11 @@ final class Chain implements MiddlewareInterface
         $this->middlewares = $middlewares;
     }
 
+    /**
+     * @param ServerRequestInterface $request
+     * @param RequestHandlerInterface $handler
+     * @return ResponseInterface
+     */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         for ($i = count($this->middlewares) - 1; $i > 0; $i--) {
@@ -31,6 +36,9 @@ final class Chain implements MiddlewareInterface
 
     /**
      * Wraps handler by middlewares
+     * @param MiddlewareInterface $middleware
+     * @param RequestHandlerInterface $handler
+     * @return RequestHandlerInterface
      */
     private function wrap(MiddlewareInterface $middleware, RequestHandlerInterface $handler): RequestHandlerInterface
     {
