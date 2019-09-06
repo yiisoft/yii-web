@@ -21,7 +21,10 @@ final class CsrfTest extends TestCase
 {
     private const PARAM_NAME = 'csrf';
 
-    public function testProcessIsValidTokenWithRequest()
+    /**
+     * @test
+     */
+    public function validTokenInBodyResultIn200()
     {
         $token = $this->generateToken();
         $middleware = $this->createCsrfMiddlewareWithToken($token);
@@ -29,8 +32,10 @@ final class CsrfTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-
-    public function testProcessIsValidTokenWithHeaders()
+    /**
+     * @test
+     */
+    public function validTokenInHeaderResultIn200()
     {
         $token = $this->generateToken();
         $middleware = $this->createCsrfMiddlewareWithToken($token);
@@ -38,30 +43,40 @@ final class CsrfTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    public function testProcessIsAllowMethod()
+    /**
+     * @test
+     */
+    public function getIsAlwaysAllowed()
     {
         $middleware = $this->createCsrfMiddlewareWithToken('');
         $response = $middleware->process($this->createServerRequest(Method::GET), $this->createRequestHandler());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    public function testProcessInvalidToken()
+    /**
+     * @test
+     */
+    public function invalidTokenResultIn400()
     {
         $middleware = $this->createCsrfMiddlewareWithToken($this->generateToken());
         $response = $middleware->process($this->createPostServerRequestWithBodyToken($this->generateToken()), $this->createRequestHandler());
         $this->assertEquals(400, $response->getStatusCode());
     }
 
-
-    public function testProcessEmptyTokenInSession()
+    /**
+     * @test
+     */
+    public function emptyTokenInSessionResultIn400()
     {
         $middleware = $this->createCsrfMiddlewareWithToken('');
         $response = $middleware->process($this->createPostServerRequestWithBodyToken($this->generateToken()), $this->createRequestHandler());
         $this->assertEquals(400, $response->getStatusCode());
     }
 
-
-    public function testProcessEmptyTokenInRequest()
+    /**
+     * @test
+     */
+    public function emptyTokenInRequestResultIn400()
     {
         $middleware = $this->createCsrfMiddlewareWithToken($this->generateToken());
         $response = $middleware->process($this->createServerRequest(), $this->createRequestHandler());
