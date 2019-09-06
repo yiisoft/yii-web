@@ -24,11 +24,33 @@ final class CsrfTest extends TestCase
     /**
      * @test
      */
-    public function validTokenInBodyResultIn200()
+    public function validTokenInBodyPostRequestResultIn200()
     {
-        $token = $this->generateToken();
+        $token      = $this->generateToken();
         $middleware = $this->createCsrfMiddlewareWithToken($token);
-        $response = $middleware->process($this->createPostServerRequestWithBodyToken($token), $this->createRequestHandler());
+        $response   = $middleware->process($this->createPostServerRequestWithBodyToken($token), $this->createRequestHandler());
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    /**
+     * @test
+     */
+    public function validTokenInBodyPutRequestResultIn200()
+    {
+        $token      = $this->generateToken();
+        $middleware = $this->createCsrfMiddlewareWithToken($token);
+        $response   = $middleware->process($this->createPutServerRequestWithBodyToken($token), $this->createRequestHandler());
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    /**
+     * @test
+     */
+    public function validTokenInBodyDeleteRequestResultIn200()
+    {
+        $token      = $this->generateToken();
+        $middleware = $this->createCsrfMiddlewareWithToken($token);
+        $response   = $middleware->process($this->createDeleteServerRequestWithBodyToken($token), $this->createRequestHandler());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -37,9 +59,9 @@ final class CsrfTest extends TestCase
      */
     public function validTokenInHeaderResultIn200()
     {
-        $token = $this->generateToken();
+        $token      = $this->generateToken();
         $middleware = $this->createCsrfMiddlewareWithToken($token);
-        $response = $middleware->process($this->createPostServerRequestWithHeaderToken($token), $this->createRequestHandler());
+        $response   = $middleware->process($this->createPostServerRequestWithHeaderToken($token), $this->createRequestHandler());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -49,7 +71,7 @@ final class CsrfTest extends TestCase
     public function getIsAlwaysAllowed()
     {
         $middleware = $this->createCsrfMiddlewareWithToken('');
-        $response = $middleware->process($this->createServerRequest(Method::GET), $this->createRequestHandler());
+        $response   = $middleware->process($this->createServerRequest(Method::GET), $this->createRequestHandler());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -59,7 +81,7 @@ final class CsrfTest extends TestCase
     public function invalidTokenResultIn400()
     {
         $middleware = $this->createCsrfMiddlewareWithToken($this->generateToken());
-        $response = $middleware->process($this->createPostServerRequestWithBodyToken($this->generateToken()), $this->createRequestHandler());
+        $response   = $middleware->process($this->createPostServerRequestWithBodyToken($this->generateToken()), $this->createRequestHandler());
         $this->assertEquals(400, $response->getStatusCode());
     }
 
@@ -69,7 +91,7 @@ final class CsrfTest extends TestCase
     public function emptyTokenInSessionResultIn400()
     {
         $middleware = $this->createCsrfMiddlewareWithToken('');
-        $response = $middleware->process($this->createPostServerRequestWithBodyToken($this->generateToken()), $this->createRequestHandler());
+        $response   = $middleware->process($this->createPostServerRequestWithBodyToken($this->generateToken()), $this->createRequestHandler());
         $this->assertEquals(400, $response->getStatusCode());
     }
 
@@ -79,7 +101,7 @@ final class CsrfTest extends TestCase
     public function emptyTokenInRequestResultIn400()
     {
         $middleware = $this->createCsrfMiddlewareWithToken($this->generateToken());
-        $response = $middleware->process($this->createServerRequest(), $this->createRequestHandler());
+        $response   = $middleware->process($this->createServerRequest(), $this->createRequestHandler());
         $this->assertEquals(400, $response->getStatusCode());
     }
 
@@ -87,14 +109,23 @@ final class CsrfTest extends TestCase
     private function createServerRequest(string $method = Method::POST, array $bodyParams = [], array $headParams = []): ServerRequestInterface
     {
         $request = new ServerRequest($method, '/', $headParams);
+
         return $request->withParsedBody($bodyParams);
     }
 
     private function createPostServerRequestWithBodyToken(string $token): ServerRequestInterface
     {
-        return $this->createServerRequest(Method::POST, [
-            self::PARAM_NAME => TokenMasker::mask($token),
-        ]);
+        return $this->createServerRequest(Method::POST, $this->getBodyRequestParamsByToken($token));
+    }
+
+    private function createPutServerRequestWithBodyToken(string $token): ServerRequestInterface
+    {
+        return $this->createServerRequest(Method::PUT, $this->getBodyRequestParamsByToken($token));
+    }
+
+    private function createDeleteServerRequestWithBodyToken(string $token): ServerRequestInterface
+    {
+        return $this->createServerRequest(Method::DELETE, $this->getBodyRequestParamsByToken($token));
     }
 
     private function createPostServerRequestWithHeaderToken(string $token): ServerRequestInterface
@@ -106,7 +137,8 @@ final class CsrfTest extends TestCase
 
     private function createRequestHandler(): RequestHandlerInterface
     {
-        return new class implements RequestHandlerInterface {
+        return new class implements RequestHandlerInterface
+        {
             public function handle(ServerRequestInterface $request): ResponseInterface
             {
                 return new Response(200);
@@ -141,5 +173,12 @@ final class CsrfTest extends TestCase
     private function generateToken(): string
     {
         return Random::string();
+    }
+
+    private function getBodyRequestParamsByToken(string $token): array
+    {
+        return [
+            self::PARAM_NAME => TokenMasker::mask($token),
+        ];
     }
 }
