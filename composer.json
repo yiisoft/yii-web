@@ -41,11 +41,6 @@
         "yiisoft/factory": "^3.0@dev",
         "yiisoft/log": "^3.0@dev",
         "yiisoft/cache": "^3.0@dev",
-        "yiisoft/yii-console": "^3.0@dev",
-        "yiisoft/db": "^3.0@dev",
-        "yiisoft/db-mysql": "^3.0@dev",
-        "yiisoft/db-pgsql": "^3.0@dev",
-        "yiisoft/db-sqlite": "^3.0@dev",
         "yiisoft/var-dumper": "^3.0@dev",
         "ezyang/htmlpurifier": "~4.6",
         "phpunit/phpunit": "^7.3",
@@ -77,8 +72,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Yiisoft\\Yii\\Web\\Tests\\": "tests",
-            "Yiisoft\\Cache\\Tests\\": "vendor/yiisoft/cache/tests"
+            "Yiisoft\\Yii\\Web\\Tests\\": "tests"
         }
     }
 }
