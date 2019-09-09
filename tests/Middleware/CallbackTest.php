@@ -48,10 +48,8 @@ final class CallbackTest extends TestCase
         $requestMethod = Method::PUT;
         $requestUri = '/test/request/uri';
         $middleware = new Callback(function (ServerRequestInterface $request, RequestHandlerInterface $handler) use ($requestMethod, $requestUri) {
-
             $this->assertEquals($request->getMethod(), $requestMethod);
             $this->assertEquals($request->getUri(), $requestUri);
-
             return $handler->handle($request);
         }, $this->createContainer());
 
