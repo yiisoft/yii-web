@@ -4,12 +4,12 @@
 namespace Yiisoft\Yii\Web\Tests\Session;
 
 use Nyholm\Psr7\Response;
+use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use PHPUnit_Framework_MockObject_MockObject;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Yiisoft\Cache\Tests\TestCase;
 use Yiisoft\Yii\Web\Session\SessionException;
 use Yiisoft\Yii\Web\Session\SessionInterface;
 use Yiisoft\Yii\Web\Session\SessionMiddleware;
