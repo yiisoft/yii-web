@@ -18,6 +18,11 @@ class SessionMiddleware implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        $requestSessionId = $this->getSidFromRequest($request);
+        if ($requestSessionId !== null) {
+            $this->session->setId($requestSessionId);
+        }
+
         try {
             $response = $handler->handle($request);
         } catch (\Throwable $e) {
