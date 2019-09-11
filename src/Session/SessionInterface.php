@@ -42,6 +42,11 @@ interface SessionInterface
     public function getId(): ?string;
 
     /**
+     * @param string $sessionId set session ID
+     */
+    public function setId(string $sessionId): void;
+
+    /**
      * Regenerate session ID keeping data
      */
     public function regenerateId(): void;

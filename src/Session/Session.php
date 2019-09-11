@@ -7,6 +7,8 @@ namespace Yiisoft\Yii\Web\Session;
  */
 class Session implements SessionInterface
 {
+    private $sessionId;
+
     private const DEFAULT_OPTIONS = [
         'use_cookies' => 1,
         'cookie_secure' => 1,
@@ -70,8 +72,13 @@ class Session implements SessionInterface
             return;
         }
 
+        if ($this->sessionId !== null) {
+            session_id($this->sessionId);
+        }
+
         try {
             session_start($this->options);
+            $this->sessionId = session_id();
         } catch (\Throwable $e) {
             throw new SessionException('Failed to start session', $e->getCode(), $e);
         }
@@ -84,8 +91,7 @@ class Session implements SessionInterface
 
     public function getId(): ?string
     {
-        $id = session_id();
-        return $id === '' ? null : $id;
+        return $this->sessionId === '' ? null : $this->sessionId;
     }
 
     public function regenerateId(): void
@@ -146,11 +152,17 @@ class Session implements SessionInterface
     {
         if ($this->isActive()) {
             session_destroy();
+            $this->sessionId = null;
         }
     }
 
     public function getCookieParameters(): array
     {
         return session_get_cookie_params();
+    }
+
+    public function setId(string $sessionId): void
+    {
+        $this->sessionId = $sessionId;
     }
 }
