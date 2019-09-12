@@ -2,7 +2,9 @@
 /* @var $throwable \Throwable */
 /* @var $this \Yiisoft\Yii\Web\ErrorHandler\HtmlRenderer */
 
-use Yiisoft\Yii\Web\ErrorHandler\SolutionInterface; ?>
+use Yiisoft\Yii\Web\ErrorHandler\SolutionInterface;
+
+?>
 <!doctype html>
 <html lang="en">
 
