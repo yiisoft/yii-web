@@ -1,7 +1,8 @@
 <?php
 /* @var $throwable \Throwable */
 /* @var $this \Yiisoft\Yii\Web\ErrorHandler\HtmlRenderer */
-?>
+
+use Yiisoft\Yii\Web\ErrorHandler\SolutionInterface; ?>
 <!doctype html>
 <html lang="en">
 
@@ -109,6 +110,11 @@ h1,h2,h3,p,img,ul li{
     font-size: 20px;
     line-height: 1.25;
 }
+
+.header .solution {
+    font-family: Arial, sans-serif;
+}
+
 .header pre{
     margin: 10px 0;
     overflow-y: scroll;
@@ -397,6 +403,9 @@ body.mousedown pre {
             <span><?= $this->addTypeLinks(get_class($throwable), $this->getThrowableName($throwable)) ?></span>
         </h1>
         <h2><?= nl2br($this->htmlEncode($throwable->getMessage())) ?></h2>
+        <?php if ($throwable instanceof SolutionInterface): ?>
+            <div class="solution"><?= nl2br($this->htmlEncode($throwable->getSolution())) ?></div>
+        <?php endif ?>
 
         <?= $this->renderPreviousExceptions($throwable) ?>
     </div>
