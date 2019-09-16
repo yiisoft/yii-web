@@ -11,9 +11,10 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use TheSeer\Tokenizer\Token;
 use Yiisoft\Router\Method;
 use Yiisoft\Security\Random;
-use Yiisoft\Security\TokenMasker;
+use Yiisoft\Security\TokenMask;
 use Yiisoft\Yii\Web\Middleware\Csrf;
 use Yiisoft\Yii\Web\Session\SessionInterface;
 
@@ -129,7 +130,7 @@ final class CsrfTest extends TestCase
     private function createPostServerRequestWithHeaderToken(string $token): ServerRequestInterface
     {
         return $this->createServerRequest(Method::POST, [], [
-            Csrf::HEADER_NAME => TokenMasker::mask($token),
+            Csrf::HEADER_NAME => TokenMask::apply($token),
         ]);
     }
 
@@ -174,7 +175,7 @@ final class CsrfTest extends TestCase
     private function getBodyRequestParamsByToken(string $token): array
     {
         return [
-            self::PARAM_NAME => TokenMasker::mask($token),
+            self::PARAM_NAME => TokenMask::apply($token),
         ];
     }
 }
