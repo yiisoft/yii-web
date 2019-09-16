@@ -2,7 +2,7 @@
 namespace Yiisoft\Yii\Web\User;
 
 use Psr\EventDispatcher\EventDispatcherInterface;
-use Yiisoft\Access\CheckAccessInterface;
+use Yiisoft\Access\AccessCheckerInterface;
 use Yiisoft\Yii\Web\Session\Session;
 use Yiisoft\Yii\Web\User\Event\AfterLoginEvent;
 use Yiisoft\Yii\Web\User\Event\AfterLogoutEvent;
@@ -21,7 +21,7 @@ class User
     private $identityRepository;
 
     /**
-     * @var CheckAccessInterface
+     * @var AccessCheckerInterface
      */
     private $accessChecker;
 
@@ -46,7 +46,7 @@ class User
         $this->eventDispatcher = $eventDispatcher;
     }
 
-    public function setAccessChecker(CheckAccessInterface $accessChecker): void
+    public function setAccessChecker(AccessCheckerInterface $accessChecker): void
     {
         $this->accessChecker = $accessChecker;
     }
@@ -360,6 +360,6 @@ class User
             return false;
         }
 
-        return $this->accessChecker->checkAccess($this->getId(), $permissionName, $params);
+        return $this->accessChecker->hasPermission($this->getId(), $permissionName, $params);
     }
 }
