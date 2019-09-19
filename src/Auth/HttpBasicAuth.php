@@ -62,7 +62,7 @@ class HttpBasicAuth implements AuthInterface
      */
     public function authenticate(ServerRequestInterface $request): ?IdentityInterface
     {
-        [$username, $password] = $request->getAuthCredentials();
+        [$username, $password] = $this->getAuthCredentials($request);
 
         if ($this->auth) {
             if ($username !== null || $password !== null) {
@@ -85,5 +85,36 @@ class HttpBasicAuth implements AuthInterface
     public function challenge(ResponseInterface $response): ResponseInterface
     {
         return $response->withHeader('WWW-Authenticate', "Basic realm=\"{$this->realm}\"");
+    }
+
+    private function getAuthCredentials(ServerRequestInterface $request)
+    {
+        $username = $_SERVER['PHP_AUTH_USER'] ?? null;
+        $password = $_SERVER['PHP_AUTH_PW'] ?? null;
+        if ($username !== null || $password !== null) {
+            return [$username, $password];
+        }
+
+        /*
+         * Apache with php-cgi does not pass HTTP Basic authentication to PHP by default.
+         * To make it work, add the following line to to your .htaccess file:
+         *
+         * RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+         */
+        $headers = $request->getHeader('Authorization');
+        $authToken = !empty($headers) ? \reset($headers) : $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
+        if ($authToken !== null && strncasecmp($authToken, 'basic', 5) === 0) {
+            $parts = array_map(static function ($value) {
+                return strlen($value) === 0 ? null : $value;
+            }, explode(':', base64_decode(mb_substr($authToken, 6)), 2));
+
+            if (\count($parts) < 2) {
+                return [$parts[0], null];
+            }
+
+            return $parts;
+        }
+
+        return [null, null];
     }
 }
