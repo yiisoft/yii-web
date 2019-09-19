@@ -1,17 +1,4 @@
 <?php
-/**
- * @link      http://www.activemedia.uz/
- * @copyright Copyright (c) 2018. ActiveMedia Solutions LLC
- * @author    Rustam Mamadaminov <rmamdaminov@gmail.com>
- */
-
-/**
- * Created by PhpStorm.
- * User: rustam
- * Date: 9/18/19
- * Time: 5:07 PM
- */
-
 namespace Yiisoft\Yii\Web\Auth;
 
 

@@ -1,10 +1,4 @@
 <?php
-/**
- * @link      http://www.activemedia.uz/
- * @copyright Copyright (c) 2018. ActiveMedia Solutions LLC
- * @author    Rustam Mamadaminov <rmamdaminov@gmail.com>
- */
-
 namespace Yiisoft\Yii\Web\Auth;
 
 use Psr\Http\Message\ResponseInterface;

@@ -1,5 +1,4 @@
 <?php
-
 namespace Yiisoft\Yii\Web\Auth;
 
 
