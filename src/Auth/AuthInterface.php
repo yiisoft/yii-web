@@ -3,6 +3,7 @@
 namespace Yiisoft\Yii\Web\Auth;
 
 
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Yiisoft\Yii\Web\User\IdentityInterface;
 
@@ -21,12 +22,9 @@ interface AuthInterface
     /**
      * Generates challenges upon authentication failure.
      * For example, some appropriate HTTP headers may be generated.
+     * @param $response
+     * @return ResponseInterface
      */
-    public function challenge($response);
+    public function challenge(ResponseInterface $response): ResponseInterface;
 
-    /**
-     * Handles authentication failure.
-     * The implementation should normally throw UnauthorizedHttpException to indicate authentication failure.
-     */
-    public function handleFailure($response);
 }

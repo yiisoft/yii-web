@@ -46,11 +46,15 @@ final class AuthMiddleware implements MiddlewareInterface
 
         if ($identity === null) {
             $response = $this->responseFactory->createResponse(401);
+            $this->authenticator->challenge($response);
             $response->getBody()->write('Your request was made with invalid credentials.');
+
             return $response;
         }
 
+        $request->withAttribute($this->requestName, $identity);
 
+        return $handler->handle($request);
     }
 
     public function setRequestName($name): void

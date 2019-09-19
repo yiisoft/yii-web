@@ -1,0 +1,89 @@
+<?php
+/**
+ * @link      http://www.activemedia.uz/
+ * @copyright Copyright (c) 2018. ActiveMedia Solutions LLC
+ * @author    Rustam Mamadaminov <rmamdaminov@gmail.com>
+ */
+
+namespace Yiisoft\Yii\Web\Auth;
+
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Yiisoft\Yii\Web\User\IdentityInterface;
+use Yiisoft\Yii\Web\User\IdentityRepositoryInterface;
+
+/**
+ * HttpBasicAuth is an action filter that supports the HTTP Basic authentication method.
+ *
+ * > Tip: In case authentication does not work like expected, make sure your web server passes
+ * username and password to `$_SERVER['PHP_AUTH_USER']` and `$_SERVER['PHP_AUTH_PW']` variables.
+ * If you are using Apache with PHP-CGI, you might need to add this line to your `.htaccess` file:
+ * ```
+ * RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]
+ * ```
+ */
+class HttpBasicAuth implements AuthInterface
+{
+    /**
+     * @var string the HTTP authentication realm
+     */
+    public $realm = 'api';
+    /**
+     * @var callable a PHP callable that will authenticate the user with the HTTP basic auth information.
+     * The callable receives a username and a password as its parameters. It should return an identity object
+     * that matches the username and password. Null should be returned if there is no such identity.
+     * The callable will be called only if current user is not authenticated.
+     *
+     * The following code is a typical implementation of this callable:
+     *
+     * ```php
+     * function ($username, $password) {
+     *     return \app\models\User::findOne([
+     *         'username' => $username,
+     *         'password' => $password,
+     *     ]);
+     * }
+     * ```
+     *
+     * If this property is not set, the username information will be considered as an access token
+     * while the password information will be ignored. The [[\yii\web\User::loginByAccessToken()]]
+     * method will be called to authenticate and login the user.
+     */
+    public $auth;
+    private $identityRepository;
+
+    public function __construct(IdentityRepositoryInterface $identityRepository)
+    {
+        $this->identityRepository = $identityRepository;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function authenticate(ServerRequestInterface $request): ?IdentityInterface
+    {
+        [$username, $password] = $request->getAuthCredentials();
+
+        if ($this->auth) {
+            if ($username !== null || $password !== null) {
+                $identity = call_user_func($this->auth, $username, $password);
+
+                return $identity;
+            }
+        } elseif ($username !== null) {
+            $identity = $this->identityRepository->findIdentityByToken($username, get_class($this));
+
+            return $identity;
+        }
+
+        return null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function challenge(ResponseInterface $response): ResponseInterface
+    {
+        return $response->withHeader('WWW-Authenticate', "Basic realm=\"{$this->realm}\"");
+    }
+}
