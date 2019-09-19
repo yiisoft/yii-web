@@ -2,7 +2,7 @@
 /* @var $throwable \Throwable */
 /* @var $this \Yiisoft\Yii\Web\ErrorHandler\HtmlRenderer */
 
-use Yiisoft\Yii\Web\ErrorHandler\SolutionInterface;
+use Yiisoft\Yii\Web\ErrorHandler\FriendlyExceptionInterface;
 
 ?>
 <!doctype html>
@@ -402,10 +402,15 @@ body.mousedown pre {
             <?php endif; ?>
         </div>
         <h1>
-            <span><?= $this->addTypeLinks(get_class($throwable), $this->getThrowableName($throwable)) ?></span>
+            <?php if ($throwable instanceof FriendlyExceptionInterface): ?>
+                <span><?= $this->htmlEncode($throwable->getName())?></span>
+                <?= $this->addTypeLinks(get_class($throwable)) ?>
+            <?php else: ?>
+                <span><?= $this->addTypeLinks(get_class($throwable)) ?></span>
+            <?php endif ?>
         </h1>
         <h2><?= nl2br($this->htmlEncode($throwable->getMessage())) ?></h2>
-        <?php if ($throwable instanceof SolutionInterface): ?>
+        <?php if ($throwable instanceof FriendlyExceptionInterface && $throwable->getSolution() !== null): ?>
             <div class="solution"><?= nl2br($this->htmlEncode($throwable->getSolution())) ?></div>
         <?php endif ?>
 

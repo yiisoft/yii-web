@@ -36,7 +36,7 @@ final class ErrorHandler
      * @param string $file the filename that the error was raised in.
      * @param int $line the line number the error was raised at.
      *
-     * @throws \ErrorException
+     * @throws ErrorException
      */
     public function handleError(int $severity, string $message, string $file, int $line): void
     {
@@ -55,7 +55,7 @@ final class ErrorHandler
             }
         }
 
-        throw new \ErrorException($message, 0, $severity, $file, $line);
+        throw new ErrorException($message, $severity, $severity, $file, $line);
     }
 
     /**
@@ -131,16 +131,11 @@ final class ErrorHandler
     {
         unset($this->memoryReserve);
         $error = error_get_last();
-        if ($error !== null && $this->isFatalError($error)) {
-            $exception = new \ErrorException($error['message'], 0, $error['type'], $error['file'], $error['line']);
+        if ($error !== null && ErrorException::isFatalError($error)) {
+            $exception = new ErrorException($error['message'], $error['type'], $error['type'], $error['file'], $error['line']);
             $this->handleThrowable($exception);
             exit(1);
         }
-    }
-
-    private function isFatalError(array $error): bool
-    {
-        return isset($error['type']) && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_CORE_WARNING, E_COMPILE_ERROR, E_COMPILE_WARNING], true);
     }
 
     private function log(\Throwable $t/*, ServerRequestInterface $request*/): void
