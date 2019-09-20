@@ -51,9 +51,6 @@ class HttpBasicAuth implements AuthInterface
         $this->identityRepository = $identityRepository;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function authenticate(ServerRequestInterface $request): ?IdentityInterface
     {
         [$username, $password] = $this->getAuthCredentials($request);
@@ -73,9 +70,6 @@ class HttpBasicAuth implements AuthInterface
         return null;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function challenge(ResponseInterface $response): ResponseInterface
     {
         return $response->withHeader('WWW-Authenticate', "Basic realm=\"{$this->realm}\"");

@@ -1,7 +1,6 @@
 <?php
 namespace Yiisoft\Yii\Web\Auth;
 
-
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -11,7 +10,7 @@ use Yiisoft\Strings\StringHelper;
 
 final class AuthMiddleware implements MiddlewareInterface
 {
-    private const REQUEST_NAME = 'user';
+    private const REQUEST_NAME = 'auth_user';
 
     private $requestName = self::REQUEST_NAME;
     private $responseFactory;
@@ -44,7 +43,7 @@ final class AuthMiddleware implements MiddlewareInterface
         return $handler->handle($request);
     }
 
-    public function setRequestName($name): void
+    public function setRequestName(string $name): void
     {
         $this->requestName = $name;
     }
