@@ -2,6 +2,8 @@
 
 namespace Yiisoft\Yii\Web\ErrorHandler;
 
+use Yiisoft\FriendlyException\FriendlyExceptionInterface;
+
 /**
  * ErrorException represents a PHP error.
  */
