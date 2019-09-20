@@ -2,6 +2,7 @@
 namespace Yiisoft\Yii\Web\ErrorHandler;
 
 use Psr\Http\Message\ServerRequestInterface;
+use Yiisoft\FriendlyException\FriendlyExceptionInterface;
 
 abstract class ThrowableRenderer implements ThrowableRendererInterface
 {
