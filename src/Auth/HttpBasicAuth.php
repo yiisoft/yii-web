@@ -16,7 +16,7 @@ use Yiisoft\Yii\Web\User\IdentityRepositoryInterface;
  * RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]
  * ```
  */
-class HttpBasicAuth implements AuthInterface
+final class HttpBasicAuth implements AuthInterface
 {
     /**
      * @var string the HTTP authentication realm
@@ -40,10 +40,13 @@ class HttpBasicAuth implements AuthInterface
      * ```
      *
      * If this property is not set, the username information will be considered as an access token
-     * while the password information will be ignored. The [[\yii\web\User::loginByAccessToken()]]
+     * while the password information will be ignored. The [[Yiisoft\Yii\Web\User\IdentityRepositoryInterface::findIdentityByToken()]]
      * method will be called to authenticate and login the user.
      */
     public $auth;
+    /**
+     * @var IdentityRepositoryInterface
+     */
     private $identityRepository;
 
     public function __construct(IdentityRepositoryInterface $identityRepository)
@@ -57,7 +60,7 @@ class HttpBasicAuth implements AuthInterface
 
         if ($this->auth) {
             if ($username !== null || $password !== null) {
-                $identity = call_user_func($this->auth, $username, $password);
+                $identity = \call_user_func($this->auth, $username, $password);
 
                 return $identity;
             }
@@ -75,7 +78,7 @@ class HttpBasicAuth implements AuthInterface
         return $response->withHeader('WWW-Authenticate', "Basic realm=\"{$this->realm}\"");
     }
 
-    private function getAuthCredentials(ServerRequestInterface $request)
+    private function getAuthCredentials(ServerRequestInterface $request): array
     {
         $username = $_SERVER['PHP_AUTH_USER'] ?? null;
         $password = $_SERVER['PHP_AUTH_PW'] ?? null;
