@@ -40,7 +40,7 @@ class Flash
      * If false, the flash message will be automatically deleted in the next request.
      * @return mixed the flash message or an array of messages if addFlash was used
      */
-    public function getFlash(string $key, $defaultValue = null, bool $delete = false)
+    public function get(string $key, $defaultValue = null, bool $delete = false)
     {
         $flashes = $this->fetch();
 
@@ -48,7 +48,7 @@ class Flash
             $value = $flashes[$key];
 
             if ($delete) {
-                $this->removeFlash($key);
+                $this->remove($key);
             } elseif ($flashes[self::COUNTERS][$key] < 0) {
                 // mark for deletion in the next request
                 $flashes[self::COUNTERS][$key] = 1;
@@ -84,7 +84,7 @@ class Flash
      * If false, the flash messages will be automatically deleted in the next request.
      * @return array flash messages (key => message or key => [message1, message2]).
      */
-    public function getAllFlashes(bool $delete = false): array
+    public function getAll(bool $delete = false): array
     {
         $flashes = $this->fetch();
 
@@ -120,7 +120,7 @@ class Flash
      * regardless if it is accessed or not. If true (default value), the flash message will remain until after
      * it is accessed.
      */
-    public function setFlash(string $key, $value = true, bool $removeAfterAccess = true): void
+    public function set(string $key, $value = true, bool $removeAfterAccess = true): void
     {
         $flashes = $this->fetch();
         $flashes[self::COUNTERS][$key] = $removeAfterAccess ? -1 : 0;
@@ -138,7 +138,7 @@ class Flash
      * regardless if it is accessed or not. If true (default value), the flash message will remain until after
      * it is accessed.
      */
-    public function addFlash(string $key, $value = true, bool $removeAfterAccess = true): void
+    public function add(string $key, $value = true, bool $removeAfterAccess = true): void
     {
         $flashes = $this->fetch();
         $flashes[self::COUNTERS][$key] = $removeAfterAccess ? -1 : 0;
@@ -159,7 +159,7 @@ class Flash
      * @param string $key the key identifying the flash message.
      * @return mixed the removed flash message. Null if the flash message does not exist.
      */
-    public function removeFlash(string $key)
+    public function remove(string $key)
     {
         $flashes = $this->fetch();
 
@@ -174,7 +174,7 @@ class Flash
     /**
      * Removes all flash messages.
      */
-    public function removeAllFlashes(): void
+    public function removeAll(): void
     {
         $this->save([self::COUNTERS => []]);
     }
@@ -184,7 +184,7 @@ class Flash
      * @param string $key key identifying the flash message type
      * @return bool whether any flash messages exist under specified key
      */
-    public function hasFlash(string $key): bool
+    public function has(string $key): bool
     {
         $flashes = $this->fetch();
         return isset($flashes[$key], $flashes[self::COUNTERS][$key]);
