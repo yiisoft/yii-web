@@ -32,16 +32,16 @@ final class HtmlRenderer extends ThrowableRenderer
             throw new \RuntimeException("$template not found at $path");
         }
 
-        $renderer = function () use ($path, $params): void {
-            extract($params, EXTR_OVERWRITE);
-            require $path;
+        $renderer = function (): void {
+            extract(func_get_arg(1), EXTR_OVERWRITE);
+            require func_get_arg(0);
         };
 
         $obInitialLevel = ob_get_level();
         ob_start();
         ob_implicit_flush(0);
         try {
-            $renderer->bindTo($this)();
+            $renderer->bindTo($this)($path, $params);
             return ob_get_clean();
         } catch (\Throwable $e) {
             while (ob_get_level() > $obInitialLevel) {

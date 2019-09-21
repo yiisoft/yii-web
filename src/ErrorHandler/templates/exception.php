@@ -2,7 +2,7 @@
 /* @var $throwable \Throwable */
 /* @var $this \Yiisoft\Yii\Web\ErrorHandler\HtmlRenderer */
 
-use Yiisoft\Yii\Web\ErrorHandler\FriendlyExceptionInterface;
+use Yiisoft\FriendlyException\FriendlyExceptionInterface;
 
 ?>
 <!doctype html>
