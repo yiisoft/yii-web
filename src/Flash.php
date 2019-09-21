@@ -18,18 +18,9 @@ class Flash
      */
     private $session;
 
-    private static $init;
-
     public function __construct(SessionInterface $session)
     {
         $this->session = $session;
-
-        // todo: not sure if it's ok
-        $this->session->open();
-        if (self::$init !== $this->session->getId()) {
-            self::$init = $this->session->getId();
-            $this->updateCounters();
-        }
     }
 
     /**
@@ -190,6 +181,7 @@ class Flash
         return isset($flashes[$key], $flashes[self::COUNTERS][$key]);
     }
 
+
     /**
      * Updates the counters for flash messages and removes outdated flash messages.
      * This method should be called once after session initialization.
@@ -219,8 +211,17 @@ class Flash
         $this->save($flashes);
     }
 
+    private static $init;
+
     private function fetch(): array
     {
+        // ensure session is active (and has id)
+        $this->session->open();
+        if (self::$init !== $this->session->getId()) {
+            self::$init = $this->session->getId();
+            $this->updateCounters();
+        }
+
         return $this->session->get($this->flashParam, []);
     }
 
