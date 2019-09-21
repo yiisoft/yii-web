@@ -10,7 +10,7 @@ use Yiisoft\Yii\Web\User\IdentityRepositoryInterface;
  * HttpBasicAuth is an action filter that supports the HTTP Basic authentication method.
  *
  * > Tip: In case authentication does not work like expected, make sure your web server passes
- * username and password to `$_SERVER['PHP_AUTH_USER']` and `$_SERVER['PHP_AUTH_PW']` variables.
+ * username and password to `$request->getServerParams()['PHP_AUTH_USER']` and `$request->getServerParams()['PHP_AUTH_PW']` variables.
  * If you are using Apache with PHP-CGI, you might need to add this line to your `.htaccess` file:
  * ```
  * RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]
@@ -21,7 +21,7 @@ final class HttpBasicAuth implements AuthInterface
     /**
      * @var string the HTTP authentication realm
      */
-    public $realm = 'api';
+    private $realm = 'api';
     /**
      * @var callable a PHP callable that will authenticate the user with the HTTP basic auth information.
      * The callable receives a username and a password as its parameters. It should return an identity object
@@ -43,7 +43,7 @@ final class HttpBasicAuth implements AuthInterface
      * while the password information will be ignored. The [[Yiisoft\Yii\Web\User\IdentityRepositoryInterface::findIdentityByToken()]]
      * method will be called to authenticate and login the user.
      */
-    public $auth;
+    private $auth;
     /**
      * @var IdentityRepositoryInterface
      */
@@ -78,10 +78,20 @@ final class HttpBasicAuth implements AuthInterface
         return $response->withHeader('WWW-Authenticate', "Basic realm=\"{$this->realm}\"");
     }
 
+    public function setAuth(callable $auth): void
+    {
+        $this->auth = $auth;
+    }
+
+    public function setRealm(string $realm): void
+    {
+        $this->realm = $realm;
+    }
+
     private function getAuthCredentials(ServerRequestInterface $request): array
     {
-        $username = $_SERVER['PHP_AUTH_USER'] ?? null;
-        $password = $_SERVER['PHP_AUTH_PW'] ?? null;
+        $username = $request->getServerParams()['PHP_AUTH_USER'] ?? null;
+        $password = $request->getServerParams()['PHP_AUTH_PW'] ?? null;
         if ($username !== null || $password !== null) {
             return [$username, $password];
         }
@@ -93,7 +103,9 @@ final class HttpBasicAuth implements AuthInterface
          * RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
          */
         $headers = $request->getHeader('Authorization');
-        $authToken = !empty($headers) ? \reset($headers) : $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
+        $authToken = !empty($headers)
+            ? \reset($headers)
+            : $request->getServerParams()['REDIRECT_HTTP_AUTHORIZATION'] ?? null;
         if ($authToken !== null && strncasecmp($authToken, 'basic', 5) === 0) {
             $parts = array_map(static function ($value) {
                 return strlen($value) === 0 ? null : $value;
