@@ -4,14 +4,11 @@ namespace Yiisoft\Yii\Web;
 
 use Yiisoft\Yii\Web\Session\SessionInterface;
 
-class Flash
+final class Flash
 {
     private const COUNTERS = '__counters';
 
-    /**
-     * @var string the name of the session variable that stores the flash message data.
-     */
-    public $flashParam = '__flash';
+    private const FLASH_PARAM = '__flash';
 
     /**
      * @var SessionInterface
@@ -188,7 +185,7 @@ class Flash
      */
     private function updateCounters(): void
     {
-        $flashes = $this->session->get($this->flashParam, []);
+        $flashes = $this->session->get(self::FLASH_PARAM, []);
         if (!is_array($flashes)) {
             $flashes = [self::COUNTERS => []];
         }
@@ -222,11 +219,11 @@ class Flash
             $this->updateCounters();
         }
 
-        return $this->session->get($this->flashParam, []);
+        return $this->session->get(self::FLASH_PARAM, []);
     }
 
     private function save(array $flashes): void
     {
-        $this->session->set($this->flashParam, $flashes);
+        $this->session->set(self::FLASH_PARAM, $flashes);
     }
 }
