@@ -1,6 +1,9 @@
 <?php
 /* @var $throwable \Throwable */
 /* @var $this \Yiisoft\Yii\Web\ErrorHandler\HtmlRenderer */
+
+use Yiisoft\FriendlyException\FriendlyExceptionInterface;
+
 ?>
 <!doctype html>
 <html lang="en">
@@ -109,6 +112,11 @@ h1,h2,h3,p,img,ul li{
     font-size: 20px;
     line-height: 1.25;
 }
+
+.header .solution {
+    font-family: Arial, sans-serif;
+}
+
 .header pre{
     margin: 10px 0;
     overflow-y: scroll;
@@ -394,9 +402,17 @@ body.mousedown pre {
             <?php endif; ?>
         </div>
         <h1>
-            <span><?= $this->addTypeLinks(get_class($throwable), $this->getThrowableName($throwable)) ?></span>
+            <?php if ($throwable instanceof FriendlyExceptionInterface): ?>
+                <span><?= $this->htmlEncode($throwable->getName())?></span>
+                <?= $this->addTypeLinks(get_class($throwable)) ?>
+            <?php else: ?>
+                <span><?= $this->addTypeLinks(get_class($throwable)) ?></span>
+            <?php endif ?>
         </h1>
         <h2><?= nl2br($this->htmlEncode($throwable->getMessage())) ?></h2>
+        <?php if ($throwable instanceof FriendlyExceptionInterface && $throwable->getSolution() !== null): ?>
+            <div class="solution"><?= nl2br($this->htmlEncode($throwable->getSolution())) ?></div>
+        <?php endif ?>
 
         <?= $this->renderPreviousExceptions($throwable) ?>
     </div>

@@ -9,7 +9,7 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Router\Method;
 use Yiisoft\Security\Random;
-use Yiisoft\Security\TokenMasker;
+use Yiisoft\Security\TokenMask;
 use Yiisoft\Yii\Web\Session\SessionInterface;
 
 final class Csrf implements MiddlewareInterface
@@ -41,7 +41,7 @@ final class Csrf implements MiddlewareInterface
             return $response;
         }
 
-        $request = $request->withAttribute($this->requestName, TokenMasker::mask($token));
+        $request = $request->withAttribute($this->requestName, TokenMask::apply($token));
 
         return $handler->handle($request);
     }
@@ -90,6 +90,6 @@ final class Csrf implements MiddlewareInterface
             $token = \reset($headers);
         }
 
-        return TokenMasker::unmask($token);
+        return TokenMask::remove($token);
     }
 }
