@@ -52,7 +52,7 @@ final class RedirectTest extends TestCase
 
         $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
 
-        $this->assertSame($response->getStatusCode(), Redirect::TEMPORARY);
+        $this->assertSame($response->getStatusCode(), 302);
     }
 
     /**
@@ -66,7 +66,7 @@ final class RedirectTest extends TestCase
 
         $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
 
-        $this->assertSame($response->getStatusCode(), Redirect::PERMANENT);
+        $this->assertSame($response->getStatusCode(), 301);
     }
 
     /**
