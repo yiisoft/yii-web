@@ -20,7 +20,7 @@ final class Redirect implements MiddlewareInterface
     private $responseFactory;
     private $urlGenerator;
 
-    private function __construct(ResponseFactoryInterface $responseFactory, UrlGeneratorInterface $urlGenerator)
+    public function __construct(ResponseFactoryInterface $responseFactory, UrlGeneratorInterface $urlGenerator)
     {
         $this->responseFactory = $responseFactory;
         $this->urlGenerator = $urlGenerator;
