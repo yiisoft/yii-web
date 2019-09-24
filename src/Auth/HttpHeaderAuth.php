@@ -40,7 +40,6 @@ class HttpHeaderAuth implements AuthInterface
     {
         $authToken = $this->getAuthToken($request);
         if ($authToken !== null) {
-
             return $this->identityRepository->findIdentityByToken($authToken, get_class($this));
         }
 

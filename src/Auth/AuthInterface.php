@@ -24,5 +24,4 @@ interface AuthInterface
      * @return ResponseInterface
      */
     public function challenge(ResponseInterface $response): ResponseInterface;
-
 }
