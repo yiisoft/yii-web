@@ -7,7 +7,7 @@ use Yiisoft\Yii\Web\User\IdentityInterface;
 use Yiisoft\Yii\Web\User\IdentityRepositoryInterface;
 
 /**
- * QueryParamAuth is an action filter that supports the authentication based on the access token passed through a query parameter.
+ * QueryParamAuth supports the authentication based on the access token passed through a query parameter.
  */
 final class QueryParamAuth implements AuthInterface
 {

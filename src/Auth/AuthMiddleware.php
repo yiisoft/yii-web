@@ -25,20 +25,16 @@ final class AuthMiddleware implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        if ($this->isOptional($request)) {
-            return $handler->handle($request);
-        }
         $identity = $this->authenticator->authenticate($request);
+        $request->withAttribute($this->requestName, $identity);
 
-        if ($identity === null) {
+        if ($identity === null && !$this->isOptional($request)) {
             $response = $this->responseFactory->createResponse(401);
             $response = $this->authenticator->challenge($response);
             $response->getBody()->write('Your request was made with invalid credentials.');
 
             return $response;
         }
-
-        $request->withAttribute($this->requestName, $identity);
 
         return $handler->handle($request);
     }

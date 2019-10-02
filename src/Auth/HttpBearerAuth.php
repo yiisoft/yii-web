@@ -4,7 +4,7 @@ namespace Yiisoft\Yii\Web\Auth;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * HttpBearerAuth is an action filter that supports the authentication method based on HTTP Bearer token.
+ * HttpBearerAuth supports the authentication method based on HTTP Bearer token.
  */
 final class HttpBearerAuth extends HttpHeaderAuth
 {

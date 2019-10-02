@@ -7,7 +7,7 @@ use Yiisoft\Yii\Web\User\IdentityInterface;
 use Yiisoft\Yii\Web\User\IdentityRepositoryInterface;
 
 /**
- * HttpHeaderAuth is an action filter that supports HTTP authentication through HTTP Headers.
+ * HttpHeaderAuth supports HTTP authentication through HTTP Headers.
  *
  * The default implementation of HttpHeaderAuth uses the [[Yiisoft\Yii\Web\User\IdentityRepositoryInterface::findIdentityByToken()|findIdentityByToken()]]
  * method of the `user` application component and passes the value of the `X-Api-Key` header. This implementation is used

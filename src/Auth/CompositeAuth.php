@@ -7,9 +7,9 @@ use Psr\Http\Message\ServerRequestInterface;
 use Yiisoft\Yii\Web\User\IdentityInterface;
 
 /**
- * CompositeAuth is an action filter that supports multiple authentication methods at the same time.
+ * CompositeAuth allows multiple authentication methods at the same time.
  *
- * The authentication methods contained by CompositeAuth are configured via [[authMethods]],
+ * The authentication methods contained by CompositeAuth are configured via {@see setAuthMethods()},
  * which is a list of supported authentication class configurations.
  */
 final class CompositeAuth implements AuthInterface
@@ -34,7 +34,7 @@ final class CompositeAuth implements AuthInterface
             if (!$auth instanceof AuthInterface) {
                 $this->authMethods[$i] = $auth = $this->container->get($auth);
                 if (!$auth instanceof AuthInterface) {
-                    throw new \RuntimeException(get_class($auth) . ' must implement Yiisoft\Yii\Web\Auth\AuthInterface');
+                    throw new \RuntimeException(get_class($auth) . ' must implement ' . AuthInterface::class);
                 }
             }
 

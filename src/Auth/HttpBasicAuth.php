@@ -7,7 +7,7 @@ use Yiisoft\Yii\Web\User\IdentityInterface;
 use Yiisoft\Yii\Web\User\IdentityRepositoryInterface;
 
 /**
- * HttpBasicAuth is an action filter that supports the HTTP Basic authentication method.
+ * HttpBasicAuth supports the HTTP Basic authentication method.
  *
  * > Tip: In case authentication does not work like expected, make sure your web server passes
  * username and password to `$request->getServerParams()['PHP_AUTH_USER']` and `$request->getServerParams()['PHP_AUTH_PW']` variables.
@@ -28,19 +28,8 @@ final class HttpBasicAuth implements AuthInterface
      * that matches the username and password. Null should be returned if there is no such identity.
      * The callable will be called only if current user is not authenticated.
      *
-     * The following code is a typical implementation of this callable:
-     *
-     * ```php
-     * function ($username, $password) {
-     *     return \app\models\User::findOne([
-     *         'username' => $username,
-     *         'password' => $password,
-     *     ]);
-     * }
-     * ```
-     *
      * If this property is not set, the username information will be considered as an access token
-     * while the password information will be ignored. The [[Yiisoft\Yii\Web\User\IdentityRepositoryInterface::findIdentityByToken()]]
+     * while the password information will be ignored. The {@see \Yiisoft\Yii\Web\User\IdentityRepositoryInterface::findIdentityByToken()}
      * method will be called to authenticate and login the user.
      */
     private $auth;
