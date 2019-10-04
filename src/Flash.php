@@ -89,7 +89,7 @@ final class Flash implements FlashInterface
     {
         $flashes = $this->fetch();
 
-        $value = isset($flashes[$key], $flashes[self::COUNTERS][$key]) ? $flashes[$key] : null;
+        $value = isset($flashes[$key], $flashes[self::COUNTERS][$key]) ? $flashes[$key] : $defaultValue;
         unset($flashes[$key], $flashes[self::COUNTERS][$key]);
 
         $this->save($flashes);
