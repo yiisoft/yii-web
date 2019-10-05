@@ -83,35 +83,16 @@ final class Flash implements FlashInterface
         $this->save($flashes);
     }
 
-    public function remove(string $key)
+    public function remove(string $key): void
     {
         $flashes = $this->fetch();
-
-        $value = isset($flashes[$key], $flashes[self::COUNTERS][$key]) ? $flashes[$key] : null;
         unset($flashes[$key], $flashes[self::COUNTERS][$key]);
-
         $this->save($flashes);
-
-        return $value;
     }
 
-    public function removeAll(): array
+    public function removeAll(): void
     {
-        $flashes = $this->fetch();
-
-        $list = [];
-        foreach ($flashes as $key => $value) {
-            if ($key === self::COUNTERS) {
-                continue;
-            }
-
-            $list[$key] = $value;
-            unset($flashes[self::COUNTERS][$key], $flashes[$key]);
-        }
-
-        $this->save($flashes);
-
-        return $list;
+        $this->save([self::COUNTERS => []]);
     }
 
     public function has(string $key): bool

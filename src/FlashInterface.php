@@ -47,15 +47,13 @@ interface FlashInterface
     /**
      * Removes a flash message.
      * @param string $key the key identifying the flash message.
-     * @return mixed the removed flash message or default value if the flash message does not exist.
      */
-    public function remove(string $key);
+    public function remove(string $key): void;
 
     /**
      * Removes all flash messages.
-     * @return array flash messages (key => message or key => [message1, message2]).
      */
-    public function removeAll(): array;
+    public function removeAll(): void;
 
     /**
      * Returns a value indicating whether there are flash messages associated with the specified key.
