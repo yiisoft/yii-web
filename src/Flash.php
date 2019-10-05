@@ -20,15 +20,13 @@ final class Flash implements FlashInterface
         $this->session = $session;
     }
 
-    public function get(string $key, $defaultValue = null)
+    public function get(string $key)
     {
         $flashes = $this->fetch();
 
         if (!isset($flashes[$key], $flashes[self::COUNTERS][$key])) {
-            return $defaultValue;
+            return null;
         }
-
-        $value = $flashes[$key];
 
         if ($flashes[self::COUNTERS][$key] < 0) {
             // mark for deletion in the next request
@@ -36,7 +34,7 @@ final class Flash implements FlashInterface
             $this->save($flashes);
         }
 
-        return $value;
+        return $flashes[$key];
     }
 
     public function getAll(): array
@@ -85,11 +83,11 @@ final class Flash implements FlashInterface
         $this->save($flashes);
     }
 
-    public function remove(string $key, $defaultValue = null)
+    public function remove(string $key)
     {
         $flashes = $this->fetch();
 
-        $value = isset($flashes[$key], $flashes[self::COUNTERS][$key]) ? $flashes[$key] : $defaultValue;
+        $value = isset($flashes[$key], $flashes[self::COUNTERS][$key]) ? $flashes[$key] : null;
         unset($flashes[$key], $flashes[self::COUNTERS][$key]);
 
         $this->save($flashes);

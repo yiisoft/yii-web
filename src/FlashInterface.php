@@ -7,11 +7,9 @@ interface FlashInterface
     /**
      * Returns a flash message.
      * @param string $key the key identifying the flash message
-     * @param mixed $defaultValue value to be returned if the flash message does not exist.
-     * The flash message will be automatically deleted in the next request.
      * @return mixed the flash message or an array of messages if addFlash was used
      */
-    public function get(string $key, $defaultValue = null);
+    public function get(string $key);
 
     /**
      * Returns all flash messages.
@@ -49,10 +47,9 @@ interface FlashInterface
     /**
      * Removes a flash message.
      * @param string $key the key identifying the flash message.
-     * @param mixed $defaultValue value to be returned if the flash message does not exist.
      * @return mixed the removed flash message or default value if the flash message does not exist.
      */
-    public function remove(string $key, $defaultValue = null);
+    public function remove(string $key);
 
     /**
      * Removes all flash messages.
