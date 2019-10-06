@@ -20,28 +20,24 @@ final class Flash implements FlashInterface
         $this->session = $session;
     }
 
-    public function get(string $key, $defaultValue = null, bool $delete = false)
+    public function get(string $key)
     {
         $flashes = $this->fetch();
 
-        if (isset($flashes[$key], $flashes[self::COUNTERS][$key])) {
-            $value = $flashes[$key];
-
-            if ($delete) {
-                $this->remove($key);
-            } elseif ($flashes[self::COUNTERS][$key] < 0) {
-                // mark for deletion in the next request
-                $flashes[self::COUNTERS][$key] = 1;
-                $this->save($flashes);
-            }
-
-            return $value;
+        if (!isset($flashes[$key], $flashes[self::COUNTERS][$key])) {
+            return null;
         }
 
-        return $defaultValue;
+        if ($flashes[self::COUNTERS][$key] < 0) {
+            // mark for deletion in the next request
+            $flashes[self::COUNTERS][$key] = 1;
+            $this->save($flashes);
+        }
+
+        return $flashes[$key];
     }
 
-    public function getAll(bool $delete = false): array
+    public function getAll(): array
     {
         $flashes = $this->fetch();
 
@@ -52,9 +48,7 @@ final class Flash implements FlashInterface
             }
 
             $list[$key] = $value;
-            if ($delete) {
-                unset($flashes[self::COUNTERS][$key], $flashes[$key]);
-            } elseif ($flashes[self::COUNTERS][$key] < 0) {
+            if ($flashes[self::COUNTERS][$key] < 0) {
                 // mark for deletion in the next request
                 $flashes[self::COUNTERS][$key] = 1;
             }
@@ -89,16 +83,11 @@ final class Flash implements FlashInterface
         $this->save($flashes);
     }
 
-    public function remove(string $key)
+    public function remove(string $key): void
     {
         $flashes = $this->fetch();
-
-        $value = isset($flashes[$key], $flashes[self::COUNTERS][$key]) ? $flashes[$key] : null;
         unset($flashes[$key], $flashes[self::COUNTERS][$key]);
-
         $this->save($flashes);
-
-        return $value;
     }
 
     public function removeAll(): void
