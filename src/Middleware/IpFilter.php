@@ -16,6 +16,7 @@ final class IpFilter implements MiddlewareInterface
     private $responseFactory;
     /**
      * If not configured, then BasicNetworkResolver is used.
+     *
      * @var NetworkResolverInterface
      */
     private $networkResolver;

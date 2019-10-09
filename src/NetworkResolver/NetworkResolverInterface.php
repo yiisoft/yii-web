@@ -3,7 +3,6 @@
 
 namespace Yiisoft\Yii\Web\NetworkResolver;
 
-
 use Psr\Http\Message\ServerRequestInterface;
 
 interface NetworkResolverInterface

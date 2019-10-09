@@ -15,7 +15,7 @@ class BasicNetworkResolver implements NetworkResolverInterface
 
     public function getRemoteIp(): string
     {
-        if($this->serverRequest === null) {
+        if ($this->serverRequest === null) {
             throw new \RuntimeException('ServerRequest doesn\'t set, see NetworkResolverInterface::withServerRequest()!');
         }
         return $this->serverRequest->getServerParams()['REMOTE_ADDR'];
