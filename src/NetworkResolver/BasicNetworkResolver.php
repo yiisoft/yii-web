@@ -3,33 +3,27 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\Web\NetworkResolver;
 
-
 use Psr\Http\Message\ServerRequestInterface;
 
 class BasicNetworkResolver implements NetworkResolverInterface
 {
-    /**
-     * @var ServerRequestInterface|null
-     */
-    private $serverRequest;
-
-    public function getRemoteIp(): string
+    public function getRemoteIp(ServerRequestInterface $serverRequest): string
     {
-        if ($this->serverRequest === null) {
-            throw new \RuntimeException('ServerRequest doesn\'t set, see NetworkResolverInterface::withServerRequest()!');
-        }
-        return $this->serverRequest->getServerParams()['REMOTE_ADDR'];
+        return $serverRequest->getServerParams()['REMOTE_ADDR'];
     }
 
-    public function getUserIp(): string
+    public function getUserIp(ServerRequestInterface $serverRequest): string
     {
-        return $this->getRemoteIp();
+        return $this->getRemoteIp($serverRequest);
     }
 
-    public function withServerRequest(ServerRequestInterface $serverRequest)
+    public function getRequestScheme(ServerRequestInterface $serverRequest): string
     {
-        $new = clone $this;
-        $new->serverRequest = $serverRequest;
-        return $new;
+        return $serverRequest->getUri()->getScheme();
+    }
+
+    public function isSecureConnection(ServerRequestInterface $serverRequest): bool
+    {
+        return $this->getRequestScheme($serverRequest) === 'https';
     }
 }

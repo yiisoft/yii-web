@@ -47,8 +47,7 @@ final class IpFilter implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $networkResolver = $this->networkResolver->withServerRequest($request);
-        if ($networkResolver->getUserIp() !== $this->allowedIp) {
+        if ($this->networkResolver->getUserIp($request) !== $this->allowedIp) {
             $response = $this->responseFactory->createResponse(403);
             $response->getBody()->write('Access denied!');
             return $response;
