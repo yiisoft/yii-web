@@ -7,17 +7,27 @@ use Psr\Http\Message\ServerRequestInterface;
 
 interface NetworkResolverInterface
 {
-    public function getRemoteIp(ServerRequestInterface $serverRequest): string;
+    /**
+     * @return static
+     */
+    public function setServerRequest(ServerRequestInterface $serverRequest);
 
-    public function getUserIp(ServerRequestInterface $serverRequest): string;
+    /**
+     * @return static
+     */
+    public function withServerRequest(ServerRequestInterface $serverRequest);
+
+    public function getRemoteIp(): string;
+
+    public function getUserIp(): string;
 
     /**
      * The schema for the request from the user
      */
-    public function getRequestScheme(ServerRequestInterface $serverRequest): string;
+    public function getRequestScheme(): string;
 
     /**
      * The connection is secure from the user
      */
-    public function isSecureConnection(ServerRequestInterface $serverRequest): bool;
+    public function isSecureConnection(): bool;
 }
