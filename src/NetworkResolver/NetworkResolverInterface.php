@@ -7,10 +7,6 @@ use Psr\Http\Message\ServerRequestInterface;
 
 interface NetworkResolverInterface
 {
-    /**
-     * @return static
-     */
-    public function setServerRequest(ServerRequestInterface $serverRequest);
 
     /**
      * @return static

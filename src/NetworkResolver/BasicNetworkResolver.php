@@ -7,10 +7,14 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class BasicNetworkResolver implements NetworkResolverInterface
 {
+    protected const SCHEME_HTTPS = 'https';
+
     /**
      * @var ServerRequestInterface|null
      */
     private $serverRequest;
+
+    private $secureProtocolHeaders = [];
 
     public function getRemoteIp(): string
     {
@@ -28,26 +32,42 @@ class BasicNetworkResolver implements NetworkResolverInterface
 
     public function getRequestScheme(): string
     {
-        return $this->getServerRequest()->getUri()->getScheme();
+        $request = $this->getServerRequest();
+        foreach ($this->secureProtocolHeaders as $header => $values) {
+            if (!$request->hasHeader($header) || !in_array(strtolower($request->getHeader($header)[0]), $values)) {
+                continue;
+            }
+            return self::SCHEME_HTTPS;
+        }
+        return $request->getUri()->getScheme();
     }
 
     public function isSecureConnection(): bool
     {
-        return $this->getRequestScheme() === 'https';
-    }
-
-    public function setServerRequest(ServerRequestInterface $serverRequest)
-    {
-        $this->serverRequest = $serverRequest;
-        return $this;
+        return $this->getRequestScheme() === self::SCHEME_HTTPS;
     }
 
     public function withServerRequest(ServerRequestInterface $serverRequest)
     {
         $new = clone $this;
-        $new->setServerRequest($serverRequest);
+        $new->serverRequest = $serverRequest;
         return $new;
     }
+
+    /**
+     * @TODO: currently https only, callback, http
+     * @return static
+     */
+    public function withNewSecureProtocolHeader(string $header, array $valuesOfSecureProtocol)
+    {
+        $new = clone $this;
+        if (count($valuesOfSecureProtocol) === 0) {
+            throw new \RuntimeException('$valuesOfSecureProtocol cannot be an empty array!');
+        }
+        $new->secureProtocolHeaders[$header] = array_map('strtolower', $valuesOfSecureProtocol);
+        return $new;
+    }
+
 
     protected function getServerRequest(bool $throwIfNull = true): ?ServerRequestInterface
     {
