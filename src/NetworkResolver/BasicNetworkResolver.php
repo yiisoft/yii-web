@@ -14,7 +14,7 @@ class BasicNetworkResolver implements NetworkResolverInterface
      */
     private $serverRequest;
 
-    private $secureProtocolHeaders = [];
+    private $protocolHeaders = [];
 
     public function getRemoteIp(): string
     {
@@ -30,18 +30,34 @@ class BasicNetworkResolver implements NetworkResolverInterface
         return $this->getRemoteIp();
     }
 
+    /**
+     * User's request scheme
+     */
     public function getRequestScheme(): string
     {
         $request = $this->getServerRequest();
-        foreach ($this->secureProtocolHeaders as $header => $values) {
-            if (!$request->hasHeader($header) || !in_array(strtolower($request->getHeader($header)[0]), $values)) {
+        foreach ($this->protocolHeaders as $header => $data) {
+            if (!$request->hasHeader($header)) {
                 continue;
             }
-            return self::SCHEME_HTTPS;
+            $headerValue = $request->getHeader($header)[0];
+            if (is_callable($data)) {
+                return call_user_func($data, $headerValue, $header, $request);
+            }
+            $headerValue = strtolower($headerValue);
+            foreach ($data as $protocol => $acceptedValues) {
+                if (!in_array($headerValue, $acceptedValues)) {
+                    continue;
+                }
+                return $protocol;
+            }
         }
         return $request->getUri()->getScheme();
     }
 
+    /**
+     * User's connection security
+     */
     public function isSecureConnection(): bool
     {
         return $this->getRequestScheme() === self::SCHEME_HTTPS;
@@ -55,16 +71,24 @@ class BasicNetworkResolver implements NetworkResolverInterface
     }
 
     /**
-     * @TODO: currently https only, callback, http
+     * @TODO: documentation
+     * @param callable|array $protocolAndAcceptedValues
      * @return static
      */
-    public function withNewSecureProtocolHeader(string $header, array $valuesOfSecureProtocol)
+    public function withNewProtocolHeader(string $header, $protocolAndAcceptedValues)
     {
         $new = clone $this;
-        if (count($valuesOfSecureProtocol) === 0) {
-            throw new \RuntimeException('$valuesOfSecureProtocol cannot be an empty array!');
+        if (is_callable($protocolAndAcceptedValues)) {
+            $new->protocolHeaders[$header] = $protocolAndAcceptedValues;
+        } elseif (!is_array($protocolAndAcceptedValues)) {
+            throw new \RuntimeException('$protocolAndAcceptedValues is not array nor callable!');
+        } elseif (is_array($protocolAndAcceptedValues) && count($protocolAndAcceptedValues) === 0) {
+            throw new \RuntimeException('$protocolAndAcceptedValues cannot be an empty array!');
         }
-        $new->secureProtocolHeaders[$header] = array_map('strtolower', $valuesOfSecureProtocol);
+        $new->protocolHeaders[$header] = [];
+        foreach ($protocolAndAcceptedValues as $protocol => $acceptedValues) {
+            $new->protocolHeaders[$header][$protocol] = array_map('strtolower', (array)$acceptedValues);
+        }
         return $new;
     }
 

@@ -18,12 +18,12 @@ interface NetworkResolverInterface
     public function getUserIp(): string;
 
     /**
-     * The schema for the request from the user
+     * Relevant request schema
      */
     public function getRequestScheme(): string;
 
     /**
-     * The connection is secure from the user
+     * Relevant security of connection
      */
     public function isSecureConnection(): bool;
 }

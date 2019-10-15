@@ -17,36 +17,47 @@ class NetworkResolverTest extends TestCase
 
     public function simpleDataProvider()
     {
+        // @TODO Only relevant tests for middleware
         return [
             'httpNotModify' => ['http', [], null, 'http'],
             'httpsNotModify' => ['https', [], null, 'https'],
             'httpNotMatchedProtocolHeader' => [
                 'http',
                 ['x-forwarded-proto' => ['https']],
-                ['test' => ['https']],
+                ['test' => ['https' => 'https']],
                 'http'
             ],
             'httpNotMatchedProtocolHeaderValue' => [
                 'http',
                 ['x-forwarded-proto' => ['https']],
-                ['x-forwarded-proto' => ['test']],
+                ['x-forwarded-proto' => ['https' => 'test']],
                 'http'
             ],
-            'httpToHttps' => ['http', ['x-forwarded-proto' => ['https']], ['x-forwarded-proto' => ['https']], 'https'],
+            'httpToHttps' => [
+                'http',
+                ['x-forwarded-proto' => ['https']],
+                ['x-forwarded-proto' => ['https' => 'https']],
+                'https'
+            ],
             'httpToHttpsUpperCase' => [
                 'http',
                 ['x-forwarded-proto' => ['https']],
-                ['x-forwarded-proto' => ['HTTPS']],
+                ['x-forwarded-proto' => ['https' => 'HTTPS']],
                 'https'
             ],
             'httpToHttpsMultiValue' => [
                 'http',
                 ['x-forwarded-proto' => ['https']],
-                ['x-forwarded-proto' => ['on', 's', 'https']],
+                ['x-forwarded-proto' => ['https' => ['on', 's', 'https']]],
                 'https'
             ],
-            // @TODO: implement https -> http
-            'httpsToHttp' => ['https', ['x-forwarded-proto' => ['http']], ['x-forwarded-proto' => ['https']], 'http'],
+            'httpsToHttp' => [
+                'https',
+                ['x-forwarded-proto' => ['http']],
+                ['x-forwarded-proto' => ['http' => 'http']],
+                'http'
+            ],
+            // @TODO callback test
         ];
     }
 
@@ -73,7 +84,7 @@ class NetworkResolverTest extends TestCase
         $nr = new BasicNetworkResolver();
         if ($protocolHeaders !== null) {
             foreach ($protocolHeaders as $header => $values) {
-                $nr = $nr->withNewSecureProtocolHeader($header, $values);
+                $nr = $nr->withNewProtocolHeader($header, $values);
             }
         }
         $middleware = new NetworkResolver($nr);
