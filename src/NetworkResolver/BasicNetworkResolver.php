@@ -5,6 +5,15 @@ namespace Yiisoft\Yii\Web\NetworkResolver;
 
 use Psr\Http\Message\ServerRequestInterface;
 
+/**
+ * Basic network resolver
+ *
+ * It can be used in the following cases:
+ * - not required IP resolve to access the user's IP
+ * - user's IP is already resolved (eg ngx_http_realip_module or similar)
+ *
+ * @package Yiisoft\Yii\Web\NetworkResolver
+ */
 class BasicNetworkResolver implements NetworkResolverInterface
 {
     protected const SCHEME_HTTPS = 'https';
@@ -40,11 +49,11 @@ class BasicNetworkResolver implements NetworkResolverInterface
             if (!$request->hasHeader($header)) {
                 continue;
             }
-            $headerValue = $request->getHeader($header)[0];
+            $headerValues = $request->getHeader($header);
             if (is_callable($data)) {
-                return call_user_func($data, $headerValue, $header, $request);
+                return call_user_func($data, $headerValues, $header, $request);
             }
-            $headerValue = strtolower($headerValue);
+            $headerValue = strtolower($headerValues[0]);
             foreach ($data as $protocol => $acceptedValues) {
                 if (!in_array($headerValue, $acceptedValues)) {
                     continue;
@@ -84,14 +93,17 @@ class BasicNetworkResolver implements NetworkResolverInterface
             throw new \RuntimeException('$protocolAndAcceptedValues is not array nor callable!');
         } elseif (is_array($protocolAndAcceptedValues) && count($protocolAndAcceptedValues) === 0) {
             throw new \RuntimeException('$protocolAndAcceptedValues cannot be an empty array!');
-        }
-        $new->protocolHeaders[$header] = [];
-        foreach ($protocolAndAcceptedValues as $protocol => $acceptedValues) {
-            $new->protocolHeaders[$header][$protocol] = array_map('strtolower', (array)$acceptedValues);
+        } else {
+            $new->protocolHeaders[$header] = [];
+            foreach ($protocolAndAcceptedValues as $protocol => $acceptedValues) {
+                if (!is_string($protocol)) {
+                    throw new \RuntimeException('The protocol must be type of string!');
+                }
+                $new->protocolHeaders[$header][$protocol] = array_map('strtolower', (array)$acceptedValues);
+            }
         }
         return $new;
     }
-
 
     protected function getServerRequest(bool $throwIfNull = true): ?ServerRequestInterface
     {

@@ -10,63 +10,27 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Yii\Web\Middleware\NetworkResolver;
-use Yiisoft\Yii\Web\NetworkResolver\BasicNetworkResolver;
+use Yiisoft\Yii\Web\NetworkResolver\NetworkResolverInterface;
 
 class NetworkResolverTest extends TestCase
 {
 
     public function simpleDataProvider()
     {
-        // @TODO Only relevant tests for middleware
         return [
-            'httpNotModify' => ['http', [], null, 'http'],
-            'httpsNotModify' => ['https', [], null, 'https'],
-            'httpNotMatchedProtocolHeader' => [
-                'http',
-                ['x-forwarded-proto' => ['https']],
-                ['test' => ['https' => 'https']],
-                'http'
-            ],
-            'httpNotMatchedProtocolHeaderValue' => [
-                'http',
-                ['x-forwarded-proto' => ['https']],
-                ['x-forwarded-proto' => ['https' => 'test']],
-                'http'
-            ],
-            'httpToHttps' => [
-                'http',
-                ['x-forwarded-proto' => ['https']],
-                ['x-forwarded-proto' => ['https' => 'https']],
-                'https'
-            ],
-            'httpToHttpsUpperCase' => [
-                'http',
-                ['x-forwarded-proto' => ['https']],
-                ['x-forwarded-proto' => ['https' => 'HTTPS']],
-                'https'
-            ],
-            'httpToHttpsMultiValue' => [
-                'http',
-                ['x-forwarded-proto' => ['https']],
-                ['x-forwarded-proto' => ['https' => ['on', 's', 'https']]],
-                'https'
-            ],
-            'httpsToHttp' => [
-                'https',
-                ['x-forwarded-proto' => ['http']],
-                ['x-forwarded-proto' => ['http' => 'http']],
-                'http'
-            ],
-            // @TODO callback test
+            'http2http' => ['http', 'http'],
+            'https2http' => ['https', 'http'],
+            'http2https' => ['http', 'https'],
+            'https2https' => ['https', 'https'],
         ];
     }
 
     /**
      * @dataProvider simpleDataProvider
      */
-    public function testSimple(string $scheme, array $headers, ?array $protocolHeaders, string $expectedScheme)
+    public function testSimple(string $scheme, string $expectedScheme)
     {
-        $request = new ServerRequest('GET', '/', $headers);
+        $request = new ServerRequest('GET', '/');
         $uri = $request->getUri()->withScheme($scheme);
         $request = $request->withUri($uri);
 
@@ -81,12 +45,47 @@ class NetworkResolverTest extends TestCase
             }
         };
 
-        $nr = new BasicNetworkResolver();
-        if ($protocolHeaders !== null) {
-            foreach ($protocolHeaders as $header => $values) {
-                $nr = $nr->withNewProtocolHeader($header, $values);
+        $nr = new class($expectedScheme) implements NetworkResolverInterface
+        {
+
+            private $expectedScheme;
+            private $serverRequest;
+
+            public function __construct(string $expectedScheme)
+            {
+                $this->expectedScheme = $expectedScheme;
             }
-        }
+
+            /**
+             * @return static
+             */
+            public function withServerRequest(ServerRequestInterface $serverRequest)
+            {
+                $new = clone $this;
+                $new->serverRequest = $serverRequest;
+                return $new;
+            }
+
+            public function getRemoteIp(): string
+            {
+                throw new \RuntimeException('Not supported!');
+            }
+
+            public function getUserIp(): string
+            {
+                throw new \RuntimeException('Not supported!');
+            }
+
+            public function getRequestScheme(): string
+            {
+                return $this->expectedScheme;
+            }
+
+            public function isSecureConnection(): bool
+            {
+                throw new \RuntimeException('Not supported!');
+            }
+        };
         $middleware = new NetworkResolver($nr);
         $middleware->process($request, $requestHandler);
         $resultRequest = $requestHandler->request;
