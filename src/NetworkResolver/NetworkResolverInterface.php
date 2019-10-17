@@ -3,6 +3,7 @@
 
 namespace Yiisoft\Yii\Web\NetworkResolver;
 
+use Nyholm\Psr7\Uri;
 use Psr\Http\Message\ServerRequestInterface;
 
 interface NetworkResolverInterface
@@ -18,12 +19,12 @@ interface NetworkResolverInterface
     public function getUserIp(): string;
 
     /**
-     * Relevant request schema
-     */
-    public function getRequestScheme(): string;
-
-    /**
      * Relevant security of connection
      */
     public function isSecureConnection(): bool;
+
+    /**
+     * Relevant request
+     */
+    public function getServerRequest(): ServerRequestInterface;
 }

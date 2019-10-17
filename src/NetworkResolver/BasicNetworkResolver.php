@@ -16,18 +16,17 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class BasicNetworkResolver implements NetworkResolverInterface
 {
-    protected const SCHEME_HTTPS = 'https';
 
     /**
      * @var ServerRequestInterface|null
      */
-    private $serverRequest;
+    private $baseServerRequest;
 
     private $protocolHeaders = [];
 
     public function getRemoteIp(): string
     {
-        $ip = $this->getServerRequest()->getServerParams()['REMOTE_ADDR'] ?? null;
+        $ip = $this->getBaseServerRequest()->getServerParams()['REMOTE_ADDR'] ?? null;
         if ($ip === null) {
             throw new \RuntimeException('Remote IP is not available!');
         }
@@ -40,42 +39,17 @@ class BasicNetworkResolver implements NetworkResolverInterface
     }
 
     /**
-     * User's request scheme
-     */
-    public function getRequestScheme(): string
-    {
-        $request = $this->getServerRequest();
-        foreach ($this->protocolHeaders as $header => $data) {
-            if (!$request->hasHeader($header)) {
-                continue;
-            }
-            $headerValues = $request->getHeader($header);
-            if (is_callable($data)) {
-                return call_user_func($data, $headerValues, $header, $request);
-            }
-            $headerValue = strtolower($headerValues[0]);
-            foreach ($data as $protocol => $acceptedValues) {
-                if (!in_array($headerValue, $acceptedValues)) {
-                    continue;
-                }
-                return $protocol;
-            }
-        }
-        return $request->getUri()->getScheme();
-    }
-
-    /**
      * User's connection security
      */
     public function isSecureConnection(): bool
     {
-        return $this->getRequestScheme() === self::SCHEME_HTTPS;
+        return $this->getRequestScheme() === 'https';
     }
 
     public function withServerRequest(ServerRequestInterface $serverRequest)
     {
         $new = clone $this;
-        $new->serverRequest = $serverRequest;
+        $new->baseServerRequest = $serverRequest;
         return $new;
     }
 
@@ -105,11 +79,40 @@ class BasicNetworkResolver implements NetworkResolverInterface
         return $new;
     }
 
-    protected function getServerRequest(bool $throwIfNull = true): ?ServerRequestInterface
+    protected function getBaseServerRequest(bool $throwIfNull = true): ?ServerRequestInterface
     {
-        if ($this->serverRequest === null && $throwIfNull) {
+        if ($this->baseServerRequest === null && $throwIfNull) {
             throw new \RuntimeException('The server request object is not set!');
         }
-        return $this->serverRequest;
+        return $this->baseServerRequest;
+    }
+
+    public function getServerRequest(): ServerRequestInterface
+    {
+        $request = $this->getBaseServerRequest();
+        $newScheme = null;
+        foreach ($this->protocolHeaders as $header => $data) {
+            if (!$request->hasHeader($header)) {
+                continue;
+            }
+            $headerValues = $request->getHeader($header);
+            if (is_callable($data)) {
+                $newScheme = call_user_func($data, $headerValues, $header, $request);
+                break;
+            }
+            $headerValue = strtolower($headerValues[0]);
+            foreach ($data as $protocol => $acceptedValues) {
+                if (!in_array($headerValue, $acceptedValues)) {
+                    continue;
+                }
+                $newScheme = $protocol;
+                break 2;
+            }
+        }
+        $uri = $request->getUri();
+        if ($newScheme !== null && $newScheme !== $uri->getScheme()) {
+            $request = $request->withUri($uri->withScheme($newScheme));
+        }
+        return $request;
     }
 }

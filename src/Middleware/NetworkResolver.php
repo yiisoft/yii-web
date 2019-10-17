@@ -9,6 +9,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Yii\Web\NetworkResolver\NetworkResolverInterface;
+use Yiisoft\Yii\Web\NetworkResolver\NotTrustedHeadersInterface;
 
 class NetworkResolver implements MiddlewareInterface
 {
@@ -24,12 +25,6 @@ class NetworkResolver implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $nr = $this->networkResolver->withServerRequest($request);
-        if ($nr->getRequestScheme() !== $request->getUri()->getScheme()) {
-            $uri = $request->getUri()->withScheme($nr->getRequestScheme());
-            $request = $request->withUri($uri);
-        }
-
-        return $handler->handle($request);
+        return $handler->handle($this->networkResolver->withServerRequest($request)->getServerRequest());
     }
 }

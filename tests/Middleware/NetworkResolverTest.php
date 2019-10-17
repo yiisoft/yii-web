@@ -49,6 +49,9 @@ class NetworkResolverTest extends TestCase
         {
 
             private $expectedScheme;
+            /**
+             * @var ServerRequestInterface
+             */
             private $serverRequest;
 
             public function __construct(string $expectedScheme)
@@ -76,9 +79,9 @@ class NetworkResolverTest extends TestCase
                 throw new \RuntimeException('Not supported!');
             }
 
-            public function getRequestScheme(): string
+            public function getServerRequest(): ServerRequestInterface
             {
-                return $this->expectedScheme;
+                return $this->serverRequest->withUri($this->serverRequest->getUri()->withScheme($this->expectedScheme));
             }
 
             public function isSecureConnection(): bool

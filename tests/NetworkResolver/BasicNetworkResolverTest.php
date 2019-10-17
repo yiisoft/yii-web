@@ -80,7 +80,28 @@ class BasicNetworkResolverTest extends TestCase
                 $nr = $nr->withNewProtocolHeader($header, $values);
             }
         }
-        $this->assertSame($expectedScheme, $nr->getRequestScheme());
+        $this->assertSame($expectedScheme, $nr->getServerRequest()->getUri()->getScheme());
+    }
+
+    public function ipsDataProvider()
+    {
+        return [
+            'ipv4' => ['9.9.9.9', '9.9.9.9'],
+            'ipv6' => ['684D:1111:222:3333:4444:5555:6:77', '684D:1111:222:3333:4444:5555:6:77'],
+        ];
+    }
+
+    /**
+     * @dataProvider ipsDataProvider
+     */
+    public function testIps(string $remoteAddress, string $expectedIp)
+    {
+        $request = new ServerRequest('GET', '/', [], null, '1.1', [
+            'REMOTE_ADDR' => $remoteAddress,
+        ]);
+        $nr = (new BasicNetworkResolver())->withServerRequest($request);
+        $this->assertSame($expectedIp, $nr->getUserIp());
+        $this->assertSame($expectedIp, $nr->getRemoteIp());
     }
 
 }
