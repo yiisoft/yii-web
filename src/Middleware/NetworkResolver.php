@@ -9,7 +9,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Yii\Web\NetworkResolver\NetworkResolverInterface;
-use Yiisoft\Yii\Web\NetworkResolver\NotTrustedHeadersInterface;
 
 class NetworkResolver implements MiddlewareInterface
 {
