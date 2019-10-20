@@ -9,6 +9,15 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+/**
+ * Basic network resolver
+ *
+ * It can be used in the following cases:
+ * - not required IP resolve to access the user's IP
+ * - user's IP is already resolved (eg `ngx_http_realip_module` or similar)
+ *
+ * @package Yiisoft\Yii\Web\Middleware
+ */
 class BasicNetworkResolver implements MiddlewareInterface
 {
     private const DEFAULT_PROTOCOL_AND_ACCEPTABLE_VALUES = [
@@ -54,9 +63,31 @@ class BasicNetworkResolver implements MiddlewareInterface
     }
 
     /**
-     * @TODO: documentation
+     * With header to check for determining whether the connection is made via HTTP or HTTPS (or any protocol).
+     *
+     * The match of header names and values is case-insensitive.
+     * It's not advisable to put insecure/untrusted headers here.
+     *
+     * Accepted types of values:
+     * - NULL (default): {{DEFAULT_PROTOCOL_AND_ACCEPTABLE_VALUES}}
+     * - callable: custom function for getting the protocol
+     * ```php
+     * ->withProtocolHeader('x-forwarded-proto', function(array $values, string $header, ServerRequestInterface $request) {
+     *   return $values[0] === 'https' ? 'https' : 'http';
+     *   return null;     // If it doesn't make sense.
+     * });
+     * ```
+     * - array: The array keys are protocol string and the array value is a list of header values that indicate the protocol.
+     * ```php
+     * ->withProtocolHeader('x-forwarded-proto', [
+     *   'http' => ['http'],
+     *   'https' => ['https']
+     * ]);
+     * ```
+     *
      * @param callable|array|null $protocolAndAcceptedValues
      * @return static
+     * @see DEFAULT_PROTOCOL_AND_ACCEPTABLE_VALUES
      */
     public function withProtocolHeader(string $header, $protocolAndAcceptedValues = null)
     {
