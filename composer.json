@@ -17,6 +17,7 @@
     },
     "minimum-stability": "dev",
     "require": {
+        "php": "^7.2",
         "psr/container": "1.0.0",
         "psr/container-implementation": "1.0.0",
         "psr/http-factory": "^1.0",
@@ -34,7 +35,7 @@
         "yiisoft/aliases": "^3.0@dev",
         "alexkart/curl-builder": "^1.0",
         "yiisoft/security": "^3.0@dev",
-        "yiisoft/friendlyexception": "dev-master"
+        "yiisoft/friendly-exception": "dev-master"
     },
     "require-dev": {
         "hiqdev/composer-config-plugin": "^1.0@dev",
