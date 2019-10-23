@@ -3,7 +3,6 @@
 
 namespace Yiisoft\Yii\Web\Tests\Middleware\Mock;
 
-
 use Nyholm\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
