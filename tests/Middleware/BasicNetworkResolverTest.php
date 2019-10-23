@@ -12,7 +12,7 @@ use Yiisoft\Yii\Web\Tests\Middleware\Mock\MockRequestHandler;
 class BasicNetworkResolverTest extends TestCase
 {
 
-    public function schemeDataProvider()
+    public function schemeDataProvider(): array
     {
         return [
             'httpNotModify' => ['http', [], null, 'http'],
@@ -94,7 +94,7 @@ class BasicNetworkResolverTest extends TestCase
     /**
      * @dataProvider schemeDataProvider
      */
-    public function testScheme(string $scheme, array $headers, ?array $protocolHeaders, string $expectedScheme)
+    public function testScheme(string $scheme, array $headers, ?array $protocolHeaders, string $expectedScheme): void
     {
         $request = $this->newRequestWithSchemaAndHeaders($scheme, $headers);
         $requestHandler = new MockRequestHandler();
@@ -111,7 +111,7 @@ class BasicNetworkResolverTest extends TestCase
         $this->assertSame($expectedScheme, $resultRequest->getUri()->getScheme());
     }
 
-    public function testWithoutProtocolHeaders()
+    public function testWithoutProtocolHeaders(): void
     {
         $request = $this->newRequestWithSchemaAndHeaders('http', [
             'x-forwarded-proto' => ['https'],
@@ -127,7 +127,7 @@ class BasicNetworkResolverTest extends TestCase
         $this->assertSame('http', $resultRequest->getUri()->getScheme());
     }
 
-    public function testWithoutProtocolHeadersMulti()
+    public function testWithoutProtocolHeadersMulti(): void
     {
         $request = $this->newRequestWithSchemaAndHeaders('http', [
             'x-forwarded-proto' => ['https'],
@@ -148,7 +148,7 @@ class BasicNetworkResolverTest extends TestCase
         $this->assertSame('http', $resultRequest->getUri()->getScheme());
     }
 
-    public function testWithoutProtocolHeader()
+    public function testWithoutProtocolHeader(): void
     {
         $request = $this->newRequestWithSchemaAndHeaders('https', [
             'x-forwarded-proto' => ['https'],

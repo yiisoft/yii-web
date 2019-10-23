@@ -10,13 +10,11 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * Basic network resolver
+ * Basic network resolver updates an instance of server request with protocol from special headers.
  *
  * It can be used in the following cases:
  * - not required IP resolve to access the user's IP
  * - user's IP is already resolved (eg `ngx_http_realip_module` or similar)
- *
- * @package Yiisoft\Yii\Web\Middleware
  */
 class BasicNetworkResolver implements MiddlewareInterface
 {
@@ -36,21 +34,21 @@ class BasicNetworkResolver implements MiddlewareInterface
             }
             $headerValues = $request->getHeader($header);
             if (is_callable($data)) {
-                $newScheme = call_user_func($data, $headerValues, $header, $request);
+                $newScheme = $data($headerValues, $header, $request);
                 if ($newScheme === null) {
                     continue;
                 }
                 if (!is_string($newScheme)) {
                     throw new \RuntimeException('The scheme is neither string nor null!');
                 }
-                if (strlen($newScheme) === 0) {
+                if ($newScheme === '') {
                     throw new \RuntimeException('The scheme cannot be an empty string!');
                 }
                 break;
             }
             $headerValue = strtolower($headerValues[0]);
             foreach ($data as $protocol => $acceptedValues) {
-                if (!in_array($headerValue, $acceptedValues)) {
+                if (!in_array($headerValue, $acceptedValues, true)) {
                     continue;
                 }
                 $newScheme = $protocol;
@@ -86,12 +84,11 @@ class BasicNetworkResolver implements MiddlewareInterface
      *   'https' => ['https']
      * ]);
      * ```
-     *
+     * @param string $header
      * @param callable|array|null $values
-     * @return static
      * @see DEFAULT_PROTOCOL_AND_ACCEPTABLE_VALUES
      */
-    public function withAddedProtocolHeader(string $header, $values = null)
+    public function withAddedProtocolHeader(string $header, $values = null): self
     {
         $new = clone $this;
         $header = strtolower($header);
@@ -114,7 +111,7 @@ class BasicNetworkResolver implements MiddlewareInterface
             if (!is_string($protocol)) {
                 throw new \RuntimeException('The protocol must be type of string!');
             }
-            if (strlen($protocol) === 0) {
+            if ($protocol === '') {
                 throw new \RuntimeException('The protocol cannot be an empty string!');
             }
             $new->protocolHeaders[$header][$protocol] = array_map('strtolower', (array)$acceptedValues);
@@ -122,20 +119,14 @@ class BasicNetworkResolver implements MiddlewareInterface
         return $new;
     }
 
-    /**
-     * @return static
-     */
-    public function withoutProtocolHeader(string $header)
+    public function withoutProtocolHeader(string $header): self
     {
         $new = clone $this;
         unset($new->protocolHeaders[strtolower($header)]);
         return $new;
     }
 
-    /**
-     * @return static
-     */
-    public function withoutProtocolHeaders(?array $headers = null)
+    public function withoutProtocolHeaders(?array $headers = null): self
     {
         $new = clone $this;
         if ($headers === null) {
