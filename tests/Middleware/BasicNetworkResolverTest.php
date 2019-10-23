@@ -11,7 +11,6 @@ use Yiisoft\Yii\Web\Tests\Middleware\Mock\MockRequestHandler;
 
 class BasicNetworkResolverTest extends TestCase
 {
-
     public function schemeDataProvider(): array
     {
         return [
@@ -171,5 +170,4 @@ class BasicNetworkResolverTest extends TestCase
         /* @var $resultRequest ServerRequestInterface */
         $this->assertSame('https', $resultRequest->getUri()->getScheme());
     }
-
 }
