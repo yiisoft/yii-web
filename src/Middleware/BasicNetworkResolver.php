@@ -65,7 +65,7 @@ class BasicNetworkResolver implements MiddlewareInterface
     }
 
     /**
-     * With header to check for determining whether the connection is made via HTTP or HTTPS (or any protocol).
+     * With added header to check for determining whether the connection is made via HTTP or HTTPS (or any protocol).
      *
      * The match of header names and values is case-insensitive.
      * It's not advisable to put insecure/untrusted headers here.
@@ -87,30 +87,30 @@ class BasicNetworkResolver implements MiddlewareInterface
      * ]);
      * ```
      *
-     * @param callable|array|null $protocolAndAcceptedValues
+     * @param callable|array|null $values
      * @return static
      * @see DEFAULT_PROTOCOL_AND_ACCEPTABLE_VALUES
      */
-    public function withProtocolHeader(string $header, $protocolAndAcceptedValues = null)
+    public function withAddedProtocolHeader(string $header, $values = null)
     {
         $new = clone $this;
         $header = strtolower($header);
-        if ($protocolAndAcceptedValues === null) {
+        if ($values === null) {
             $new->protocolHeaders[$header] = self::DEFAULT_PROTOCOL_AND_ACCEPTABLE_VALUES;
             return $new;
         }
-        if (is_callable($protocolAndAcceptedValues)) {
-            $new->protocolHeaders[$header] = $protocolAndAcceptedValues;
+        if (is_callable($values)) {
+            $new->protocolHeaders[$header] = $values;
             return $new;
         }
-        if (!is_array($protocolAndAcceptedValues)) {
+        if (!is_array($values)) {
             throw new \RuntimeException('Accepted values is not array nor callable!');
         }
-        if (count($protocolAndAcceptedValues) === 0) {
+        if (count($values) === 0) {
             throw new \RuntimeException('Accepted values cannot be an empty array!');
         }
         $new->protocolHeaders[$header] = [];
-        foreach ($protocolAndAcceptedValues as $protocol => $acceptedValues) {
+        foreach ($values as $protocol => $acceptedValues) {
             if (!is_string($protocol)) {
                 throw new \RuntimeException('The protocol must be type of string!');
             }

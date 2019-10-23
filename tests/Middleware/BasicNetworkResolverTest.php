@@ -102,7 +102,7 @@ class BasicNetworkResolverTest extends TestCase
         $middleware = new BasicNetworkResolver();
         if ($protocolHeaders !== null) {
             foreach ($protocolHeaders as $header => $values) {
-                $middleware = $middleware->withProtocolHeader($header, $values);
+                $middleware = $middleware->withAddedProtocolHeader($header, $values);
             }
         }
         $middleware->process($request, $requestHandler);
@@ -119,7 +119,7 @@ class BasicNetworkResolverTest extends TestCase
         $requestHandler = new MockRequestHandler();
 
         $middleware = (new BasicNetworkResolver())
-            ->withProtocolHeader('x-forwarded-proto')
+            ->withAddedProtocolHeader('x-forwarded-proto')
             ->withoutProtocolHeaders();
         $middleware->process($request, $requestHandler);
         $resultRequest = $requestHandler->processedRequest;
@@ -136,8 +136,8 @@ class BasicNetworkResolverTest extends TestCase
         $requestHandler = new MockRequestHandler();
 
         $middleware = (new BasicNetworkResolver())
-            ->withProtocolHeader('x-forwarded-proto')
-            ->withProtocolHeader('x-forwarded-proto-2')
+            ->withAddedProtocolHeader('x-forwarded-proto')
+            ->withAddedProtocolHeader('x-forwarded-proto-2')
             ->withoutProtocolHeaders([
                 'x-forwarded-proto',
                 'x-forwarded-proto-2',
@@ -157,8 +157,8 @@ class BasicNetworkResolverTest extends TestCase
         $requestHandler = new MockRequestHandler();
 
         $middleware = (new BasicNetworkResolver())
-            ->withProtocolHeader('x-forwarded-proto')
-            ->withProtocolHeader('x-forwarded-proto-2')
+            ->withAddedProtocolHeader('x-forwarded-proto')
+            ->withAddedProtocolHeader('x-forwarded-proto-2')
             ->withoutProtocolHeader('x-forwarded-proto');
         $middleware->process($request, $requestHandler);
         $resultRequest = $requestHandler->processedRequest;
