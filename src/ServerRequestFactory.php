@@ -140,7 +140,7 @@ final class ServerRequestFactory
             $headers = [];
             foreach ($_SERVER as $name => $value) {
                 if (strncmp($name, 'HTTP_', 5) === 0) {
-                    $name = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))));
+                    $name = str_replace(' ', '-', strtolower(str_replace('_', ' ', substr($name, 5))));
                     $headers[$name] = $value;
                 }
             }
