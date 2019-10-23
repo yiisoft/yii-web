@@ -39,9 +39,11 @@ class BasicNetworkResolver implements MiddlewareInterface
                 $newScheme = call_user_func($data, $headerValues, $header, $request);
                 if ($newScheme === null) {
                     continue;
-                } elseif (!is_string($newScheme)) {
+                }
+                if (!is_string($newScheme)) {
                     throw new \RuntimeException('The scheme is neither string nor null!');
-                } elseif (strlen($newScheme) === 0) {
+                }
+                if (strlen($newScheme) === 0) {
                     throw new \RuntimeException('The scheme cannot be an empty string!');
                 }
                 break;
@@ -95,20 +97,27 @@ class BasicNetworkResolver implements MiddlewareInterface
         $header = strtolower($header);
         if ($protocolAndAcceptedValues === null) {
             $new->protocolHeaders[$header] = self::DEFAULT_PROTOCOL_AND_ACCEPTABLE_VALUES;
-        } elseif (is_callable($protocolAndAcceptedValues)) {
+            return $new;
+        }
+        if (is_callable($protocolAndAcceptedValues)) {
             $new->protocolHeaders[$header] = $protocolAndAcceptedValues;
-        } elseif (!is_array($protocolAndAcceptedValues)) {
-            throw new \RuntimeException('$protocolAndAcceptedValues is not array nor callable!');
-        } elseif (is_array($protocolAndAcceptedValues) && count($protocolAndAcceptedValues) === 0) {
-            throw new \RuntimeException('$protocolAndAcceptedValues cannot be an empty array!');
-        } else {
-            $new->protocolHeaders[$header] = [];
-            foreach ($protocolAndAcceptedValues as $protocol => $acceptedValues) {
-                if (!is_string($protocol)) {
-                    throw new \RuntimeException('The protocol must be type of string!');
-                }
-                $new->protocolHeaders[$header][$protocol] = array_map('strtolower', (array)$acceptedValues);
+            return $new;
+        }
+        if (!is_array($protocolAndAcceptedValues)) {
+            throw new \RuntimeException('Accepted values is not array nor callable!');
+        }
+        if (count($protocolAndAcceptedValues) === 0) {
+            throw new \RuntimeException('Accepted values cannot be an empty array!');
+        }
+        $new->protocolHeaders[$header] = [];
+        foreach ($protocolAndAcceptedValues as $protocol => $acceptedValues) {
+            if (!is_string($protocol)) {
+                throw new \RuntimeException('The protocol must be type of string!');
             }
+            if (strlen($protocol) === 0) {
+                throw new \RuntimeException('The protocol cannot be an empty string!');
+            }
+            $new->protocolHeaders[$header][$protocol] = array_map('strtolower', (array)$acceptedValues);
         }
         return $new;
     }
