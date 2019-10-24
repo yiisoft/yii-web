@@ -3,84 +3,12 @@
 
 namespace Yiisoft\Yii\Web\Tests;
 
-use Nyholm\Psr7\ServerRequest;
-use Nyholm\Psr7\UploadedFile;
-use Nyholm\Psr7\Uri;
+use Nyholm\Psr7\Factory\Psr17Factory;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\ServerRequestFactoryInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
-use Psr\Http\Message\StreamInterface;
-use Psr\Http\Message\UploadedFileFactoryInterface;
-use Psr\Http\Message\UploadedFileInterface;
-use Psr\Http\Message\UriFactoryInterface;
-use Psr\Http\Message\UriInterface;
 use Yiisoft\Yii\Web\ServerRequestFactory;
 
 class ServerRequestFactoryTest extends TestCase
 {
-
-    protected function getNewServerRequestFactory(): ServerRequestFactoryInterface
-    {
-        return new class implements ServerRequestFactoryInterface
-        {
-
-            public function createServerRequest(string $method, $uri, array $serverParams = []): ServerRequestInterface
-            {
-                return new ServerRequest($method, $uri, [], null, '1.1', $serverParams);
-            }
-        };
-    }
-
-    protected function getNewUriFactory(): UriFactoryInterface
-    {
-        return new class implements UriFactoryInterface
-        {
-
-            public function createUri(string $uri = ''): UriInterface
-            {
-                return new Uri($uri);
-            }
-        };
-    }
-
-    protected function getNewUploadedFileFactory(): UploadedFileFactoryInterface
-    {
-        return new class implements UploadedFileFactoryInterface
-        {
-            public function createUploadedFile(
-                StreamInterface $stream,
-                int $size = null,
-                int $error = \UPLOAD_ERR_OK,
-                string $clientFilename = null,
-                string $clientMediaType = null
-            ): UploadedFileInterface {
-                return new UploadedFile($stream, $size, $error, $clientFilename, $clientMediaType);
-            }
-        };
-    }
-
-    protected function getNewStreamFactory(): StreamFactoryInterface
-    {
-        return new class implements StreamFactoryInterface
-        {
-            public function createStream(string $content = ''): StreamInterface
-            {
-                // TODO: Implement createStream() method.
-            }
-
-            public function createStreamFromFile(string $filename, string $mode = 'r'): StreamInterface
-            {
-                // TODO: Implement createStreamFromFile() method.
-            }
-
-            public function createStreamFromResource($resource): StreamInterface
-            {
-                // TODO: Implement createStreamFromResource() method.
-            }
-        };
-    }
-
     public function hostParsingDataProvider(): array
     {
         return [
@@ -135,10 +63,14 @@ class ServerRequestFactoryTest extends TestCase
     /**
      * @dataProvider hostParsingDataProvider
      */
-    public function testHostParsing(array $serverParams, ?string $expectedHost, ?int $expectedPort)
+    public function testHostParsing(array $serverParams, ?string $expectedHost, ?int $expectedPort): void
     {
-        $serverRequestFactory = new ServerRequestFactory($this->getNewServerRequestFactory(), $this->getNewUriFactory(),
-            $this->getNewUploadedFileFactory(), $this->getNewStreamFactory());
+        $factory = new Psr17Factory();
+
+        $serverRequestFactory = new ServerRequestFactory(
+            $factory, $factory,
+            $factory, $factory
+        );
         if (!isset($serverParams['REQUEST_METHOD'])) {
             $serverParams['REQUEST_METHOD'] = 'GET';
         }
