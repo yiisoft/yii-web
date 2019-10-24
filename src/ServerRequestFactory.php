@@ -105,10 +105,12 @@ final class ServerRequestFactory
         }
 
         if (isset($server['HTTP_HOST'])) {
-            if (1 === \preg_match('/^(.+)\:(\d+)$/', $server['HTTP_HOST'], $matches)) {
-                $uri = $uri->withHost($matches[1])->withPort($matches[2]);
-            } else {
-                $uri = $uri->withHost($server['HTTP_HOST']);
+            if (\preg_match('/^\[?(?<host>.+?)]?(?::(?<port>\d+))?$/', $server['HTTP_HOST'], $matches) !== 1) {
+                throw new \RuntimeException('Invalid host!');
+            }
+            $uri = $uri->withHost($matches['host']);
+            if (isset($matches['port'])) {
+                $uri = $uri->withPort($matches['port']);
             }
         } elseif (isset($server['SERVER_NAME'])) {
             $uri = $uri->withHost($server['SERVER_NAME']);
