@@ -10,6 +10,8 @@ final class Flash implements FlashInterface
 
     private const FLASH_PARAM = '__flash';
 
+    private $sessionId;
+
     /**
      * @var SessionInterface
      */
@@ -131,14 +133,12 @@ final class Flash implements FlashInterface
         $this->save($flashes);
     }
 
-    private static $init;
-
     private function fetch(): array
     {
         // ensure session is active (and has id)
         $this->session->open();
-        if (self::$init !== $this->session->getId()) {
-            self::$init = $this->session->getId();
+        if ($this->sessionId !== $this->session->getId()) {
+            $this->sessionId = $this->session->getId();
             $this->updateCounters();
         }
 
