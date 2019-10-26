@@ -334,7 +334,7 @@ class User
         }
         $this->setIdentity($identity);
 
-        if (!$identity instanceof GuestIdentity && ($this->authTimeout !== null || $this->absoluteAuthTimeout !== null)) {
+        if (!($identity instanceof GuestIdentity) && ($this->authTimeout !== null || $this->absoluteAuthTimeout !== null)) {
             $expire = $this->authTimeout !== null ? $this->session->get(self::SESSION_AUTH_ABSOLUTE_EXPIRE) : null;
             $expireAbsolute = $this->absoluteAuthTimeout !== null ? $this->session->get(self::SESSION_AUTH_ABSOLUTE_EXPIRE) : null;
             if (($expire !== null && $expire < time()) || ($expireAbsolute !== null && $expireAbsolute < time())) {
