@@ -324,13 +324,13 @@ class User
     protected function renewAuthStatus(): void
     {
         $id = $this->session->get(self::SESSION_AUTH_ID);
-        if ($id === null) {
+
+        $identity = null;
+        if ($id !== null) {
+            $identity = $this->identityRepository;
+        }
+        if ($identity === null) {
             $identity = new GuestIdentity();
-        } else {
-            $identity = $this->identityRepository->findIdentity($id);
-            if ($identity === null) {
-                $identity = new GuestIdentity();
-            }
         }
         $this->setIdentity($identity);
 
