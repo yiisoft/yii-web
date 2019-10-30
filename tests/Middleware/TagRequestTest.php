@@ -9,7 +9,6 @@ use PHPUnit\Framework\TestCase;
 
 class TagRequestTest extends TestCase
 {
-
     public function testProcess()
     {
         $request = $this->createMock(ServerRequestInterface::class);
