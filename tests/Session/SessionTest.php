@@ -7,19 +7,14 @@ use PHPUnit\Framework\TestCase;
 
 class SessionTest extends TestCase
 {
-    public function tearDown()
-    {
-        @session_destroy();
-    }
-
     /**
      * @runInSeparateProcess
      */
     public function testGetAndSet()
     {
         $session = new Session();
-        $session->set('get', 'set');
-        self::assertEquals('set', $session->get('get'));
+        $session->set('key_get', 'value');
+        self::assertEquals('value', $session->get('key_get'));
     }
 
     /**
@@ -28,8 +23,8 @@ class SessionTest extends TestCase
     public function testHas()
     {
         $session = new Session();
-        $session->set('has', 'has');
-        self::assertTrue($session->has('has'));
+        $session->set('key_has', 'has');
+        self::assertTrue($session->has('key_has'));
     }
 
     /**
@@ -38,13 +33,9 @@ class SessionTest extends TestCase
     public function testClose()
     {
         $session = new Session();
-        $session->set('close', 'close');
+        $session->set('key_close', 'value');
         $session->close();
         self::assertEquals(PHP_SESSION_NONE, session_status());
-        // because session_destroy() in tearDown doesn't work as expected
-        // we need to open session and then destroy it
-        $session->open();
-        $session->destroy();
     }
 
     /**
@@ -65,7 +56,7 @@ class SessionTest extends TestCase
     public function testDiscard()
     {
         $session = new Session();
-        $session->set('discard', 'discard');
+        $session->set('key_discard', 'value');
         $session->discard();
         self::assertEmpty($session->get('discard'));
     }
@@ -82,9 +73,9 @@ class SessionTest extends TestCase
     public function testPull()
     {
         $session = new Session();
-        $session->set('pull', 'pull');
-        self::assertEquals('pull', $session->pull('pull'));
-        self::assertEmpty($session->get('pull'));
+        $session->set('key_pull', 'value');
+        self::assertEquals('value', $session->pull('key_pull'));
+        self::assertEmpty($session->get('key_pull'));
     }
 
     /**
@@ -93,9 +84,9 @@ class SessionTest extends TestCase
     public function testAll()
     {
         $session = new Session();
-        $session->set('1', 1);
-        $session->set('2', 2);
-        self::assertEquals(['1' => 1, '2' => 2], $session->all());
+        $session->set('key_1', 1);
+        $session->set('key_2', 2);
+        self::assertEquals(['key_1' => 1, 'key_2' => 2], $session->all());
     }
 
     /**
@@ -104,7 +95,7 @@ class SessionTest extends TestCase
     public function testClear()
     {
         $session = new Session();
-        $session->set('1', 1);
+        $session->set('key', 'value');
         $session->clear();
         self::assertEmpty($session->all());
     }
@@ -132,7 +123,7 @@ class SessionTest extends TestCase
     public function testAlreadyStartedException()
     {
         $session = new Session();
-        $session->set('1', 1);
-        $session = new Session();
+        $session->open();
+        new Session();
     }
 }
