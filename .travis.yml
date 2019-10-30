@@ -35,7 +35,7 @@ before_script:
   - composer --version
 
 script:
-  - phpdbg -qrr vendor/bin/phpunit --stderr --verbose --coverage-clover=coverage.clover
+  - phpdbg -qrr vendor/bin/phpunit --verbose --coverage-clover=coverage.clover
 
 after_script:
     - travis_retry wget https://scrutinizer-ci.com/ocular.phar
