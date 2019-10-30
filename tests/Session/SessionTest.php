@@ -12,6 +12,9 @@ class SessionTest extends TestCase
         @session_destroy();
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testGetAndSet()
     {
         $session = new Session();
@@ -19,6 +22,9 @@ class SessionTest extends TestCase
         self::assertEquals('set', $session->get('get'));
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testHas()
     {
         $session = new Session();
@@ -26,6 +32,9 @@ class SessionTest extends TestCase
         self::assertTrue($session->has('has'));
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testClose()
     {
         $session = new Session();
@@ -38,6 +47,9 @@ class SessionTest extends TestCase
         $session->destroy();
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testRegenerateID()
     {
         $session = new Session();
@@ -47,6 +59,9 @@ class SessionTest extends TestCase
         self::assertNotEquals($id, $session->getId());
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testDiscard()
     {
         $session = new Session();
@@ -61,6 +76,9 @@ class SessionTest extends TestCase
         self::assertEquals($session->getName(), session_name());
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testPull()
     {
         $session = new Session();
@@ -69,6 +87,9 @@ class SessionTest extends TestCase
         self::assertEmpty($session->get('pull'));
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testAll()
     {
         $session = new Session();
@@ -77,6 +98,9 @@ class SessionTest extends TestCase
         self::assertEquals(['1' => 1, '2' => 2], $session->all());
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testClear()
     {
         $session = new Session();
@@ -85,6 +109,9 @@ class SessionTest extends TestCase
         self::assertEmpty($session->all());
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testSetId()
     {
         $session = new Session();
