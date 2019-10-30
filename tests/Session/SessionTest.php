@@ -23,7 +23,7 @@ class SessionTest extends TestCase
     public function testHas()
     {
         $session = new Session();
-        $session->set('key_has', 'has');
+        $session->set('key_has', 'value');
         self::assertTrue($session->has('key_has'));
     }
 
@@ -58,7 +58,7 @@ class SessionTest extends TestCase
         $session = new Session();
         $session->set('key_discard', 'value');
         $session->discard();
-        self::assertEmpty($session->get('discard'));
+        self::assertEmpty($session->get('key_discard'));
     }
 
     public function testGetName()
