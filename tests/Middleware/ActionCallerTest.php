@@ -3,10 +3,10 @@
 namespace Yiisoft\Yii\Web\Tests\Middleware;
 
 use Nyholm\Psr7\Response;
-use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Yiisoft\Di\Container;
 use Yiisoft\Yii\Web\Middleware\ActionCaller;
 use PHPUnit\Framework\TestCase;
 
@@ -26,10 +26,9 @@ class ActionCallerTest extends TestCase
 
     public function testProcess()
     {
-        $container = $this->createMock(ContainerInterface::class);
-        $container->method('get')->willReturn($this);
+        $container = new Container([self::class => $this]);
 
-        $caller = new ActionCaller('this', 'process', $container);
+        $caller = new ActionCaller(self::class, 'process', $container);
 
         $response = $caller->process($this->request, $this->handler);
         self::assertEquals(204, $response->getStatusCode());

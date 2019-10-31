@@ -8,6 +8,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Yiisoft\Di\Container;
 
 class WebActionsCallerTest extends TestCase
 {
@@ -24,8 +25,7 @@ class WebActionsCallerTest extends TestCase
     {
         $this->request = $this->createMock(ServerRequestInterface::class);
         $this->handler = $this->createMock(RequestHandlerInterface::class);
-        $this->container = $this->createMock(ContainerInterface::class);
-        $this->container->method('get')->willReturn($this);
+        $this->container = new Container([self::class => $this]);
     }
 
     public function testProcess()
@@ -35,7 +35,7 @@ class WebActionsCallerTest extends TestCase
             ->with($this->equalTo('action'))
             ->willReturn('process');
 
-        $response = (new WebActionsCaller('this', $this->container))->process($this->request, $this->handler);
+        $response = (new WebActionsCaller(self::class, $this->container))->process($this->request, $this->handler);
         $this->assertEquals(204, $response->getStatusCode());
     }
 
@@ -47,7 +47,7 @@ class WebActionsCallerTest extends TestCase
             ->willReturn(null);
 
         $this->expectException(\RuntimeException::class);
-        (new WebActionsCaller('this', $this->container))->process($this->request, $this->handler);
+        (new WebActionsCaller(self::class, $this->container))->process($this->request, $this->handler);
     }
 
     public function testHandlerInvocation()
@@ -61,7 +61,7 @@ class WebActionsCallerTest extends TestCase
             ->expects($this->once())
             ->method('handle');
 
-        (new WebActionsCaller('this', $this->container))->process($this->request, $this->handler);
+        (new WebActionsCaller(self::class, $this->container))->process($this->request, $this->handler);
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
