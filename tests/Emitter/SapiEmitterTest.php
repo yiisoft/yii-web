@@ -29,7 +29,10 @@ class SapiEmitterTest extends TestCase
         $this->assertEquals($body, $result);
     }
 
-    public function testEmptyBodyOnCode()
+    /**
+     * @test
+     */
+    public function shouldNotOutputBodyWhenResponseCodeIs204()
     {
         $response = new Response(204, ['X-Test' => 1], 'Example body');
 
@@ -45,7 +48,10 @@ class SapiEmitterTest extends TestCase
         $this->assertEmpty($result);
     }
 
-    public function testEmptyBodyOnFlag()
+    /*
+     * @test
+     */
+    public function shouldNotOutputBodyIfEmitToldSo()
     {
         $response = new Response(200, ['X-Test' => 1], 'Example body');
 
