@@ -12,22 +12,34 @@ use PHPUnit\Framework\TestCase;
 
 class ActionCallerTest extends TestCase
 {
+    /** @var ServerRequestInterface  */
+    private $request;
+
+    /** @var RequestHandlerInterface  */
+    private $handler;
+
+    protected function setUp()
+    {
+        $this->request = $this->createMock(ServerRequestInterface::class);
+        $this->handler = $this->createMock(RequestHandlerInterface::class);
+    }
+
     public function testProcess()
     {
         $container = $this->createMock(ContainerInterface::class);
         $container->method('get')->willReturn($this);
 
-        $request = $this->createMock(ServerRequestInterface::class);
-        $handler = $this->createMock(RequestHandlerInterface::class);
+        $caller = new ActionCaller('this', 'process', $container);
 
-        $caller = new ActionCaller('this', 'exampleMethod', $container);
-
-        $response = $caller->process($request, $handler);
+        $response = $caller->process($this->request, $this->handler);
         self::assertEquals(204, $response->getStatusCode());
     }
 
-    public function exampleMethod(): ResponseInterface
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        $this->assertSame($this->request, $request);
+        $this->assertSame($this->handler, $handler);
+
         return new Response(204);
     }
 }

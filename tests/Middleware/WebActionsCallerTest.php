@@ -33,7 +33,7 @@ class WebActionsCallerTest extends TestCase
         $this->request
             ->method('getAttribute')
             ->with($this->equalTo('action'))
-            ->willReturn('example');
+            ->willReturn('process');
 
         $response = (new WebActionsCaller('this', $this->container))->process($this->request, $this->handler);
         $this->assertEquals(204, $response->getStatusCode());
@@ -64,8 +64,11 @@ class WebActionsCallerTest extends TestCase
         (new WebActionsCaller('this', $this->container))->process($this->request, $this->handler);
     }
 
-    public function example(): ResponseInterface
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        $this->assertSame($this->request, $request);
+        $this->assertSame($this->handler, $handler);
+
         return new Response(204);
     }
 }
