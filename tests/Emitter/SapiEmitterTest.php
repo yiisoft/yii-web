@@ -48,7 +48,7 @@ class SapiEmitterTest extends TestCase
         $this->assertEmpty($result);
     }
 
-    /*
+    /**
      * @test
      */
     public function shouldNotOutputBodyIfEmitToldSo()
@@ -67,7 +67,7 @@ class SapiEmitterTest extends TestCase
         $this->assertEmpty($result);
     }
 
-    /*
+    /**
      * @test
      */
     public function contentLengthShouldNotBeOverwrittenIfPresent()
