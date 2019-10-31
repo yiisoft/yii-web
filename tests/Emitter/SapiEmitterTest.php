@@ -67,7 +67,10 @@ class SapiEmitterTest extends TestCase
         $this->assertEmpty($result);
     }
 
-    public function testContentLengthHeader()
+    /*
+     * @test
+     */
+    public function contentLengthShouldNotBeOverwrittenIfPresent()
     {
         $length = 100;
         $response = new Response(200, ['Content-length' => $length, 'X-Test' => 1], '');
