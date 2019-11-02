@@ -26,7 +26,7 @@ final class AuthMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $identity = $this->authenticator->authenticate($request);
-        $request->withAttribute($this->requestName, $identity);
+        $request = $request->withAttribute($this->requestName, $identity);
 
         if ($identity === null && !$this->isOptional($request)) {
             $response = $this->responseFactory->createResponse(401);
