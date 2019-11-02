@@ -62,7 +62,7 @@ class AuthMiddlewareTest extends TestCase
     /**
      * @test
      */
-    public function shouldAuthenticateOptionalPath(): void
+    public function shouldSkipCheckForOptionalPath(): void
     {
         $path = '/optional';
         $request = new ServerRequest('GET', $path);
@@ -85,7 +85,7 @@ class AuthMiddlewareTest extends TestCase
     /**
      * @test
      */
-    public function shouldNotAuthenticate(): void
+    public function shouldNotExecuteHandlerAndReturn401OnAuthenticationFailure(): void
     {
         $request = new ServerRequest('GET', '/');
         $header = 'Authenticated';
