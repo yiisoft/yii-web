@@ -31,7 +31,7 @@ class AuthMiddlewareTest extends TestCase
     /**
      * @test
      */
-    public function shouldAuthenticateAndSetAttribute()
+    public function shouldAuthenticateAndSetAttribute(): void
     {
         $request = new ServerRequest('GET', '/');
         $identity = $this->createMock(IdentityInterface::class);
@@ -62,7 +62,7 @@ class AuthMiddlewareTest extends TestCase
     /**
      * @test
      */
-    public function shouldAuthenticateOptionalPath()
+    public function shouldAuthenticateOptionalPath(): void
     {
         $path = '/optional';
         $request = new ServerRequest('GET', $path);
@@ -85,7 +85,7 @@ class AuthMiddlewareTest extends TestCase
     /**
      * @test
      */
-    public function shouldNotAuthenticate()
+    public function shouldNotAuthenticate(): void
     {
         $request = new ServerRequest('GET', '/');
         $header = 'Authenticated';
