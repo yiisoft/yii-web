@@ -11,7 +11,7 @@ use Yiisoft\Yii\Web\Emitter\SapiEmitter;
  */
 class SapiEmitterTest extends TestCase
 {
-    public function testEmit()
+    public function testEmit(): void
     {
         $body = 'Example body';
         $response = new Response(200, ['X-Test' => 1], $body);
@@ -32,7 +32,7 @@ class SapiEmitterTest extends TestCase
     /**
      * @test
      */
-    public function shouldNotOutputBodyWhenResponseCodeIs204()
+    public function shouldNotOutputBodyWhenResponseCodeIs204(): void
     {
         $response = new Response(204, ['X-Test' => 1], 'Example body');
 
@@ -51,7 +51,7 @@ class SapiEmitterTest extends TestCase
     /**
      * @test
      */
-    public function shouldNotOutputBodyIfEmitToldSo()
+    public function shouldNotOutputBodyIfEmitToldSo(): void
     {
         $response = new Response(200, ['X-Test' => 1], 'Example body');
 
@@ -70,7 +70,7 @@ class SapiEmitterTest extends TestCase
     /**
      * @test
      */
-    public function contentLengthShouldNotBeOverwrittenIfPresent()
+    public function contentLengthShouldNotBeOverwrittenIfPresent(): void
     {
         $length = 100;
         $response = new Response(200, ['Content-length' => $length, 'X-Test' => 1], '');
