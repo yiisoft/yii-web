@@ -4,6 +4,7 @@ namespace Yiisoft\Yii\Web\Tests\Auth;
 
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\ServerRequest;
+use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -18,7 +19,7 @@ class AuthMiddlewareTest extends TestCase
     /** @var ResponseFactoryInterface */
     private $responseFactory;
 
-    /** @var AuthInterface */
+    /** @var AuthInterface|MockObject */
     private $authenticator;
 
     protected function setUp()
