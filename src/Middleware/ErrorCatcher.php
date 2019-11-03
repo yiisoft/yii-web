@@ -8,6 +8,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Yii\Web\ErrorHandler\ErrorHandler;
+use Yiisoft\Yii\Web\ErrorHandler\JsonpRenderer;
 use Yiisoft\Yii\Web\ErrorHandler\ThrowableRendererInterface;
 use Yiisoft\Yii\Web\ErrorHandler\HtmlRenderer;
 use Yiisoft\Yii\Web\ErrorHandler\JsonRenderer;
@@ -26,6 +27,7 @@ final class ErrorCatcher implements MiddlewareInterface
 
     private $renderers = [
         'application/json' => JsonRenderer::class,
+        'application/javascript' => JsonpRenderer::class,
         'application/xml' => XmlRenderer::class,
         'text/xml' => XmlRenderer::class,
         'text/plain' => PlainTextRenderer::class,
