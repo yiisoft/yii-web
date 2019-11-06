@@ -1,6 +1,7 @@
 <?php
 namespace Yiisoft\Yii\Web\Middleware;
 
+use Nyholm\Psr7\Stream;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -39,17 +40,52 @@ final class ErrorCatcher implements MiddlewareInterface
         $this->container = $container;
     }
 
+    public function withAddedRenderer(string $mimeType, string $rendererClass): self
+    {
+        if (strlen($mimeType) === 0) {
+            throw new \InvalidArgumentException('The mime type cannot be an empty string!');
+        }
+        if (strlen($rendererClass) === 0) {
+            throw new \InvalidArgumentException('The renderer class cannot be an empty string!');
+        }
+        if (strpos($mimeType, '/') === false) {
+            throw new \InvalidArgumentException('Invalid mime type!');
+        }
+        $new = clone $this;
+        $new->renderers[strtolower($mimeType)] = $rendererClass;
+        return $new;
+    }
+
+    /**
+     * @param string... $mimeTypes MIME types or, if not specified, all will be removed.
+     */
+    public function withoutRenderers(string... $mimeTypes): self
+    {
+        $new = clone $this;
+        if(count($mimeTypes) === 0) {
+            $new->renderers = [];
+            return $new;
+        }
+        foreach($mimeTypes as $mimeType) {
+            if (strlen($mimeType) === 0) {
+                throw new \InvalidArgumentException('The mime type cannot be an empty string!');
+            }
+            unset($new->renderers[strtolower($mimeType)]);
+        }
+        return $new;
+    }
+
     private function handleException(\Throwable $e, ServerRequestInterface $request): ResponseInterface
     {
         $contentType = $this->getContentType($request);
-        $renderer = $this->getRenderer($contentType);
-        $renderer->setRequest($request);
+        $renderer = $this->getRenderer(strtolower($contentType));
+        if ($renderer !== null) {
+            $renderer->setRequest($request);
+        }
         $content = $this->errorHandler->handleCaughtThrowable($e, $renderer);
-
-        $response = $this->responseFactory->createResponse(500)
-            ->withHeader('Content-type', $contentType);
-        $response->getBody()->write($content);
-        return $response;
+        return $this->responseFactory->createResponse(500)
+            ->withHeader('Content-type', $contentType)
+            ->withBody(Stream::create($content));
     }
 
     private function getRenderer(string $contentType): ?ThrowableRendererInterface
