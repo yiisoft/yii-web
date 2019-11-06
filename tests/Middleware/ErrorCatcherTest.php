@@ -14,7 +14,6 @@ use Yiisoft\Yii\Web\Tests\Middleware\Mock\MockThrowableRenderer;
 
 class ErrorCatcherTest extends TestCase
 {
-
     private const DEFAULT_RENDERER_RESPONSE = 'default-renderer-test';
 
     public function testAddedRenderer(): void
@@ -63,5 +62,4 @@ class ErrorCatcherTest extends TestCase
         $content = $response->getBody()->getContents();
         $this->assertSame(self::DEFAULT_RENDERER_RESPONSE, $content);
     }
-
 }

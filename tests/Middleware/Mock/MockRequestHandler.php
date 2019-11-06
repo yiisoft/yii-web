@@ -33,14 +33,15 @@ class MockRequestHandler implements RequestHandlerInterface
     /**
      * @return static
      */
-    public function setHandleExcaption(?\Throwable $throwable) {
+    public function setHandleExcaption(?\Throwable $throwable)
+    {
         $this->handleException = $throwable;
         return $this;
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        if($this->handleException !== null) {
+        if ($this->handleException !== null) {
             throw $this->handleException;
         }
         $this->processedRequest = $request;

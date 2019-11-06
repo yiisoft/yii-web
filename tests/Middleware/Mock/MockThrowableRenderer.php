@@ -3,7 +3,6 @@
 
 namespace Yiisoft\Yii\Web\Tests\Middleware\Mock;
 
-
 use Yiisoft\Yii\Web\ErrorHandler\ThrowableRenderer;
 
 class MockThrowableRenderer extends ThrowableRenderer

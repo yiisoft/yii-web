@@ -62,11 +62,11 @@ final class ErrorCatcher implements MiddlewareInterface
     public function withoutRenderers(string... $mimeTypes): self
     {
         $new = clone $this;
-        if(count($mimeTypes) === 0) {
+        if (count($mimeTypes) === 0) {
             $new->renderers = [];
             return $new;
         }
-        foreach($mimeTypes as $mimeType) {
+        foreach ($mimeTypes as $mimeType) {
             if (strlen($mimeType) === 0) {
                 throw new \InvalidArgumentException('The mime type cannot be an empty string!');
             }
