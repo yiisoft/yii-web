@@ -1,7 +1,6 @@
 <?php
 namespace Yiisoft\Yii\Web\Middleware;
 
-use Nyholm\Psr7\Stream;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -83,9 +82,10 @@ final class ErrorCatcher implements MiddlewareInterface
             $renderer->setRequest($request);
         }
         $content = $this->errorHandler->handleCaughtThrowable($e, $renderer);
-        return $this->responseFactory->createResponse(500)
-            ->withHeader('Content-type', $contentType)
-            ->withBody(Stream::create($content));
+        $response = $this->responseFactory->createResponse(500)
+            ->withHeader('Content-type', $contentType);
+        $response->getBody()->write($content);
+        return $response;
     }
 
     private function getRenderer(string $contentType): ?ThrowableRendererInterface
