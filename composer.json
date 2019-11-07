@@ -18,6 +18,7 @@
     "minimum-stability": "dev",
     "require": {
         "php": "^7.2",
+        "ext-json": "*",
         "psr/container": "1.0.0",
         "psr/container-implementation": "1.0.0",
         "psr/http-factory": "^1.0",
