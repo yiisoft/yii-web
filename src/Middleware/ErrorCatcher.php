@@ -13,6 +13,7 @@ use Yiisoft\Yii\Web\ErrorHandler\HtmlRenderer;
 use Yiisoft\Yii\Web\ErrorHandler\JsonRenderer;
 use Yiisoft\Yii\Web\ErrorHandler\PlainTextRenderer;
 use Yiisoft\Yii\Web\ErrorHandler\XmlRenderer;
+use Yiisoft\Yii\Web\Helper\HeaderHelper;
 
 /**
  * ErrorCatcher catches all throwables from the next middlewares and renders it
@@ -99,7 +100,7 @@ final class ErrorCatcher implements MiddlewareInterface
 
     private function getContentType(ServerRequestInterface $request): string
     {
-        $acceptHeaders = preg_split('~\s*,\s*~', $request->getHeaderLine('Accept'), PREG_SPLIT_NO_EMPTY);
+        $acceptHeaders = HeaderHelper::getSortedAcceptTypes($request);
         foreach ($acceptHeaders as $header) {
             if (array_key_exists($header, $this->renderers)) {
                 return $header;
