@@ -34,22 +34,22 @@ class HeaderHelperTest extends TestCase
     public function qFactorSortDataProvider(): array
     {
         return [
-            'empty' => ['', false, []],
-            'emptyArray' => [[], false, []],
-            'noQ' => ['text/html,text/xml', false, [['text/html', 'q' => 1.0], ['text/xml', 'q' => 1.0]]],
-            'noQParams' => ['text/html,text/xml', true, ['text/html', 'text/xml']],
-            'q' => ['text/html;q=0.2,text/xml', false, [['text/xml', 'q' => 1.0], ['text/html', 'q' => 0.2]]],
-            'qq' => ['text/html;q=0.2,text/xml;q=0.3', false, [['text/xml', 'q' => 0.3], ['text/html', 'q' => 0.2]]],
-            'qqValues' => ['text/html;q=0.2,text/xml;q=0.3', true, ['text/xml', 'text/html']],
+            'empty' => ['', []],
+            'emptyArray' => [[], []],
+            'noQ' => ['text/html,text/xml', [['text/html', 'q' => 1.0], ['text/xml', 'q' => 1.0]]],
+            'q' => ['text/html;q=0.2,text/xml', [['text/xml', 'q' => 1.0], ['text/html', 'q' => 0.2]]],
+            'qq' => ['text/html;q=0.2,text/xml;q=0.3', [['text/xml', 'q' => 0.3], ['text/html', 'q' => 0.2]]],
+            'qqDigits' => ['text/html;q=0.000,text/xml;q=1.000', [['text/xml', 'q' => 1.0], ['text/html', 'q' => 0.0]]],
+            'qqDigits0.999' => ['text/html;q=0.999,text/xml;q=1.000', [['text/xml', 'q' => 1.0], ['text/html', 'q' => 0.999]]],
         ];
     }
 
     /**
      * @dataProvider qFactorSortDataProvider
      */
-    public function testQFactorSort($input, bool $valuesOnly, array $expected): void
+    public function testQFactorSort($input, array $expected): void
     {
-        $this->assertSame($expected, HeaderHelper::getByQFactorSortedList($input, $valuesOnly));
+        $this->assertSame($expected, HeaderHelper::getByQFactorSortedList($input));
     }
 
     public function qFactorSortFailDataProvider(): array

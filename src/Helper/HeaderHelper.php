@@ -32,7 +32,7 @@ final class HeaderHelper
      * @see getValueAndParameters
      * @link https://developer.mozilla.org/en-US/docs/Glossary/Quality_values
      */
-    public static function getByQFactorSortedList($values, bool $outputValuesOnly = false): array
+    public static function getByQFactorSortedList($values): array
     {
         if (is_string($values)) {
             $values = preg_split('/\s*,\s*/', trim($values), -1, PREG_SPLIT_NO_EMPTY);
@@ -48,7 +48,7 @@ final class HeaderHelper
             $parse = self::getValueAndParameters($value);
             $q = $parse['q'] ?? 1.0;
             if (is_string($q) && preg_match('/^(?:0(?:\.\d{1,3})?|1(?:\.0{1,3})?)$/', $q) === 0) {
-                throw new \InvalidArgumentException('Invalid q factor!');
+                throw new \InvalidArgumentException('Invalid q factor');
             }
             $parse['q'] = floatval($q);
             $output[] = $parse;
@@ -61,12 +61,6 @@ final class HeaderHelper
             }
             return $a > $b ? -1 : 1;
         });
-        if (!$outputValuesOnly) {
-            return $output;
-        }
-        foreach ($output as &$value) {
-            $value = array_shift($value);
-        }
         return $output;
     }
 
