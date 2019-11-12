@@ -14,7 +14,7 @@ final class HeaderHelper
     public static function getValueAndParameters(string $headerValue): array
     {
         $headerValue = trim($headerValue);
-        if (strlen($headerValue) === 0) {
+        if ($headerValue === '') {
             return [];
         }
         $parts = preg_split('/\s*;\s*/', $headerValue, -1, PREG_SPLIT_NO_EMPTY);
@@ -38,7 +38,7 @@ final class HeaderHelper
             $values = preg_split('/\s*,\s*/', trim($values), -1, PREG_SPLIT_NO_EMPTY);
         }
         if (!is_array($values)) {
-            throw new \InvalidArgumentException('Values ​​are neither array nor string!');
+            throw new \InvalidArgumentException('Values ​​are neither array nor string');
         }
         if (count($values) === 0) {
             return [];
@@ -53,7 +53,7 @@ final class HeaderHelper
             $parse['q'] = floatval($q);
             $output[] = $parse;
         }
-        usort($output, function ($a, $b) {
+        usort($output, static function ($a, $b) {
             $a = $a['q'];
             $b = $b['q'];
             if ($a === $b) {
@@ -84,7 +84,7 @@ final class HeaderHelper
             $values = $values->getHeader('accept');
         }
         $output = self::getByQFactorSortedList($values);
-        usort($output, function ($a, $b) {
+        usort($output, static function ($a, $b) {
             if ($a['q'] !== $b['q']) {
                 // The higher q value wins
                 return $a['q'] > $b['q'] ? -1 : 1;
