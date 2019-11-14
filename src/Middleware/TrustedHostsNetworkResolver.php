@@ -1,9 +1,8 @@
 <?php
 
-
 namespace Yiisoft\Yii\Web\Middleware;
 
-
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -15,24 +14,46 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
 {
 
     private const DEFAULT_IP_HEADERS = [
-        'X-Forwarded-For', // Common
+        'x-forwarded-for', // common
+    ];
+
+    private const DEFAULT_HOST_HEADERS = [
+        'x-forwarded-host', // common
+    ];
+
+    private const DEFAULT_FORWARD_HEADERS = [
+        'forward',  // https://tools.ietf.org/html/rfc7239#section-4
+    ];
+
+    private const DEFAULT_URL_HEADERS = [
+        'x-rewrite-url',    // Microsoft
     ];
 
     private const DEFAULT_PROTOCOL_HEADERS = [
-        'X-Forwarded-Proto' => ['http' => 'http', 'https' => 'https'], // Common
-        'Front-End-Https' => ['https' => 'on'], // Microsoft
+        'x-forwarded-proto' => ['http' => 'http', 'https' => 'https'], // Common
+        'front-end-https' => ['https' => 'on'], // Microsoft
     ];
 
     private const DEFAULT_TRUSTED_HEADERS = [
         // Common:
-        'X-Forwarded-For',
-        'X-Forwarded-Host',
-        'X-Forwarded-Proto',
+        'x-forwarded-for',
+        'x-forwarded-host',
+        'x-forwarded-proto',
+        // RFC
+        'forward',
 
         // Microsoft:
-        'Front-End-Https',
-        'X-Rewrite-Url',
+        'front-end-https',
+        'x-rewrite-url',
     ];
+
+    private const DATA_KEY_HOSTS = 'hosts';
+    private const DATA_KEY_IP_HEADERS = 'ipHeaders';
+    private const DATA_KEY_HOST_HEADERS = 'hostHeaders';
+    private const DATA_KEY_FORWARD_HEADERS = 'forwardHeaders';
+    private const DATA_KEY_URL_HEADERS = 'urlHeaders';
+    private const DATA_KEY_PROTOCOL_HEADERS = 'protocolHeaders';
+    private const DATA_KEY_TRUSTED_HEADERS = 'trustedHeaders';
 
     private $trustedHosts = [];
 
@@ -63,9 +84,12 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
     /**
      * @return static
      */
-    public function withIpValidator(Ip $ipValidator) {
+    public function withIpValidator(Ip $ipValidator)
+    {
         $new = clone $this;
-        $new->ipValidator = $ipValidator;
+        $ipValidator = clone $ipValidator;
+        // force disable unacceptable validation
+        $new->ipValidator = $ipValidator->disallowSubnet()->disallowNegation();
         return $new;
     }
 
@@ -86,14 +110,20 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
         array $hosts,
         ?array $ipHeaders = null,
         ?array $protocolHeaders = null,
+        ?array $hostHeaders = null,
+        ?array $urlHeaders = null,
+        ?array $forwardHeaders = null,
         ?array $trustedHeaders = null
     ) {
         $new = clone $this;
         $new->trustedHosts[] = [
-            'hosts' => $hosts,
-            'ipHeaders' => $ipHeaders ?? self::DEFAULT_IP_HEADERS,
-            'protocolHeaders' => $this->prepareProtocolHeaders($protocolHeaders ?? self::DEFAULT_PROTOCOL_HEADERS),
-            'trustedHeaders' => $trustedHeaders ?? self::DEFAULT_TRUSTED_HEADERS,
+            self::DATA_KEY_HOSTS => $hosts,
+            self::DATA_KEY_IP_HEADERS => $ipHeaders ?? self::DEFAULT_IP_HEADERS,
+            self::DATA_KEY_PROTOCOL_HEADERS => $this->prepareProtocolHeaders($protocolHeaders ?? self::DEFAULT_PROTOCOL_HEADERS),
+            self::DATA_KEY_TRUSTED_HEADERS => $trustedHeaders ?? self::DEFAULT_TRUSTED_HEADERS,
+            self::DATA_KEY_HOST_HEADERS => $hostHeaders ?? self::DEFAULT_HOST_HEADERS,
+            self::DATA_KEY_URL_HEADERS => $urlHeaders ?? self::DEFAULT_URL_HEADERS,
+            self::DATA_KEY_FORWARD_HEADERS => $forwardHeaders ?? self::DEFAULT_FORWARD_HEADERS,
         ];
         return $new;
     }
@@ -114,7 +144,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
     public function withAttributeIps(?string $attribute)
     {
         if ($attribute !== null && strlen($attribute) === 0) {
-            throw new \RuntimeException('Attribute is cannot be an empty string!');
+            throw new \RuntimeException('Attribute is cannot be an empty string');
         }
         $new = clone $this;
         $new->attributeIps = $attribute;
@@ -131,18 +161,18 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
                 continue;
             }
             if (!is_array($protocolAndAcceptedValues)) {
-                throw new \RuntimeException('Accepted values is not array nor callable!');
+                throw new \RuntimeException('Accepted values is not array nor callable');
             }
             if (count($protocolAndAcceptedValues) === 0) {
-                throw new \RuntimeException('Accepted values cannot be an empty array!');
+                throw new \RuntimeException('Accepted values cannot be an empty array');
             }
             $output[$header] = [];
             foreach ($protocolAndAcceptedValues as $protocol => $acceptedValues) {
                 if (!is_string($protocol)) {
-                    throw new \RuntimeException('The protocol must be type of string!');
+                    throw new \RuntimeException('The protocol must be type of string');
                 }
                 if (strlen($protocol) === 0) {
-                    throw new \RuntimeException('The protocol cannot be an empty string!');
+                    throw new \RuntimeException('The protocol cannot be an empty string');
                 }
                 $output[$header][$protocol] = array_map('strtolower', (array)$acceptedValues);
             }
@@ -165,8 +195,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
      */
     protected function isValidHost(string $host, array $ranges, Ip $validator): bool
     {
-        $validator->setRanges($ranges);
-        return $validator->validate($host)->isValid();
+        return $validator->ranges($ranges)->validate($host)->isValid();
     }
 
     /**
@@ -179,21 +208,22 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $actualHost = $request->getServerParams()['REMOTE_ADDR'];
-        $ips = [$actualHost];
+        $ips = [['for' => $actualHost]];
         $trustedHostData = null;
         $trustedHeaders = [];
         $ipValidator = $this->ipValidator ?? new Ip();
         foreach ($this->trustedHosts as $data) {
-            $trustedHeaders = array_merge($trustedHeaders, $data['trustedHeaders']);
+            // collect all trusted headers
+            $trustedHeaders = array_merge($trustedHeaders, $data[self::DATA_KEY_TRUSTED_HEADERS]);
             if ($trustedHostData !== null) {
+                // trusted hosts already found
                 continue;
             }
-            if (!$this->isValidHost($actualHost, $data['hosts'], $ipValidator)) {
-                continue;
+            if ($this->isValidHost($actualHost, $data[self::DATA_KEY_HOSTS], $ipValidator)) {
+                $trustedHostData = $data;
             }
-            $trustedHostData = $data;
         }
-        $untrustedHeaders = array_diff($trustedHeaders, $trustedHostData['trustedHeaders'] ?? []);
+        $untrustedHeaders = array_diff($trustedHeaders, $trustedHostData[self::DATA_KEY_TRUSTED_HEADERS] ?? []);
         $request = $this->removeHeaders($request, $untrustedHeaders);
         if ($trustedHostData === null) {
             // No trusted host at all.
@@ -205,28 +235,21 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
             return $response;
         }
 
-        $ipList = null;
-        foreach ($trustedHostData['ipHeaders'] as $ipHeader) {
-            if ($request->hasHeader($ipHeader)) {
-                $ipList = $request->getHeader($ipHeader)[0];
-                break;
-            }
-        }
-        if ($ipList === null || strlen($ipList) === 0) {
+        $ipList = $this->getIpList($request, $trustedHostData[self::DATA_KEY_IP_HEADERS]);
+        if (count($ipList) === 0) {
             if ($this->attributeIps !== null) {
-                $request = $request->withAttribute($this->attributeIps, []);
+                $request = $request->withAttribute($this->attributeIps, $ips);
             }
             return $handler->handle($request);
         }
 
-        $ipList = preg_split('/\s*,\s*/', trim($ipList), -1, PREG_SPLIT_NO_EMPTY);
         do {
             $ip = array_pop($ipList);
             if (!$this->isValidHost($ip, ['any'], $ipValidator)) {
                 break;
             }
-            $ips[] = $ip;
-            if (!$this->isValidHost($ip, $trustedHostData['hosts'], $ipValidator)) {
+            $ips[] = ['for' => $ip];
+            if (!$this->isValidHost($ip, $trustedHostData[self::DATA_KEY_HOSTS], $ipValidator)) {
                 break;
             }
         } while (count($ipList) > 0);
@@ -235,6 +258,16 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
             $request = $request->withAttribute($this->attributeIps, $ips);
         }
 
-        return $handler->handle($request->withAttribute('clientIp', end($ips)));
+        return $handler->handle($request->withAttribute('requestClientIp', end($ips)['for']));
+    }
+
+    private function getIpList(RequestInterface $request, array $ipHeaders): array
+    {
+        foreach ($ipHeaders as $ipHeader) {
+            if ($request->hasHeader($ipHeader)) {
+                return $request->getHeader($ipHeader);
+            }
+        }
+        return [];
     }
 }

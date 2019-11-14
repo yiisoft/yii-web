@@ -52,8 +52,14 @@ class TrustedHostsNetworkResolverTest extends TestCase
 
         $middleware = new TrustedHostsNetworkResolver(new Psr17Factory());
         foreach ($trustedHosts as $data) {
-            $middleware = $middleware->withAddedTrustedHosts($data['hosts'], $data['ipHeaders'] ?? null,
-                $data['protocolHeaders'] ?? null, $data['trustedHeaders'] ?? null);
+            $middleware = $middleware->withAddedTrustedHosts(
+                $data['hosts'],
+                $data['ipHeaders'] ?? null,
+                $data['protocolHeaders'] ?? null,
+                null,
+                null,
+                null,
+                $data['trustedHeaders'] ?? null);
         }
         $response = $middleware->process($request, $requestHandler);
         $this->assertInstanceOf(ResponseInterface::class, $response);
