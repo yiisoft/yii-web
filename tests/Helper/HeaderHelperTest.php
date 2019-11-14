@@ -109,7 +109,8 @@ class HeaderHelperTest extends TestCase
         $this->assertSame($expected, HeaderHelper::getSortedAcceptTypes($input));
     }
 
-    public function sortedAcceptTypesFromRequestDataProvider(): array {
+    public function sortedAcceptTypesFromRequestDataProvider(): array
+    {
         return [
             'simple' => [
                 new ServerRequest('get', '/', ['accept' => ['text/html;q=0.1', 'text/xml']]),
@@ -121,7 +122,8 @@ class HeaderHelperTest extends TestCase
     /**
      * @dataProvider sortedAcceptTypesFromRequestDataProvider
      */
-    public function testSortedAcceptTypesFromRequest(RequestInterface $request, array $expected): void {
+    public function testSortedAcceptTypesFromRequest(RequestInterface $request, array $expected): void
+    {
         $this->assertSame($expected, HeaderHelper::getSortedAcceptTypesFromRequest($request));
     }
 }
