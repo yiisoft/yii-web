@@ -35,7 +35,7 @@ class ErrorCatcherTest extends TestCase
         $this->assertSame($expectedRendererOutput, $content);
     }
 
-    public function testWithoutRenderers()
+    public function testWithoutRenderers(): void
     {
         $factory = new Psr17Factory();
         $errorHandler = new ErrorHandler(new Logger(), new MockThrowableRenderer(self::DEFAULT_RENDERER_RESPONSE));
@@ -49,7 +49,7 @@ class ErrorCatcherTest extends TestCase
         $this->assertSame(self::DEFAULT_RENDERER_RESPONSE, $content);
     }
 
-    public function testWithoutRenderer()
+    public function testWithoutRenderer(): void
     {
         $factory = new Psr17Factory();
         $errorHandler = new ErrorHandler(new Logger(), new MockThrowableRenderer(self::DEFAULT_RENDERER_RESPONSE));
@@ -61,5 +61,25 @@ class ErrorCatcherTest extends TestCase
         $response->getBody()->rewind();
         $content = $response->getBody()->getContents();
         $this->assertSame(self::DEFAULT_RENDERER_RESPONSE, $content);
+    }
+
+    public function testAdvancedAcceptHeader(): void
+    {
+        $factory = new Psr17Factory();
+        $errorHandler = new ErrorHandler(new Logger(), new MockThrowableRenderer(self::DEFAULT_RENDERER_RESPONSE));
+        $container = new Container();
+        $mimeType = 'text/html;version=2';
+        $containerId = 'testRenderer';
+        $catcher = (new ErrorCatcher($factory, $errorHandler, $container))
+            ->withAddedRenderer($mimeType, $containerId);
+        $expectedRendererOutput = 'expectedRendereOutput';
+        $container->set($containerId, new MockThrowableRenderer($expectedRendererOutput));
+        $requestHandler = (new MockRequestHandler())->setHandleExcaption(new \RuntimeException());
+        $response = $catcher->process(new ServerRequest('GET', '/', ['Accept' => ['text/html', $mimeType]]),
+            $requestHandler);
+        $response->getBody()->rewind();
+        $content = $response->getBody()->getContents();
+        $this->assertNotSame(self::DEFAULT_RENDERER_RESPONSE, $content);
+        $this->assertSame($expectedRendererOutput, $content);
     }
 }
