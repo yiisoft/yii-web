@@ -13,6 +13,7 @@ use Yiisoft\Yii\Web\ErrorHandler\HtmlRenderer;
 use Yiisoft\Yii\Web\ErrorHandler\JsonRenderer;
 use Yiisoft\Yii\Web\ErrorHandler\PlainTextRenderer;
 use Yiisoft\Yii\Web\ErrorHandler\XmlRenderer;
+use Yiisoft\Yii\Web\Helper\HeaderHelper;
 
 /**
  * ErrorCatcher catches all throwables from the next middlewares and renders it
@@ -99,11 +100,15 @@ final class ErrorCatcher implements MiddlewareInterface
 
     private function getContentType(ServerRequestInterface $request): string
     {
-        $acceptHeaders = preg_split('~\s*,\s*~', $request->getHeaderLine('Accept'), PREG_SPLIT_NO_EMPTY);
-        foreach ($acceptHeaders as $header) {
-            if (array_key_exists($header, $this->renderers)) {
-                return $header;
+        try {
+            $acceptHeaders = HeaderHelper::getSortedAcceptTypesFromRequest($request);
+            foreach ($acceptHeaders as $header) {
+                if (array_key_exists($header, $this->renderers)) {
+                    return $header;
+                }
             }
+        } catch (\InvalidArgumentException $e) {
+            // The Accept header contains an invalid q factor
         }
         return 'text/html';
     }
