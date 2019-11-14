@@ -2,14 +2,9 @@
 
 namespace Yiisoft\Yii\Web\Tests\Helper;
 
-use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
-use Yiisoft\Di\Container;
+use Psr\Http\Message\RequestInterface;
 use Yiisoft\Yii\Web\Helper\HeaderHelper;
-use Yiisoft\Yii\Web\Middleware\ActionCaller;
 use PHPUnit\Framework\TestCase;
 
 class HeaderHelperTest extends TestCase
@@ -31,7 +26,7 @@ class HeaderHelperTest extends TestCase
         $this->assertSame($expected, HeaderHelper::getValueAndParameters($input));
     }
 
-    public function qFactorSortDataProvider(): array
+    public function sortedValuesAndParametersDataProvider(): array
     {
         return [
             'empty' => ['', []],
@@ -40,16 +35,19 @@ class HeaderHelperTest extends TestCase
             'q' => ['text/html;q=0.2,text/xml', [['text/xml', 'q' => 1.0], ['text/html', 'q' => 0.2]]],
             'qq' => ['text/html;q=0.2,text/xml;q=0.3', [['text/xml', 'q' => 0.3], ['text/html', 'q' => 0.2]]],
             'qqDigits' => ['text/html;q=0.000,text/xml;q=1.000', [['text/xml', 'q' => 1.0], ['text/html', 'q' => 0.0]]],
-            'qqDigits0.999' => ['text/html;q=0.999,text/xml;q=1.000', [['text/xml', 'q' => 1.0], ['text/html', 'q' => 0.999]]],
+            'qqDigits0.999' => [
+                'text/html;q=0.999,text/xml;q=1.000',
+                [['text/xml', 'q' => 1.0], ['text/html', 'q' => 0.999]]
+            ],
         ];
     }
 
     /**
-     * @dataProvider qFactorSortDataProvider
+     * @dataProvider sortedValuesAndParametersDataProvider
      */
-    public function testQFactorSort($input, array $expected): void
+    public function testSortedValuesAndParameters($input, array $expected): void
     {
-        $this->assertSame($expected, HeaderHelper::getByQFactorSortedList($input));
+        $this->assertSame($expected, HeaderHelper::getSortedValueAndParameters($input));
     }
 
     public function qFactorSortFailDataProvider(): array
@@ -71,7 +69,7 @@ class HeaderHelperTest extends TestCase
     public function testQFactorSortFail($input, string $expected): void
     {
         $this->expectException($expected);
-        HeaderHelper::getByQFactorSortedList($input);
+        HeaderHelper::getSortedValueAndParameters($input);
     }
 
     public function sortedAcceptTypesDataProvider(): array
@@ -91,11 +89,7 @@ class HeaderHelperTest extends TestCase
                 'text/html;version=2;a=b,text/html;version=2;a=a',
                 ['text/html;a=b;version=2', 'text/html;a=a;version=2']
             ],
-            'serverRequest' => [
-                new ServerRequest('get', '/', ['accept' => ['text/html;q=0.1', 'text/xml']]),
-                ['text/xml', 'text/html'],
-            ],
-            'wildcard' => [ // https://tools.ietf.org/html/rfc7231#section-5.3.2
+            'wildcardRfcExample' => [ //  https://tools.ietf.org/html/rfc7231#section-5.3.2
                 'text/*, text/plain, text/plain;format=flowed, */*',
                 [
                     'text/plain;format=flowed',
@@ -113,5 +107,21 @@ class HeaderHelperTest extends TestCase
     public function testSortedAcceptTypes($input, array $expected): void
     {
         $this->assertSame($expected, HeaderHelper::getSortedAcceptTypes($input));
+    }
+
+    public function sortedAcceptTypesFromRequestDataProvider(): array {
+        return [
+            'simple' => [
+                new ServerRequest('get', '/', ['accept' => ['text/html;q=0.1', 'text/xml']]),
+                ['text/xml', 'text/html'],
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider sortedAcceptTypesFromRequestDataProvider
+     */
+    public function testSortedAcceptTypesFromRequest(RequestInterface $request, array $expected): void {
+        $this->assertSame($expected, HeaderHelper::getSortedAcceptTypesFromRequest($request));
     }
 }

@@ -100,11 +100,15 @@ final class ErrorCatcher implements MiddlewareInterface
 
     private function getContentType(ServerRequestInterface $request): string
     {
-        $acceptHeaders = HeaderHelper::getSortedAcceptTypes($request);
-        foreach ($acceptHeaders as $header) {
-            if (array_key_exists($header, $this->renderers)) {
-                return $header;
+        try {
+            $acceptHeaders = HeaderHelper::getSortedAcceptTypesFromRequest($request);
+            foreach ($acceptHeaders as $header) {
+                if (array_key_exists($header, $this->renderers)) {
+                    return $header;
+                }
             }
+        } catch (\InvalidArgumentException $e) {
+            // The Accept header contains an invalid q factor
         }
         return 'text/html';
     }

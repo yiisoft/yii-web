@@ -32,7 +32,7 @@ final class HeaderHelper
      * @see getValueAndParameters
      * @link https://developer.mozilla.org/en-US/docs/Glossary/Quality_values
      */
-    public static function getByQFactorSortedList($values): array
+    public static function getSortedValueAndParameters($values): array
     {
         if (is_string($values)) {
             $values = preg_split('/\s*,\s*/', trim($values), -1, PREG_SPLIT_NO_EMPTY);
@@ -47,6 +47,8 @@ final class HeaderHelper
         foreach ($values as $value) {
             $parse = self::getValueAndParameters($value);
             $q = $parse['q'] ?? 1.0;
+
+            // min 0.000 max 1.000, max 3 digits, without digits allowed
             if (is_string($q) && preg_match('/^(?:0(?:\.\d{1,3})?|1(?:\.0{1,3})?)$/', $q) === 0) {
                 throw new \InvalidArgumentException('Invalid q factor');
             }
@@ -65,19 +67,21 @@ final class HeaderHelper
     }
 
     /**
-     * @param $values string|string[]|RequestInterface $values Header value as a comma-separated string
-     *                                                         or already exploded string array
-     *                                                         or request interface with 'accept' header.
+     * @see getSortedAcceptTypes
+     */
+    public static function getSortedAcceptTypesFromRequest(RequestInterface $request): array {
+        return static::getSortedAcceptTypes($request->getHeader('accept'));
+    }
+
+    /**
+     * @param $values string|string[] $values Header value as a comma-separated string or already exploded string array
      * @return string[] sorted accept types. Note: According to RFC 7231, special parameters (except the q factor) are
      *                  added to the type, which are always appended by a semicolon and sorted by string.
      * @link https://tools.ietf.org/html/rfc7231#section-5.3.2
      */
     public static function getSortedAcceptTypes($values): array
     {
-        if ($values instanceof RequestInterface) {
-            $values = $values->getHeader('accept');
-        }
-        $output = self::getByQFactorSortedList($values);
+        $output = self::getSortedValueAndParameters($values);
         usort($output, static function ($a, $b) {
             if ($a['q'] !== $b['q']) {
                 // The higher q value wins
@@ -114,6 +118,7 @@ final class HeaderHelper
             foreach ($value as $k => $v) {
                 $value[$k] = $k . '=' . $v;
             }
+            // Parameters are sorted for easier use of parameter variations.
             asort($value, SORT_STRING);
             $output[$key] = $type . ';' . join(';', $value);
         }
