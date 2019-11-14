@@ -69,7 +69,8 @@ final class HeaderHelper
     /**
      * @see getSortedAcceptTypes
      */
-    public static function getSortedAcceptTypesFromRequest(RequestInterface $request): array {
+    public static function getSortedAcceptTypesFromRequest(RequestInterface $request): array
+    {
         return static::getSortedAcceptTypes($request->getHeader('accept'));
     }
 
