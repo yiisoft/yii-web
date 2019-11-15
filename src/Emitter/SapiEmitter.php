@@ -29,10 +29,10 @@ final class SapiEmitter implements EmitterInterface
         $reason = $response->getReasonPhrase();
 
         header(sprintf(
-            'HTTP/%s %d%s',
+            'HTTP/%s %d %s',
             $response->getProtocolVersion(),
             $status,
-            ($reason !== '' ? ' ' . $reason : '')
+            $reason
         ), true, $status);
 
         if ($withoutBody === false && $this->shouldOutputBody($response)) {

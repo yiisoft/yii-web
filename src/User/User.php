@@ -324,14 +324,17 @@ class User
     protected function renewAuthStatus(): void
     {
         $id = $this->session->get(self::SESSION_AUTH_ID);
-        if ($id === null) {
+
+        $identity = null;
+        if ($id !== null) {
+            $identity = $this->identityRepository;
+        }
+        if ($identity === null) {
             $identity = new GuestIdentity();
-        } else {
-            $identity = $this->identityRepository->findIdentity($id);
         }
         $this->setIdentity($identity);
 
-        if ($identity !== null && ($this->authTimeout !== null || $this->absoluteAuthTimeout !== null)) {
+        if (!($identity instanceof GuestIdentity) && ($this->authTimeout !== null || $this->absoluteAuthTimeout !== null)) {
             $expire = $this->authTimeout !== null ? $this->session->get(self::SESSION_AUTH_ABSOLUTE_EXPIRE) : null;
             $expireAbsolute = $this->absoluteAuthTimeout !== null ? $this->session->get(self::SESSION_AUTH_ABSOLUTE_EXPIRE) : null;
             if (($expire !== null && $expire < time()) || ($expireAbsolute !== null && $expireAbsolute < time())) {

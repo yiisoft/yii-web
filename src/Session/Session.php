@@ -98,7 +98,9 @@ class Session implements SessionInterface
     {
         if ($this->isActive()) {
             try {
-                session_regenerate_id(true);
+                if (session_regenerate_id(true)) {
+                    $this->sessionId = session_id();
+                }
             } catch (\Throwable $e) {
                 throw new SessionException('Failed to regenerate ID', $e->getCode(), $e);
             }
