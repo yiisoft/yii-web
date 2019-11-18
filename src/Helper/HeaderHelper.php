@@ -21,6 +21,9 @@ final class HeaderHelper
         $output = [array_shift($parts)];
         foreach ($parts as $part) {
             [$key, $headerValue] = explode('=', $part, 2);
+            if (preg_match('/^"(?<value>.*)"$/', $headerValue, $matches) === 1) {
+                $headerValue = $matches['value'];
+            }
             $output[$key] = $headerValue;
         }
         return $output;
