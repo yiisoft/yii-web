@@ -15,6 +15,10 @@ class HeaderHelperTest extends TestCase
             'empty' => ['', []],
             'noParams' => ['test', ['test']],
             'withParams' => ['test;q=1.0;version=2', ['test', 'q' => '1.0', 'version' => '2']],
+            'witQuotedParameter' => [
+                'test;noqoute=test;qoute="test2"',
+                ['test', 'noqoute' => 'test', 'qoute' => 'test2']
+            ],
         ];
     }
 
