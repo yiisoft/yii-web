@@ -1,7 +1,7 @@
 <?php
 namespace Yiisoft\Yii\Web\User\Event;
 
-use Yiisoft\Yii\Web\User\IdentityInterface;
+use Yiisoft\Auth\IdentityInterface;
 
 class AfterLogoutEvent
 {
