@@ -26,6 +26,25 @@ final class HeaderHelper
         return $output;
     }
 
+    public static function getParameters(string $headerValue): array
+    {
+        $headerValue = trim($headerValue);
+        if ($headerValue === '') {
+            return [];
+        }
+        $parts = preg_split('/\s*;\s*/', $headerValue, -1, PREG_SPLIT_NO_EMPTY);
+        $output = [];
+        foreach ($parts as $part) {
+            [$key, $headerValue] = explode('=', $part, 2);
+            if (preg_match('/^"(?<value>.*)"$/', $headerValue, $matches) === 1) {
+                $headerValue = $matches['value'];
+            }
+            $output[$key] = $headerValue;
+        }
+        return $output;
+
+    }
+
     /**
      * Getting header value as q factor sorted list
      * @param string|string[] $values Header value as a comma-separated string or already exploded string array.

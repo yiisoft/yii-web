@@ -26,6 +26,63 @@ class TrustedHostsNetworkResolverTest extends TestCase
         return $request->withUri($uri);
     }
 
+    public function trustedDataProvider(): array
+    {
+        return [
+            'xForwardLevel1' => [
+                ['x-forwarded-for' => ['9.9.9.9', '5.5.5.5', '2.2.2.2']],
+                ['REMOTE_ADDR' => '127.0.0.1'],
+                [['hosts' => ['8.8.8.8', '127.0.0.1']]],
+                '2.2.2.2',
+            ],
+            'xForwardLevel2' => [
+                ['x-forwarded-for' => ['9.9.9.9', '5.5.5.5', '2.2.2.2']],
+                ['REMOTE_ADDR' => '127.0.0.1'],
+                [['hosts' => ['8.8.8.8', '127.0.0.1', '2.2.2.2']]],
+                '5.5.5.5',
+            ],
+            'forwardLevel1' => [
+                ['forward' => ['for=9.9.9.9', 'for=5.5.5.5', 'for=2.2.2.2']],
+                ['REMOTE_ADDR' => '127.0.0.1'],
+                [['hosts' => ['8.8.8.8', '127.0.0.1']]],
+                '2.2.2.2',
+            ],
+            'forwardLevel2' => [
+                ['forward' => ['for=9.9.9.9', 'for=5.5.5.5', 'for=2.2.2.2']],
+                ['REMOTE_ADDR' => '127.0.0.1'],
+                [['hosts' => ['8.8.8.8', '127.0.0.1', '2.2.2.2']]],
+                '5.5.5.5',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider trustedDataProvider
+     */
+    public function testTrusted(
+        array $headers,
+        array $serverParams,
+        array $trustedHosts,
+        string $expectedClientIp
+    ): void {
+        $request = $this->newRequestWithSchemaAndHeaders('http', $headers, $serverParams);
+        $requestHandler = new MockRequestHandler();
+
+        $middleware = new TrustedHostsNetworkResolver(new Psr17Factory());
+        foreach ($trustedHosts as $data) {
+            $middleware = $middleware->withAddedTrustedHosts(
+                $data['hosts'],
+                $data['ipHeaders'] ?? null,
+                $data['protocolHeaders'] ?? null,
+                null,
+                null,
+                $data['trustedHeaders'] ?? null);
+        }
+        $response = $middleware->process($request, $requestHandler);
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame($expectedClientIp, $requestHandler->processedRequest->getAttribute('requestClientIp'));
+    }
+
     public function notTrustedDataProvider(): array
     {
         return [
@@ -34,8 +91,13 @@ class TrustedHostsNetworkResolverTest extends TestCase
                 ['REMOTE_ADDR' => '127.0.0.1'],
                 [],
             ],
-            'level1' => [
-                ['x-forwarded-for' => '9.9.9.9, 5.5.5.5, 2.2.2.2'],
+            'x-forwarded-for' => [
+                ['x-forwarded-for' => ['9.9.9.9', '5.5.5.5', '2.2.2.2']],
+                ['REMOTE_ADDR' => '127.0.0.1'],
+                [['hosts' => ['8.8.8.8']]],
+            ],
+            'forward' => [
+                ['x-forwarded-for' => ['for=9.9.9.9', 'for=5.5.5.5', 'for=2.2.2.2']],
                 ['REMOTE_ADDR' => '127.0.0.1'],
                 [['hosts' => ['8.8.8.8']]],
             ],
@@ -58,11 +120,9 @@ class TrustedHostsNetworkResolverTest extends TestCase
                 $data['protocolHeaders'] ?? null,
                 null,
                 null,
-                null,
                 $data['trustedHeaders'] ?? null);
         }
         $response = $middleware->process($request, $requestHandler);
-        $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertSame(412, $response->getStatusCode());
     }
 
@@ -81,13 +141,13 @@ class TrustedHostsNetworkResolverTest extends TestCase
                 ServerRequestInterface $request,
                 RequestHandlerInterface $handler
             ): ResponseInterface {
-                $response = (new Psr17Factory())->createResponse(200);
+                $response = (new Psr17Factory())->createResponse(403);
                 $response->getBody()->write('Another branch.');
                 return $response;
             }
         });
         $response = $middleware->process($request, $requestHandler);
         $this->assertInstanceOf(ResponseInterface::class, $response);
-        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame(403, $response->getStatusCode());
     }
 }

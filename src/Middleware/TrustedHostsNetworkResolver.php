@@ -8,21 +8,22 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Yiisoft\NetworkUtilities\IpHelper;
 use Yiisoft\Validator\Rule\Ip;
+use Yiisoft\Yii\Web\Helper\HeaderHelper;
 
 class TrustedHostsNetworkResolver implements MiddlewareInterface
 {
 
+    public const IP_HEADER_TYPE_RFC7239 = 'rfc7239';
+
     private const DEFAULT_IP_HEADERS = [
-        'x-forwarded-for', // common
+        [self::IP_HEADER_TYPE_RFC7239, 'forward'],  // https://tools.ietf.org/html/rfc7239
+        'x-forwarded-for',                          // common
     ];
 
     private const DEFAULT_HOST_HEADERS = [
         'x-forwarded-host', // common
-    ];
-
-    private const DEFAULT_FORWARD_HEADERS = [
-        'forward',  // https://tools.ietf.org/html/rfc7239#section-4
     ];
 
     private const DEFAULT_URL_HEADERS = [
@@ -50,7 +51,6 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
     private const DATA_KEY_HOSTS = 'hosts';
     private const DATA_KEY_IP_HEADERS = 'ipHeaders';
     private const DATA_KEY_HOST_HEADERS = 'hostHeaders';
-    private const DATA_KEY_FORWARD_HEADERS = 'forwardHeaders';
     private const DATA_KEY_URL_HEADERS = 'urlHeaders';
     private const DATA_KEY_PROTOCOL_HEADERS = 'protocolHeaders';
     private const DATA_KEY_TRUSTED_HEADERS = 'trustedHeaders';
@@ -112,20 +112,57 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
         ?array $protocolHeaders = null,
         ?array $hostHeaders = null,
         ?array $urlHeaders = null,
-        ?array $forwardHeaders = null,
         ?array $trustedHeaders = null
     ) {
         $new = clone $this;
+        $ipHeaders = $ipHeaders ?? self::DEFAULT_IP_HEADERS;
+        foreach ($ipHeaders as $ipHeader) {
+            if (is_string($ipHeader)) {
+                continue;
+            }
+            if (!is_array($ipHeader)) {
+                throw new \InvalidArgumentException('Type of ipHeader is not a string and not array');
+            }
+            if (count($ipHeader) !== 2) {
+                throw new \InvalidArgumentException('The ipHeader array must have exactly 2 elements');
+            }
+            [$type, $header] = $ipHeader;
+            if (!is_string($type)) {
+                throw new \InvalidArgumentException('The type is not a string');
+            }
+            if (!is_string($header)) {
+                throw new \InvalidArgumentException('The header is not a string');
+            }
+            switch ($type) {
+                case self::IP_HEADER_TYPE_RFC7239:
+                    continue 2;
+                default:
+                    throw new \InvalidArgumentException("Not supported IP header type: $type");
+            }
+        }
         $new->trustedHosts[] = [
             self::DATA_KEY_HOSTS => $hosts,
-            self::DATA_KEY_IP_HEADERS => $ipHeaders ?? self::DEFAULT_IP_HEADERS,
+            self::DATA_KEY_IP_HEADERS => $ipHeaders,
             self::DATA_KEY_PROTOCOL_HEADERS => $this->prepareProtocolHeaders($protocolHeaders ?? self::DEFAULT_PROTOCOL_HEADERS),
             self::DATA_KEY_TRUSTED_HEADERS => $trustedHeaders ?? self::DEFAULT_TRUSTED_HEADERS,
             self::DATA_KEY_HOST_HEADERS => $hostHeaders ?? self::DEFAULT_HOST_HEADERS,
             self::DATA_KEY_URL_HEADERS => $urlHeaders ?? self::DEFAULT_URL_HEADERS,
-            self::DATA_KEY_FORWARD_HEADERS => $forwardHeaders ?? self::DEFAULT_FORWARD_HEADERS,
         ];
         return $new;
+    }
+
+    private function checkIpHeaderTypes(array $ipHeaders): bool
+    {
+        $supportedTypes = [self::IP_HEADER_TYPE_RFC7239];
+        foreach ($ipHeaders as $type => $ipHeader) {
+            if (!is_string($ipHeader)) {
+                continue;
+            }
+            if (!in_array($type, $supportedTypes)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -208,7 +245,6 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $actualHost = $request->getServerParams()['REMOTE_ADDR'];
-        $ips = [['for' => $actualHost]];
         $trustedHostData = null;
         $trustedHeaders = [];
         $ipValidator = $this->ipValidator ?? new Ip();
@@ -234,40 +270,109 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
             $response->getBody()->write('Unable to verify your network.');
             return $response;
         }
-
-        $ipList = $this->getIpList($request, $trustedHostData[self::DATA_KEY_IP_HEADERS]);
-        if (count($ipList) === 0) {
-            if ($this->attributeIps !== null) {
-                $request = $request->withAttribute($this->attributeIps, $ips);
-            }
-            return $handler->handle($request);
+        [$type, $ipList] = $this->getIpList($request, $trustedHostData[self::DATA_KEY_IP_HEADERS]);
+        $ipList = array_reverse($ipList);       // the first item should be the closest to the server
+        if ($type === null) {
+            $ipList = $this->getFormattedIpList($ipList);
+        } elseif ($type === self::IP_HEADER_TYPE_RFC7239) {
+            $ipList = $this->getForwardedElements($ipList);
         }
-
+        array_unshift($ipList, ['ip' => $actualHost]);  // server's ip to first position
+        $ipDataList = [];
         do {
-            $ip = array_pop($ipList);
+            $ipData = array_shift($ipList);
+            if (!isset($ipData['ip'])) {
+                $ipData = $this->reverseObfuscate($ipData, $ipDataList);
+                if (!isset($ipData['ip'])) {
+                    break;
+                }
+            }
+            $ip = $ipData['ip'];
             if (!$this->isValidHost($ip, ['any'], $ipValidator)) {
                 break;
             }
-            $ips[] = ['for' => $ip];
+            $ipDataList[] = $ipData;
             if (!$this->isValidHost($ip, $trustedHostData[self::DATA_KEY_HOSTS], $ipValidator)) {
                 break;
             }
         } while (count($ipList) > 0);
 
         if ($this->attributeIps !== null) {
-            $request = $request->withAttribute($this->attributeIps, $ips);
+            $request = $request->withAttribute($this->attributeIps, $ipDataList);
         }
 
-        return $handler->handle($request->withAttribute('requestClientIp', end($ips)['for']));
+        return $handler->handle($request->withAttribute('requestClientIp', end($ipDataList)['ip']));
+    }
+
+    protected function reverseObfuscate(array $ipData, array $ipDataList): array
+    {
+        return $ipData;
     }
 
     private function getIpList(RequestInterface $request, array $ipHeaders): array
     {
         foreach ($ipHeaders as $ipHeader) {
+            $type = null;
+            if (is_array($ipHeader)) {
+                $type = array_shift($ipHeader);
+                $ipHeader = array_shift($ipHeader);
+            }
             if ($request->hasHeader($ipHeader)) {
-                return $request->getHeader($ipHeader);
+                return [$type, $request->getHeader($ipHeader)];
             }
         }
-        return [];
+        return [null, []];
+    }
+
+    private function getFormattedIpList(array $forwards): array
+    {
+        $list = [];
+        foreach ($forwards as $ip) {
+            $list[] = ['ip' => $ip];
+        }
+        return $list;
+    }
+
+    private function getForwardedElements(array $forwards): array
+    {
+        $list = [];
+        foreach ($forwards as $forward) {
+            $data = HeaderHelper::getParameters($forward);
+            if (!isset($data['for'])) {
+                // Invalid element, other items will be dropped.
+                break;
+            }
+            $pattern = '/^(?<host>' . IpHelper::IPV4_PATTERN . '|_[^:]+|[[]' . IpHelper::IPV6_PATTERN . '[]])(?::(?<port>.+))?$/';
+            if (preg_match($pattern, $data['for'], $matches) === 0) {
+                // Invalid element, other items will be dropped.
+                break;
+            }
+            $ipData = [];
+            $host = $matches['host'];
+            $obfuscatedHost = strpos($host, '_') === 0;
+            if (!$obfuscatedHost) {
+                // IPv4 & IPv6
+                $ipData['ip'] = strpos($host, '[') === 0 ? trim($host /* IPv6 */, '[]') : $host;
+            }
+            $ipData['host'] = $host;
+            if (isset($matches['port'])) {
+                $port = $matches['port'];
+                if (!$obfuscatedHost && (preg_match('/^\d{1,5}$/', $port) === 0 || intval($port) > 65535)) {
+                    // Invalid port, other items will be dropped.
+                    break;
+                }
+                $ipData['port'] = $obfuscatedHost ? $port : intval($port);
+            }
+
+            // copy other properties
+            foreach (['proto' => 'protocol', 'host' => 'host', 'by' => 'by'] as $source => $destination) {
+                if (isset($data[$source])) {
+                    $ipData[$destination] = $data[$source];
+                }
+            }
+
+            $list[] = $ipData;
+        }
+        return $list;
     }
 }
