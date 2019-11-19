@@ -329,7 +329,7 @@ class User
 
         $identity = null;
         if ($id !== null) {
-            $identity = $this->identityRepository;
+            $identity = $this->identityRepository->findIdentity($id);
         }
         if ($identity === null) {
             $identity = new GuestIdentity();
