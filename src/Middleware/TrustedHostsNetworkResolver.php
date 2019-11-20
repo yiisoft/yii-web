@@ -117,20 +117,20 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
         $new = clone $this;
         $ipHeaders = $ipHeaders ?? self::DEFAULT_IP_HEADERS;
         foreach ($ipHeaders as $ipHeader) {
-            if (is_string($ipHeader)) {
+            if (\is_string($ipHeader)) {
                 continue;
             }
-            if (!is_array($ipHeader)) {
+            if (!\is_array($ipHeader)) {
                 throw new \InvalidArgumentException('Type of ipHeader is not a string and not array');
             }
             if (count($ipHeader) !== 2) {
                 throw new \InvalidArgumentException('The ipHeader array must have exactly 2 elements');
             }
             [$type, $header] = $ipHeader;
-            if (!is_string($type)) {
+            if (!\is_string($type)) {
                 throw new \InvalidArgumentException('The type is not a string');
             }
-            if (!is_string($header)) {
+            if (!\is_string($header)) {
                 throw new \InvalidArgumentException('The header is not a string');
             }
             if ($type === self::IP_HEADER_TYPE_RFC7239) {
@@ -295,11 +295,11 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
         $output = [];
         foreach ($protocolHeaders as $header => $protocolAndAcceptedValues) {
             $header = strtolower($header);
-            if (is_callable($protocolAndAcceptedValues)) {
+            if (\is_callable($protocolAndAcceptedValues)) {
                 $output[$header] = $protocolAndAcceptedValues;
                 continue;
             }
-            if (!is_array($protocolAndAcceptedValues)) {
+            if (!\is_array($protocolAndAcceptedValues)) {
                 throw new \RuntimeException('Accepted values is not an array nor callable');
             }
             if (count($protocolAndAcceptedValues) === 0) {
@@ -307,7 +307,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
             }
             $output[$header] = [];
             foreach ($protocolAndAcceptedValues as $protocol => $acceptedValues) {
-                if (!is_string($protocol)) {
+                if (!\is_string($protocol)) {
                     throw new \RuntimeException('The protocol must be a string');
                 }
                 if ($protocol === '') {
@@ -331,7 +331,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
     {
         foreach ($ipHeaders as $ipHeader) {
             $type = null;
-            if (is_array($ipHeader)) {
+            if (\is_array($ipHeader)) {
                 $type = array_shift($ipHeader);
                 $ipHeader = array_shift($ipHeader);
             }
@@ -421,7 +421,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
             }
             $value = strtolower($request->getHeaderLine($header));
             foreach ($ref as $protocol => $acceptedValues) {
-                if (in_array($value, $acceptedValues, true)) {
+                if (\in_array($value, $acceptedValues, true)) {
                     return $protocol;
                 }
             }
