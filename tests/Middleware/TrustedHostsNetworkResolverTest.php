@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Yiisoft\Yii\Web\Tests\Middleware;
-
 
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\ServerRequest;
@@ -53,6 +51,27 @@ class TrustedHostsNetworkResolverTest extends TestCase
                 [['hosts' => ['8.8.8.8', '127.0.0.1', '2.2.2.2']]],
                 '5.5.5.5',
             ],
+            'forwardLevel2HostAndProtocol' => [
+                ['forward' => ['for=9.9.9.9', 'proto=https;for=5.5.5.5;host=test', 'for=2.2.2.2']],
+                ['REMOTE_ADDR' => '127.0.0.1'],
+                [['hosts' => ['8.8.8.8', '127.0.0.1', '2.2.2.2']]],
+                '5.5.5.5',
+                'test',
+                'https',
+            ],
+            'forwardLevel2HostAndProtocolAndUrl' => [
+                [
+                    'forward' => ['for=9.9.9.9', 'proto=https;for=5.5.5.5;host=test', 'for=2.2.2.2'],
+                    'x-rewrite-url' => ['/test?test=test'],
+                ],
+                ['REMOTE_ADDR' => '127.0.0.1'],
+                [['hosts' => ['8.8.8.8', '127.0.0.1', '2.2.2.2']]],
+                '5.5.5.5',
+                'test',
+                'https',
+                '/test',
+                'test=test',
+            ],
         ];
     }
 
@@ -63,7 +82,11 @@ class TrustedHostsNetworkResolverTest extends TestCase
         array $headers,
         array $serverParams,
         array $trustedHosts,
-        string $expectedClientIp
+        string $expectedClientIp,
+        ?string $expectedHttpHost = null,
+        string $expectedHttpScheme = 'http',
+        string $expectedPath = '/',
+        string $expectedQuery = ''
     ): void {
         $request = $this->newRequestWithSchemaAndHeaders('http', $headers, $serverParams);
         $requestHandler = new MockRequestHandler();
@@ -81,6 +104,12 @@ class TrustedHostsNetworkResolverTest extends TestCase
         $response = $middleware->process($request, $requestHandler);
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame($expectedClientIp, $requestHandler->processedRequest->getAttribute('requestClientIp'));
+        if ($expectedHttpHost !== null) {
+            $this->assertSame($expectedHttpHost, $requestHandler->processedRequest->getUri()->getHost());
+        }
+        $this->assertSame($expectedHttpScheme, $requestHandler->processedRequest->getUri()->getScheme());
+        $this->assertSame($expectedPath, $requestHandler->processedRequest->getUri()->getPath());
+        $this->assertSame($expectedQuery, $requestHandler->processedRequest->getUri()->getQuery());
     }
 
     public function notTrustedDataProvider(): array
@@ -134,20 +163,31 @@ class TrustedHostsNetworkResolverTest extends TestCase
         $requestHandler = new MockRequestHandler();
 
         $middleware = new TrustedHostsNetworkResolver(new Psr17Factory());
-        $middleware = $middleware->withNotTrustedBranch(new class() implements MiddlewareInterface
+        $content = 'Another branch.';
+        $middleware = $middleware->withNotTrustedBranch(new class($content) implements MiddlewareInterface
         {
+
+            private $content;
+
+            public function __construct(string $content)
+            {
+                $this->content = $content;
+            }
 
             public function process(
                 ServerRequestInterface $request,
                 RequestHandlerInterface $handler
             ): ResponseInterface {
                 $response = (new Psr17Factory())->createResponse(403);
-                $response->getBody()->write('Another branch.');
+                $response->getBody()->write($this->content);
                 return $response;
             }
         });
         $response = $middleware->process($request, $requestHandler);
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertSame(403, $response->getStatusCode());
+        $body = $response->getBody();
+        $body->rewind();
+        $this->assertSame($content, $body->getContents());
     }
 }
