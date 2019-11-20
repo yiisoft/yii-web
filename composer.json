@@ -33,6 +33,7 @@
         "yiisoft/access": "^3.0@dev",
         "yiisoft/injector": "^3.0@dev",
         "yiisoft/aliases": "^3.0@dev",
+        "yiisoft/auth": "^3.0@dev",
         "alexkart/curl-builder": "^1.0",
         "yiisoft/security": "^3.0@dev",
         "yiisoft/friendly-exception": "dev-master",

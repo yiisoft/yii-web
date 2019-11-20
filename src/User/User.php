@@ -3,6 +3,8 @@ namespace Yiisoft\Yii\Web\User;
 
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Yiisoft\Access\AccessCheckerInterface;
+use Yiisoft\Auth\IdentityInterface;
+use Yiisoft\Auth\IdentityRepositoryInterface;
 use Yiisoft\Yii\Web\Session\Session;
 use Yiisoft\Yii\Web\User\Event\AfterLoginEvent;
 use Yiisoft\Yii\Web\User\Event\AfterLogoutEvent;
@@ -327,7 +329,7 @@ class User
 
         $identity = null;
         if ($id !== null) {
-            $identity = $this->identityRepository;
+            $identity = $this->identityRepository->findIdentity($id);
         }
         if ($identity === null) {
             $identity = new GuestIdentity();
