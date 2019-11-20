@@ -17,8 +17,8 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
     public const IP_HEADER_TYPE_RFC7239 = 'rfc7239';
 
     private const DEFAULT_IP_HEADERS = [
-        [self::IP_HEADER_TYPE_RFC7239, 'forward'],  // https://tools.ietf.org/html/rfc7239
-        'x-forwarded-for',                          // common
+        [self::IP_HEADER_TYPE_RFC7239, 'forward'], // https://tools.ietf.org/html/rfc7239
+        'x-forwarded-for', // common
     ];
 
     private const DEFAULT_HOST_HEADERS = [
@@ -26,20 +26,21 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
     ];
 
     private const DEFAULT_URL_HEADERS = [
-        'x-rewrite-url',    // Microsoft
+        'x-rewrite-url', // Microsoft
     ];
 
     private const DEFAULT_PROTOCOL_HEADERS = [
-        'x-forwarded-proto' => ['http' => 'http', 'https' => 'https'], // Common
+        'x-forwarded-proto' => ['http' => 'http', 'https' => 'https'], // common
         'front-end-https' => ['https' => 'on'], // Microsoft
     ];
 
     private const DEFAULT_TRUSTED_HEADERS = [
-        // Common:
+        // common:
         'x-forwarded-for',
         'x-forwarded-host',
         'x-forwarded-proto',
-        // RFC
+
+        // RFC:
         'forward',
 
         // Microsoft:
@@ -165,8 +166,8 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
      */
     public function withAttributeIps(?string $attribute)
     {
-        if ($attribute !== null && strlen($attribute) === 0) {
-            throw new \RuntimeException('Attribute is cannot be an empty string');
+        if ($attribute === '') {
+            throw new \RuntimeException('Attribute should not be empty');
         }
         $new = clone $this;
         $new->attributeIps = $attribute;
@@ -300,7 +301,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
                 continue;
             }
             if (!is_array($protocolAndAcceptedValues)) {
-                throw new \RuntimeException('Accepted values is not array nor callable');
+                throw new \RuntimeException('Accepted values is not an array nor callable');
             }
             if (count($protocolAndAcceptedValues) === 0) {
                 throw new \RuntimeException('Accepted values cannot be an empty array');
@@ -308,10 +309,10 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
             $output[$header] = [];
             foreach ($protocolAndAcceptedValues as $protocol => $acceptedValues) {
                 if (!is_string($protocol)) {
-                    throw new \RuntimeException('The protocol must be type of string');
+                    throw new \RuntimeException('The protocol must be a string');
                 }
-                if (strlen($protocol) === 0) {
-                    throw new \RuntimeException('The protocol cannot be an empty string');
+                if ($protocol === '') {
+                    throw new \RuntimeException('The protocol cannot be empty');
                 }
                 $output[$header][$protocol] = array_map('strtolower', (array)$acceptedValues);
             }
@@ -380,11 +381,11 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
             $ipData['host'] = $host;
             if (isset($matches['port'])) {
                 $port = $matches['port'];
-                if (!$obfuscatedHost && (preg_match('/^\d{1,5}$/', $port) === 0 || intval($port) > 65535)) {
+                if (!$obfuscatedHost && (preg_match('/^\d{1,5}$/', $port) === 0 || (int)$port > 65535)) {
                     // Invalid port, the following items will be dropped
                     break;
                 }
-                $ipData['port'] = $obfuscatedHost ? $port : intval($port);
+                $ipData['port'] = $obfuscatedHost ? $port : (int)$port;
             }
 
             // copy other properties
@@ -421,7 +422,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
             }
             $value = strtolower($request->getHeaderLine($header));
             foreach ($ref as $protocol => $acceptedValues) {
-                if (in_array($value, $acceptedValues)) {
+                if (in_array($value, $acceptedValues, true)) {
                     return $protocol;
                 }
             }
