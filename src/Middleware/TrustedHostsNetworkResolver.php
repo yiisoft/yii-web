@@ -14,7 +14,6 @@ use Yiisoft\Yii\Web\Helper\HeaderHelper;
 
 class TrustedHostsNetworkResolver implements MiddlewareInterface
 {
-
     public const IP_HEADER_TYPE_RFC7239 = 'rfc7239';
 
     private const DEFAULT_IP_HEADERS = [
