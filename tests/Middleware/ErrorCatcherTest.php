@@ -80,7 +80,7 @@ class ErrorCatcherTest extends TestCase
         $response->getBody()->rewind();
         $content = $response->getBody()->getContents();
         $this->assertNotSame(self::DEFAULT_RENDERER_RESPONSE, $content);
-        $this->assertSame($expectedRendererOutput, $content);
+        $this.ontent);
     }
 
     public function testDefaultContentType(): void
@@ -100,6 +100,5 @@ class ErrorCatcherTest extends TestCase
         $content = $response->getBody()->getContents();
         $this->assertNotSame(self::DEFAULT_RENDERER_RESPONSE, $content);
         $this->assertSame($expectedRendererOutput, $content);
-
     }
 }
