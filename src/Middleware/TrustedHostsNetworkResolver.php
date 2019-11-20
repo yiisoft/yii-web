@@ -60,7 +60,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
     /**
      * @var string|null
      */
-    private $attributeIps = null;
+    private $attributeIps;
 
     /**
      * @var ResponseFactoryInterface
@@ -133,12 +133,11 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
             if (!is_string($header)) {
                 throw new \InvalidArgumentException('The header is not a string');
             }
-            switch ($type) {
-                case self::IP_HEADER_TYPE_RFC7239:
-                    continue 2;
-                default:
-                    throw new \InvalidArgumentException("Not supported IP header type: $type");
+            if ($type === self::IP_HEADER_TYPE_RFC7239) {
+                continue;
             }
+
+            throw new \InvalidArgumentException("Not supported IP header type: $type");
         }
         $new->trustedHosts[] = [
             self::DATA_KEY_HOSTS => $hosts,
