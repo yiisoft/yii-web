@@ -44,7 +44,6 @@ final class HeaderHelper
             $output[$key] = $headerValue;
         }
         return $output;
-
     }
 
     /**
