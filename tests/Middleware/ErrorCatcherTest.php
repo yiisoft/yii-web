@@ -55,7 +55,7 @@ class ErrorCatcherTest extends TestCase
         $errorHandler = new ErrorHandler(new Logger(), new MockThrowableRenderer(self::DEFAULT_RENDERER_RESPONSE));
         $container = new Container();
         $catcher = (new ErrorCatcher($factory, $errorHandler, $container))
-            ->withoutRenderers('text/html');
+            ->withoutRenderers('*/*');
         $requestHandler = (new MockRequestHandler())->setHandleExcaption(new \RuntimeException());
         $response = $catcher->process(new ServerRequest('GET', '/', ['Accept' => ['test/html']]), $requestHandler);
         $response->getBody()->rewind();
