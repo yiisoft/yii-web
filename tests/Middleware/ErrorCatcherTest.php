@@ -83,7 +83,8 @@ class ErrorCatcherTest extends TestCase
         $this->assertSame($expectedRendererOutput, $content);
     }
 
-    public function testDefaultContentType(): void {
+    public function testDefaultContentType(): void
+    {
         $factory = new Psr17Factory();
         $errorHandler = new ErrorHandler(new Logger(), new MockThrowableRenderer(self::DEFAULT_RENDERER_RESPONSE));
         $container = new Container();
