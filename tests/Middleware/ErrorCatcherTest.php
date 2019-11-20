@@ -82,4 +82,23 @@ class ErrorCatcherTest extends TestCase
         $this->assertNotSame(self::DEFAULT_RENDERER_RESPONSE, $content);
         $this->assertSame($expectedRendererOutput, $content);
     }
+
+//    public function testDefaultContentType(): void {
+//        $factory = new Psr17Factory();
+//        $errorHandler = new ErrorHandler(new Logger(), new MockThrowableRenderer(self::DEFAULT_RENDERER_RESPONSE));
+//        $container = new Container();
+//        $containerId = 'testRenderer';
+//        $catcher = (new ErrorCatcher($factory, $errorHandler, $container))
+//            ->withAddedRenderer('*/*', $containerId);
+//        $expectedRendererOutput = 'expectedRendereOutput';
+//        $container->set($containerId, new MockThrowableRenderer($expectedRendererOutput));
+//        $requestHandler = (new MockRequestHandler())->setHandleExcaption(new \RuntimeException());
+//        $response = $catcher->process(new ServerRequest('GET', '/', ['Accept' => ['test/test']]),
+//            $requestHandler);
+//        $response->getBody()->rewind();
+//        $content = $response->getBody()->getContents();
+//        $this->assertNotSame(self::DEFAULT_RENDERER_RESPONSE, $content);
+//        $this->assertSame($expectedRendererOutput, $content);
+//
+//    }
 }
