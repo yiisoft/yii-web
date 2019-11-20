@@ -18,7 +18,8 @@ class TrustedHostsNetworkResolverTest extends TestCase
         string $scheme = 'http',
         array $headers = [],
         array $serverParams = []
-    ): ServerRequestInterface {
+    ): ServerRequestInterface
+    {
         $request = new ServerRequest('GET', '/', $headers, null, '1.1', $serverParams);
         $uri = $request->getUri()->withScheme($scheme);
         return $request->withUri($uri);
@@ -87,7 +88,8 @@ class TrustedHostsNetworkResolverTest extends TestCase
         string $expectedHttpScheme = 'http',
         string $expectedPath = '/',
         string $expectedQuery = ''
-    ): void {
+    ): void
+    {
         $request = $this->newRequestWithSchemaAndHeaders('http', $headers, $serverParams);
         $requestHandler = new MockRequestHandler();
 
@@ -136,7 +138,7 @@ class TrustedHostsNetworkResolverTest extends TestCase
     /**
      * @dataProvider notTrustedDataProvider
      */
-    public function testNotTrusted(array $headers, array $serverParams, array $trustedHosts)
+    public function testNotTrusted(array $headers, array $serverParams, array $trustedHosts): void
     {
         $request = $this->newRequestWithSchemaAndHeaders('http', $headers, $serverParams);
         $requestHandler = new MockRequestHandler();
@@ -155,7 +157,7 @@ class TrustedHostsNetworkResolverTest extends TestCase
         $this->assertSame(412, $response->getStatusCode());
     }
 
-    public function testNotTrustedMiddleware()
+    public function testNotTrustedMiddleware(): void
     {
         $request = $this->newRequestWithSchemaAndHeaders('http', [], [
             'REMOTE_ADDR' => '127.0.0.1',
