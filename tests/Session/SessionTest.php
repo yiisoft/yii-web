@@ -12,7 +12,7 @@ class SessionTest extends TestCase
         $session = new Session();
         $session->set('key_get', 'value');
         self::assertEquals('value', $session->get('key_get'));
-        $session->discard();
+        $session->destroy();
     }
 
     public function testHas(): void
@@ -20,7 +20,7 @@ class SessionTest extends TestCase
         $session = new Session();
         $session->set('key_has', 'value');
         self::assertTrue($session->has('key_has'));
-        $session->discard();
+        $session->destroy();
     }
 
     public function testClose(): void
@@ -29,6 +29,8 @@ class SessionTest extends TestCase
         $session->set('key_close', 'value');
         $session->close();
         self::assertEquals(PHP_SESSION_NONE, session_status());
+
+        $session->destroy();
     }
 
     public function testRegenerateID(): void
@@ -38,7 +40,7 @@ class SessionTest extends TestCase
         $id = $session->getId();
         $session->regenerateId();
         self::assertNotEquals($id, $session->getId());
-        $session->discard();
+        $session->destroy();
     }
 
     public function testDiscard(): void
@@ -47,14 +49,14 @@ class SessionTest extends TestCase
         $session->set('key_discard', 'value');
         $session->discard();
         self::assertEmpty($session->get('key_discard'));
-        $session->discard();
+        $session->destroy();
     }
 
     public function testGetName(): void
     {
         $session = new Session();
         self::assertEquals($session->getName(), session_name());
-        $session->discard();
+        $session->destroy();
     }
 
     public function testPull(): void
@@ -63,7 +65,7 @@ class SessionTest extends TestCase
         $session->set('key_pull', 'value');
         self::assertEquals('value', $session->pull('key_pull'));
         self::assertEmpty($session->get('key_pull'));
-        $session->discard();
+        $session->destroy();
     }
 
     public function testAll(): void
@@ -72,7 +74,7 @@ class SessionTest extends TestCase
         $session->set('key_1', 1);
         $session->set('key_2', 2);
         self::assertEquals(['key_1' => 1, 'key_2' => 2], $session->all());
-        $session->discard();
+        $session->destroy();
     }
 
     public function testClear(): void
@@ -81,7 +83,7 @@ class SessionTest extends TestCase
         $session->set('key', 'value');
         $session->clear();
         self::assertEmpty($session->all());
-        $session->discard();
+        $session->destroy();
     }
 
     public function testSetId(): void
@@ -90,7 +92,7 @@ class SessionTest extends TestCase
         $session->setId('sessionId');
         $session->open();
         self::assertEquals(session_id(), $session->getId());
-        $session->discard();
+        $session->destroy();
     }
 
     public function testGetCookieParameters(): void
