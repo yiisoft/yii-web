@@ -37,10 +37,6 @@ class Session implements SessionInterface
             $defaultOptions = array_merge($defaultOptions, self::DEFAULT_OPTIONS_73);
         }
         $this->options = array_merge($defaultOptions, $options);
-
-        if ($this->isActive()) {
-            throw new \RuntimeException('Session is already started');
-        }
     }
 
     public function get(string $key, $default = null)
@@ -166,5 +162,6 @@ class Session implements SessionInterface
     public function setId(string $sessionId): void
     {
         $this->sessionId = $sessionId;
+        session_id($sessionId);
     }
 }

@@ -7,30 +7,21 @@ use PHPUnit\Framework\TestCase;
 
 class SessionTest extends TestCase
 {
-    /**
-     * @runInSeparateProcess
-     */
-    public function testGetAndSet()
+    public function testGetAndSet(): void
     {
         $session = new Session();
         $session->set('key_get', 'value');
         self::assertEquals('value', $session->get('key_get'));
     }
 
-    /**
-     * @runInSeparateProcess
-     */
-    public function testHas()
+    public function testHas(): void
     {
         $session = new Session();
         $session->set('key_has', 'value');
         self::assertTrue($session->has('key_has'));
     }
 
-    /**
-     * @runInSeparateProcess
-     */
-    public function testClose()
+    public function testClose(): void
     {
         $session = new Session();
         $session->set('key_close', 'value');
@@ -38,10 +29,7 @@ class SessionTest extends TestCase
         self::assertEquals(PHP_SESSION_NONE, session_status());
     }
 
-    /**
-     * @runInSeparateProcess
-     */
-    public function testRegenerateID()
+    public function testRegenerateID(): void
     {
         $session = new Session();
         $session->open();
@@ -50,10 +38,7 @@ class SessionTest extends TestCase
         self::assertNotEquals($id, $session->getId());
     }
 
-    /**
-     * @runInSeparateProcess
-     */
-    public function testDiscard()
+    public function testDiscard(): void
     {
         $session = new Session();
         $session->set('key_discard', 'value');
@@ -61,16 +46,13 @@ class SessionTest extends TestCase
         self::assertEmpty($session->get('key_discard'));
     }
 
-    public function testGetName()
+    public function testGetName(): void
     {
         $session = new Session();
         self::assertEquals($session->getName(), session_name());
     }
 
-    /**
-     * @runInSeparateProcess
-     */
-    public function testPull()
+    public function testPull(): void
     {
         $session = new Session();
         $session->set('key_pull', 'value');
@@ -78,10 +60,7 @@ class SessionTest extends TestCase
         self::assertEmpty($session->get('key_pull'));
     }
 
-    /**
-     * @runInSeparateProcess
-     */
-    public function testAll()
+    public function testAll(): void
     {
         $session = new Session();
         $session->set('key_1', 1);
@@ -89,10 +68,7 @@ class SessionTest extends TestCase
         self::assertEquals(['key_1' => 1, 'key_2' => 2], $session->all());
     }
 
-    /**
-     * @runInSeparateProcess
-     */
-    public function testClear()
+    public function testClear(): void
     {
         $session = new Session();
         $session->set('key', 'value');
@@ -100,10 +76,7 @@ class SessionTest extends TestCase
         self::assertEmpty($session->all());
     }
 
-    /**
-     * @runInSeparateProcess
-     */
-    public function testSetId()
+    public function testSetId(): void
     {
         $session = new Session();
         $session->setId('sessionId');
@@ -111,19 +84,9 @@ class SessionTest extends TestCase
         self::assertEquals(session_id(), $session->getId());
     }
 
-    public function testGetCookieParameters()
+    public function testGetCookieParameters(): void
     {
         $session = new Session();
         self::assertEquals(session_get_cookie_params(), $session->getCookieParameters());
-    }
-
-    /**
-     * @expectedException \RuntimeException
-     */
-    public function testAlreadyStartedException()
-    {
-        $session = new Session();
-        $session->open();
-        new Session();
     }
 }
