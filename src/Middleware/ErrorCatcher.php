@@ -31,6 +31,7 @@ final class ErrorCatcher implements MiddlewareInterface
         'text/xml' => XmlRenderer::class,
         'text/plain' => PlainTextRenderer::class,
         'text/html' => HtmlRenderer::class,
+        '*/*' => HtmlRenderer::class,
     ];
 
     public function __construct(ResponseFactoryInterface $responseFactory, ErrorHandler $errorHandler, ContainerInterface $container)
@@ -110,7 +111,7 @@ final class ErrorCatcher implements MiddlewareInterface
         } catch (\InvalidArgumentException $e) {
             // The Accept header contains an invalid q factor
         }
-        return 'text/html';
+        return '*/*';
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
