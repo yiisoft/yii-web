@@ -162,6 +162,5 @@ class Session implements SessionInterface
     public function setId(string $sessionId): void
     {
         $this->sessionId = $sessionId;
-        session_id($sessionId);
     }
 }
