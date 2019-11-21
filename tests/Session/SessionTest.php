@@ -30,6 +30,7 @@ class SessionTest extends TestCase
         $session->close();
         self::assertEquals(PHP_SESSION_NONE, session_status());
 
+        $session->open();
         $session->destroy();
     }
 
