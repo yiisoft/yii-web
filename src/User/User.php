@@ -149,6 +149,7 @@ class User
      */
     public function login(IdentityInterface $identity, $duration = 0)
     {
+        $this->identity = null;
         if ($this->beforeLogin($identity, $duration)) {
             $this->switchIdentity($identity);
             $this->afterLogin($identity, $duration);
@@ -189,6 +190,7 @@ class User
     {
         $identity = $this->getIdentity();
         if (!$this->isGuest() && $this->beforeLogout($identity)) {
+            $this->identity = null;
             $this->switchIdentity(new GuestIdentity());
             if ($destroySession && $this->session) {
                 $this->session->destroy();
