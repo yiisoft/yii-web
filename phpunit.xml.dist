@@ -10,7 +10,8 @@
     convertWarningsToExceptions="true"
     stopOnFailure="false"
     executionOrder="random"
-    resolveDependencies="true">
+    resolveDependencies="true"
+    printerClass="Yiisoft\Yii\Web\Tests\ResultPrinter">
 
     <testsuites>
         <testsuite name="Yii Web Test Suite">
