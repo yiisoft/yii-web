@@ -1,5 +1,5 @@
 <?php
-if(!isset($this)) {
+if (!isset($this)) {
     // @link https://github.com/sebastianbergmann/phpunit/issues/3952
     return;
 }
