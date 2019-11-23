@@ -220,7 +220,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
         do {
             $ipData = array_shift($ipList);
             if (!isset($ipData['ip'])) {
-                $ipData = $this->reverseObfuscate($ipData, $ipDataList);
+                $ipData = $this->reverseObfuscate($ipData, $ipDataList, $ipList, $request);
                 if (!isset($ipData['ip'])) {
                     break;
                 }
@@ -285,8 +285,12 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
      * The base operation does not perform any transformation on the data.
      * This method can be extendable by overwriting eg.
      */
-    protected function reverseObfuscate(array $ipData, array $ipDataList): array
-    {
+    protected function reverseObfuscate(
+        array $ipData,
+        array $ipDataListValidated,
+        array $ipDataListRemaining,
+        RequestInterface $request
+    ): array {
         return $ipData;
     }
 
@@ -365,14 +369,14 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
                 // Invalid item, the following items will be dropped
                 break;
             }
-            $pattern = '/^(?<host>' . IpHelper::IPV4_PATTERN . '|_[^:]+|[[]' . IpHelper::IPV6_PATTERN . '[]])(?::(?<port>.+))?$/';
+            $pattern = '/^(?<host>' . IpHelper::IPV4_PATTERN . '|unknown|_[\w\.-]+|[[]' . IpHelper::IPV6_PATTERN . '[]])(?::(?<port>[\w\.-]+))?$/';
             if (preg_match($pattern, $data['for'], $matches) === 0) {
                 // Invalid item, the following items will be dropped
                 break;
             }
             $ipData = [];
             $host = $matches['host'];
-            $obfuscatedHost = strpos($host, '_') === 0;
+            $obfuscatedHost = $host === 'unknown' || strpos($host, '_') === 0;
             if (!$obfuscatedHost) {
                 // IPv4 & IPv6
                 $ipData['ip'] = strpos($host, '[') === 0 ? trim($host /* IPv6 */, '[]') : $host;
