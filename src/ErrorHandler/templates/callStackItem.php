@@ -1,4 +1,8 @@
 <?php
+if (!isset($this)) {
+    // @link https://github.com/sebastianbergmann/phpunit/issues/3952
+    return;
+}
 /* @var $file string|null */
 /* @var $line int|null */
 /* @var $class string|null */
