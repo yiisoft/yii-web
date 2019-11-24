@@ -16,11 +16,6 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
 {
     public const IP_HEADER_TYPE_RFC7239 = 'rfc7239';
 
-    private const DEFAULT_IP_HEADERS = [
-        [self::IP_HEADER_TYPE_RFC7239, 'forward'], // https://tools.ietf.org/html/rfc7239
-        'x-forwarded-for', // common
-    ];
-
     private const DEFAULT_HOST_HEADERS = [
         'x-forwarded-host', // common
     ];
@@ -115,7 +110,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
         ?array $trustedHeaders = null
     ) {
         $new = clone $this;
-        $ipHeaders = $ipHeaders ?? self::DEFAULT_IP_HEADERS;
+        $ipHeaders = $ipHeaders ?? ['x-forwarded-for' /* It is not safe to specify multiple default ip header! */ ];
         foreach ($ipHeaders as $ipHeader) {
             if (\is_string($ipHeader)) {
                 continue;
@@ -150,7 +145,12 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
             self::DATA_KEY_HOST_HEADERS => $hostHeaders ?? self::DEFAULT_HOST_HEADERS,
             self::DATA_KEY_URL_HEADERS => $urlHeaders ?? self::DEFAULT_URL_HEADERS,
         ];
-        foreach ([self::DATA_KEY_HOSTS, self::DATA_KEY_TRUSTED_HEADERS, self::DATA_KEY_HOST_HEADERS, self::DATA_KEY_URL_HEADERS] as $key) {
+        foreach ([
+                     self::DATA_KEY_HOSTS,
+                     self::DATA_KEY_TRUSTED_HEADERS,
+                     self::DATA_KEY_HOST_HEADERS,
+                     self::DATA_KEY_URL_HEADERS
+                 ] as $key) {
             $this->checkStringArrayType($data[$key], $key);
         }
         foreach ($data[self::DATA_KEY_HOSTS] as $host) {

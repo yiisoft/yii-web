@@ -42,19 +42,35 @@ class TrustedHostsNetworkResolverTest extends TestCase
             'forwardLevel1' => [
                 ['forward' => ['for=9.9.9.9', 'for=5.5.5.5', 'for=2.2.2.2']],
                 ['REMOTE_ADDR' => '127.0.0.1'],
-                [['hosts' => ['8.8.8.8', '127.0.0.1']]],
+                [
+                    [
+                        'hosts' => ['8.8.8.8', '127.0.0.1'],
+                        'ipHeaders' => [[TrustedHostsNetworkResolver::IP_HEADER_TYPE_RFC7239, 'forward']],
+                    ]
+                ],
                 '2.2.2.2',
             ],
             'forwardLevel2' => [
                 ['forward' => ['for=9.9.9.9', 'for=5.5.5.5', 'for=2.2.2.2']],
                 ['REMOTE_ADDR' => '127.0.0.1'],
-                [['hosts' => ['8.8.8.8', '127.0.0.1', '2.2.2.2']]],
+                [
+                    [
+                        'hosts' => ['8.8.8.8', '127.0.0.1', '2.2.2.2'],
+                        'ipHeaders' => [[TrustedHostsNetworkResolver::IP_HEADER_TYPE_RFC7239, 'forward']],
+                    ],
+
+                ],
                 '5.5.5.5',
             ],
             'forwardLevel2HostAndProtocol' => [
                 ['forward' => ['for=9.9.9.9', 'proto=https;for=5.5.5.5;host=test', 'for=2.2.2.2']],
                 ['REMOTE_ADDR' => '127.0.0.1'],
-                [['hosts' => ['8.8.8.8', '127.0.0.1', '2.2.2.2']]],
+                [
+                    [
+                        'hosts' => ['8.8.8.8', '127.0.0.1', '2.2.2.2'],
+                        'ipHeaders' => [[TrustedHostsNetworkResolver::IP_HEADER_TYPE_RFC7239, 'forward']],
+                    ],
+                ],
                 '5.5.5.5',
                 'test',
                 'https',
@@ -65,7 +81,12 @@ class TrustedHostsNetworkResolverTest extends TestCase
                     'x-rewrite-url' => ['/test?test=test'],
                 ],
                 ['REMOTE_ADDR' => '127.0.0.1'],
-                [['hosts' => ['8.8.8.8', '127.0.0.1', '2.2.2.2']]],
+                [
+                    [
+                        'hosts' => ['8.8.8.8', '127.0.0.1', '2.2.2.2'],
+                        'ipHeaders' => [[TrustedHostsNetworkResolver::IP_HEADER_TYPE_RFC7239, 'forward']],
+                    ],
+                ],
                 '5.5.5.5',
                 'test',
                 'https',
