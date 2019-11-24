@@ -185,8 +185,7 @@ class TrustedHostsNetworkResolverTest extends TestCase
 
         $middleware = new TrustedHostsNetworkResolver(new Psr17Factory());
         $content = 'Another branch.';
-        $middleware = $middleware->withNotTrustedBranch(new class($content) implements MiddlewareInterface
-        {
+        $middleware = $middleware->withNotTrustedBranch(new class($content) implements MiddlewareInterface {
             private $content;
 
             public function __construct(string $content)
