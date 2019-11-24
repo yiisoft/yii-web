@@ -139,7 +139,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
 
             throw new \InvalidArgumentException("Not supported IP header type: $type");
         }
-        $new->trustedHosts[] = [
+        $data = [
             self::DATA_KEY_HOSTS => $hosts,
             self::DATA_KEY_IP_HEADERS => $ipHeaders,
             self::DATA_KEY_PROTOCOL_HEADERS => $this->prepareProtocolHeaders($protocolHeaders ?? self::DEFAULT_PROTOCOL_HEADERS),
@@ -147,7 +147,29 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
             self::DATA_KEY_HOST_HEADERS => $hostHeaders ?? self::DEFAULT_HOST_HEADERS,
             self::DATA_KEY_URL_HEADERS => $urlHeaders ?? self::DEFAULT_URL_HEADERS,
         ];
+        foreach ([self::DATA_KEY_HOSTS, self::DATA_KEY_TRUSTED_HEADERS, self::DATA_KEY_HOST_HEADERS, self::DATA_KEY_URL_HEADERS] as $key) {
+            $this->checkStringArrayType($data[$key], $key);
+        }
+        foreach ($data[self::DATA_KEY_HOSTS] as $host) {
+            $host = str_replace('*', 'wildcard', $host);        // wildcard is allowed in host
+            if (filter_var($host, FILTER_VALIDATE_DOMAIN) === false) {
+                throw new \InvalidArgumentException("'$host' host is not a domain and not an IP address");
+            }
+        }
+        $new->trustedHosts[] = $data;
         return $new;
+    }
+
+    private function checkStringArrayType(array $array, string $field): void
+    {
+        foreach ($array as $item) {
+            if (!is_string($item)) {
+                throw new \InvalidArgumentException("$field must be string type");
+            }
+            if (trim($item) === '') {
+                throw new \InvalidArgumentException("$field cannot be empty strings");
+            }
+        }
     }
 
     /**
