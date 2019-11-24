@@ -10,6 +10,12 @@ use Psr\Http\Message\ResponseInterface;
 final class SapiEmitter implements EmitterInterface
 {
     private const NO_BODY_RESPONSE_CODES = [204, 205, 304];
+    private $partSize;
+
+    public function __construct(int $partSize = 8388608)
+    {
+        $this->partSize = $partSize;
+    }
 
     public function emit(ResponseInterface $response, bool $withoutBody = false): bool
     {
@@ -41,13 +47,37 @@ final class SapiEmitter implements EmitterInterface
                 $contentLengthHeader = $response->getHeader('Content-Length');
                 $contentLength = array_shift($contentLengthHeader);
             }
+            if ($contentLength !== null) {
+                header(sprintf('Content-Length: %s', $contentLength), true, $status);
+            }
 
-            header(sprintf('Content-Length: %s', $contentLength), true, $status);
-
-            echo $response->getBody();
+            $this->emitBody($response);
         }
 
         return true;
+    }
+
+    private function emitBody(ResponseInterface $response): void
+    {
+        $body = $response->getBody();
+        if ($body->isSeekable()) {
+            $body->rewind();
+        }
+        $bytesToSend = $response->getBody()->getSize();
+        if ($bytesToSend > 0) {
+            while ($bytesToSend > 0 && !$body->eof()) {
+                $toRead = \min($this->partSize, $bytesToSend);
+                $data = $body->read($toRead);
+                echo $data;
+                $bytesToSend -= \strlen($data);
+                \flush();
+            }
+        } else {
+            while (!$body->eof()) {
+                echo $body->read($this->partSize);
+                \flush();
+            }
+        }
     }
 
     private function shouldOutputBody(ResponseInterface $response): bool
