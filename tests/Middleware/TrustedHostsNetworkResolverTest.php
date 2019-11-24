@@ -164,7 +164,8 @@ class TrustedHostsNetworkResolverTest extends TestCase
 
         $middleware = new TrustedHostsNetworkResolver(new Psr17Factory());
         $content = 'Another branch.';
-        $middleware = $middleware->withNotTrustedBranch(new class($content) implements MiddlewareInterface {
+        $middleware = $middleware->withNotTrustedBranch(new class($content) implements MiddlewareInterface
+        {
             private $content;
 
             public function __construct(string $content)
@@ -187,5 +188,50 @@ class TrustedHostsNetworkResolverTest extends TestCase
         $body = $response->getBody();
         $body->rewind();
         $this->assertSame($content, $body->getContents());
+    }
+
+    public function addedTrustedHostsInvalidParameterDataProvider(): array
+    {
+        return [
+            'hostsEmpty' => ['hosts' => []],
+            'hostsEmptyString' => ['hosts' => ['']],
+            'hostsNumeric' => ['hosts' => [888]],
+            'hostsSpaces' => ['hosts' => ['    ']],
+            'hostsNotDomain' => ['host' => ['-apple']],
+            'urlHeadersEmpty' => ['urlHeaders' => ['']],
+            'urlHeadersNumeric' => ['urlHeaders' => [888]],
+            'urlHeadersSpaces' => ['urlHeaders' => ['   ']],
+            'trustedHeadersEmpty' => ['trustedHeaders' => ['']],
+            'trustedHeadersNumeric' => ['trustedHeaders' => [888]],
+            'trustedHeadersSpaces' => ['trustedHeaders' => ['   ']],
+            'protocolHeadersNumeric' => ['protocolHeaders' => ['http' => 888]],
+            'ipHeadersEmptyString' => ['ipHeaders' => [' ']],
+            'ipHeadersNumeric' => ['ipHeaders' => [888]],
+            'ipHeadersInvalidType' => ['ipHeaders' => [['---', 'aaa']]],
+            'ipHeadersInvalidTypeValue' => [
+                'ipHeaders' => [
+                    [
+                        TrustedHostsNetworkResolver::IP_HEADER_TYPE_RFC7239,
+                        888
+                    ]
+                ]
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider addedTrustedHostsInvalidParameterDataProvider
+     */
+    public function testAddedTrustedHostsInvalidParameter(array $data): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        (new TrustedHostsNetworkResolver(new Psr17Factory()))
+            ->withAddedTrustedHosts($data['hosts'] ?? [],
+                $data['ipHeaders'] ?? null,
+                $data['protocolHeaders'] ?? null,
+                $data['hostHeaders'] ?? null,
+                $data['urlHeaders'] ?? null,
+                $data['trustedHeaders'] ?? null
+            );
     }
 }

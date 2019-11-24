@@ -139,6 +139,9 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
 
             throw new \InvalidArgumentException("Not supported IP header type: $type");
         }
+        if (count($hosts) === 0) {
+            throw new \InvalidArgumentException("Empty hosts not allowed");
+        }
         $data = [
             self::DATA_KEY_HOSTS => $hosts,
             self::DATA_KEY_IP_HEADERS => $ipHeaders,
