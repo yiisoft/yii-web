@@ -10,12 +10,12 @@ use Psr\Http\Message\ResponseInterface;
 final class SapiEmitter implements EmitterInterface
 {
     private const NO_BODY_RESPONSE_CODES = [204, 205, 304];
-    private $partSize;
+    private $bufferSize;
     private const DEFAULT_BUFFER_SIZE = 8388608; // 8MB
 
-    public function __construct(int $partSize = self::DEFAULT_BUFFER_SIZE)
+    public function __construct(int $bufferSize = self::DEFAULT_BUFFER_SIZE)
     {
-        $this->partSize = $partSize > 0 ? $partSize : static::DEFAULT_BUFFER_SIZE;
+        $this->bufferSize = $bufferSize > 0 ? $bufferSize : static::DEFAULT_BUFFER_SIZE;
     }
 
     public function emit(ResponseInterface $response, bool $withoutBody = false): bool
@@ -67,7 +67,7 @@ final class SapiEmitter implements EmitterInterface
         $bytesToSend = $response->getBody()->getSize();
         if ($bytesToSend > 0) {
             while ($bytesToSend > 0 && !$body->eof()) {
-                $toRead = \min($this->partSize, $bytesToSend);
+                $toRead = \min($this->bufferSize, $bytesToSend);
                 $data = $body->read($toRead);
                 echo $data;
                 $bytesToSend -= \strlen($data);
@@ -75,7 +75,7 @@ final class SapiEmitter implements EmitterInterface
             }
         } else {
             while (!$body->eof()) {
-                echo $body->read($this->partSize);
+                echo $body->read($this->bufferSize);
                 \flush();
             }
         }
