@@ -79,7 +79,7 @@ class SapiEmitterTest extends TestCase
     /**
      * @test
      */
-    public function contentAlwaysShouldFullyEmitted(): void
+    public function contentAlwaysShouldBeFullyEmitted(): void
     {
         $body = 'Example body';
         $response = new Response(200, ['Content-length' => 1, 'X-Test' => 1], $body);
