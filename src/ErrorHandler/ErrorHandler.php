@@ -20,6 +20,8 @@ final class ErrorHandler
 
     private $defaultRenderer;
 
+    private $exposeDetails = true;
+
     public function __construct(LoggerInterface $logger, ThrowableRendererInterface $defaultRenderer)
     {
         $this->logger = $logger;
@@ -73,7 +75,7 @@ final class ErrorHandler
 
         try {
             $this->log($t);
-            return $renderer->render($t);
+            return $this->exposeDetails ? $renderer->renderVerbose($t) : $renderer->render($t);
         } catch (\Throwable $t) {
             return nl2br($t);
         }
@@ -141,9 +143,14 @@ final class ErrorHandler
     private function log(\Throwable $t/*, ServerRequestInterface $request*/): void
     {
         $renderer = new PlainTextRenderer();
-        $this->logger->error($renderer->render($t), [
+        $this->logger->error($renderer->renderVerbose($t), [
             'throwable' => $t,
             //'request' => $request,
         ]);
+    }
+
+    public function setExposeDetails(bool $exposeDetails): void
+    {
+        $this->exposeDetails = $exposeDetails;
     }
 }
