@@ -15,7 +15,7 @@ final class SapiEmitter implements EmitterInterface
 
     public function __construct(int $bufferSize = self::DEFAULT_BUFFER_SIZE)
     {
-        $this->bufferSize = $bufferSize > 0 ? $bufferSize : static::DEFAULT_BUFFER_SIZE;
+        $this->bufferSize = $bufferSize > 0 ? $bufferSize : self::DEFAULT_BUFFER_SIZE;
     }
 
     public function emit(ResponseInterface $response, bool $withoutBody = false): bool
