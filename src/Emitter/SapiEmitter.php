@@ -11,10 +11,11 @@ final class SapiEmitter implements EmitterInterface
 {
     private const NO_BODY_RESPONSE_CODES = [204, 205, 304];
     private $partSize;
+    private const DEFAULT_BUFFER_SIZE = 8388608; // 8MB
 
-    public function __construct(int $partSize = 8388608)
+    public function __construct(int $partSize = self::DEFAULT_BUFFER_SIZE)
     {
-        $this->partSize = $partSize;
+        $this->partSize = $partSize > 0 ? $partSize : static::DEFAULT_BUFFER_SIZE;
     }
 
     public function emit(ResponseInterface $response, bool $withoutBody = false): bool
