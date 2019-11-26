@@ -494,7 +494,7 @@ window.onload = function() {
                 code = callStackItem.getElementsByClassName('code-wrap')[0];
 
             if (typeof code !== 'undefined') {
-                code.style.display = window.getComputedStyle(code).display == 'block' ? 'none' : 'block';
+                code.style.display = window.getComputedStyle(code).display === 'block' ? 'none' : 'block';
                 refreshCallStackItemCode(callStackItem);
             }
         });
@@ -524,9 +524,6 @@ window.onload = function() {
     document.onmousedown = function() { document.getElementsByTagName('body')[0].classList.add('mousedown'); }
     document.onmouseup = function() { document.getElementsByTagName('body')[0].classList.remove('mousedown'); }
     </script>
-    <?php if (method_exists($this, 'endBody')): ?>
-        <?php $this->endBody() // to allow injecting code into body (mostly by Yii Debug Toolbar)?>
-    <?php endif ?>
 </body>
 
 </html>

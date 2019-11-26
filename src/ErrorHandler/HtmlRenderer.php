@@ -35,8 +35,8 @@ final class HtmlRenderer extends ThrowableRenderer
 
     public function render(\Throwable $t): string
     {
-        return $this->renderTemplate('exception', [
-            'throwable' => new \RuntimeException('An internal server error occurred.'),
+        return $this->renderTemplate('error', [
+            'throwable' => $t,
         ]);
     }
 
