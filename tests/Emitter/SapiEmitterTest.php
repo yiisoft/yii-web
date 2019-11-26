@@ -19,7 +19,7 @@ function header(string $string, bool $replace = true, ?int $http_response_code =
     HTTPFunctions::header($string, $replace, $http_response_code);
 }
 /**
- * Mock for the headers_sent() function for Emitter class.
+ * Mock for the header_remove() function for Emitter class.
  */
 function header_remove(): void
 {
