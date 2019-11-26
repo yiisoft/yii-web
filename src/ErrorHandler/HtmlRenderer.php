@@ -7,11 +7,31 @@ use Yiisoft\Yii\Web\Info;
 
 final class HtmlRenderer extends ThrowableRenderer
 {
-    // TODO expose config
     private $maxSourceLines = 19;
     private $maxTraceLines = 13;
 
     private $traceLine = '{html}';
+
+    public function withMaxSourceLines(int $maxSourceLines): self
+    {
+        $new = clone $this;
+        $new->maxSourceLines = $maxSourceLines;
+        return $new;
+    }
+
+    public function setMaxTraceLines(int $maxTraceLines): self
+    {
+        $new = clone $this;
+        $new->maxTraceLines = $maxTraceLines;
+        return $new;
+    }
+
+    public function withTraceLine(string $traceLine): self
+    {
+        $new = clone $this;
+        $new->traceLine = $traceLine;
+        return $new;
+    }
 
     public function render(\Throwable $t): string
     {
@@ -305,15 +325,16 @@ final class HtmlRenderer extends ThrowableRenderer
      */
     private function createServerInformationLink(): string
     {
-        $serverUrls = [
-            'http://httpd.apache.org/' => ['apache'],
-            'http://nginx.org/' => ['nginx'],
-            'http://lighttpd.net/' => ['lighttpd'],
-            'http://gwan.com/' => ['g-wan', 'gwan'],
-            'http://iis.net/' => ['iis', 'services'],
-            'https://secure.php.net/manual/en/features.commandline.webserver.php' => ['development'],
-        ];
         if (isset($_SERVER['SERVER_SOFTWARE'])) {
+            $serverUrls = [
+                'http://httpd.apache.org/' => ['apache'],
+                'http://nginx.org/' => ['nginx'],
+                'http://lighttpd.net/' => ['lighttpd'],
+                'http://gwan.com/' => ['g-wan', 'gwan'],
+                'http://iis.net/' => ['iis', 'services'],
+                'https://secure.php.net/manual/en/features.commandline.webserver.php' => ['development'],
+            ];
+
             foreach ($serverUrls as $url => $keywords) {
                 foreach ($keywords as $keyword) {
                     if (stripos($_SERVER['SERVER_SOFTWARE'], $keyword) !== false) {
@@ -332,6 +353,6 @@ final class HtmlRenderer extends ThrowableRenderer
      */
     public function createFrameworkVersionLink(): string
     {
-        return '<a href="http://github.com/yiisoft/yii2/" target="_blank">' . $this->htmlEncode(Info::frameworkVersion()) . '</a>';
+        return '<a href="http://github.com/yiisoft/yii-web/" target="_blank">' . $this->htmlEncode(Info::frameworkVersion()) . '</a>';
     }
 }
