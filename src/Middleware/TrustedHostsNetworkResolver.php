@@ -15,21 +15,8 @@ use Yiisoft\Yii\Web\Helper\HeaderHelper;
 class TrustedHostsNetworkResolver implements MiddlewareInterface
 {
     public const IP_HEADER_TYPE_RFC7239 = 'rfc7239';
-
-    private const DEFAULT_HOST_HEADERS = [
-        'x-forwarded-host', // common
-    ];
-
-    private const DEFAULT_URL_HEADERS = [
-        'x-rewrite-url', // Microsoft
-    ];
-
-    private const DEFAULT_PROTOCOL_HEADERS = [
-        'x-forwarded-proto' => ['http' => 'http', 'https' => 'https'], // common
-        'front-end-https' => ['https' => 'on'], // Microsoft
-    ];
-
-    private const DEFAULT_TRUSTED_HEADERS = [
+    
+    public const DEFAULT_TRUSTED_HEADERS = [
         // common:
         'x-forwarded-for',
         'x-forwarded-host',
@@ -103,14 +90,14 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
      */
     public function withAddedTrustedHosts(
         array $hosts,
-        ?array $ipHeaders = null,
-        ?array $protocolHeaders = null,
-        ?array $hostHeaders = null,
-        ?array $urlHeaders = null,
+        // Defining default headers is not secure!
+        array $ipHeaders = [],
+        array $protocolHeaders = [],
+        array $hostHeaders = [],
+        array $urlHeaders = [],
         ?array $trustedHeaders = null
     ) {
         $new = clone $this;
-        $ipHeaders = $ipHeaders ?? ['x-forwarded-for' /* It is not safe to specify multiple default ip header! */ ];
         foreach ($ipHeaders as $ipHeader) {
             if (\is_string($ipHeader)) {
                 continue;
@@ -140,10 +127,10 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
         $data = [
             self::DATA_KEY_HOSTS => $hosts,
             self::DATA_KEY_IP_HEADERS => $ipHeaders,
-            self::DATA_KEY_PROTOCOL_HEADERS => $this->prepareProtocolHeaders($protocolHeaders ?? self::DEFAULT_PROTOCOL_HEADERS),
+            self::DATA_KEY_PROTOCOL_HEADERS => $this->prepareProtocolHeaders($protocolHeaders),
             self::DATA_KEY_TRUSTED_HEADERS => $trustedHeaders ?? self::DEFAULT_TRUSTED_HEADERS,
-            self::DATA_KEY_HOST_HEADERS => $hostHeaders ?? self::DEFAULT_HOST_HEADERS,
-            self::DATA_KEY_URL_HEADERS => $urlHeaders ?? self::DEFAULT_URL_HEADERS,
+            self::DATA_KEY_HOST_HEADERS => $hostHeaders,
+            self::DATA_KEY_URL_HEADERS => $urlHeaders,
         ];
         foreach ([
                      self::DATA_KEY_HOSTS,

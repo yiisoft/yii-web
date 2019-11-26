@@ -30,13 +30,17 @@ class TrustedHostsNetworkResolverTest extends TestCase
             'xForwardLevel1' => [
                 ['x-forwarded-for' => ['9.9.9.9', '5.5.5.5', '2.2.2.2']],
                 ['REMOTE_ADDR' => '127.0.0.1'],
-                [['hosts' => ['8.8.8.8', '127.0.0.1']]],
+                [
+                    ['hosts' => ['8.8.8.8', '127.0.0.1'], 'ipHeaders' => ['x-forwarded-for']]
+                ],
                 '2.2.2.2',
             ],
             'xForwardLevel2' => [
                 ['x-forwarded-for' => ['9.9.9.9', '5.5.5.5', '2.2.2.2']],
                 ['REMOTE_ADDR' => '127.0.0.1'],
-                [['hosts' => ['8.8.8.8', '127.0.0.1', '2.2.2.2']]],
+                [
+                    ['hosts' => ['8.8.8.8', '127.0.0.1', '2.2.2.2'], 'ipHeaders' => ['x-forwarded-for']],
+                ],
                 '5.5.5.5',
             ],
             'forwardLevel1' => [
@@ -85,6 +89,7 @@ class TrustedHostsNetworkResolverTest extends TestCase
                     [
                         'hosts' => ['8.8.8.8', '127.0.0.1', '2.2.2.2'],
                         'ipHeaders' => [[TrustedHostsNetworkResolver::IP_HEADER_TYPE_RFC7239, 'forward']],
+                        'urlHeaders' => ['x-rewrite-url'],
                     ],
                 ],
                 '5.5.5.5',
@@ -116,10 +121,10 @@ class TrustedHostsNetworkResolverTest extends TestCase
         foreach ($trustedHosts as $data) {
             $middleware = $middleware->withAddedTrustedHosts(
                 $data['hosts'],
-                $data['ipHeaders'] ?? null,
-                $data['protocolHeaders'] ?? null,
-                null,
-                null,
+                $data['ipHeaders'] ?? [],
+                $data['protocolHeaders'] ?? [],
+                $data['hostHeaders'] ?? [],
+                $data['urlHeaders'] ?? [],
                 $data['trustedHeaders'] ?? null);
         }
         $response = $middleware->process($request, $requestHandler);
@@ -144,12 +149,12 @@ class TrustedHostsNetworkResolverTest extends TestCase
             'x-forwarded-for' => [
                 ['x-forwarded-for' => ['9.9.9.9', '5.5.5.5', '2.2.2.2']],
                 ['REMOTE_ADDR' => '127.0.0.1'],
-                [['hosts' => ['8.8.8.8']]],
+                [['hosts' => ['8.8.8.8'], 'ipHeaders' => ['x-forwarded-for']]],
             ],
             'forward' => [
                 ['x-forwarded-for' => ['for=9.9.9.9', 'for=5.5.5.5', 'for=2.2.2.2']],
                 ['REMOTE_ADDR' => '127.0.0.1'],
-                [['hosts' => ['8.8.8.8']]],
+                [['hosts' => ['8.8.8.8'], 'ipHeaders' => ['x-forwarded-for']]],
             ],
         ];
     }
@@ -166,11 +171,11 @@ class TrustedHostsNetworkResolverTest extends TestCase
         foreach ($trustedHosts as $data) {
             $middleware = $middleware->withAddedTrustedHosts(
                 $data['hosts'],
-                $data['ipHeaders'] ?? null,
-                $data['protocolHeaders'] ?? null,
-                null,
-                null,
-                $data['trustedHeaders'] ?? null);
+                $data['ipHeaders'] ?? [],
+                $data['protocolHeaders'] ?? [],
+                [],
+                [],
+                $data['trustedHeaders'] ?? []);
         }
         $response = $middleware->process($request, $requestHandler);
         $this->assertSame(412, $response->getStatusCode());
@@ -185,7 +190,8 @@ class TrustedHostsNetworkResolverTest extends TestCase
 
         $middleware = new TrustedHostsNetworkResolver(new Psr17Factory());
         $content = 'Another branch.';
-        $middleware = $middleware->withNotTrustedBranch(new class($content) implements MiddlewareInterface {
+        $middleware = $middleware->withNotTrustedBranch(new class($content) implements MiddlewareInterface
+        {
             private $content;
 
             public function __construct(string $content)
@@ -247,10 +253,10 @@ class TrustedHostsNetworkResolverTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         (new TrustedHostsNetworkResolver(new Psr17Factory()))
             ->withAddedTrustedHosts($data['hosts'] ?? [],
-                $data['ipHeaders'] ?? null,
-                $data['protocolHeaders'] ?? null,
-                $data['hostHeaders'] ?? null,
-                $data['urlHeaders'] ?? null,
+                $data['ipHeaders'] ?? [],
+                $data['protocolHeaders'] ?? [],
+                $data['hostHeaders'] ?? [],
+                $data['urlHeaders'] ?? [],
                 $data['trustedHeaders'] ?? null
             );
     }
