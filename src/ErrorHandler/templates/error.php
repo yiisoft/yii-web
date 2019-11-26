@@ -9,13 +9,11 @@ use Yiisoft\Yii\Web\ErrorHandler\UserException;
 /* @var $throwable \Throwable */
 /* @var $this \Yiisoft\Yii\Web\ErrorHandler\HtmlRenderer */
 
-$name = $this->getThrowableName($throwable);
-if ($name === null) {
-    $name = 'Error';
-}
 if ($throwable instanceof UserException) {
+    $name = $this->getThrowableName($throwable);
     $message = $throwable->getMessage();
 } else {
+    $name = 'Error';
     $message = 'An internal server error occurred.';
 }
 ?>
