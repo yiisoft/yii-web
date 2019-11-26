@@ -7,123 +7,98 @@ use PHPUnit\Framework\TestCase;
 
 class SessionTest extends TestCase
 {
-    /**
-     * @runInSeparateProcess
-     */
-    public function testGetAndSet()
+    public function testGetAndSet(): void
     {
         $session = new Session();
         $session->set('key_get', 'value');
         self::assertEquals('value', $session->get('key_get'));
+        $session->destroy();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
-    public function testHas()
+    public function testHas(): void
     {
         $session = new Session();
         $session->set('key_has', 'value');
         self::assertTrue($session->has('key_has'));
+        $session->destroy();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
-    public function testClose()
+    public function testClose(): void
     {
         $session = new Session();
         $session->set('key_close', 'value');
         $session->close();
         self::assertEquals(PHP_SESSION_NONE, session_status());
+
+        $session->open();
+        $session->destroy();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
-    public function testRegenerateID()
+    public function testRegenerateID(): void
     {
         $session = new Session();
         $session->open();
         $id = $session->getId();
         $session->regenerateId();
         self::assertNotEquals($id, $session->getId());
+        $session->destroy();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
-    public function testDiscard()
+    public function testDiscard(): void
     {
         $session = new Session();
         $session->set('key_discard', 'value');
         $session->discard();
         self::assertEmpty($session->get('key_discard'));
+        $session->destroy();
     }
 
-    public function testGetName()
+    public function testGetName(): void
     {
         $session = new Session();
         self::assertEquals($session->getName(), session_name());
+        $session->destroy();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
-    public function testPull()
+    public function testPull(): void
     {
         $session = new Session();
         $session->set('key_pull', 'value');
         self::assertEquals('value', $session->pull('key_pull'));
         self::assertEmpty($session->get('key_pull'));
+        $session->destroy();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
-    public function testAll()
+    public function testAll(): void
     {
         $session = new Session();
         $session->set('key_1', 1);
         $session->set('key_2', 2);
         self::assertEquals(['key_1' => 1, 'key_2' => 2], $session->all());
+        $session->destroy();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
-    public function testClear()
+    public function testClear(): void
     {
         $session = new Session();
         $session->set('key', 'value');
         $session->clear();
         self::assertEmpty($session->all());
+        $session->destroy();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
-    public function testSetId()
+    public function testSetId(): void
     {
         $session = new Session();
         $session->setId('sessionId');
         $session->open();
         self::assertEquals(session_id(), $session->getId());
+        $session->destroy();
     }
 
-    public function testGetCookieParameters()
+    public function testGetCookieParameters(): void
     {
         $session = new Session();
         self::assertEquals(session_get_cookie_params(), $session->getCookieParameters());
-    }
-
-    /**
-     * @expectedException \RuntimeException
-     */
-    public function testAlreadyStartedException()
-    {
-        $session = new Session();
-        $session->open();
-        new Session();
     }
 }

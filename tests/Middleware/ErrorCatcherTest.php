@@ -55,7 +55,7 @@ class ErrorCatcherTest extends TestCase
         $errorHandler = new ErrorHandler(new Logger(), new MockThrowableRenderer(self::DEFAULT_RENDERER_RESPONSE));
         $container = new Container();
         $catcher = (new ErrorCatcher($factory, $errorHandler, $container))
-            ->withoutRenderers('text/html');
+            ->withoutRenderers('*/*');
         $requestHandler = (new MockRequestHandler())->setHandleExcaption(new \RuntimeException());
         $response = $catcher->process(new ServerRequest('GET', '/', ['Accept' => ['test/html']]), $requestHandler);
         $response->getBody()->rewind();
@@ -76,6 +76,24 @@ class ErrorCatcherTest extends TestCase
         $container->set($containerId, new MockThrowableRenderer($expectedRendererOutput));
         $requestHandler = (new MockRequestHandler())->setHandleExcaption(new \RuntimeException());
         $response = $catcher->process(new ServerRequest('GET', '/', ['Accept' => ['text/html', $mimeType]]),
+            $requestHandler);
+        $response->getBody()->rewind();
+        $content = $response->getBody()->getContents();
+        $this->assertNotSame(self::DEFAULT_RENDERER_RESPONSE, $content);
+    }
+
+    public function testDefaultContentType(): void
+    {
+        $factory = new Psr17Factory();
+        $errorHandler = new ErrorHandler(new Logger(), new MockThrowableRenderer(self::DEFAULT_RENDERER_RESPONSE));
+        $container = new Container();
+        $containerId = 'testRenderer';
+        $catcher = (new ErrorCatcher($factory, $errorHandler, $container))
+            ->withAddedRenderer('*/*', $containerId);
+        $expectedRendererOutput = 'expectedRendereOutput';
+        $container->set($containerId, new MockThrowableRenderer($expectedRendererOutput));
+        $requestHandler = (new MockRequestHandler())->setHandleExcaption(new \RuntimeException());
+        $response = $catcher->process(new ServerRequest('GET', '/', ['Accept' => ['test/test']]),
             $requestHandler);
         $response->getBody()->rewind();
         $content = $response->getBody()->getContents();
