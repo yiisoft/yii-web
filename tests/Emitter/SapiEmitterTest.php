@@ -180,8 +180,7 @@ class SapiEmitterTest extends TestCase
         array $headers = [],
         $body = null,
         string $version = '1.1'
-    ): ResponseInterface
-    {
+    ): ResponseInterface {
         $response = (new Response())
             ->withStatus($status)
             ->withProtocolVersion($version);
