@@ -9,5 +9,4 @@ namespace Yiisoft\Yii\Web\ErrorHandler;
  */
 class UserException extends \Exception
 {
-
 }
