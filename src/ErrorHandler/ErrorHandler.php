@@ -134,7 +134,13 @@ final class ErrorHandler
         unset($this->memoryReserve);
         $error = error_get_last();
         if ($error !== null && ErrorException::isFatalError($error)) {
-            $exception = new ErrorException($error['message'], $error['type'], $error['type'], $error['file'], $error['line']);
+            $exception = new ErrorException(
+                $error['message'],
+                $error['type'],
+                $error['type'],
+                $error['file'],
+                $error['line']
+            );
             $this->handleThrowable($exception);
             exit(1);
         }
@@ -143,14 +149,26 @@ final class ErrorHandler
     private function log(\Throwable $t/*, ServerRequestInterface $request*/): void
     {
         $renderer = new PlainTextRenderer();
-        $this->logger->error($renderer->renderVerbose($t), [
-            'throwable' => $t,
-            //'request' => $request,
-        ]);
+        $this->logger->error(
+            $renderer->renderVerbose($t),
+            [
+                'throwable' => $t,
+                //'request' => $request,
+            ]
+        );
     }
 
-    public function setExposeDetails(bool $exposeDetails): void
+    public function withExposedDetails(): self
     {
-        $this->exposeDetails = $exposeDetails;
+        $new = clone $this;
+        $new->exposeDetails = true;
+        return $new;
+    }
+
+    public function withoutExposedDetails(): self
+    {
+        $new = clone $this;
+        $new->exposeDetails = false;
+        return $new;
     }
 }
