@@ -19,7 +19,7 @@ final class HtmlRenderer extends ThrowableRenderer
         return $new;
     }
 
-    public function setMaxTraceLines(int $maxTraceLines): self
+    public function withMaxTraceLines(int $maxTraceLines): self
     {
         $new = clone $this;
         $new->maxTraceLines = $maxTraceLines;
