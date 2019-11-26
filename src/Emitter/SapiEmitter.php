@@ -10,12 +10,16 @@ use Psr\Http\Message\ResponseInterface;
 final class SapiEmitter implements EmitterInterface
 {
     private const NO_BODY_RESPONSE_CODES = [204, 205, 304];
-    private $bufferSize;
     private const DEFAULT_BUFFER_SIZE = 8388608; // 8MB
 
-    public function __construct(int $bufferSize = self::DEFAULT_BUFFER_SIZE)
+    private $bufferSize;
+
+    public function __construct(?int $bufferSize = null)
     {
-        $this->bufferSize = $bufferSize > 0 ? $bufferSize : self::DEFAULT_BUFFER_SIZE;
+        if ($bufferSize !== null && $bufferSize <= 0) {
+            throw new \InvalidArgumentException('Buffer size must be greater than zero');
+        }
+        $this->bufferSize = $bufferSize ?? self::DEFAULT_BUFFER_SIZE;
     }
 
     public function emit(ResponseInterface $response, bool $withoutBody = false): bool
