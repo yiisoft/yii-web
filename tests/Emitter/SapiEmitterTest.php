@@ -63,6 +63,37 @@ class SapiEmitterTest extends TestCase
         HTTPFunctions::reset();
     }
 
+    public function testHTTPFunctions(): void
+    {
+        // check default code 200
+        $this->checkResponseCodeEquals(200);
+        $this->assertFalse(HTTPFunctions::hasHeader('x-test'));
+        // add header
+        HTTPFunctions::header('X-Test: 1');
+        $this->assertTrue(HTTPFunctions::hasHeader('x-test'));
+        // added header, change status
+        HTTPFunctions::header('X-Test: 2', false, 300);
+        $this->checkHeadersEquals(['X-Test: 1', 'X-Test: 2']);
+        $this->checkResponseCodeEquals(300);
+        // replace x-test headers, change status
+        HTTPFunctions::header('X-Test: 3', true, 404);
+        HTTPFunctions::header('Control-Cache: no-cache');
+        $this->checkHeadersEquals(['X-Test: 3', 'Control-Cache: no-cache']);
+        $this->checkResponseCodeEquals(404);
+        // remove x-test header
+        HTTPFunctions::header_remove('x-test');
+        $this->checkHeadersEquals(['Control-Cache: no-cache']);
+        // remove all headers and check code
+        HTTPFunctions::header_remove();
+        $this->checkResponseCodeEquals(404);
+        $this->checkHeadersEquals([]);
+        // check defaults after reset
+        HTTPFunctions::header('X-Test: 3', true, 404);
+        HTTPFunctions::reset();
+        $this->checkResponseCodeEquals(200);
+        $this->checkHeadersEquals([]);
+    }
+
     public function testEmit(): void
     {
         $body = 'Example body';
