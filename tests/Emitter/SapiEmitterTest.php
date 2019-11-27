@@ -1,46 +1,7 @@
 <?php
-
-namespace Yiisoft\Yii\Web\Emitter;
-
-use Yiisoft\Yii\Web\Tests\Emitter\HTTPFunctions;
-
-/**
- * Mock for the headers_sent() function for Emitter class.
- */
-function headers_sent(): bool
-{
-    return false;
-}
-/**
- * Mock for the header() function for Emitter class.
- */
-function header(string $string, bool $replace = true, ?int $http_response_code = null): void
-{
-    HTTPFunctions::header($string, $replace, $http_response_code);
-}
-/**
- * Mock for the header_remove() function for Emitter class.
- */
-function header_remove(): void
-{
-    HTTPFunctions::header_remove();
-}
-/**
- * Mock for the header_list() function for Emitter class.
- */
-function header_list(): array
-{
-    return HTTPFunctions::headers_list();
-}
-/**
- * Mock for the http_response_code() function for Emitter class.
- */
-function http_response_code(?int $response_code = null): int
-{
-    return HTTPFunctions::http_response_code($response_code);
-}
-
 namespace Yiisoft\Yii\Web\Tests\Emitter;
+
+include 'includeMocks.php';
 
 use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
@@ -59,7 +20,7 @@ class SapiEmitterTest extends TestCase
         HTTPFunctions::reset();
     }
 
-    public function tearDown(): void
+    public static function tearDownAfterClass(): void
     {
         HTTPFunctions::reset();
     }
