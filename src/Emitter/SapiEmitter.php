@@ -64,20 +64,9 @@ final class SapiEmitter implements EmitterInterface
         if ($body->isSeekable()) {
             $body->rewind();
         }
-        $bytesToSend = $response->getBody()->getSize();
-        if ($bytesToSend > 0) {
-            while ($bytesToSend > 0 && !$body->eof()) {
-                $toRead = \min($this->bufferSize, $bytesToSend);
-                $data = $body->read($toRead);
-                echo $data;
-                $bytesToSend -= \strlen($data);
-                \flush();
-            }
-        } else {
-            while (!$body->eof()) {
-                echo $body->read($this->bufferSize);
-                \flush();
-            }
+        while (!$body->eof()) {
+            echo $body->read($this->bufferSize);
+            \flush();
         }
     }
 
