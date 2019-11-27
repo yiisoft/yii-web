@@ -51,13 +51,15 @@ final class SapiEmitter implements EmitterInterface
                     $replaceFirst = false;
                 }
             }
+        } else {
+            $withoutContentLength = false;
         }
 
         if (!$withoutBody) {
             if (!$withoutContentLength && !$response->hasHeader('Content-Length')) {
                 $contentLength = $response->getBody()->getSize();
                 if ($contentLength !== null) {
-                    header(sprintf('Content-Length: %s', $contentLength), true);
+                    header('Content-Length: ' . $contentLength, true);
                 }
             }
 
