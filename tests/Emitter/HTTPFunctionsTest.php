@@ -1,7 +1,7 @@
 <?php
 namespace Yiisoft\Yii\Web\Tests\Emitter;
 
-include 'includeMocks.php';
+include 'httpFunctionMocks.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -20,19 +20,8 @@ class HTTPFunctionsTest extends TestCase
         HTTPFunctions::reset();
     }
 
-    public function testReset(): void
+    public function testInitialState(): void
     {
-        // check initial state
-        $this->assertEquals(200, $this->getResponseCode());
-        $this->assertEquals([], $this->getHeaders());
-
-        HTTPFunctions::header('X-Test: 3', false, 404);
-
-        $this->assertEquals(404, $this->getResponseCode());
-        $this->assertEquals(['X-Test: 3'], $this->getHeaders());
-
-        HTTPFunctions::reset();
-
         $this->assertEquals(200, $this->getResponseCode());
         $this->assertEquals([], $this->getHeaders());
     }
@@ -46,22 +35,41 @@ class HTTPFunctionsTest extends TestCase
         $this->assertTrue(HTTPFunctions::hasHeader('x-test'));
     }
 
+    public function testReset(): void
+    {
+        HTTPFunctions::header('X-Test: 1');
+        HTTPFunctions::header('X-Test: 2', false, 500);
+
+        HTTPFunctions::reset();
+
+        $this->assertEquals(200, $this->getResponseCode());
+        $this->assertEquals([], $this->getHeaders());
+    }
+
     public function testAddedHeaders(): void
     {
         // first header
         HTTPFunctions::header('X-Test: 1');
-        // added header, change status
-        HTTPFunctions::header('X-Test: 2', false, 300);
+        // added header with new status
+        HTTPFunctions::header('X-Test: 2', false, 500);
         HTTPFunctions::header('X-Test: 3', false);
 
         $this->assertContains('X-Test: 1', $this->getHeaders());
         $this->assertContains('X-Test: 2', $this->getHeaders());
         $this->assertContains('X-Test: 3', $this->getHeaders());
-        $this->assertEquals(300, $this->getResponseCode());
+        $this->assertEquals(500, $this->getResponseCode());
+    }
 
-        // replace x-test headers, change status
-        HTTPFunctions::header('X-Test: 3', true, 404);
-        $this->assertEquals(['X-Test: 3'], $this->getHeaders());
+    public function testReplacingHeaders(): void
+    {
+        HTTPFunctions::header('X-Test: 1');
+        HTTPFunctions::header('X-Test: 2', false, 300);
+        HTTPFunctions::header('X-Test: 3', false);
+
+        // replace x-test headers with new status
+        HTTPFunctions::header('X-Test: 42', true, 404);
+
+        $this->assertEquals(['X-Test: 42'], $this->getHeaders());
         $this->assertEquals(404, $this->getResponseCode());
     }
 
@@ -72,7 +80,15 @@ class HTTPFunctionsTest extends TestCase
         HTTPFunctions::header('Z-Test: 3', false, 404);
 
         HTTPFunctions::header_remove('y-test');
+
         $this->assertEquals(['X-Test: 1', 'Z-Test: 3'], $this->getHeaders());
+    }
+
+    public function testHeaderRemoveAll(): void
+    {
+        HTTPFunctions::header('X-Test: 1');
+        HTTPFunctions::header('Y-Test: 2');
+        HTTPFunctions::header('Z-Test: 3', false, 404);
 
         HTTPFunctions::header_remove();
 

@@ -1,7 +1,7 @@
 <?php
 namespace Yiisoft\Yii\Web\Tests\Emitter;
 
-include 'includeMocks.php';
+include 'httpFunctionMocks.php';
 
 use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
@@ -28,48 +28,6 @@ class SapiEmitterTest extends TestCase
     public function noBodyHTTPCodeProvider(): array
     {
         return [[100], [101], [102], [204], [205], [304]];
-    }
-
-    public function testHTTPFunctions(): void
-    {
-        // check default code 200, check hasHeader
-        $this->assertEquals(200, $this->getResponseCode());
-        $this->assertEquals([], $this->getHeaders());
-        $this->assertFalse(HTTPFunctions::hasHeader('x-test'));
-
-        // add header, check hasHeader
-        HTTPFunctions::header('X-Test: 1');
-        $this->assertTrue(HTTPFunctions::hasHeader('x-test'));
-        $this->assertEquals(['X-Test: 1'], $this->getHeaders());
-
-        // added header, change status
-        HTTPFunctions::header('X-Test: 2', false, 300);
-        $this->assertContains('X-Test: 1', $this->getHeaders());
-        $this->assertContains('X-Test: 2', $this->getHeaders());
-        $this->assertEquals(300, $this->getResponseCode());
-
-        // replace x-test headers, change status
-        HTTPFunctions::header('X-Test: 3', true, 404);
-        HTTPFunctions::header('Control-Cache: no-cache');
-        $this->assertCount(2, $this->getHeaders());
-        $this->assertContains('X-Test: 3', $this->getHeaders());
-        $this->assertContains('Control-Cache: no-cache', $this->getHeaders());
-        $this->assertEquals(404, $this->getResponseCode());
-
-        // remove x-test header
-        HTTPFunctions::header_remove('x-test');
-        $this->assertEquals(['Control-Cache: no-cache'], $this->getHeaders());
-
-        // remove all headers and check code
-        HTTPFunctions::header_remove();
-        $this->assertEquals(404, $this->getResponseCode());
-        $this->assertEquals([], $this->getHeaders());
-
-        // check defaults after reset
-        HTTPFunctions::header('X-Test: 3', true, 404);
-        HTTPFunctions::reset();
-        $this->assertEquals(200, $this->getResponseCode());
-        $this->assertEquals([], $this->getHeaders());
     }
 
     public function testEmit(): void
@@ -181,7 +139,7 @@ class SapiEmitterTest extends TestCase
     /**
      * @test
      */
-    public function emitDuplicatedHeaders(): void
+    public function shouldEmitDuplicateHeaders(): void
     {
         $body = 'Example body';
         $response = $this->createResponse(200, [], $body)

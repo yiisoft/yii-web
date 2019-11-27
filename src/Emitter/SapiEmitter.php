@@ -81,7 +81,7 @@ final class SapiEmitter implements EmitterInterface
         }
     }
 
-    private function shouldOutputBody(ResponseInterface $response)
+    private function shouldOutputBody(ResponseInterface $response): bool
     {
         if (\in_array($response->getStatusCode(), self::NO_BODY_RESPONSE_CODES, true)) {
             return false;
