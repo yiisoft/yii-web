@@ -15,7 +15,7 @@ use Yiisoft\Yii\Web\Helper\HeaderHelper;
 class TrustedHostsNetworkResolver implements MiddlewareInterface
 {
     public const IP_HEADER_TYPE_RFC7239 = 'rfc7239';
-    
+
     public const DEFAULT_TRUSTED_HEADERS = [
         // common:
         'x-forwarded-for',
@@ -86,6 +86,13 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
     }
 
     /**
+     * @param string[] $hosts List of trusted hosts IP addresses. If `isValidHost` is extended, then can use
+     *                        domain names with reverse DNS resolving eg. yiiframework.com, * .yiiframework.com.
+     * @param array $ipHeaders List of headers containing IP lists.
+     * @param array $protocolHeaders
+     * @param string[] $hostHeaders List of headers containing HTTP host.
+     * @param string[] $urlHeaders List of headers containing HTTP URL.
+     * @param string[]|null $trustedHeaders List of trusted headers.
      * @return static
      */
     public function withAddedTrustedHosts(
@@ -220,12 +227,12 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
             $response->getBody()->write('Unable to verify your network.');
             return $response;
         }
-        [$type, $ipList] = $this->getIpList($request, $trustedHostData[self::DATA_KEY_IP_HEADERS]);
+        [$ipListType, $ipHeader, $ipList] = $this->getIpList($request, $trustedHostData[self::DATA_KEY_IP_HEADERS]);
         $ipList = array_reverse($ipList);       // the first item should be the closest to the server
-        if ($type === null) {
+        if ($ipListType === null) {
             $ipList = $this->getFormattedIpList($ipList);
-        } elseif ($type === self::IP_HEADER_TYPE_RFC7239) {
-            $ipList = $this->getForwardedElements($ipList);
+        } elseif ($ipListType === self::IP_HEADER_TYPE_RFC7239) {
+            $ipList = $this->getElementsByRfc7239($ipList);
         }
         array_unshift($ipList, ['ip' => $actualHost]);  // server's ip to first position
         $ipDataList = [];
@@ -252,22 +259,37 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
         }
 
         $uri = $request->getUri();
-        if (isset($ipData['httpHost'])) {
-            $uri = $uri->withHost($ipData['httpHost']);
-        } else {
-            // find host from headers
-            $host = $this->getHttpHost($request, $trustedHostData[self::DATA_KEY_HOST_HEADERS]);
-            if ($host !== null) {
-                $uri = $uri->withHost($host);
+        // find HTTP host
+        foreach ($trustedHostData[self::DATA_KEY_HOST_HEADERS] as $hostHeader) {
+            if (!$request->hasHeader($hostHeader)) {
+                continue;
             }
+            if ($hostHeader === $ipHeader && $ipListType === self::IP_HEADER_TYPE_RFC7239 && isset($ipData['httpHost'])) {
+                $uri = $uri->withHost($ipData['httpHost']);
+                break;
+            }
+            $host = $request->getHeaderLine($hostHeader);
+            if (filter_var($host, FILTER_VALIDATE_DOMAIN) === false) {
+                continue;
+            }
+            $uri = $uri->withHost($host);
         }
-        if (isset($ipData['protocol'])) {
-            $uri = $uri->withScheme($ipData['protocol']);
-        } else {
-            // find scheme from headers
-            $scheme = $this->getScheme($request, $trustedHostData[self::DATA_KEY_PROTOCOL_HEADERS]);
-            if ($scheme !== null) {
-                $uri = $uri->withScheme($scheme);
+
+        // find protocol
+        foreach ($trustedHostData[self::DATA_KEY_PROTOCOL_HEADERS] as $protocolHeader => $protocols) {
+            if (!$request->hasHeader($protocolHeader)) {
+                continue;
+            }
+            if ($protocolHeader === $ipHeader && $ipListType === self::IP_HEADER_TYPE_RFC7239 && isset($ipData['protocol'])) {
+                $uri = $uri->withScheme($ipData['protocol']);
+                break;
+            }
+            $protocolHeaderValue = $request->getHeaderLine($protocolHeader);
+            foreach ($protocols as $protocol => $acceptedValues) {
+                if (\in_array($protocolHeaderValue, $acceptedValues)) {
+                    $uri = $uri->withScheme($protocol);
+                    break 2;
+                }
             }
         }
         $urlParts = $this->getUrl($request, $trustedHostData[self::DATA_KEY_URL_HEADERS]);
@@ -352,10 +374,10 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
                 $ipHeader = array_shift($ipHeader);
             }
             if ($request->hasHeader($ipHeader)) {
-                return [$type, $request->getHeader($ipHeader)];
+                return [$type, $ipHeader, $request->getHeader($ipHeader)];
             }
         }
-        return [null, []];
+        return [null, null, []];
     }
 
     private function getFormattedIpList(array $forwards): array
@@ -372,7 +394,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
      *
      * @link https://tools.ietf.org/html/rfc7239
      */
-    private function getForwardedElements(array $forwards): array
+    private function getElementsByRfc7239(array $forwards): array
     {
         $list = [];
         foreach ($forwards as $forward) {
@@ -409,40 +431,14 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
                     $ipData[$destination] = $data[$source];
                 }
             }
+            if (isset($ipData['httpHost']) && filter_var($ipData['httpHost'], FILTER_VALIDATE_DOMAIN) === false) {
+                // remove not valid HTTP host
+                unset($ipData['httpHost']);
+            }
 
             $list[] = $ipData;
         }
         return $list;
-    }
-
-    private function getHttpHost(RequestInterface $request, array $hostHeaders): ?string
-    {
-        foreach ($hostHeaders as $header) {
-            if (!$request->hasHeader($header)) {
-                continue;
-            }
-            $host = $request->getHeaderLine($header);
-            if (filter_var($host, FILTER_VALIDATE_DOMAIN) !== false) {
-                return $host;
-            }
-        }
-        return null;
-    }
-
-    private function getScheme(RequestInterface $request, array $protocolHeaders): ?string
-    {
-        foreach ($protocolHeaders as $header => $ref) {
-            if (!$request->hasHeader($header)) {
-                continue;
-            }
-            $value = strtolower($request->getHeaderLine($header));
-            foreach ($ref as $protocol => $acceptedValues) {
-                if (\in_array($value, $acceptedValues, true)) {
-                    return $protocol;
-                }
-            }
-        }
-        return null;
     }
 
     private function getUrl(RequestInterface $request, array $urlHeaders): ?array
