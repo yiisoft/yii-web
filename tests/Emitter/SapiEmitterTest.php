@@ -46,6 +46,7 @@ use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
+use Yiisoft\Yii\Web\Emitter\EmitterInterface;
 use Yiisoft\Yii\Web\Emitter\SapiEmitter;
 
 /**
@@ -63,35 +64,51 @@ class SapiEmitterTest extends TestCase
         HTTPFunctions::reset();
     }
 
+    public function noBodyHTTPCodeProvider(): array
+    {
+        return [[100], [101], [102], [204], [205], [304]];
+    }
+
     public function testHTTPFunctions(): void
     {
-        // check default code 200
-        $this->checkResponseCodeEquals(200);
+        // check default code 200, check hasHeader
+        $this->assertEquals(200, $this->getResponseCode());
+        $this->assertEquals([], $this->getHeaders());
         $this->assertFalse(HTTPFunctions::hasHeader('x-test'));
-        // add header
+
+        // add header, check hasHeader
         HTTPFunctions::header('X-Test: 1');
         $this->assertTrue(HTTPFunctions::hasHeader('x-test'));
+        $this->assertEquals(['X-Test: 1'], $this->getHeaders());
+
         // added header, change status
         HTTPFunctions::header('X-Test: 2', false, 300);
-        $this->checkHeadersEquals(['X-Test: 1', 'X-Test: 2']);
-        $this->checkResponseCodeEquals(300);
+        $this->assertContains('X-Test: 1', $this->getHeaders());
+        $this->assertContains('X-Test: 2', $this->getHeaders());
+        $this->assertEquals(300, $this->getResponseCode());
+
         // replace x-test headers, change status
         HTTPFunctions::header('X-Test: 3', true, 404);
         HTTPFunctions::header('Control-Cache: no-cache');
-        $this->checkHeadersEquals(['X-Test: 3', 'Control-Cache: no-cache']);
-        $this->checkResponseCodeEquals(404);
+        $this->assertCount(2, $this->getHeaders());
+        $this->assertContains('X-Test: 3', $this->getHeaders());
+        $this->assertContains('Control-Cache: no-cache', $this->getHeaders());
+        $this->assertEquals(404, $this->getResponseCode());
+
         // remove x-test header
         HTTPFunctions::header_remove('x-test');
-        $this->checkHeadersEquals(['Control-Cache: no-cache']);
+        $this->assertEquals(['Control-Cache: no-cache'], $this->getHeaders());
+
         // remove all headers and check code
         HTTPFunctions::header_remove();
-        $this->checkResponseCodeEquals(404);
-        $this->checkHeadersEquals([]);
+        $this->assertEquals(404, $this->getResponseCode());
+        $this->assertEquals([], $this->getHeaders());
+
         // check defaults after reset
         HTTPFunctions::header('X-Test: 3', true, 404);
         HTTPFunctions::reset();
-        $this->checkResponseCodeEquals(200);
-        $this->checkHeadersEquals([]);
+        $this->assertEquals(200, $this->getResponseCode());
+        $this->assertEquals([], $this->getHeaders());
     }
 
     public function testEmit(): void
@@ -101,24 +118,24 @@ class SapiEmitterTest extends TestCase
 
         $this->createEmitter()->emit($response);
 
-        $this->checkResponseCodeEquals(200);
-        $this->checkHeadersEquals([
-            'X-Test: 1',
-            'Content-Length: ' . strlen($body),
-        ]);
+        $this->assertEquals(200, $this->getResponseCode());
+        $this->assertCount(2, $this->getHeaders());
+        $this->assertContains('X-Test: 1', $this->getHeaders());
+        $this->assertContains('Content-Length: ' . strlen($body), $this->getHeaders());
         $this->expectOutputString($body);
     }
 
     /**
      * @test
-    //  */
-    public function shouldNotOutputBodyWhenResponseCodeIs204(): void
+     * @dataProvider noBodyHTTPCodeProvider
+     */
+    public function shouldNotOutputBodyByResponseCode(int $code): void
     {
-        $response = $this->createResponse(204, ['X-Test' => 1], 'Example body');
+        $response = $this->createResponse($code, ['X-Test' => 1], 'Example body');
 
         $this->createEmitter()->emit($response);
 
-        $this->checkResponseCodeEquals(204);
+        $this->assertEquals($code, $this->getResponseCode());
         $this->assertTrue(HTTPFunctions::hasHeader('X-Test'));
         $this->assertFalse(HTTPFunctions::hasHeader('Content-Length'));
         $this->expectOutputString('');
@@ -133,7 +150,7 @@ class SapiEmitterTest extends TestCase
 
         $this->createEmitter()->emit($response, true);
 
-        $this->checkResponseCodeEquals(200);
+        $this->assertEquals(200, $this->getResponseCode());
         $this->assertTrue(HTTPFunctions::hasHeader('X-Test'));
         $this->assertFalse(HTTPFunctions::hasHeader('Content-Length'));
         $this->expectOutputString('');
@@ -145,15 +162,29 @@ class SapiEmitterTest extends TestCase
     public function contentLengthShouldNotBeOverwrittenIfPresent(): void
     {
         $length = 100;
+        $response = $this->createResponse(200, ['Content-Length' => $length, 'X-Test' => 1], 'Example body');
+
+        $this->createEmitter()->emit($response);
+
+        $this->assertEquals(200, $this->getResponseCode());
+        $this->assertCount(2, $this->getHeaders());
+        $this->assertContains('X-Test: 1', $this->getHeaders());
+        $this->assertContains('Content-Length: ' . $length, $this->getHeaders());
+        $this->expectOutputString('Example body');
+    }
+
+    /**
+     * @test
+     */
+    public function contentLengthShouldNotOutputWhenBodyIsEmpty(): void
+    {
+        $length = 100;
         $response = $this->createResponse(200, ['Content-Length' => $length, 'X-Test' => 1], '');
 
         $this->createEmitter()->emit($response);
 
-        $this->checkResponseCodeEquals(200);
-        $this->checkHeadersEquals([
-            'X-Test: 1',
-            'Content-Length: ' . $length,
-        ]);
+        $this->assertEquals(200, $this->getResponseCode());
+        $this->assertEquals(['X-Test: 1'], $this->getHeaders());
         $this->expectOutputString('');
     }
 
@@ -170,7 +201,49 @@ class SapiEmitterTest extends TestCase
         $this->expectOutputString($body);
     }
 
-    private function createEmitter(?int $bufferSize = null): SapiEmitter
+    /**
+     * @test
+     */
+    public function sentHeadersShouldBeRemoved(): void
+    {
+        HTTPFunctions::header('Cookie-Set: First Cookie');
+        HTTPFunctions::header('X-Test: 1');
+        $body = 'Example body';
+        $response = $this->createResponse(200, [], $body);
+
+        $this->createEmitter()->emit($response);
+
+        $this->assertEquals(['Content-Length: ' . strlen($body)], $this->getHeaders());
+        $this->expectOutputString($body);
+    }
+
+    /**
+     * @test
+     */
+    public function emitDuplicatedHeaders(): void
+    {
+        $body = 'Example body';
+        $response = $this->createResponse(200, [], $body)
+                         ->withHeader('X-Test', '1')
+                         ->withAddedHeader('X-Test', '2')
+                         ->withAddedHeader('X-Test', '3; 3.5')
+                         ->withHeader('Cookie-Set', '1')
+                         ->withAddedHeader('cookie-Set', '2')
+                         ->withAddedHeader('Cookie-set', '3');
+
+        $this->createEmitter()->emit($response);
+        $this->assertEquals(200, $this->getResponseCode());
+        $this->assertContains('X-Test: 1', $this->getHeaders());
+        $this->assertContains('X-Test: 2', $this->getHeaders());
+        $this->assertContains('X-Test: 3; 3.5', $this->getHeaders());
+        $this->assertContains('Cookie-Set: 1', $this->getHeaders());
+        $this->assertContains('Cookie-Set: 2', $this->getHeaders());
+        $this->assertContains('Cookie-Set: 3', $this->getHeaders());
+        $this->assertContains('Content-Length: ' . strlen($body), $this->getHeaders());
+        $this->expectOutputString($body);
+    }
+
+    private function createEmitter(?int $bufferSize = null): EmitterInterface
     {
         return new SapiEmitter($bufferSize);
     }
@@ -195,16 +268,13 @@ class SapiEmitterTest extends TestCase
         return $response;
     }
 
-    private function checkHeadersEquals(array $expected): void
+    private function getHeaders(): array
     {
-        $actual = HTTPFunctions::headers_list();
-        sort($expected, SORT_STRING);
-        sort($actual, SORT_STRING);
-        $this->assertEquals($expected, $actual);
+        return HTTPFunctions::headers_list();
     }
 
-    private function checkResponseCodeEquals(int $expected): void
+    private function getResponseCode(): int
     {
-        $this->assertEquals($expected, HTTPFunctions::http_response_code());
+        return HTTPFunctions::http_response_code();
     }
 }

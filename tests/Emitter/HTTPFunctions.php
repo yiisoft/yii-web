@@ -46,15 +46,12 @@ class HTTPFunctions
     /**
      * Remove previously set headers
      */
-    public static function header_remove(?string $name = null): void
+    public static function header_remove(?string $header = null): void
     {
-        if ($name === null) {
+        if ($header === null) {
             self::$headers = [];
         } else {
-            $name = strtolower($name);
-            if (key_exists($name, self::$headers)) {
-                unset(self::$headers[$name]);
-            }
+            unset(self::$headers[strtolower($header)]);
         }
     }
 
@@ -90,7 +87,6 @@ class HTTPFunctions
      */
     public static function hasHeader(string $header): bool
     {
-        $name = strtolower($header);
-        return key_exists($name, self::$headers);
+        return key_exists(strtolower($header), self::$headers);
     }
 }

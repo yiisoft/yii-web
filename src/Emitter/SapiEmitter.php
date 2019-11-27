@@ -9,7 +9,7 @@ use Psr\Http\Message\ResponseInterface;
  */
 final class SapiEmitter implements EmitterInterface
 {
-    private const NO_BODY_RESPONSE_CODES = [204, 205, 304];
+    private const NO_BODY_RESPONSE_CODES = [100, 101, 102, 204, 205, 304];
     private const DEFAULT_BUFFER_SIZE = 8388608; // 8MB
 
     private $bufferSize;
@@ -25,35 +25,40 @@ final class SapiEmitter implements EmitterInterface
     public function emit(ResponseInterface $response, bool $withoutBody = false): bool
     {
         $status = $response->getStatusCode();
+        $withoutBody = $withoutBody || !$this->shouldOutputBody($response);
+        $withoutContentLength = $withoutBody || $response->hasHeader('Transfer-Encoding');
 
-        header_remove();
-        foreach ($response->getHeaders() as $header => $values) {
-            foreach ($values as $value) {
-                header(sprintf(
-                    '%s: %s',
-                    $header,
-                    $value
-                ), $header !== 'Set-Cookie', $status);
+        // we can't replace headers if they are already sent
+        if (!headers_sent()) {
+            header_remove();
+            // send HTTP Status-Line
+            header(sprintf(
+                'HTTP/%s %d %s',
+                $response->getProtocolVersion(),
+                $status,
+                $response->getReasonPhrase()
+            ), true, $status);
+            // filter headers
+            $headers = $withoutContentLength
+                ? $response->withoutHeader('Content-Length')
+                           ->getHeaders()
+                : $response->getHeaders();
+            // send headers
+            foreach ($headers as $header => $values) {
+                $replaceFirst = strtolower($header) !== 'set-cookie';
+                foreach ($values as $value) {
+                    header(sprintf('%s: %s', $header, $value), $replaceFirst);
+                    $replaceFirst = false;
+                }
             }
         }
 
-        $reason = $response->getReasonPhrase();
-
-        header(sprintf(
-            'HTTP/%s %d %s',
-            $response->getProtocolVersion(),
-            $status,
-            $reason
-        ), true, $status);
-
-        if ($withoutBody === false && $this->shouldOutputBody($response)) {
-            $contentLength = $response->getBody()->getSize();
-            if ($response->hasHeader('Content-Length')) {
-                $contentLengthHeader = $response->getHeader('Content-Length');
-                $contentLength = array_shift($contentLengthHeader);
-            }
-            if ($contentLength !== null) {
-                header(sprintf('Content-Length: %s', $contentLength), true, $status);
+        if (!$withoutBody) {
+            if (!$withoutContentLength && !$response->hasHeader('Content-Length')) {
+                $contentLength = $response->getBody()->getSize();
+                if ($contentLength !== null) {
+                    header(sprintf('Content-Length: %s', $contentLength), true);
+                }
             }
 
             $this->emitBody($response);
@@ -74,8 +79,24 @@ final class SapiEmitter implements EmitterInterface
         }
     }
 
-    private function shouldOutputBody(ResponseInterface $response): bool
+    private function shouldOutputBody(ResponseInterface $response)
     {
-        return !\in_array($response->getStatusCode(), self::NO_BODY_RESPONSE_CODES, true);
+        if (\in_array($response->getStatusCode(), self::NO_BODY_RESPONSE_CODES, true)) {
+            return false;
+        }
+        // check if body is empty
+        $body = $response->getBody();
+        $size = $body->getSize();
+        if ($size !== null) {
+            return $size > 0;
+        }
+        if ($body->isSeekable()) {
+            $body->rewind();
+            $byte = $body->read(1);
+            if ($byte === '' || $body->eof()) {
+                return false;
+            }
+        }
+        return true;
     }
 }
