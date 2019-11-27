@@ -102,6 +102,32 @@ class TrustedHostsNetworkResolverTest extends TestCase
                 '/test',
                 'test=test',
             ],
+            'rfc7239Level2AnotherHostAndAnotherProtocolAndUrl' => [
+                [
+                    'forwarded' => ['for=9.9.9.9', 'proto=https;for=5.5.5.5;host=test', 'for=2.2.2.2'],
+                    'x-rewrite-url' => ['/test?test=test'],
+                    'x-forwarded-host' => ['test.another'],
+                    'x-forwarded-proto' => ['on']
+                ],
+                ['REMOTE_ADDR' => '127.0.0.1'],
+                [
+                    [
+                        'hosts' => ['8.8.8.8', '127.0.0.1', '2.2.2.2'],
+                        'ipHeaders' => [[TrustedHostsNetworkResolver::IP_HEADER_TYPE_RFC7239, 'forwarded']],
+                        'hostHeaders' => ['x-forwarded-host', 'forwarded'],
+                        'protocolHeaders' => [
+                            'x-forwarded-proto' => ['http' => 'http', 'httpsss' => 'on'],
+                            'forwarded' => ['http' => 'http', 'https' => 'https']
+                        ],
+                        'urlHeaders' => ['x-rewrite-url'],
+                    ],
+                ],
+                '5.5.5.5',
+                'test.another',
+                'httpsss',
+                '/test',
+                'test=test',
+            ],
         ];
     }
 

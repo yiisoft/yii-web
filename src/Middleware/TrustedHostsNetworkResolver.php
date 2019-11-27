@@ -89,7 +89,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
      * @param string[] $hosts List of trusted hosts IP addresses. If `isValidHost` is extended, then can use
      *                        domain names with reverse DNS resolving eg. yiiframework.com, * .yiiframework.com.
      * @param array $ipHeaders List of headers containing IP lists.
-     * @param array $protocolHeaders
+     * @param array $protocolHeaders List of headers containing protocol. @TODO
      * @param string[] $hostHeaders List of headers containing HTTP host.
      * @param string[] $urlHeaders List of headers containing HTTP URL.
      * @param string[]|null $trustedHeaders List of trusted headers.
@@ -269,10 +269,10 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
                 break;
             }
             $host = $request->getHeaderLine($hostHeader);
-            if (filter_var($host, FILTER_VALIDATE_DOMAIN) === false) {
-                continue;
+            if (filter_var($host, FILTER_VALIDATE_DOMAIN) !== false) {
+                $uri = $uri->withHost($host);
+                break;
             }
-            $uri = $uri->withHost($host);
         }
 
         // find protocol
@@ -318,6 +318,8 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
      *
      * The base operation does not perform any transformation on the data.
      * This method can be extendable by overwriting eg.
+     *
+     * @see getElementsByRfc7239
      */
     protected function reverseObfuscate(
         array $ipData,
@@ -380,6 +382,9 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
         return [null, null, []];
     }
 
+    /**
+     * @see getElementsByRfc7239
+     */
     private function getFormattedIpList(array $forwards): array
     {
         $list = [];
@@ -392,7 +397,16 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
     /**
      * Forwarded elements by RFC7239
      *
+     * The structure of the elements:
+     * - `host`: IP or obfuscated hostname or "unknown"
+     * - `ip`: IP address (only if presented)
+     * - `by`: used user-agent by proxy (only if presented)
+     * - `port`: port number received by proxy (only if presented)
+     * - `protocol`: protocol received by proxy (only if presented)
+     * - `httpHost`: HTTP host received by proxy (only if presented)
+     *
      * @link https://tools.ietf.org/html/rfc7239
+     * @return array proxy data elements
      */
     private function getElementsByRfc7239(array $forwards): array
     {
