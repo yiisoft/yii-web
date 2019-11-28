@@ -79,31 +79,31 @@ final class CsrfTest extends TestCase
     /**
      * @test
      */
-    public function invalidTokenResultIn400()
+    public function invalidTokenResultIn403()
     {
         $middleware = $this->createCsrfMiddlewareWithToken($this->generateToken());
         $response = $middleware->process($this->createPostServerRequestWithBodyToken($this->generateToken()), $this->createRequestHandler());
-        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals(403, $response->getStatusCode());
     }
 
     /**
      * @test
      */
-    public function emptyTokenInSessionResultIn400()
+    public function emptyTokenInSessionResultIn403()
     {
         $middleware = $this->createCsrfMiddlewareWithToken('');
         $response = $middleware->process($this->createPostServerRequestWithBodyToken($this->generateToken()), $this->createRequestHandler());
-        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals(403, $response->getStatusCode());
     }
 
     /**
      * @test
      */
-    public function emptyTokenInRequestResultIn400()
+    public function emptyTokenInRequestResultIn403()
     {
         $middleware = $this->createCsrfMiddlewareWithToken($this->generateToken());
         $response = $middleware->process($this->createServerRequest(), $this->createRequestHandler());
-        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals(403, $response->getStatusCode());
     }
 
     private function createServerRequest(string $method = Method::POST, array $bodyParams = [], array $headParams = []): ServerRequestInterface
