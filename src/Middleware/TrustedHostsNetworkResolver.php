@@ -19,8 +19,8 @@ use Yiisoft\Yii\Web\Helper\HeaderHelper;
  * ```
  * (new TrustedHostsNetworkResolver($responseFactory))
  * ->withAddedTrustedHosts(
- *   // List of secure hosts including $ _SERVER['REMOTE_ADDR'], can specify IPv4, IPv6 and domains.
- *   ['1.1.1.1', '2.2.2.1/3', '2001::/32']
+ *   // List of secure hosts including $ _SERVER['REMOTE_ADDR'], can specify IPv4, IPv6, domains and aliases (see {{Ip}})
+ *   ['1.1.1.1', '2.2.2.1/3', '2001::/32', 'localhost']
  *   // IP list headers. For advanced handling headers, see the constants IP_HEADER_TYPE_ *.
  *   // Headers containing multiple sub-elements (eg RFC 7239) must also be listed for other relevant types
  *   // (eg. host headers), otherwise they will only be used as an IP list.
