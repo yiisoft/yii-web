@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 use Yiisoft\Di\Container;
 use Yiisoft\Log\Logger;
 use Yiisoft\Yii\Web\ErrorHandler\ErrorHandler;
-use Yiisoft\Yii\Web\Middleware\ErrorCatcher;
+use Yiisoft\Yii\Web\ErrorHandler\ErrorCatcher;
 use Yiisoft\Yii\Web\Tests\Middleware\Mock\MockRequestHandler;
 use Yiisoft\Yii\Web\Tests\Middleware\Mock\MockThrowableRenderer;
 
