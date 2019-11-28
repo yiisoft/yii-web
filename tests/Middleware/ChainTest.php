@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 class ChainTest extends TestCase
 {
-    public function testProcess()
+    public function testProcess(): void
     {
         $request = $this->createMock(ServerRequestInterface::class);
         $handler = $this->createMock(RequestHandlerInterface::class);
