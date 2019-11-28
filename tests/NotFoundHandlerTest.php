@@ -14,7 +14,7 @@ final class NotFoundHandlerTest extends TestCase
     /**
      * @test
      */
-    public function shouldReturnCode404()
+    public function shouldReturnCode404(): void
     {
         $response = $this->createHandler()->handle($this->createRequest());
         $this->assertEquals(404, $response->getStatusCode());
@@ -23,7 +23,7 @@ final class NotFoundHandlerTest extends TestCase
     /**
      * @test
      */
-    public function shouldReturnCorrectErrorInBody()
+    public function shouldReturnCorrectErrorInBody(): void
     {
         $response = $this->createHandler()->handle($this->createRequest('http://site.com/test/path?param=1'));
         $this->assertEquals('We were unable to find the page /test/path.', (string)$response->getBody());
