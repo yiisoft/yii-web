@@ -12,6 +12,36 @@ use Yiisoft\NetworkUtilities\IpHelper;
 use Yiisoft\Validator\Rule\Ip;
 use Yiisoft\Yii\Web\Helper\HeaderHelper;
 
+/**
+ * Trusted hosts network resolver
+ *
+ * Code example with comments:
+ * ```
+ * (new TrustedHostsNetworkResolver($responseFactory))
+ * ->withAddedTrustedHosts(
+ *   // List of secure hosts including $ _SERVER['REMOTE_ADDR'], can specify IPv4, IPv6 and domains.
+ *   ['1.1.1.1', '2.2.2.1/3', '2001::/32']
+ *   // IP list headers. For advanced handling headers, see the constants IP_HEADER_TYPE_ *.
+ *   // Headers containing multiple sub-elements (eg RFC 7239) must also be listed for other relevant types
+ *   // (eg. host headers), otherwise they will only be used as an IP list.
+ *   ['x-forwarded-for', [TrustedHostsNetworkResolver::IP_HEADER_TYPE_RFC7239, 'forwarded']]
+ *   // protocol headers with accepted protocols and values. Matching of values ​​is case insensitive.
+ *   ['front-end-https' => ['https' => 'on']],
+ *   // Host headers
+ *   ['forwarded', 'x-forwarded-for']
+ *   // URL headers
+ *   ['x-rewrite-url'],
+ *   // Trusted headers. It is a good idea to list all relevant headers.
+ *   ['x-forwarded-for', 'forwarded', ...]
+ * );
+ * ->withAddedTrustedHosts(...)
+ * // If the network is not trusted, you can continue the process through the specified middleware.
+ * // Otherwise, the process ends with a status code of 412.
+ * ->withNotTrustedBranch($middleware)
+ * ;
+ * ```
+ *
+ */
 class TrustedHostsNetworkResolver implements MiddlewareInterface
 {
     public const IP_HEADER_TYPE_RFC7239 = 'rfc7239';
@@ -76,6 +106,8 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
     }
 
     /**
+     * If the network is not trusted, you can continue the process through the specified middleware.
+     * Otherwise, the process ends with a status code of 412.
      * @return static
      */
     public function withNotTrustedBranch(?MiddlewareInterface $middleware)
@@ -86,13 +118,20 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
     }
 
     /**
+     * With added trusted hosts and related headers
+     *
+     * The header lists are evaluated in the order they were specified.
+     * If you specify multiple headers by type (eg IP headers), you must ensure that the irrelevant header is removed
+     * eg. web server application, otherwise spoof clients can be use this vulnerability.
+     *
      * @param string[] $hosts List of trusted hosts IP addresses. If `isValidHost` is extended, then can use
      *                        domain names with reverse DNS resolving eg. yiiframework.com, * .yiiframework.com.
      * @param array $ipHeaders List of headers containing IP lists.
-     * @param array $protocolHeaders List of headers containing protocol. @TODO
+     * @param array $protocolHeaders List of headers containing protocol. eg. ['x-forwarded-for' => ['http' => 'http', 'https' => ['on', 'https']]]
      * @param string[] $hostHeaders List of headers containing HTTP host.
      * @param string[] $urlHeaders List of headers containing HTTP URL.
-     * @param string[]|null $trustedHeaders List of trusted headers.
+     * @param string[]|null $trustedHeaders List of trusted headers. Removed from the request, if in checking process
+     *                                      are classified as untrusted by hosts.
      * @return static
      */
     public function withAddedTrustedHosts(
@@ -180,7 +219,12 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
     }
 
     /**
+     * Request's attribute name to which trusted path data is added.
+     *
+     * The list starts with the server and the last item is the client itself.
+     *
      * @return static
+     * @see getElementsByRfc7239
      */
     public function withAttributeIps(?string $attribute)
     {
@@ -192,13 +236,6 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
         return $new;
     }
 
-    /**
-     * Process an incoming server request.
-     *
-     * Processes an incoming server request in order to produce a response.
-     * If unable to produce the response itself, it may delegate to the provided
-     * request handler to do so.
-     */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $actualHost = $request->getServerParams()['REMOTE_ADDR'];
@@ -318,6 +355,8 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
      *
      * The base operation does not perform any transformation on the data.
      * This method can be extendable by overwriting eg.
+     *
+     * The `$ipData` array must contain relevant keys (eg` ip`) for the validation process ({{isValidHost}}) to process the request.
      *
      * @see getElementsByRfc7239
      */
