@@ -6,15 +6,16 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Yiisoft\Validator\Rule\Ip;
 
 final class IpFilter implements MiddlewareInterface
 {
-    private $allowedIp;
+    private $ipValidator;
     private $responseFactory;
 
-    public function __construct(string $allowedIp, ResponseFactoryInterface $responseFactory)
+    public function __construct(Ip $ipValidator, ResponseFactoryInterface $responseFactory)
     {
-        $this->allowedIp = $allowedIp;
+        $this->ipValidator = (clone $ipValidator)->disallowSubnet()->disallowNegation();
         $this->responseFactory = $responseFactory;
     }
 
@@ -27,7 +28,7 @@ final class IpFilter implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        if ($request->getServerParams()['REMOTE_ADDR'] !== $this->allowedIp) {
+        if (!$this->ipValidator->validateValue($request->getServerParams()['REMOTE_ADDR'])->isValid()) {
             $response = $this->responseFactory->createResponse(403);
             $response->getBody()->write('Access denied!');
             return $response;
