@@ -18,13 +18,13 @@ class ActionCallerTest extends TestCase
     /** @var RequestHandlerInterface  */
     private $handler;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->request = $this->createMock(ServerRequestInterface::class);
         $this->handler = $this->createMock(RequestHandlerInterface::class);
     }
 
-    public function testProcess()
+    public function testProcess(): void
     {
         $container = new Container([self::class => $this]);
 
