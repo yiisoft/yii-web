@@ -130,4 +130,41 @@ class HeaderHelperTest extends TestCase
     {
         $this->assertSame($expected, HeaderHelper::getSortedAcceptTypesFromRequest($request));
     }
+
+    public function getParametersDataProvider(): array
+    {
+        return [
+            'simple' => ['a=test; test=test55', ['a' => 'test', 'test' => 'test55']],
+            'quoted' => ['a="test" ;b="test2;";d ="."', ['a' => 'test', 'b' => 'test2;', 'd' => '.']],
+            'mixed' => ['a = b; c="apple"', ['a' => 'b', 'c' => 'apple']],
+            'one' => ['a=test', ['a' => 'test']],
+            'oneSpace1' => ['a =test', ['a' => 'test']],
+            'oneSpace2' => ['a= test', ['a' => 'test']],
+            'oneSpace3' => ['a = test', ['a' => 'test']],
+            'oneQuoted' => ['a="test"', ['a' => 'test']],
+            'oneQuotedSpace1' => ['a ="test"', ['a' => 'test']],
+            'oneQuotedSpace2' => ['a= "test"', ['a' => 'test']],
+            'oneQuotedSpace3' => ['a = "test"', ['a' => 'test']],
+            'semicolonAtEnd' => ['a = b;', ['a' => 'b']],
+            'semicolonAndSpaceAtEnd' => ['a = b; ', ['a' => 'b']],
+            'mixedQuotes' => ['a="test\'";test = "\'test\'"', ['a' => 'test\'', 'test' => '\'test\'']],
+            'specChars' => ['a=!#$%&\'*+.^`|~-; b=test', ['a' => '!#$%&\'*+.^`|~-', 'b' => 'test']],
+            'numbers' => ['a=8888;b="999"', ['a' => '8888', 'b' => '999']],
+            'invalidQuotes2' => ['a="test', null, \InvalidArgumentException::class],
+            'invalidQuotes3' => ['a=test"', null, \InvalidArgumentException::class],
+            'invalidEmptyQuotes' => ['a=""', null, \InvalidArgumentException::class],
+            'invalidEmptyValue' => ['a=b; c=', null, \InvalidArgumentException::class],
+        ];
+    }
+
+    /**
+     * @dataProvider getParametersDataProvider
+     */
+    public function testGetParameters(string $input, ?array $expected, ?string $expectedException = null): void
+    {
+        if ($expectedException !== null) {
+            $this->expectException($expectedException);
+        }
+        $this->assertSame($expected, HeaderHelper::getParameters($input));
+    }
 }
