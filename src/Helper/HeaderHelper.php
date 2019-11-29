@@ -40,8 +40,8 @@ final class HeaderHelper
         $output->data = [];
         do {
             $headerValue = preg_replace_callback(
-                '/^\s*(?<parameter>\w+)\s*=\s*(?:"(?<valueQuoted>[^"]+)"|(?<value>[!#$%&\'*+.^`|~\w\d-]+))\s*(?:;|$)/',
-                function ($matches) use ($output) {
+                '/^\s*(?<parameter>\w+)\s*=\s*(?:"(?<valueQuoted>[^"]+)"|(?<value>[!#$%&\'*+.^`|~\w-]+))\s*(?:;|$)/',
+                static function ($matches) use ($output) {
                     $output->data[$matches['parameter']] = $matches['value'] ?? $matches['valueQuoted'];
                 }, $headerValue, 1, $count);
             if ($count !== 1) {
@@ -77,7 +77,7 @@ final class HeaderHelper
             if (is_string($q) && preg_match('/^(?:0(?:\.\d{1,3})?|1(?:\.0{1,3})?)$/', $q) === 0) {
                 throw new \InvalidArgumentException('Invalid q factor');
             }
-            $parse['q'] = floatval($q);
+            $parse['q'] = (float)$q;
             $output[] = $parse;
         }
         usort($output, static function ($a, $b) {
