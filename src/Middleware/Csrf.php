@@ -36,7 +36,7 @@ final class Csrf implements MiddlewareInterface
         if (!$this->validateCsrfToken($request, $token)) {
             $this->session->remove($this->name);
 
-            $response = $this->responseFactory->createResponse(400);
+            $response = $this->responseFactory->createResponse(422);
             $response->getBody()->write('Unable to verify your data submission.');
             return $response;
         }
