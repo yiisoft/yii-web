@@ -17,16 +17,38 @@ final class HeaderHelper
         if ($headerValue === '') {
             return [];
         }
-        $parts = preg_split('/\s*;\s*/', $headerValue, -1, PREG_SPLIT_NO_EMPTY);
-        $output = [array_shift($parts)];
-        foreach ($parts as $part) {
-            [$key, $headerValue] = explode('=', $part, 2);
-            if (preg_match('/^"(?<value>.*)"$/', $headerValue, $matches) === 1) {
-                $headerValue = $matches['value'];
-            }
-            $output[$key] = $headerValue;
+        $parts = preg_split('/\s*;\s*/', $headerValue, 2, PREG_SPLIT_NO_EMPTY);
+        $output = [$parts[0]];
+        if (count($parts) === 1) {
+            return $output;
         }
-        return $output;
+        return array_merge($output, self::getParameters($parts[1]));
+    }
+
+    /**
+     * Explode header value to parameters (eg. q=2;version=6)
+     *
+     * @link https://tools.ietf.org/html/rfc7230#section-3.2.6
+     */
+    public static function getParameters(string $headerValue): array
+    {
+        $headerValue = trim($headerValue);
+        if ($headerValue === '') {
+            return [];
+        }
+        $output = new \stdClass();
+        $output->data = [];
+        do {
+            $headerValue = preg_replace_callback(
+                '/^\s*(?<parameter>\w+)\s*=\s*(?:(?<qoute>")(?<valueQuoted>[^"]+)\k<qoute>|(?<value>[!#$%&\'*+.^`|~\w\d-]+))\s*(?:;|$)/',
+                function ($matches) use ($output) {
+                    $output->data[$matches['parameter']] = $matches['value'] ?? $matches['valueQuoted'];
+                }, $headerValue, 1, $count);
+            if ($count !== 1) {
+                throw new \InvalidArgumentException('Invalid input: ' . $headerValue);
+            }
+        } while ($headerValue !== '');
+        return $output->data;
     }
 
     /**
