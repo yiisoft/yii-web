@@ -40,7 +40,7 @@ final class HeaderHelper
         $output->data = [];
         do {
             $headerValue = preg_replace_callback(
-                '/^\s*(?<parameter>\w+)\s*=\s*(?:(?<qoute>")(?<valueQuoted>[^"]+)\k<qoute>|(?<value>[!#$%&\'*+.^`|~\w\d-]+))\s*(?:;|$)/',
+                '/^\s*(?<parameter>\w+)\s*=\s*(?:"(?<valueQuoted>[^"]+)"|(?<value>[!#$%&\'*+.^`|~\w\d-]+))\s*(?:;|$)/',
                 function ($matches) use ($output) {
                     $output->data[$matches['parameter']] = $matches['value'] ?? $matches['valueQuoted'];
                 }, $headerValue, 1, $count);
