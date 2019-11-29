@@ -162,7 +162,7 @@ class HeaderHelperTest extends TestCase
      */
     public function testGetParameters(string $input, ?array $expected, ?string $expectedException = null): void
     {
-        if($expectedException !== null) {
+        if ($expectedException !== null) {
             $this->expectException($expectedException);
         }
         $this->assertSame($expected, HeaderHelper::getParameters($input));
