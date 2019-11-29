@@ -36,19 +36,18 @@ final class HeaderHelper
         if ($headerValue === '') {
             return [];
         }
-        $output = new \stdClass();
-        $output->data = [];
+        $output = [];
         do {
             $headerValue = preg_replace_callback(
                 '/^\s*(?<parameter>\w+)\s*=\s*(?:"(?<valueQuoted>[^"]+)"|(?<value>[!#$%&\'*+.^`|~\w-]+))\s*(?:;|$)/',
-                static function ($matches) use ($output) {
-                    $output->data[$matches['parameter']] = $matches['value'] ?? $matches['valueQuoted'];
+                static function ($matches) use (&$output) {
+                    $output[$matches['parameter']] = $matches['value'] ?? $matches['valueQuoted'];
                 }, $headerValue, 1, $count);
             if ($count !== 1) {
                 throw new \InvalidArgumentException('Invalid input: ' . $headerValue);
             }
         } while ($headerValue !== '');
-        return $output->data;
+        return $output;
     }
 
     /**
