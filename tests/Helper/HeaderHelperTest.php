@@ -4,7 +4,6 @@ namespace Yiisoft\Yii\Web\Tests\Helper;
 
 use Nyholm\Psr7\ServerRequest;
 use Psr\Http\Message\RequestInterface;
-use Yiisoft\Auth\Method\HttpHeader;
 use Yiisoft\Yii\Web\Helper\HeaderHelper;
 use PHPUnit\Framework\TestCase;
 
