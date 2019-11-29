@@ -1,5 +1,5 @@
 <?php
-namespace Yiisoft\Yii\Web\Middleware;
+namespace Yiisoft\Yii\Web\ErrorHandler;
 
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -7,12 +7,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Yiisoft\Yii\Web\ErrorHandler\ErrorHandler;
-use Yiisoft\Yii\Web\ErrorHandler\ThrowableRendererInterface;
-use Yiisoft\Yii\Web\ErrorHandler\HtmlRenderer;
-use Yiisoft\Yii\Web\ErrorHandler\JsonRenderer;
-use Yiisoft\Yii\Web\ErrorHandler\PlainTextRenderer;
-use Yiisoft\Yii\Web\ErrorHandler\XmlRenderer;
 use Yiisoft\Yii\Web\Helper\HeaderHelper;
 
 /**
@@ -43,10 +37,10 @@ final class ErrorCatcher implements MiddlewareInterface
 
     public function withAddedRenderer(string $mimeType, string $rendererClass): self
     {
-        if (strlen($mimeType) === 0) {
+        if ($mimeType === '') {
             throw new \InvalidArgumentException('The mime type cannot be an empty string!');
         }
-        if (strlen($rendererClass) === 0) {
+        if ($rendererClass === '') {
             throw new \InvalidArgumentException('The renderer class cannot be an empty string!');
         }
         if (strpos($mimeType, '/') === false) {
@@ -68,7 +62,7 @@ final class ErrorCatcher implements MiddlewareInterface
             return $new;
         }
         foreach ($mimeTypes as $mimeType) {
-            if (strlen($mimeType) === 0) {
+            if ($mimeType === '') {
                 throw new \InvalidArgumentException('The mime type cannot be an empty string!');
             }
             unset($new->renderers[strtolower($mimeType)]);
@@ -102,8 +96,7 @@ final class ErrorCatcher implements MiddlewareInterface
     private function getContentType(ServerRequestInterface $request): string
     {
         try {
-            $acceptHeaders = HeaderHelper::getSortedAcceptTypesFromRequest($request);
-            foreach ($acceptHeaders as $header) {
+            foreach (HeaderHelper::getSortedAcceptTypesFromRequest($request) as $header) {
                 if (array_key_exists($header, $this->renderers)) {
                     return $header;
                 }
