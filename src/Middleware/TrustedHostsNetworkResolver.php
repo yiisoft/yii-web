@@ -347,7 +347,8 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
         return $ipData;
     }
 
-    private function handleNotTrusted(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
+    private function handleNotTrusted(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    {
         if ($this->attributeIps !== null) {
             $request = $request->withAttribute($this->attributeIps, null);
         }
