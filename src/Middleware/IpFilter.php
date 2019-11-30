@@ -10,13 +10,29 @@ use Yiisoft\Validator\Rule\Ip;
 
 final class IpFilter implements MiddlewareInterface
 {
+    /**
+     * @var Ip
+     */
     private $ipValidator;
+    /**
+     * @var ResponseFactoryInterface
+     */
     private $responseFactory;
+    /**
+     * @var string|null
+     */
+    private $clientIpAttribute;
 
-    public function __construct(Ip $ipValidator, ResponseFactoryInterface $responseFactory)
+    /**
+     * @param Ip          $ipValidator       Client IP validator. The properties of the validator can be modified up to the moment of processing.
+     * @param string|null $clientIpAttribute Attribute name of client IP. If NULL, then 'REMOTE_ADDR' value of the server parameters is processed.
+     *                                       If the value is not null, then the attribute specified must have a value, otherwise the request will closed with forbidden.
+     */
+    public function __construct(Ip $ipValidator, ResponseFactoryInterface $responseFactory, ?string $clientIpAttribute = null)
     {
-        $this->ipValidator = (clone $ipValidator)->disallowSubnet()->disallowNegation();
+        $this->ipValidator = $ipValidator;
         $this->responseFactory = $responseFactory;
+        $this->clientIpAttribute = $clientIpAttribute;
     }
 
     /**
@@ -28,7 +44,11 @@ final class IpFilter implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        if (!$this->ipValidator->validateValue($request->getServerParams()['REMOTE_ADDR'])->isValid()) {
+        $clientIp = $request->getServerParams()['REMOTE_ADDR'] ?? null;
+        if ($this->clientIpAttribute !== null) {
+            $clientIp = $request->getAttribute($clientIp);
+        }
+        if ($clientIp === null || !$this->ipValidator->disallowNegation()->disallowSubnet()->validateValue($clientIp)->isValid()) {
             $response = $this->responseFactory->createResponse(403);
             $response->getBody()->write('Access denied!');
             return $response;
