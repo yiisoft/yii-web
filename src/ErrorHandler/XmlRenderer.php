@@ -10,6 +10,15 @@ final class XmlRenderer extends ThrowableRenderer
     {
         $out = '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>';
         $out .= "<error>\n";
+        $out .= $this->tag('message', 'An internal server error occurred');
+        $out .= '</error>';
+        return $out;
+    }
+
+    public function renderVerbose(\Throwable $t): string
+    {
+        $out = '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>';
+        $out .= "<error>\n";
         $out .= $this->tag('type', get_class($t));
         $out .= $this->tag('message', $this->cdata($t->getMessage()));
         $out .= $this->tag('code', $this->cdata($t->getCode()));

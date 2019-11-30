@@ -20,6 +20,8 @@ final class ErrorHandler
 
     private $defaultRenderer;
 
+    private $exposeDetails = true;
+
     public function __construct(LoggerInterface $logger, ThrowableRendererInterface $defaultRenderer)
     {
         $this->logger = $logger;
@@ -73,7 +75,7 @@ final class ErrorHandler
 
         try {
             $this->log($t);
-            return $renderer->render($t);
+            return $this->exposeDetails ? $renderer->renderVerbose($t) : $renderer->render($t);
         } catch (\Throwable $t) {
             return nl2br($t);
         }
@@ -132,7 +134,13 @@ final class ErrorHandler
         unset($this->memoryReserve);
         $error = error_get_last();
         if ($error !== null && ErrorException::isFatalError($error)) {
-            $exception = new ErrorException($error['message'], $error['type'], $error['type'], $error['file'], $error['line']);
+            $exception = new ErrorException(
+                $error['message'],
+                $error['type'],
+                $error['type'],
+                $error['file'],
+                $error['line']
+            );
             $this->handleThrowable($exception);
             exit(1);
         }
@@ -141,9 +149,26 @@ final class ErrorHandler
     private function log(\Throwable $t/*, ServerRequestInterface $request*/): void
     {
         $renderer = new PlainTextRenderer();
-        $this->logger->error($renderer->render($t), [
-            'throwable' => $t,
-            //'request' => $request,
-        ]);
+        $this->logger->error(
+            $renderer->renderVerbose($t),
+            [
+                'throwable' => $t,
+                //'request' => $request,
+            ]
+        );
+    }
+
+    public function withExposedDetails(): self
+    {
+        $new = clone $this;
+        $new->exposeDetails = true;
+        return $new;
+    }
+
+    public function withoutExposedDetails(): self
+    {
+        $new = clone $this;
+        $new->exposeDetails = false;
+        return $new;
     }
 }

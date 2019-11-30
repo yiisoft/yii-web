@@ -44,7 +44,7 @@ class IpFilterTest extends TestCase
     /**
      * @test
      */
-    public function processReturnsAccessDeniedResponseWhenIpIsNotAllowed()
+    public function processReturnsAccessDeniedResponseWhenIpIsNotAllowed(): void
     {
         $this->setUpResponseFactory();
         $requestMock = $this->createMock(ServerRequestInterface::class);
@@ -65,7 +65,7 @@ class IpFilterTest extends TestCase
     /**
      * @test
      */
-    public function processCallsRequestHandlerWhenRemoteAddressIsAllowed()
+    public function processCallsRequestHandlerWhenRemoteAddressIsAllowed(): void
     {
         $requestParams = [
             'REMOTE_ADDR' => self::ALLOWED_IP,
@@ -84,7 +84,7 @@ class IpFilterTest extends TestCase
         $this->ipFilter->process($requestMock, $this->requestHandlerMock);
     }
 
-    public function setUpResponseFactory()
+    public function setUpResponseFactory(): void
     {
         $response = new Response(403);
         $this->responseFactoryMock

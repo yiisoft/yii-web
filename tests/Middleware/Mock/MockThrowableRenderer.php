@@ -21,4 +21,9 @@ class MockThrowableRenderer extends ThrowableRenderer
     {
         return $this->response;
     }
+
+    public function renderVerbose(\Throwable $t): string
+    {
+        return $this->response;
+    }
 }

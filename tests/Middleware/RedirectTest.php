@@ -18,7 +18,7 @@ final class RedirectTest extends TestCase
     /**
      * @test
      */
-    public function invalidArguments()
+    public function invalidArguments(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->createRedirectMiddleware()->process($this->createRequest(), $this->createRequestHandler());
@@ -27,7 +27,7 @@ final class RedirectTest extends TestCase
     /**
      * @test
      */
-    public function generateUri()
+    public function generateUri(): void
     {
         $middleware = $this->createRedirectMiddleware()
             ->toRoute('test/route', [
@@ -44,7 +44,7 @@ final class RedirectTest extends TestCase
     /**
      * @test
      */
-    public function temporaryReturnCode302()
+    public function temporaryReturnCode302(): void
     {
         $middleware = $this->createRedirectMiddleware()
             ->toRoute('test/route')
@@ -58,7 +58,7 @@ final class RedirectTest extends TestCase
     /**
      * @test
      */
-    public function permanentReturnCode301()
+    public function permanentReturnCode301(): void
     {
         $middleware = $this->createRedirectMiddleware()
             ->toRoute('test/route')
@@ -72,7 +72,7 @@ final class RedirectTest extends TestCase
     /**
      * @test
      */
-    public function statusReturnCode400()
+    public function statusReturnCode400(): void
     {
         $middleware = $this->createRedirectMiddleware()
             ->toRoute('test/route')
@@ -86,7 +86,7 @@ final class RedirectTest extends TestCase
     /**
      * @test
      */
-    public function setUri()
+    public function setUri(): void
     {
         $middleware = $this->createRedirectMiddleware()
             ->toUrl('test/custom/route');

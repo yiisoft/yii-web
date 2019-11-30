@@ -50,7 +50,7 @@ class MiddlewareDispatcherTest extends TestCase
     /**
      * @test
      */
-    public function constructThrowsExceptionWhenMiddlewaresAreNotDefined()
+    public function constructThrowsExceptionWhenMiddlewaresAreNotDefined(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         new MiddlewareDispatcher(
@@ -63,7 +63,7 @@ class MiddlewareDispatcherTest extends TestCase
     /**
      * @test
      */
-    public function addThrowsInvalidArgumentExceptionWhenMiddlewareIsNotOfCorrectType()
+    public function addThrowsInvalidArgumentExceptionWhenMiddlewareIsNotOfCorrectType(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $exampleInput = new SapiEmitter();
@@ -75,7 +75,7 @@ class MiddlewareDispatcherTest extends TestCase
      * @test
      * @doesNotPerformAssertions
      */
-    public function addAddsCallableToMiddlewareArrayWithoutThrowingException()
+    public function addAddsCallableToMiddlewareArrayWithoutThrowingException(): void
     {
         $callable = function () {
             echo 'example function for testing purposes';
@@ -87,7 +87,7 @@ class MiddlewareDispatcherTest extends TestCase
      * @test
      * @doesNotPerformAssertions
      */
-    public function addAddsMiddlewareInterfaceToMiddlewareArrayWithoutThrowingException()
+    public function addAddsMiddlewareInterfaceToMiddlewareArrayWithoutThrowingException(): void
     {
         $middleware = $this->createMock(MiddlewareInterface::class);
         $this->middlewareDispatcher->add($middleware);
@@ -96,7 +96,7 @@ class MiddlewareDispatcherTest extends TestCase
     /**
      * @test
      */
-    public function handleCallsMiddlewareFromQueueToProcessRequest()
+    public function handleCallsMiddlewareFromQueueToProcessRequest(): void
     {
         $request = $this->createMock(ServerRequestInterface::class);
         $this->fallbackHandlerMock

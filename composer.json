@@ -78,5 +78,8 @@
         "psr-4": {
             "Yiisoft\\Yii\\Web\\Tests\\": "tests"
         }
+    },
+    "config": {
+        "sort-packages": true
     }
 }
