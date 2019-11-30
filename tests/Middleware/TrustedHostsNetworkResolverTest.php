@@ -207,42 +207,8 @@ class TrustedHostsNetworkResolverTest extends TestCase
                 [],
                 $data['trustedHeaders'] ?? []);
         }
-        $response = $middleware->process($request, $requestHandler);
-        $this->assertSame(412, $response->getStatusCode());
-    }
-
-    public function testNotTrustedMiddleware(): void
-    {
-        $request = $this->newRequestWithSchemaAndHeaders('http', [], [
-            'REMOTE_ADDR' => '127.0.0.1',
-        ]);
-        $requestHandler = new MockRequestHandler();
-
-        $middleware = new TrustedHostsNetworkResolver(new Psr17Factory());
-        $content = 'Another branch.';
-        $middleware = $middleware->withNotTrustedBranch(new class($content) implements MiddlewareInterface {
-            private $content;
-
-            public function __construct(string $content)
-            {
-                $this->content = $content;
-            }
-
-            public function process(
-                ServerRequestInterface $request,
-                RequestHandlerInterface $handler
-            ): ResponseInterface {
-                $response = (new Psr17Factory())->createResponse(403);
-                $response->getBody()->write($this->content);
-                return $response;
-            }
-        });
-        $response = $middleware->process($request, $requestHandler);
-        $this->assertInstanceOf(ResponseInterface::class, $response);
-        $this->assertSame(403, $response->getStatusCode());
-        $body = $response->getBody();
-        $body->rewind();
-        $this->assertSame($content, $body->getContents());
+        $middleware->process($request, $requestHandler);
+        $this->assertNull($request->getAttribute('requestClientIp'));
     }
 
     public function addedTrustedHostsInvalidParameterDataProvider(): array

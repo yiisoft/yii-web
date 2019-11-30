@@ -78,10 +78,6 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
      * @var ResponseFactoryInterface
      */
     private $responseFactory;
-    /**
-     * @var Chain|null
-     */
-    private $notTrustedBranch;
 
     /**
      * @var Ip|null
@@ -99,21 +95,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
     public function withIpValidator(Ip $ipValidator)
     {
         $new = clone $this;
-        $ipValidator = clone $ipValidator;
-        // force disable unacceptable validation
-        $new->ipValidator = $ipValidator->disallowSubnet()->disallowNegation();
-        return $new;
-    }
-
-    /**
-     * If the network is not trusted, you can continue the process through the specified middleware.
-     * Otherwise, the process ends with a status code of 412.
-     * @return static
-     */
-    public function withNotTrustedBranch(?MiddlewareInterface $middleware)
-    {
-        $new = clone $this;
-        $new->notTrustedBranch = $middleware;
+        $new->ipValidator = $ipValidator;
         return $new;
     }
 
@@ -238,10 +220,14 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $actualHost = $request->getServerParams()['REMOTE_ADDR'];
+        $actualHost = $request->getServerParams()['REMOTE_ADDR'] ?? null;
+        if ($actualHost === null) {
+            // Validation is not possible.
+            return $this->handleNotTrusted($request, $handler);
+        }
         $trustedHostData = null;
         $trustedHeaders = [];
-        $ipValidator = $this->ipValidator ?? new Ip();
+        $ipValidator = ($this->ipValidator ?? new Ip())->disallowSubnet()->disallowNegation();
         foreach ($this->trustedHosts as $data) {
             // collect all trusted headers
             $trustedHeaders = array_merge($trustedHeaders, $data[self::DATA_KEY_TRUSTED_HEADERS]);
@@ -257,12 +243,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
         $request = $this->removeHeaders($request, $untrustedHeaders);
         if ($trustedHostData === null) {
             // No trusted host at all.
-            if ($this->notTrustedBranch !== null) {
-                return $this->notTrustedBranch->process($request, $handler);
-            }
-            $response = $this->responseFactory->createResponse(412);
-            $response->getBody()->write('Unable to verify your network.');
-            return $response;
+            return $this->handleNotTrusted($request, $handler);
         }
         [$ipListType, $ipHeader, $ipList] = $this->getIpList($request, $trustedHostData[self::DATA_KEY_IP_HEADERS]);
         $ipList = array_reverse($ipList);       // the first item should be the closest to the server
@@ -367,6 +348,13 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
         RequestInterface $request
     ): array {
         return $ipData;
+    }
+
+    private function handleNotTrusted(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
+        if ($this->attributeIps !== null) {
+            $request = $request->withAttribute($this->attributeIps, null);
+        }
+        return $handler->handle($request->withAttribute('requestClientIp', null));
     }
 
     private function prepareProtocolHeaders(array $protocolHeaders): array
