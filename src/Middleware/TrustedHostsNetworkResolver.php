@@ -35,9 +35,6 @@ use Yiisoft\Yii\Web\Helper\HeaderHelper;
  *   ['x-forwarded-for', 'forwarded', ...]
  * );
  * ->withAddedTrustedHosts(...)
- * // If the network is not trusted, you can continue the process through the specified middleware.
- * // Otherwise, the process ends with a status code of 412.
- * ->withNotTrustedBranch($middleware)
  * ;
  * ```
  *
