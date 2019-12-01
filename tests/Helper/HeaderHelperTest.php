@@ -15,6 +15,10 @@ class HeaderHelperTest extends TestCase
             'empty' => ['', []],
             'noParams' => ['test', ['test']],
             'withParams' => ['test;q=1.0;version=2', ['test', 'q' => '1.0', 'version' => '2']],
+            'simple1' => ['audio/*;q=0.2', ['audio/*', 'q' => '0.2']],
+            'simple2' => ['gzip;q=1.0', ['gzip', 'q' => '1.0']],
+            'simple3' => ['identity;q=0.5', ['identity', 'q' => '0.5']],
+            'simple4' => ['*;q=0', ['*', 'q' => '0']],
             'witQuotedParameter' => [
                 'test;noqoute=test;qoute="test2"',
                 ['test', 'noqoute' => 'test', 'qoute' => 'test2']
@@ -134,26 +138,23 @@ class HeaderHelperTest extends TestCase
     public function getParametersDataProvider(): array
     {
         return [
-            'simple' => ['a=test; test=test55', ['a' => 'test', 'test' => 'test55']],
-            'quoted' => ['a="test" ;b="test2;";d ="."', ['a' => 'test', 'b' => 'test2;', 'd' => '.']],
-            'mixed' => ['a = b; c="apple"', ['a' => 'b', 'c' => 'apple']],
+            'simple' => ['a=test;test=test55', ['a' => 'test', 'test' => 'test55']],
+            'quoted' => ['a="test";b="test2;";d="."', ['a' => 'test', 'b' => 'test2;', 'd' => '.']],
+            'mixed' => ['a=b;c="apple"', ['a' => 'b', 'c' => 'apple']],
             'one' => ['a=test', ['a' => 'test']],
-            'oneSpace1' => ['a =test', ['a' => 'test']],
-            'oneSpace2' => ['a= test', ['a' => 'test']],
-            'oneSpace3' => ['a = test', ['a' => 'test']],
+            'oneSpace' => ['a=test', ['a' => 'test']],
             'oneQuoted' => ['a="test"', ['a' => 'test']],
-            'oneQuotedSpace1' => ['a ="test"', ['a' => 'test']],
-            'oneQuotedSpace2' => ['a= "test"', ['a' => 'test']],
-            'oneQuotedSpace3' => ['a = "test"', ['a' => 'test']],
-            'semicolonAtEnd' => ['a = b;', ['a' => 'b']],
-            'semicolonAndSpaceAtEnd' => ['a = b; ', ['a' => 'b']],
-            'mixedQuotes' => ['a="test\'";test = "\'test\'"', ['a' => 'test\'', 'test' => '\'test\'']],
-            'specChars' => ['a=!#$%&\'*+.^`|~-; b=test', ['a' => '!#$%&\'*+.^`|~-', 'b' => 'test']],
+            'oneQuotedEmpty' => ['a=""', ['a' => '']],
+            'mixedQuotes' => [
+                'a="test\'";test="\'test\'";test2="\"\\\\test\""',
+                ['a' => 'test\'', 'test' => '\'test\'', 'test2' => '"\\test"']
+            ],
+            'specChars' => ['*=test;test=*', ['*' => 'test', 'test' => '*']],
             'numbers' => ['a=8888;b="999"', ['a' => '8888', 'b' => '999']],
             'invalidQuotes2' => ['a="test', null, \InvalidArgumentException::class],
             'invalidQuotes3' => ['a=test"', null, \InvalidArgumentException::class],
-            'invalidEmptyQuotes' => ['a=""', null, \InvalidArgumentException::class],
             'invalidEmptyValue' => ['a=b; c=', null, \InvalidArgumentException::class],
+            'semicolonAtEnd' => ['a=b;', null, \InvalidArgumentException::class],
         ];
     }
 

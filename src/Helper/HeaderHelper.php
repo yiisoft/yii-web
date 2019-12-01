@@ -7,7 +7,36 @@ use Psr\Http\Message\RequestInterface;
 final class HeaderHelper
 {
     /**
+     * @link https://www.rfc-editor.org/rfc/rfc2616.html#section-2.2
+     * token  = 1*<any CHAR except CTLs or separators>
+     */
+    private const PATTERN_TOKEN = '(?:(?:[^()<>@,;:\\"\/[\\]?={} \t\x7f]|[\x00-\x1f])+)';
+
+    /**
+     * @link https://www.rfc-editor.org/rfc/rfc2616.html#section-3.6
+     * attribute = token
+     */
+    private const PATTERN_ATTRIBUTE = self::PATTERN_TOKEN;
+
+    /**
+     * @link https://www.rfc-editor.org/rfc/rfc2616.html#section-2.2
+     * quoted-string  = ( <"> *(qdtext | quoted-pair ) <"> )
+     * qdtext         = <any TEXT except <">>
+     * quoted-pair    = "\" CHAR
+     */
+    private const PATTERN_QUOTED_STRING = '(?:"(?:(?:\\\\.)+|[^\\"]+)*")';
+
+    /**
+     * @link https://www.rfc-editor.org/rfc/rfc2616.html#section-3.6
+     * value = token | quoted-string
+     */
+    private const PATTERN_VALUE = '(?:' . self::PATTERN_QUOTED_STRING . '|' . self::PATTERN_TOKEN . ')';
+
+    /**
      * Explode header value to value and parameters (eg. text/html;q=2;version=6)
+     *
+     * @link https://www.rfc-editor.org/rfc/rfc2616.html#section-3.6
+     * transfer-extension      = token *( ";" parameter )
      * @param string $headerValue
      * @return array first element is the value, and key-value are the parameters
      */
@@ -17,7 +46,7 @@ final class HeaderHelper
         if ($headerValue === '') {
             return [];
         }
-        $parts = preg_split('/\s*;\s*/', $headerValue, 2, PREG_SPLIT_NO_EMPTY);
+        $parts = explode(';', $headerValue, 2);
         $output = [$parts[0]];
         if (count($parts) === 1) {
             return $output;
@@ -36,12 +65,20 @@ final class HeaderHelper
         if ($headerValue === '') {
             return [];
         }
+        if (rtrim($headerValue, ';') !== $headerValue) {
+            throw new \InvalidArgumentException('Cannot end with a semicolon.');
+        }
         $output = [];
         do {
             $headerValue = preg_replace_callback(
-                '/^\s*(?<parameter>\w+)\s*=\s*(?:"(?<valueQuoted>[^"]+)"|(?<value>[!#$%&\'*+.^`|~\w-]+))\s*(?:;|$)/',
+                '/^(?<parameter>' . self::PATTERN_ATTRIBUTE . ')=(?<value>' . self::PATTERN_VALUE . ')(?:;|$)/',
                 static function ($matches) use (&$output) {
-                    $output[$matches['parameter']] = $matches['value'] ?? $matches['valueQuoted'];
+                    $value = $matches['value'];
+                    if (substr($matches['value'], 0, 1) === '"') {
+                        // unescape + remove first and last quote
+                        $value = preg_replace('/\\\\(.)/', '$1', substr($value, 1, -1));
+                    }
+                    $output[$matches['parameter']] = $value;
                 }, $headerValue, 1, $count);
             if ($count !== 1) {
                 throw new \InvalidArgumentException('Invalid input: ' . $headerValue);
