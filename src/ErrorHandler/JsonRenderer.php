@@ -9,6 +9,13 @@ final class JsonRenderer extends ThrowableRenderer
     public function render(\Throwable $t): string
     {
         return json_encode([
+            'message' => 'An internal server error occurred',
+        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    }
+
+    public function renderVerbose(\Throwable $t): string
+    {
+        return json_encode([
             'type' => get_class($t),
             'message' => $t->getMessage(),
             'code' => $t->getCode(),

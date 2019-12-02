@@ -28,7 +28,7 @@ class WebActionsCallerTest extends TestCase
         $this->container = new Container([self::class => $this]);
     }
 
-    public function testProcess()
+    public function testProcess(): void
     {
         $this->request
             ->method('getAttribute')
@@ -39,7 +39,7 @@ class WebActionsCallerTest extends TestCase
         $this->assertEquals(204, $response->getStatusCode());
     }
 
-    public function testExceptionOnNullAction()
+    public function testExceptionOnNullAction(): void
     {
         $this->request
             ->method('getAttribute')
@@ -50,7 +50,7 @@ class WebActionsCallerTest extends TestCase
         (new WebActionsCaller(self::class, $this->container))->process($this->request, $this->handler);
     }
 
-    public function testHandlerInvocation()
+    public function testHandlerInvocation(): void
     {
         $this->request
             ->method('getAttribute')
