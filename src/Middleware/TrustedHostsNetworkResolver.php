@@ -48,6 +48,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
         'x-forwarded-for',
         'x-forwarded-host',
         'x-forwarded-proto',
+        'x-forwarded-port',
 
         // RFC:
         'forward',
@@ -63,6 +64,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
     private const DATA_KEY_URL_HEADERS = 'urlHeaders';
     private const DATA_KEY_PROTOCOL_HEADERS = 'protocolHeaders';
     private const DATA_KEY_TRUSTED_HEADERS = 'trustedHeaders';
+    private const DATA_KEY_PORT_HEADERS = 'portHeaders';
 
     private $trustedHosts = [];
 
@@ -149,29 +151,27 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
         if (count($hosts) === 0) {
             throw new \InvalidArgumentException("Empty hosts not allowed");
         }
-        $data = [
-            self::DATA_KEY_HOSTS => $hosts,
-            self::DATA_KEY_IP_HEADERS => $ipHeaders,
-            self::DATA_KEY_PROTOCOL_HEADERS => $this->prepareProtocolHeaders($protocolHeaders),
-            self::DATA_KEY_TRUSTED_HEADERS => $trustedHeaders ?? self::DEFAULT_TRUSTED_HEADERS,
-            self::DATA_KEY_HOST_HEADERS => $hostHeaders,
-            self::DATA_KEY_URL_HEADERS => $urlHeaders,
-        ];
-        foreach ([
-                     self::DATA_KEY_HOSTS,
-                     self::DATA_KEY_TRUSTED_HEADERS,
-                     self::DATA_KEY_HOST_HEADERS,
-                     self::DATA_KEY_URL_HEADERS
-                 ] as $key) {
-            $this->checkStringArrayType($data[$key], $key);
-        }
-        foreach ($data[self::DATA_KEY_HOSTS] as $host) {
+        $trustedHeaders = $trustedHeaders ?? self::DEFAULT_TRUSTED_HEADERS;
+        $protocolHeaders = $this->prepareProtocolHeaders($protocolHeaders);
+        $this->checkStringArrayType($hosts, 'hosts');
+        $this->checkStringArrayType($trustedHeaders, 'trustedHeaders');
+        $this->checkStringArrayType($hostHeaders, 'hostHeaders');
+        $this->checkStringArrayType($urlHeaders, 'urlHeaders');
+
+        foreach ($hosts as $host) {
             $host = str_replace('*', 'wildcard', $host);        // wildcard is allowed in host
             if (filter_var($host, FILTER_VALIDATE_DOMAIN) === false) {
                 throw new \InvalidArgumentException("'$host' host is not a domain and not an IP address");
             }
         }
-        $new->trustedHosts[] = $data;
+        $new->trustedHosts[] = [
+            self::DATA_KEY_HOSTS => $hosts,
+            self::DATA_KEY_IP_HEADERS => $ipHeaders,
+            self::DATA_KEY_PROTOCOL_HEADERS => $protocolHeaders,
+            self::DATA_KEY_TRUSTED_HEADERS => $trustedHeaders,
+            self::DATA_KEY_HOST_HEADERS => $hostHeaders,
+            self::DATA_KEY_URL_HEADERS => $urlHeaders,
+        ];
         return $new;
     }
 
