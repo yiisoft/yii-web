@@ -12,7 +12,7 @@ use Yiisoft\Yii\Web\Middleware\Callback;
 /**
  * MiddlewareDispatcher
  */
-final class MiddlewareDispatcher implements RequestHandlerInterface
+final class MiddlewareDispatcher implements RequestHandlerInterface, MiddlewareInterface
 {
     private $pointer = 0;
 
@@ -22,9 +22,9 @@ final class MiddlewareDispatcher implements RequestHandlerInterface
     private $middlewares = [];
 
     /**
-     * @var RequestHandlerInterface
+     * @var RequestHandlerInterface|null
      */
-    private $fallbackHandler;
+    private $nextHandler;
 
     /**
      * @var ContainerInterface
@@ -34,7 +34,7 @@ final class MiddlewareDispatcher implements RequestHandlerInterface
     public function __construct(
         array $middlewares,
         ContainerInterface $container,
-        RequestHandlerInterface $fallbackHandler = null
+        RequestHandlerInterface $nextHandler = null
     ) {
         if ($middlewares === []) {
             throw new \InvalidArgumentException('Middlewares should be defined.');
@@ -48,7 +48,7 @@ final class MiddlewareDispatcher implements RequestHandlerInterface
 
         $responseFactory = $container->get(ResponseFactoryInterface::class);
 
-        $this->fallbackHandler = $fallbackHandler ?? new NotFoundHandler($responseFactory);
+        $this->nextHandler = $nextHandler ?? new NotFoundHandler($responseFactory);
     }
 
     private function addCallable(callable $callback): void
@@ -67,21 +67,24 @@ final class MiddlewareDispatcher implements RequestHandlerInterface
         }
     }
 
-    public function handle(ServerRequestInterface $request): ResponseInterface
+    public function dispatch(ServerRequestInterface $request): ResponseInterface
     {
-        if ($this->isLastMiddlewareCalled()) {
-            return $this->fallbackHandler->handle($request);
-        }
-
-        return $this->middlewares[$this->pointer++]->process($request, $this);
+        $this->pointer = 0;
+        return $this->handle($request);
     }
 
     /**
-     * Prepare dispatcher to handle another request
+     * @internal Please use {@see dispatch()} instead
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface
      */
-    public function reset(): void
+    public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $this->pointer = 0;
+        if ($this->isLastMiddlewareCalled()) {
+            return $this->nextHandler->handle($request);
+        }
+
+        return $this->middlewares[$this->pointer++]->process($request, $this);
     }
 
     /**
@@ -90,5 +93,11 @@ final class MiddlewareDispatcher implements RequestHandlerInterface
     private function isLastMiddlewareCalled(): bool
     {
         return $this->pointer === \count($this->middlewares);
+    }
+
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $nextHandler): ResponseInterface
+    {
+        $this->nextHandler = $nextHandler;
+        return $this->dispatch($request);
     }
 }
