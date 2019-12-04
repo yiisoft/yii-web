@@ -14,8 +14,6 @@ use Yiisoft\Yii\Web\Middleware\Callback;
  */
 final class MiddlewareDispatcher implements RequestHandlerInterface, MiddlewareInterface
 {
-    private $pointer = 0;
-
     /**
      * @var MiddlewareInterface[]
      */
@@ -69,7 +67,7 @@ final class MiddlewareDispatcher implements RequestHandlerInterface, MiddlewareI
 
     public function dispatch(ServerRequestInterface $request): ResponseInterface
     {
-        $this->pointer = 0;
+        reset($this->middlewares);
         return $this->handle($request);
     }
 
@@ -80,7 +78,9 @@ final class MiddlewareDispatcher implements RequestHandlerInterface, MiddlewareI
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        if ($this->isLastMiddlewareCalled()) {
+        $middleware = current($this->middlewares);
+        next($this->middlewares);
+        if ($middleware === false) {
             if (!$this->nextHandler !== null) {
                 return $this->nextHandler->handle($request);
             }
@@ -88,15 +88,7 @@ final class MiddlewareDispatcher implements RequestHandlerInterface, MiddlewareI
             throw new \LogicException('Middleware stack exhausted');
         }
 
-        return $this->middlewares[$this->pointer++]->process($request, $this);
-    }
-
-    /**
-     * Last middleware in the queue has been called on the request handler
-     */
-    private function isLastMiddlewareCalled(): bool
-    {
-        return $this->pointer === \count($this->middlewares);
+        return $middleware->process($request, $this);
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $nextHandler): ResponseInterface
