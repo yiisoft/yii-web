@@ -109,9 +109,11 @@ class MiddlewareDispatcherTest extends TestCase
             ->method('process')
             ->with($request, $this->middlewareDispatcher);
 
+        // TODO: test that second middleware is called as well
+
         $this->middlewareDispatcher->dispatch($request);
 
-        // to ensure that dispatcher could be called multiple times
+        // ensure that dispatcher could be called multiple times
         $this->middlewareDispatcher->dispatch($request);
     }
 }
