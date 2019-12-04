@@ -12,19 +12,17 @@ use Yiisoft\Yii\Web\Middleware\Callback;
 /**
  * MiddlewareDispatcher
  */
-final class MiddlewareDispatcher implements RequestHandlerInterface
+final class MiddlewareDispatcher implements RequestHandlerInterface, MiddlewareInterface
 {
-    private $pointer = 0;
-
     /**
      * @var MiddlewareInterface[]
      */
     private $middlewares = [];
 
     /**
-     * @var RequestHandlerInterface
+     * @var RequestHandlerInterface|null
      */
-    private $fallbackHandler;
+    private $nextHandler;
 
     /**
      * @var ContainerInterface
@@ -34,7 +32,7 @@ final class MiddlewareDispatcher implements RequestHandlerInterface
     public function __construct(
         array $middlewares,
         ContainerInterface $container,
-        RequestHandlerInterface $fallbackHandler = null
+        RequestHandlerInterface $nextHandler = null
     ) {
         if ($middlewares === []) {
             throw new \InvalidArgumentException('Middlewares should be defined.');
@@ -48,7 +46,7 @@ final class MiddlewareDispatcher implements RequestHandlerInterface
 
         $responseFactory = $container->get(ResponseFactoryInterface::class);
 
-        $this->fallbackHandler = $fallbackHandler ?? new NotFoundHandler($responseFactory);
+        $this->nextHandler = $nextHandler ?? new NotFoundHandler($responseFactory);
     }
 
     private function addCallable(callable $callback): void
@@ -67,28 +65,35 @@ final class MiddlewareDispatcher implements RequestHandlerInterface
         }
     }
 
+    public function dispatch(ServerRequestInterface $request): ResponseInterface
+    {
+        reset($this->middlewares);
+        return $this->handle($request);
+    }
+
+    /**
+     * @internal Please use {@see dispatch()} or {@see process()} instead
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface
+     */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        if ($this->isLastMiddlewareCalled()) {
-            return $this->fallbackHandler->handle($request);
+        $middleware = current($this->middlewares);
+        next($this->middlewares);
+        if ($middleware === false) {
+            if (!$this->nextHandler !== null) {
+                return $this->nextHandler->handle($request);
+            }
+
+            throw new \LogicException('Middleware stack exhausted');
         }
 
-        return $this->middlewares[$this->pointer++]->process($request, $this);
+        return $middleware->process($request, $this);
     }
 
-    /**
-     * Prepare dispatcher to handle another request
-     */
-    public function reset(): void
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $nextHandler): ResponseInterface
     {
-        $this->pointer = 0;
-    }
-
-    /**
-     * Last middleware in the queue has been called on the request handler
-     */
-    private function isLastMiddlewareCalled(): bool
-    {
-        return $this->pointer === \count($this->middlewares);
+        $this->nextHandler = $nextHandler;
+        return $this->dispatch($request);
     }
 }
