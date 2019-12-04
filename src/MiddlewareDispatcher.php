@@ -81,7 +81,11 @@ final class MiddlewareDispatcher implements RequestHandlerInterface, MiddlewareI
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         if ($this->isLastMiddlewareCalled()) {
-            return $this->nextHandler->handle($request);
+            if (!$this->nextHandler !== null) {
+                return $this->nextHandler->handle($request);
+            }
+
+            throw new \LogicException('Middleware stack exhausted');
         }
 
         return $this->middlewares[$this->pointer++]->process($request, $this);
