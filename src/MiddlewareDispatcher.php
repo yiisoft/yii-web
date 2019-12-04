@@ -74,7 +74,7 @@ final class MiddlewareDispatcher implements RequestHandlerInterface, MiddlewareI
     }
 
     /**
-     * @internal Please use {@see dispatch()} instead
+     * @internal Please use {@see dispatch()} or {@see process()} instead
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
