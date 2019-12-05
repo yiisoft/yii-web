@@ -21,9 +21,6 @@ cache:
   directories:
     - $HOME/.composer/cache
 
-before_install:
-  - phpenv config-rm xdebug.ini || echo "xdebug is not installed"
-
 install:
   - travis_retry composer self-update && composer --version
   - export PATH="$HOME/.composer/vendor/bin:$PATH"
@@ -43,7 +40,7 @@ before_script:
     fi
 
 script:
-  - phpdbg -qrr vendor/bin/phpunit --verbose $PHPUNIT_COVERAGE_FLAG
+  - vendor/bin/phpunit --verbose $PHPUNIT_COVERAGE_FLAG
   - |
     if [ $TASK_STATIC_ANALYSIS == 1 ]; then
       composer phan

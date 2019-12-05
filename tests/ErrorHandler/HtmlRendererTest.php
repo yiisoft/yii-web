@@ -9,7 +9,7 @@ use Yiisoft\Yii\Web\ErrorHandler\HtmlRenderer;
 
 class HtmlRendererTest extends TestCase
 {
-    /*public function testNonVerboseOutput(): void
+    public function testNonVerboseOutput(): void
     {
         $renderer = new HtmlRenderer();
         $request = new ServerRequest('GET', '/', ['Accept' => ['text/html']]);
@@ -33,5 +33,5 @@ class HtmlRendererTest extends TestCase
         $this->assertStringContainsString('<html', $renderedOutput);
         $this->assertStringContainsString(RuntimeException::class, $renderedOutput);
         $this->assertStringContainsString($exceptionMessage, $renderedOutput);
-    }*/
+    }
 }
