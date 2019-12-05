@@ -99,7 +99,7 @@ class TrustedHostsNetworkResolverTest extends TestCase
                 '/test',
                 'test=test',
             ],
-            'rfc7239Level2AnotherHostAndAnotherProtocolAndUrl' => [
+            'rfc7239Level2AnotherHost&AnotherProtocol&Url' => [
                 [
                     'forwarded' => ['for=9.9.9.9', 'proto=https;for=5.5.5.5;host=test', 'for=2.2.2.2'],
                     'x-rewrite-url' => ['/test?test=test'],
@@ -125,6 +125,34 @@ class TrustedHostsNetworkResolverTest extends TestCase
                 '/test',
                 'test=test',
             ],
+            'rfc7239Level2AnotherHost&AnotherProtocol&Url&Port' => [
+                [
+                    'forwarded' => ['for=9.9.9.9', 'proto=https;for="5.5.5.5:123";host=test', 'for=2.2.2.2'],
+                    'x-rewrite-url' => ['/test?test=test'],
+                    'x-forwarded-host' => ['test.another'],
+                    'x-forwarded-proto' => ['on']
+                ],
+                ['REMOTE_ADDR' => '127.0.0.1'],
+                [
+                    [
+                        'hosts' => ['8.8.8.8', '127.0.0.1', '2.2.2.2'],
+                        'ipHeaders' => [[TrustedHostsNetworkResolver::IP_HEADER_TYPE_RFC7239, 'forwarded']],
+                        'hostHeaders' => ['x-forwarded-host', 'forwarded'],
+                        'protocolHeaders' => [
+                            'x-forwarded-proto' => ['http' => 'http', 'httpsss' => 'on'],
+                            'forwarded' => ['http' => 'http', 'https' => 'https']
+                        ],
+                        'urlHeaders' => ['x-rewrite-url'],
+                        'portHeaders' => ['forwarded'],
+                    ],
+                ],
+                '5.5.5.5',
+                'test.another',
+                'httpsss',
+                '/test',
+                'test=test',
+                123,
+            ],
         ];
     }
 
@@ -139,7 +167,8 @@ class TrustedHostsNetworkResolverTest extends TestCase
         ?string $expectedHttpHost = null,
         string $expectedHttpScheme = 'http',
         string $expectedPath = '/',
-        string $expectedQuery = ''
+        string $expectedQuery = '',
+        ?int $expectedPort = null
     ): void {
         $request = $this->newRequestWithSchemaAndHeaders('http', $headers, $serverParams);
         $requestHandler = new MockRequestHandler();
@@ -152,6 +181,7 @@ class TrustedHostsNetworkResolverTest extends TestCase
                 $data['protocolHeaders'] ?? [],
                 $data['hostHeaders'] ?? [],
                 $data['urlHeaders'] ?? [],
+                $data['portHeaders'] ?? [],
                 $data['trustedHeaders'] ?? null);
         }
         $response = $middleware->process($request, $requestHandler);
@@ -163,6 +193,7 @@ class TrustedHostsNetworkResolverTest extends TestCase
         $this->assertSame($expectedHttpScheme, $requestHandler->processedRequest->getUri()->getScheme());
         $this->assertSame($expectedPath, $requestHandler->processedRequest->getUri()->getPath());
         $this->assertSame($expectedQuery, $requestHandler->processedRequest->getUri()->getQuery());
+        $this->assertSame($expectedPort, $requestHandler->processedRequest->getUri()->getPort());
     }
 
     public function notTrustedDataProvider(): array
@@ -200,6 +231,7 @@ class TrustedHostsNetworkResolverTest extends TestCase
                 $data['hosts'],
                 $data['ipHeaders'] ?? [],
                 $data['protocolHeaders'] ?? [],
+                [],
                 [],
                 [],
                 $data['trustedHeaders'] ?? []);
@@ -249,6 +281,7 @@ class TrustedHostsNetworkResolverTest extends TestCase
                 $data['protocolHeaders'] ?? [],
                 $data['hostHeaders'] ?? [],
                 $data['urlHeaders'] ?? [],
+                $data['portHeaders'] ?? [],
                 $data['trustedHeaders'] ?? null
             );
     }

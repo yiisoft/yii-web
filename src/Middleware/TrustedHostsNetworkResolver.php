@@ -6,6 +6,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\UriInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\NetworkUtilities\IpHelper;
@@ -111,6 +112,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
      * @param array $protocolHeaders List of headers containing protocol. eg. ['x-forwarded-for' => ['http' => 'http', 'https' => ['on', 'https']]]
      * @param string[] $hostHeaders List of headers containing HTTP host.
      * @param string[] $urlHeaders List of headers containing HTTP URL.
+     * @param string[] $portHeaders List of headers containing port number.
      * @param string[]|null $trustedHeaders List of trusted headers. Removed from the request, if in checking process
      *                                      are classified as untrusted by hosts.
      * @return static
@@ -122,6 +124,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
         array $protocolHeaders = [],
         array $hostHeaders = [],
         array $urlHeaders = [],
+        array $portHeaders = [],
         ?array $trustedHeaders = null
     ) {
         $new = clone $this;
@@ -153,10 +156,11 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
         }
         $trustedHeaders = $trustedHeaders ?? self::DEFAULT_TRUSTED_HEADERS;
         $protocolHeaders = $this->prepareProtocolHeaders($protocolHeaders);
-        $this->checkStringArrayType($hosts, 'hosts');
-        $this->checkStringArrayType($trustedHeaders, 'trustedHeaders');
-        $this->checkStringArrayType($hostHeaders, 'hostHeaders');
-        $this->checkStringArrayType($urlHeaders, 'urlHeaders');
+        $this->checkTypeStringOrArray($hosts, 'hosts');
+        $this->checkTypeStringOrArray($trustedHeaders, 'trustedHeaders');
+        $this->checkTypeStringOrArray($hostHeaders, 'hostHeaders');
+        $this->checkTypeStringOrArray($urlHeaders, 'urlHeaders');
+        $this->checkTypeStringOrArray($portHeaders, 'portHeaders');
 
         foreach ($hosts as $host) {
             $host = str_replace('*', 'wildcard', $host);        // wildcard is allowed in host
@@ -171,11 +175,12 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
             self::DATA_KEY_TRUSTED_HEADERS => $trustedHeaders,
             self::DATA_KEY_HOST_HEADERS => $hostHeaders,
             self::DATA_KEY_URL_HEADERS => $urlHeaders,
+            self::DATA_KEY_PORT_HEADERS => $portHeaders,
         ];
         return $new;
     }
 
-    private function checkStringArrayType(array $array, string $field): void
+    private function checkTypeStringOrArray(array $array, string $field): void
     {
         foreach ($array as $item) {
             if (!is_string($item)) {
@@ -315,6 +320,23 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
                 $uri = $uri->withQuery($query);
             }
         }
+
+        // find port
+        foreach ($trustedHostData[self::DATA_KEY_PORT_HEADERS] as $portHeader) {
+            if (!$request->hasHeader($portHeader)) {
+                continue;
+            }
+            if ($portHeader === $ipHeader && $ipListType === self::IP_HEADER_TYPE_RFC7239 && isset($ipData['port']) && $this->checkPort($ipData['port'])) {
+                $uri = $uri->withPort($ipData['port']);
+                break;
+            }
+            $port = $request->getHeaderLine($portHeader);
+            if ($this->checkPort($port)) {
+                $uri = $uri->withPort($port);
+                break;
+            }
+        }
+
         return $handler->handle($request->withUri($uri)->withAttribute('requestClientIp', $ipData['ip']));
     }
 
@@ -457,7 +479,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
             $ipData['host'] = $host;
             if (isset($matches['port'])) {
                 $port = $matches['port'];
-                if (!$obfuscatedHost && (preg_match('/^\d{1,5}$/', $port) === 0 || (int)$port > 65535)) {
+                if (!$obfuscatedHost && !$this->checkPort($port)) {
                     // Invalid port, the following items will be dropped
                     break;
                 }
@@ -492,5 +514,10 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
             }
         }
         return null;
+    }
+
+    private function checkPort(string $port): bool
+    {
+        return preg_match('/^\d{1,5}$/', $port) === 1 && (int)$port <= 65535;
     }
 }
