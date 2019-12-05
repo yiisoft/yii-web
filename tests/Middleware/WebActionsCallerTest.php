@@ -21,7 +21,7 @@ class WebActionsCallerTest extends TestCase
     /** @var ContainerInterface  */
     private $container;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->request = $this->createMock(ServerRequestInterface::class);
         $this->handler = $this->createMock(RequestHandlerInterface::class);

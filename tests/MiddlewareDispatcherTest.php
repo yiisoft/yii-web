@@ -35,7 +35,7 @@ class MiddlewareDispatcherTest extends TestCase
      */
     private $middlewareMocks;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->containerMock = $this->createMock(ContainerInterface::class);
