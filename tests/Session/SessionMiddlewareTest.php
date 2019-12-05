@@ -54,7 +54,7 @@ class SessionMiddlewareTest extends TestCase
      */
     private $sessionMiddleware;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->requestHandlerMock = $this->createMock(RequestHandlerInterface::class);
