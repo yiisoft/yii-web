@@ -77,7 +77,7 @@ class MiddlewareDispatcherTest extends TestCase
      */
     public function addAddsCallableToMiddlewareArrayWithoutThrowingException(): void
     {
-        $callable = function () {
+        $callable = static function () {
             echo 'example function for testing purposes';
         };
         $this->middlewareDispatcher->add($callable);
@@ -96,7 +96,7 @@ class MiddlewareDispatcherTest extends TestCase
     /**
      * @test
      */
-    public function handleCallsMiddlewareFromQueueToProcessRequest(): void
+    public function dispatchCallsMiddlewareFromQueueToProcessRequest(): void
     {
         $request = $this->createMock(ServerRequestInterface::class);
         $this->fallbackHandlerMock
@@ -105,10 +105,15 @@ class MiddlewareDispatcherTest extends TestCase
             ->with($request);
 
         $this->middlewareMocks[0]
-            ->expects($this->once())
+            ->expects($this->exactly(2))
             ->method('process')
             ->with($request, $this->middlewareDispatcher);
 
-        $this->middlewareDispatcher->handle($request);
+        // TODO: test that second middleware is called as well
+
+        $this->middlewareDispatcher->dispatch($request);
+
+        // ensure that dispatcher could be called multiple times
+        $this->middlewareDispatcher->dispatch($request);
     }
 }

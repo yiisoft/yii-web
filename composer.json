@@ -17,7 +17,7 @@
     },
     "minimum-stability": "dev",
     "require": {
-        "php": "^7.2",
+        "php": "^7.4",
         "ext-json": "*",
         "psr/container": "1.0.0",
         "psr/container-implementation": "1.0.0",
@@ -48,7 +48,7 @@
         "yiisoft/cache": "^3.0@dev",
         "yiisoft/var-dumper": "^3.0@dev",
         "ezyang/htmlpurifier": "~4.6",
-        "phpunit/phpunit": "^7.3",
+        "phpunit/phpunit": "^8.4",
         "cebe/indent": "~1.0.2",
         "friendsofphp/php-cs-fixer": "^2.2",
         "nyholm/psr7": "^1.0",
