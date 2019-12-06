@@ -17,9 +17,9 @@ class HtmlRendererTest extends TestCase
         $exceptionMessage = 'exception-test-message';
         $exception = new \RuntimeException($exceptionMessage);
         $renderedOutput = $renderer->render($exception);
-        $this->assertContains('<html', $renderedOutput);
-        $this->assertNotContains(RuntimeException::class, $renderedOutput);
-        $this->assertNotContains($exceptionMessage, $renderedOutput);
+        $this->assertStringContainsString('<html', $renderedOutput);
+        $this->assertStringNotContainsString(RuntimeException::class, $renderedOutput);
+        $this->assertStringNotContainsString($exceptionMessage, $renderedOutput);
     }
 
     public function testVerboseOutput(): void
@@ -30,8 +30,8 @@ class HtmlRendererTest extends TestCase
         $exceptionMessage = 'exception-test-message';
         $exception = new \RuntimeException($exceptionMessage);
         $renderedOutput = $renderer->renderVerbose($exception);
-        $this->assertContains('<html', $renderedOutput);
-        $this->assertContains(RuntimeException::class, $renderedOutput);
-        $this->assertContains($exceptionMessage, $renderedOutput);
+        $this->assertStringContainsString('<html', $renderedOutput);
+        $this->assertStringContainsString(RuntimeException::class, $renderedOutput);
+        $this->assertStringContainsString($exceptionMessage, $renderedOutput);
     }
 }
