@@ -205,7 +205,7 @@ class User
      */
     public function isGuest(): bool
     {
-        return $this->identity instanceof GuestIdentity;
+        return $this->getIdentity() instanceof GuestIdentity;
     }
 
     /**
