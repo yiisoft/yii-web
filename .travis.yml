@@ -21,6 +21,13 @@ cache:
   directories:
     - $HOME/.composer/cache
 
+before_install:
+  - |
+    if [[ $TASK_TESTS_COVERAGE != 1 ]]; then
+      # disable xdebug for performance reasons when code coverage is not needed
+      phpenv config-rm xdebug.ini || echo "xdebug is not installed"
+    fi
+
 install:
   - travis_retry composer self-update && composer --version
   - export PATH="$HOME/.composer/vendor/bin:$PATH"
