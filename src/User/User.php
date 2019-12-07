@@ -17,31 +17,12 @@ class User
     private const SESSION_AUTH_EXPIRE = '__auth_expire';
     private const SESSION_AUTH_ABSOLUTE_EXPIRE = '__auth_absolute_expire';
 
-    /**
-     * @var IdentityRepositoryInterface
-     */
-    private $identityRepository;
-
-    /**
-     * @var AccessCheckerInterface
-     */
-    private $accessChecker;
-
-    /**
-     * @var IdentityInterface
-     */
-    private $identity;
-
-    /**
-     * @var Session
-     */
-    private $session;
-
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $eventDispatcher;
-
+    private IdentityRepositoryInterface $identityRepository;
+    private EventDispatcherInterface $eventDispatcher;
+    private ?AccessCheckerInterface $accessChecker = null;
+    private ?IdentityInterface $identity = null;
+    private ?Session $session = null;
+    
     public function __construct(IdentityRepositoryInterface $identityRepository, EventDispatcherInterface $eventDispatcher)
     {
         $this->identityRepository = $identityRepository;
