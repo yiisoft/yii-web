@@ -247,40 +247,40 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
             // No trusted host at all.
             return $this->handleNotTrusted($request, $handler);
         }
-        [$ipListType, $ipHeader, $ipList] = $this->getIpList($request, $trustedHostData[self::DATA_KEY_IP_HEADERS]);
-        $ipList = array_reverse($ipList);       // the first item should be the closest to the server
+        [$ipListType, $ipHeader, $hostList] = $this->getIpList($request, $trustedHostData[self::DATA_KEY_IP_HEADERS]);
+        $hostList = array_reverse($hostList);       // the first item should be the closest to the server
         if ($ipListType === null) {
-            $ipList = $this->getFormattedIpList($ipList);
+            $hostList = $this->getFormattedIpList($hostList);
         } elseif ($ipListType === self::IP_HEADER_TYPE_RFC7239) {
-            $ipList = $this->getElementsByRfc7239($ipList);
+            $hostList = $this->getElementsByRfc7239($hostList);
         }
-        array_unshift($ipList, ['ip' => $actualHost]);  // server's ip to first position
-        $ipDataList = [];
+        array_unshift($hostList, ['ip' => $actualHost]);  // server's ip to first position
+        $hostDataList = [];
         do {
-            $ipData = array_shift($ipList);
-            if (!isset($ipData['ip'])) {
-                $ipData = $this->reverseObfuscate($ipData, $ipDataList, $ipList, $request);
-                if ($ipData === null) {
+            $hostData = array_shift($hostList);
+            if (!isset($hostData['ip'])) {
+                $hostData = $this->reverseObfuscate($hostData, $hostDataList, $hostList, $request);
+                if ($hostData === null) {
                     continue;
                 }
-                if (!isset($ipData['ip'])) {
+                if (!isset($hostData['ip'])) {
                     break;
                 }
             }
-            $ip = $ipData['ip'];
+            $ip = $hostData['ip'];
             if (!$this->isValidHost($ip, ['any'], $ipValidator)) {
                 // invalid IP
                 break;
             }
-            $ipDataList[] = $ipData;
+            $hostDataList[] = $hostData;
             if (!$this->isValidHost($ip, $trustedHostData[self::DATA_KEY_HOSTS], $ipValidator)) {
                 // not trusted host
                 break;
             }
-        } while (count($ipList) > 0);
+        } while (count($hostList) > 0);
 
         if ($this->attributeIps !== null) {
-            $request = $request->withAttribute($this->attributeIps, $ipDataList);
+            $request = $request->withAttribute($this->attributeIps, $hostDataList);
         }
 
         $uri = $request->getUri();
@@ -289,8 +289,8 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
             if (!$request->hasHeader($hostHeader)) {
                 continue;
             }
-            if ($hostHeader === $ipHeader && $ipListType === self::IP_HEADER_TYPE_RFC7239 && isset($ipData['httpHost'])) {
-                $uri = $uri->withHost($ipData['httpHost']);
+            if ($hostHeader === $ipHeader && $ipListType === self::IP_HEADER_TYPE_RFC7239 && isset($hostData['httpHost'])) {
+                $uri = $uri->withHost($hostData['httpHost']);
                 break;
             }
             $host = $request->getHeaderLine($hostHeader);
@@ -305,8 +305,8 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
             if (!$request->hasHeader($protocolHeader)) {
                 continue;
             }
-            if ($protocolHeader === $ipHeader && $ipListType === self::IP_HEADER_TYPE_RFC7239 && isset($ipData['protocol'])) {
-                $uri = $uri->withScheme($ipData['protocol']);
+            if ($protocolHeader === $ipHeader && $ipListType === self::IP_HEADER_TYPE_RFC7239 && isset($hostData['protocol'])) {
+                $uri = $uri->withScheme($hostData['protocol']);
                 break;
             }
             $protocolHeaderValue = $request->getHeaderLine($protocolHeader);
@@ -331,8 +331,8 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
             if (!$request->hasHeader($portHeader)) {
                 continue;
             }
-            if ($portHeader === $ipHeader && $ipListType === self::IP_HEADER_TYPE_RFC7239 && isset($ipData['port']) && $this->checkPort($ipData['port'])) {
-                $uri = $uri->withPort($ipData['port']);
+            if ($portHeader === $ipHeader && $ipListType === self::IP_HEADER_TYPE_RFC7239 && isset($hostData['port']) && $this->checkPort($hostData['port'])) {
+                $uri = $uri->withPort($hostData['port']);
                 break;
             }
             $port = $request->getHeaderLine($portHeader);
@@ -342,7 +342,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
             }
         }
 
-        return $handler->handle($request->withUri($uri)->withAttribute('requestClientIp', $ipData['ip']));
+        return $handler->handle($request->withUri($uri)->withAttribute('requestClientIp', $hostData['ip']));
     }
 
     /**
@@ -358,22 +358,27 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
     /**
      * Reverse obfuscating host data
      *
+     * RFC7239 allow the ability to use obfuscated host data. In this case, either specifying the
+     * IP address or dropping the proxy endpoint is required to determine validated route.
+     *
      * The base operation does not perform any transformation on the data.
-     * This method can be extendable by overwriting eg.
+     * This method can be extendable by overwriting.
      *
-     * The `$ipData` array must contain relevant keys (eg` ip`) for the validation process ({{isValidHost}}) to process the request.
-     *
-     * @return array|null reverse obfuscated host data or NULL. If returned NULL, it is discarded and the process continues with the next.
+     * @return array|null reverse obfuscated host data or NULL.
+     *                    If returned NULL, it is discarded and the process continues with the next.
+     *                    If the return value is an array, it must contain at least the `ip` key.
      *
      * @see getElementsByRfc7239
+     * @link https://tools.ietf.org/html/rfc7239#section-6.2
+     * @link https://tools.ietf.org/html/rfc7239#section-6.3
      */
     protected function reverseObfuscate(
-        array $ipData,
-        array $ipDataListValidated,
-        array $ipDataListRemaining,
+        array $hostData,
+        array $hostDataListValidated,
+        array $hostDataListRemaining,
         RequestInterface $request
     ): ?array {
-        return $ipData;
+        return $hostData;
     }
 
     private function handleNotTrusted(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
