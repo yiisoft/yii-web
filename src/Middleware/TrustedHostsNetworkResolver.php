@@ -260,7 +260,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
             $ipData = array_shift($ipList);
             if (!isset($ipData['ip'])) {
                 $ipData = $this->reverseObfuscate($ipData, $ipDataList, $ipList, $request);
-                if($ipData === null) {
+                if ($ipData === null) {
                     continue;
                 }
                 if (!isset($ipData['ip'])) {
