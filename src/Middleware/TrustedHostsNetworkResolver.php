@@ -260,16 +260,21 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
             $ipData = array_shift($ipList);
             if (!isset($ipData['ip'])) {
                 $ipData = $this->reverseObfuscate($ipData, $ipDataList, $ipList, $request);
+                if($ipData === null) {
+                    continue;
+                }
                 if (!isset($ipData['ip'])) {
                     break;
                 }
             }
             $ip = $ipData['ip'];
             if (!$this->isValidHost($ip, ['any'], $ipValidator)) {
+                // invalid IP
                 break;
             }
             $ipDataList[] = $ipData;
             if (!$this->isValidHost($ip, $trustedHostData[self::DATA_KEY_HOSTS], $ipValidator)) {
+                // not trusted host
                 break;
             }
         } while (count($ipList) > 0);
@@ -358,6 +363,8 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
      *
      * The `$ipData` array must contain relevant keys (eg` ip`) for the validation process ({{isValidHost}}) to process the request.
      *
+     * @return array|null reverse obfuscated host data or NULL. If returned NULL, it is discarded and the process continues with the next.
+     *
      * @see getElementsByRfc7239
      */
     protected function reverseObfuscate(
@@ -365,7 +372,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
         array $ipDataListValidated,
         array $ipDataListRemaining,
         RequestInterface $request
-    ): array {
+    ): ?array {
         return $ipData;
     }
 
