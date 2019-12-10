@@ -101,7 +101,7 @@ class User
         if ($this->identity !== null) {
             return $this->identity;
         }
-        if ($this->session === null && !$autoRenew) {
+        if ($this->session === null || !$autoRenew) {
             return new GuestIdentity();
         }
         try {
