@@ -98,18 +98,17 @@ class User
      */
     public function getIdentity($autoRenew = true): IdentityInterface
     {
-        if ($this->identity === null) {
-            if ($this->session !== null && $autoRenew) {
-                try {
-                    $this->identity = null;
-                    $this->renewAuthStatus();
-                } catch (\Throwable $e) {
-                    $this->identity = null;
-                    throw $e;
-                }
-            } else {
-                return new GuestIdentity();
-            }
+        if ($this->identity !== null) {
+            return $this->identity;
+        }
+        if ($this->session === null && !$autoRenew) {
+            return new GuestIdentity();
+        }
+        try {
+            $this->renewAuthStatus();
+        } catch (\Throwable $e) {
+            $this->identity = null;
+            throw $e;
         }
         return $this->identity;
     }
@@ -147,7 +146,7 @@ class User
      * @param int $duration number of seconds that the user can remain in logged-in status, defaults to `0`
      * @return bool whether the user is logged in
      */
-    public function login(IdentityInterface $identity, $duration = 0)
+    public function login(IdentityInterface $identity, int $duration = 0): bool
     {
         if ($this->beforeLogin($identity, $duration)) {
             $this->switchIdentity($identity);
@@ -162,12 +161,12 @@ class User
      * with the provided access token. If successful, it will call [[login()]] to log in the authenticated user.
      * If authentication fails or [[login()]] is unsuccessful, it will return null.
      * @param string $token the access token
-     * @param mixed $type the type of the token. The value of this parameter depends on the implementation.
+     * @param string $type the type of the token. The value of this parameter depends on the implementation.
      * For example, [[\yii\filters\auth\HttpBearerAuth]] will set this parameter to be `yii\filters\auth\HttpBearerAuth`.
      * @return IdentityInterface|null the identity associated with the given access token. Null is returned if
      * the access token is invalid or [[login()]] is unsuccessful.
      */
-    public function loginByAccessToken($token, $type = null): ?IdentityInterface
+    public function loginByAccessToken(string $token, string $type = null): ?IdentityInterface
     {
         $identity = $this->identityRepository->findIdentityByToken($token, $type);
         if ($identity && $this->login($identity)) {
@@ -188,7 +187,10 @@ class User
     public function logout($destroySession = true): bool
     {
         $identity = $this->getIdentity();
-        if (!$this->isGuest() && $this->beforeLogout($identity)) {
+        if (!$this->isGuest()) {
+            return false;
+        }
+        if ($this->beforeLogout($identity)) {
             $this->switchIdentity(new GuestIdentity());
             if ($destroySession && $this->session) {
                 $this->session->destroy();
@@ -272,7 +274,7 @@ class User
      * so that the event is triggered.
      * @param IdentityInterface $identity the user identity information
      */
-    protected function afterLogout($identity): void
+    protected function afterLogout(IdentityInterface $identity): void
     {
         $this->eventDispatcher->dispatch(new AfterLogoutEvent($identity));
     }
@@ -301,14 +303,15 @@ class User
         $this->session->remove(self::SESSION_AUTH_ID);
         $this->session->remove(self::SESSION_AUTH_EXPIRE);
 
-        if ($identity->getId() !== null) {
-            $this->session->set(self::SESSION_AUTH_ID, $identity->getId());
-            if ($this->authTimeout !== null) {
-                $this->session->set(self::SESSION_AUTH_EXPIRE, time() + $this->authTimeout);
-            }
-            if ($this->absoluteAuthTimeout !== null) {
-                $this->session->set(self::SESSION_AUTH_ABSOLUTE_EXPIRE, time() + $this->absoluteAuthTimeout);
-            }
+        if ($identity->getId() === null) {
+            return;
+        }
+        $this->session->set(self::SESSION_AUTH_ID, $identity->getId());
+        if ($this->authTimeout !== null) {
+            $this->session->set(self::SESSION_AUTH_EXPIRE, time() + $this->authTimeout);
+        }
+        if ($this->absoluteAuthTimeout !== null) {
+            $this->session->set(self::SESSION_AUTH_ABSOLUTE_EXPIRE, time() + $this->absoluteAuthTimeout);
         }
     }
 
