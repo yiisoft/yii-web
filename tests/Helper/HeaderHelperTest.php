@@ -23,14 +23,25 @@ class HeaderHelperTest extends TestCase
                 'test;noqoute=test;qoute="test2"',
                 ['test', 'noqoute' => 'test', 'qoute' => 'test2']
             ],
+
+            // 'withSpaces' => ['test; q=1.0; version=2', ['test', 'q' => '1.0', 'version' => '2']],
+            // 'quotedValue' => ['"value"', null, \InvalidArgumentException::class],
+            // 'valueAsParam' => ['param=value', null, \InvalidArgumentException::class],
+            // 'valueAsParam2' => ['param=value;a=b', null, \InvalidArgumentException::class],
+            // 'doubleColon' => [': value;a=b', null, \InvalidArgumentException::class],
+            'missingDelim1' => ['value; a=a1 b=b1', null, \InvalidArgumentException::class],
+            // 'missingDelim2 ' => ['value a=a1', null, \InvalidArgumentException::class],
         ];
     }
 
     /**
      * @dataProvider valueAndParametersDataProvider
      */
-    public function testValueAndParameters(string $input, array $expected): void
+    public function testValueAndParameters(string $input, ?array $expected, ?string $expectedException = null): void
     {
+        if ($expectedException !== null) {
+            $this->expectException($expectedException);
+        }
         $this->assertSame($expected, HeaderHelper::getValueAndParameters($input));
     }
 
@@ -142,19 +153,56 @@ class HeaderHelperTest extends TestCase
             'quoted' => ['a="test";b="test2;";d="."', ['a' => 'test', 'b' => 'test2;', 'd' => '.']],
             'mixed' => ['a=b;c="apple"', ['a' => 'b', 'c' => 'apple']],
             'one' => ['a=test', ['a' => 'test']],
-            'oneSpace' => ['a=test', ['a' => 'test']],
+            'oneSpace' => ['a=test', ['a' => 'test']], // ??????
             'oneQuoted' => ['a="test"', ['a' => 'test']],
             'oneQuotedEmpty' => ['a=""', ['a' => '']],
+            'oneSingleQuoted' => ["a='a'", ['a' => "'a'"]],
             'mixedQuotes' => [
-                'a="test\'";test="\'test\'";test2="\"\\\\test\""',
-                ['a' => 'test\'', 'test' => '\'test\'', 'test2' => '"\\test"']
+                'a="tes\'t";test="\'test\'";test2="\\"quoted\\" test"',
+                ['a' => 'tes\'t', 'test' => '\'test\'', 'test2' => '"quoted" test']
+            ],
+            'slashes' => [
+                'a="\\t\\e\\s\\t";b="te\\\\st";c="\\"\\"',
+                ['a' => 'test', 'b' => 'te\\st', 'c' => '"\\']
             ],
             'specChars' => ['*=test;test=*', ['*' => 'test', 'test' => '*']],
+            'specChars2' => ['param*1=a;param*2=b', ['param*1' => 'a', 'param*2' => 'b']],
             'numbers' => ['a=8888;b="999"', ['a' => '8888', 'b' => '999']],
             'invalidQuotes2' => ['a="test', null, \InvalidArgumentException::class],
             'invalidQuotes3' => ['a=test"', null, \InvalidArgumentException::class],
+            'invalidQuotes4' => ['a=te"st', null, \InvalidArgumentException::class],
             'invalidEmptyValue' => ['a=b; c=', null, \InvalidArgumentException::class],
+            'invalidEmptyParam' => ['a=b; ;c=d', null, \InvalidArgumentException::class],
             'semicolonAtEnd' => ['a=b;', null, \InvalidArgumentException::class],
+            'comma' => ['a=test,test', null, \InvalidArgumentException::class],
+
+            # true syntax
+            // 'spaces2' => [' a = b ; c = "d" ', ['a' => 'b', 'c' => 'd']],
+            # param names should be case insensitive (lowercase?)
+            // 'case' => ['A=TEST;TEST=B', ['a' => 'TEST', 'test' => 'B']],
+            // 'spaces1' => ['a=b; c="d" ', ['a' => 'b', 'c' => 'd']],
+            'spaces3' => ['a=b c', null, \InvalidArgumentException::class],
+            'percent' => ['a=%1;b="foo-%32-bar"', ['a' => '%1', 'b' => 'foo-%32-bar']],
+
+            # Invalid syntax but most browsers take a first parameter
+            // 'sameName' => ['a=T1;a="T2"', ['a' => 'T1']],
+            // 'sameNameCase' => ['aa=T1;Aa="T2"', ['aa' => 'T1']],
+
+            # Invalid syntax but most browsers accept the unquoted value with warn
+            # What is better for us to do?
+            'brokenToken' => ['a=foo[1](2).html', null, \InvalidArgumentException::class],
+
+            'brokenSyntax1' => ['a==b', null, \InvalidArgumentException::class],
+            'brokenSyntax2' => ['a *=b', null, \InvalidArgumentException::class],
+            # Invalid syntax but most browsers accept the umlaut with warn
+            'brokenToken2' => ['a=foo-ä.html', ['a' => 'foo-ä.html']],
+            # Invalid syntax but most browsers accept the umlaut with warn
+            'brokenToken3' => ['a=foo-Ã¤.html', ['a' => 'foo-Ã¤.html']],
+
+            # RFC 2231/5987 Encoding: Character Sets
+            // '2231iso' => ["filename=iso-8859-1''foo-%E4.html", ['filename' => 'foo-ä.html']],
+            // '2231utf' => ["filename=UTF-8''foo-%c3%a4-%e2%82%ac.html", ['filename' => 'foo-ä-€.html']],
+            // '2231noc' => ["filename=''foo-%c3%a4-%e2%82%ac.html", null, \InvalidArgumentException::class],
         ];
     }
 
