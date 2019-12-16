@@ -16,7 +16,7 @@ use Yiisoft\Yii\Web\Exception\BadUriPrefixException;
 final class SubFolderMiddleware implements MiddlewareInterface
 {
     public ?string $prefix = null;
-    protected UrlGeneratorInterface $uriGenerator;
+    private UrlGeneratorInterface $uriGenerator;
     private Aliases $aliases;
 
     public function __construct(UrlGeneratorInterface $uriGenerator, Aliases $aliases)
