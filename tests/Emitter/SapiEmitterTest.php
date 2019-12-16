@@ -7,8 +7,11 @@ use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
+use Yiisoft\FriendlyException\FriendlyExceptionInterface;
 use Yiisoft\Yii\Web\Emitter\EmitterInterface;
 use Yiisoft\Yii\Web\Emitter\SapiEmitter;
+use Yiisoft\Yii\Web\Exception\HeadersHaveBeenSentException;
+
 
 /**
  * @runTestsInSeparateProcesses
@@ -134,6 +137,19 @@ class SapiEmitterTest extends TestCase
 
         $this->assertEquals(['Content-Length: ' . strlen($body)], $this->getHeaders());
         $this->expectOutputString($body);
+    }
+
+    /**
+     * @test
+     */
+    public function exceptionWhenHeadersHaveBeenSent(): void
+    {
+        $body = 'Example body';
+        $response = $this->createResponse(200, [], $body);
+        HTTPFunctions::set_headers_sent(true, 'test-file.php', 200);
+
+        $this->expectException(HeadersHaveBeenSentException::class);
+        $this->createEmitter()->emit($response);
     }
 
     /**
