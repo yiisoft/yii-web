@@ -12,7 +12,6 @@ use Yiisoft\Yii\Web\Emitter\EmitterInterface;
 use Yiisoft\Yii\Web\Emitter\SapiEmitter;
 use Yiisoft\Yii\Web\Exception\HeadersHaveBeenSentException;
 
-
 /**
  * @runTestsInSeparateProcesses
  */
