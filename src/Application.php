@@ -1,6 +1,7 @@
 <?php
 namespace Yiisoft\Yii\Web;
 
+use Exception;
 use Psr\Http\Message\ServerRequestInterface;
 use Yiisoft\Router\Method;
 use Yiisoft\Yii\Web\Emitter\EmitterInterface;
@@ -13,15 +14,9 @@ use Yiisoft\Yii\Web\ErrorHandler\ErrorHandler;
  */
 final class Application
 {
-    /**
-     * @var MiddlewareDispatcher
-     */
-    private $dispatcher;
+    private MiddlewareDispatcher $dispatcher;
 
-    /**
-     * @var EmitterInterface
-     */
-    private $emitter;
+    private EmitterInterface $emitter;
 
     /**
      * Application constructor.
@@ -36,6 +31,11 @@ final class Application
         $errorHandler->register();
     }
 
+    /**
+     * @param ServerRequestInterface $request
+     * @return bool
+     * @throws Exception
+     */
     public function handle(ServerRequestInterface $request): bool
     {
         $response = $this->dispatcher->dispatch($request);
