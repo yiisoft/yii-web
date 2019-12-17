@@ -6,7 +6,6 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\UriInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\NetworkUtilities\IpHelper;
@@ -16,8 +15,7 @@ use Yiisoft\Yii\Web\Helper\HeaderHelper;
 /**
  * Trusted hosts network resolver
  *
- * Code example with comments:
- * ```
+ * ```php
  * (new TrustedHostsNetworkResolver($responseFactory))
  * ->withAddedTrustedHosts(
  *   // List of secure hosts including $ _SERVER['REMOTE_ADDR'], can specify IPv4, IPv6, domains and aliases (see {{Ip}})
@@ -38,7 +36,6 @@ use Yiisoft\Yii\Web\Helper\HeaderHelper;
  * ->withAddedTrustedHosts(...)
  * ;
  * ```
- *
  */
 class TrustedHostsNetworkResolver implements MiddlewareInterface
 {
@@ -67,32 +64,20 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
     private const DATA_KEY_TRUSTED_HEADERS = 'trustedHeaders';
     private const DATA_KEY_PORT_HEADERS = 'portHeaders';
 
-    private $trustedHosts = [];
+    private array $trustedHosts = [];
 
-    /**
-     * @var string|null
-     */
-    private $attributeIps;
+    private ?string $attributeIps = null;
 
-    /**
-     * @var ResponseFactoryInterface
-     */
-    private $responseFactory;
+    private ResponseFactoryInterface $responseFactory;
 
-    /**
-     * @var Ip|null
-     */
-    private $ipValidator;
+    private ?Ip $ipValidator = null;
 
     public function __construct(ResponseFactoryInterface $responseFactory)
     {
         $this->responseFactory = $responseFactory;
     }
 
-    /**
-     * @return static
-     */
-    public function withIpValidator(Ip $ipValidator)
+    public function withIpValidator(Ip $ipValidator): self
     {
         $new = clone $this;
         $new->ipValidator = $ipValidator;
@@ -107,14 +92,14 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
      * eg. web server application, otherwise spoof clients can be use this vulnerability.
      *
      * @param string[] $hosts List of trusted hosts IP addresses. If `isValidHost` is extended, then can use
-     *                        domain names with reverse DNS resolving eg. yiiframework.com, * .yiiframework.com.
+     * domain names with reverse DNS resolving eg. yiiframework.com, * .yiiframework.com.
      * @param array $ipHeaders List of headers containing IP lists.
      * @param array $protocolHeaders List of headers containing protocol. eg. ['x-forwarded-for' => ['http' => 'http', 'https' => ['on', 'https']]]
      * @param string[] $hostHeaders List of headers containing HTTP host.
      * @param string[] $urlHeaders List of headers containing HTTP URL.
      * @param string[] $portHeaders List of headers containing port number.
      * @param string[]|null $trustedHeaders List of trusted headers. Removed from the request, if in checking process
-     *                                      are classified as untrusted by hosts.
+     * are classified as untrusted by hosts.
      * @return static
      */
     public function withAddedTrustedHosts(
@@ -126,7 +111,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
         array $urlHeaders = [],
         array $portHeaders = [],
         ?array $trustedHeaders = null
-    ) {
+    ): self {
         $new = clone $this;
         foreach ($ipHeaders as $ipHeader) {
             if (\is_string($ipHeader)) {
@@ -152,7 +137,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
             throw new \InvalidArgumentException("Not supported IP header type: $type");
         }
         if (count($hosts) === 0) {
-            throw new \InvalidArgumentException("Empty hosts not allowed");
+            throw new \InvalidArgumentException('Empty hosts not allowed');
         }
         $trustedHeaders = $trustedHeaders ?? self::DEFAULT_TRUSTED_HEADERS;
         $protocolHeaders = $this->prepareProtocolHeaders($protocolHeaders);
@@ -192,10 +177,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
         }
     }
 
-    /**
-     * @return static
-     */
-    public function withoutTrustedHosts()
+    public function withoutTrustedHosts(): self
     {
         $new = clone $this;
         $new->trustedHosts = [];
@@ -210,7 +192,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
      * @return static
      * @see getElementsByRfc7239
      */
-    public function withAttributeIps(?string $attribute)
+    public function withAttributeIps(?string $attribute): self
     {
         if ($attribute === '') {
             throw new \RuntimeException('Attribute should not be empty');
@@ -227,6 +209,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
             // Validation is not possible.
             return $this->handleNotTrusted($request, $handler);
         }
+
         $trustedHostData = null;
         $trustedHeaders = [];
         $ipValidator = ($this->ipValidator ?? new Ip())->disallowSubnet()->disallowNegation();
@@ -311,7 +294,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
             }
             $protocolHeaderValue = $request->getHeaderLine($protocolHeader);
             foreach ($protocols as $protocol => $acceptedValues) {
-                if (\in_array($protocolHeaderValue, $acceptedValues)) {
+                if (\in_array($protocolHeaderValue, $acceptedValues, true)) {
                     $uri = $uri->withScheme($protocol);
                     break 2;
                 }
@@ -337,7 +320,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
             }
             $port = $request->getHeaderLine($portHeader);
             if ($this->checkPort($port)) {
-                $uri = $uri->withPort($port);
+                $uri = $uri->withPort((int)$port);
                 break;
             }
         }
@@ -358,15 +341,18 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
     /**
      * Reverse obfuscating host data
      *
-     * RFC7239 allow the ability to use obfuscated host data. In this case, either specifying the
+     * RFC 7239 allows to use obfuscated host data. In this case, either specifying the
      * IP address or dropping the proxy endpoint is required to determine validated route.
      *
-     * The base operation does not perform any transformation on the data.
-     * This method can be extendable by overwriting.
+     * By default it does not perform any transformation on the data. You can override this method.
      *
-     * @return array|null reverse obfuscated host data or NULL.
-     *                    If returned NULL, it is discarded and the process continues with the next.
-     *                    If the return value is an array, it must contain at least the `ip` key.
+     * @param array $hostData
+     * @param array $hostDataListValidated
+     * @param array $hostDataListRemaining
+     * @param RequestInterface $request
+     * @return array|null reverse obfuscated host data or null.
+     * In case of null data is discarded and the process continues with the next portion of host data.
+     * If the return value is an array, it must contain at least the `ip` key.
      *
      * @see getElementsByRfc7239
      * @link https://tools.ietf.org/html/rfc7239#section-6.2
