@@ -153,7 +153,6 @@ class HeaderHelperTest extends TestCase
             'quoted' => ['a="test";b="test2;";d="."', ['a' => 'test', 'b' => 'test2;', 'd' => '.']],
             'mixed' => ['a=b;c="apple"', ['a' => 'b', 'c' => 'apple']],
             'one' => ['a=test', ['a' => 'test']],
-            'oneSpace' => ['a=test', ['a' => 'test']], // ??????
             'oneQuoted' => ['a="test"', ['a' => 'test']],
             'oneQuotedEmpty' => ['a=""', ['a' => '']],
             'oneSingleQuoted' => ["a='a'", ['a' => "'a'"]],
