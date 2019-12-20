@@ -40,18 +40,18 @@ final class HeaderHelper
      * @param string $headerValue
      * @return array first element is the value, and key-value are the parameters
      */
-    public static function getValueAndParameters(string $headerValue): array
+    public static function getValueAndParameters(string $headerValue, bool $lowerCaseValue = true, bool $lowerCaseParameter = true, bool $lowerCaseParameterValue = true): array
     {
         $headerValue = trim($headerValue);
         if ($headerValue === '') {
             return [];
         }
         $parts = explode(';', $headerValue, 2);
-        $output = [$parts[0]];
+        $output = [$lowerCaseValue ? strtolower($parts[0]) : $parts[0]];
         if (count($parts) === 1) {
             return $output;
         }
-        return array_merge($output, self::getParameters($parts[1]));
+        return $output + self::getParameters($parts[1], $lowerCaseParameter, $lowerCaseParameterValue);
     }
 
     /**
@@ -59,7 +59,7 @@ final class HeaderHelper
      *
      * @link https://tools.ietf.org/html/rfc7230#section-3.2.6
      */
-    public static function getParameters(string $headerValue): array
+    public static function getParameters(string $headerValue, bool $lowerCaseParameter = true, $lowerCaseValue = true): array
     {
         $headerValue = trim($headerValue);
         if ($headerValue === '') {
@@ -72,13 +72,13 @@ final class HeaderHelper
         do {
             $headerValue = preg_replace_callback(
                 '/^(?<parameter>' . self::PATTERN_ATTRIBUTE . ')=(?<value>' . self::PATTERN_VALUE . ')(?:;|$)/',
-                static function ($matches) use (&$output) {
+                static function ($matches) use (&$output, $lowerCaseParameter, $lowerCaseValue) {
                     $value = $matches['value'];
                     if (substr($matches['value'], 0, 1) === '"') {
                         // unescape + remove first and last quote
                         $value = preg_replace('/\\\\(.)/', '$1', substr($value, 1, -1));
                     }
-                    $output[$matches['parameter']] = $value;
+                    $output[$lowerCaseParameter ? strtolower($matches['parameter']) : $matches['parameter']] = $lowerCaseValue ? strtolower($value) : $value;
                 }, $headerValue, 1, $count);
             if ($count !== 1) {
                 throw new \InvalidArgumentException('Invalid input: ' . $headerValue);
@@ -92,8 +92,9 @@ final class HeaderHelper
      * @param string|string[] $values Header value as a comma-separated string or already exploded string array.
      * @see getValueAndParameters
      * @link https://developer.mozilla.org/en-US/docs/Glossary/Quality_values
+     * @link https://www.ietf.org/rfc/rfc2045.html#section-2
      */
-    public static function getSortedValueAndParameters($values): array
+    public static function getSortedValueAndParameters($values, bool $lowerCaseValue = true, bool $loweCaseParameter = true, bool $lowerCaseParameterValue = true): array
     {
         if (is_string($values)) {
             $values = preg_split('/\s*,\s*/', trim($values), -1, PREG_SPLIT_NO_EMPTY);
@@ -106,14 +107,16 @@ final class HeaderHelper
         }
         $output = [];
         foreach ($values as $value) {
-            $parse = self::getValueAndParameters($value);
-            $q = $parse['q'] ?? 1.0;
+            $parse = self::getValueAndParameters($value, $lowerCaseValue, $loweCaseParameter, $lowerCaseParameterValue);
+            // case-insensitive "q" parameter
+            $q = $parse['q'] ?? $parse['Q'] ?? 1.0;
 
             // min 0.000 max 1.000, max 3 digits, without digits allowed
             if (is_string($q) && preg_match('/^(?:0(?:\.\d{1,3})?|1(?:\.0{1,3})?)$/', $q) === 0) {
                 throw new \InvalidArgumentException('Invalid q factor');
             }
             $parse['q'] = (float)$q;
+            unset($parse['Q']);
             $output[] = $parse;
         }
         usort($output, static function ($a, $b) {
@@ -140,6 +143,7 @@ final class HeaderHelper
      * @return string[] sorted accept types. Note: According to RFC 7231, special parameters (except the q factor) are
      *                  added to the type, which are always appended by a semicolon and sorted by string.
      * @link https://tools.ietf.org/html/rfc7231#section-5.3.2
+     * @link https://www.ietf.org/rfc/rfc2045.html#section-2
      */
     public static function getSortedAcceptTypes($values): array
     {
