@@ -47,16 +47,6 @@ final class ErrorHandler
             return;
         }
 
-        // in case error appeared in __toString method we can't throw any exception
-        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-        array_shift($trace);
-        foreach ($trace as $frame) {
-            if ($frame['function'] === '__toString') {
-                trigger_error($message, $severity);
-                return;
-            }
-        }
-
         throw new ErrorException($message, $severity, $severity, $file, $line);
     }
 
