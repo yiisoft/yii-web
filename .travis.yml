@@ -21,6 +21,13 @@ cache:
   directories:
     - $HOME/.composer/cache
 
+before_install:
+  - |
+    if [[ $TASK_TESTS_COVERAGE != 1 ]]; then
+      # disable xdebug for performance reasons when code coverage is not needed
+      phpenv config-rm xdebug.ini || echo "xdebug is not installed"
+    fi
+
 install:
   - travis_retry composer self-update && composer --version
   - export PATH="$HOME/.composer/vendor/bin:$PATH"
@@ -62,14 +69,14 @@ notifications:
     -
       rooms:
         -
-          secure: cmfmS/NrBlvpasj76vVvrjqrXtn3Jw2OMDmX6QSZUdtBephpVYNI83r2LRPqhuUlAII2q6oxaS7dVIZG9XE3Y/anqKGOS7SQym3cMN1O11ipq7MsI1IJ4GZBNeryhDoXQXYBqY/enh0qGGNTCHfwUDxRhBkGoDLZL8U9nxq2Id+PfB/LcFN52xxEstIZdQwkWAcaPPBstS/VHRuJxf3g+KNILqNpd1l5WJogu+XmzwGGHE8Kdl793GZl+3ALsjxBsmoJOdl2bbbi//ZqvhtGNu3Bwjlibi3IYfoTGAfjn1/IUMZQXG2JGL1eQC9VeCqT3rhEaLpIXkW+z9z4dZc7kPqDGqk4tN4Hx7weZafiKG0JtQXX3db1WLMaHApB00u+tvlaAxVAcS9ZV2jugR7ukVqWpluRngsDzHcfgMW9ns/nkTUn/NqKZcB1Pmun6lyLgM3quvfUVdL1G3zNMAFUydgoZXuPHlFYl3BVt2BA95wi09zdkbU3Ow5NZbvuVaOcbnVWJy8v/+MJnQgBjw13tarWGppDAsILmqkGeyz6/I/QmKs0Mh3S0+p7Kz8gboqHcerLKTg/lE7y7HZZWH2eE0Bc6Bscr+376X8ENksnkKystffANiY6ICRwu0I4oAY5kEJn6YMiRMeqD5xONCBPIcP27TIvzZ2As3X98vnN8Yg=
+          secure: YrT6CbMPjn7urDxERUSdfbyw+HjASOGYCuHWaOmtle+QZmwlDOE5BEFjJREWQqywkgPFj13WNNGgDSWZImRWtbDNGVYpQMoRd6ZOBOce/9Xmaywj8HQk8MpUttiYnxeUUZUlkt6WICdJKLdIeoF6fCnHUjF5cQrhT+Pm2PKV9MKwt810a8C/zmqzH9BQ8tjP7bRm+Y/yvmh8VkZPIi8qtSLYBJ7d9nleuVGkzd2894VSuvupyjMeynvi1xJLiP4BGSr/ofK+I/EXrQI6SjypHoo1gTRNvMbJejsTlwOA8xS2etb7NwJcoA0fc7wcVNvgXlZert8fLbdOSp3bqr/DEeniRhYhBnHFbEXXMxj04Bzu0xP2vJdwY8LAq1TskERheW3cY6QV7tg/T+2+IpNpmiqsWPoholeMyzy974sw6EtAz3E+SP0ss7COJ6naWykI9GhVEtCIesCU5eD5tXm7prftJrgYlfzcP9+Uaaf7xcPvbHYK8xjIbit7twsDrFro8e7/8s2K+8kkWflHvn7iT2NqZz8poRt7KuAZwh2XWx1+5rZOlr1iopgK9hdZNkaHTVeiYJa6qWJtxb71HxR5T/nmlrrku15bXx/fUZ0NTL/QQHtlF/Cm1+Y6DsDpjRND4N27ZJK/IGz7+DcHxGeALFe6IngPtcD9mdS9N+lNctI=
       on_success: always
       on_failure: never
       on_pull_requests: false
     -
       rooms:
         -
-          secure: GQiPScEsxNrxgmkm1Ib/swxPpT61UXzeqggI7iLitvrcOtwCplWRaRjJaMW4bWgKZ8JqxyybU9/YThuYKXKZrpFbmeqbG3HyDCmC+wmuxm5IXF/0rgz69PM4Uy6yI2GO9es68+tKLvBbLJ7sH9CnuQUKIkUSKu81nge6N4djLhdm6YCf8TTwW0UazmleJ1Np/eJ4Qjp+eBLWsJmuFeKvH0nQ7w2tU+ZVCx4Ge1BCpC0wYJTumj1TpjjJelBvxqFmGxkVlbAOaA92nZFDa1luvreYahb1iN1b9CP8A1TiY+fytoxaCZ4Yxq73jy3bxp3El0j09CzD6J/8xK5V+K+HyTQJZSOjP72oP1iRhriMr75p/0oIawdJdMrMdGlJs6b+dh2dwwZkclKn+cpzvsmaIlwWSw46r5W3XPs1zXR6jV3NSOUL4N9T0KQEL/TO4/Q0Tyg4bYWeNWSsCHS/QHYNa8dxUshSDHiqjqnqclkxAcGfRvTGgg6m/V0WoAPmpVFJoTWqYQYG/FtHj+rFEvbRY/RxGgpZkhomdTYLfP1eAsp0KAy8GgOqiHIxHYb60zj1xZ3t355OmN4Au5ddvDoo2ri/ODlGpQzEfQ0njHEyMHgcnJTuhFbt6fJUVGlIM4WhhrLGxCu52pVdRzG3m7wKqI8/UGxSPHuKOYuVxq9SpVU=
+          secure: RfAc/JTejBxXv1sjaUML4PahUPjLMAW4vhMFiiuwUEkInlWgxSxVCFsQVNlZFcqin2Kbqbz3lDpXMj8VGuO1pbMeE4LWYyNh9+h7qjo2QydUrd/vcSGEEsdqcknssIuO913laVlNKk123Ze3KkoxTCyLn0avYAXsU5s699wO20Yh7EMcvkN6sIWxCWZtHWN4SgrKjeoQt0ElYxHzh51evx7/UeG+hxbdUeMJPBMNhW9zu0ntuC+C7GZt79CK/YCEyOeGeHEsWT6bCQFC6sqV5JjsxGkrU9c/kOKw8l05EYSMVwxLHR6YwMXmE66p7u+c8j/mR0/Xzo1ONkTw70mzjwxr219/74xi+UQ00cnJN4MDJFQh5spfLEcGFPoD2WakUrhVCSVhI/pH3zaoclobLlNiDy2SP7GCIA7Msi5UG8giS89ux2/ALrfAtzAo34A2/JIbsBFcNZ9+SMh2Rl6arHjDyRSgaDmnre23nG3sOhdzb9Gy/ZsBqa25lM2Alk4qiNqeaI9QyeuoefV1nJgRcTd13rEUwSVMOrdK4IlJntMOaCCt5K9S5fPkPSaUMQnkdMcO1hQ3sicuP7ba6VEiumYOzfsG6I1O+OJZNoXGE0dJPyX27uuu4CsALhgK5QEPQC/IMy40Tg/glIzZYX42Fe5K6w/5NszXqmP4loG2ebU=
       on_success: never
       on_failure: always
       on_pull_requests: false
