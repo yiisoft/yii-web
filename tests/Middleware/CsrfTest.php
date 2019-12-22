@@ -11,7 +11,6 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use TheSeer\Tokenizer\Token;
 use Yiisoft\Router\Method;
 use Yiisoft\Security\Random;
 use Yiisoft\Security\TokenMask;
@@ -25,7 +24,7 @@ final class CsrfTest extends TestCase
     /**
      * @test
      */
-    public function validTokenInBodyPostRequestResultIn200()
+    public function validTokenInBodyPostRequestResultIn200(): void
     {
         $token = $this->generateToken();
         $middleware = $this->createCsrfMiddlewareWithToken($token);
@@ -36,7 +35,7 @@ final class CsrfTest extends TestCase
     /**
      * @test
      */
-    public function validTokenInBodyPutRequestResultIn200()
+    public function validTokenInBodyPutRequestResultIn200(): void
     {
         $token = $this->generateToken();
         $middleware = $this->createCsrfMiddlewareWithToken($token);
@@ -47,7 +46,7 @@ final class CsrfTest extends TestCase
     /**
      * @test
      */
-    public function validTokenInBodyDeleteRequestResultIn200()
+    public function validTokenInBodyDeleteRequestResultIn200(): void
     {
         $token = $this->generateToken();
         $middleware = $this->createCsrfMiddlewareWithToken($token);
@@ -58,7 +57,7 @@ final class CsrfTest extends TestCase
     /**
      * @test
      */
-    public function validTokenInHeaderResultIn200()
+    public function validTokenInHeaderResultIn200(): void
     {
         $token = $this->generateToken();
         $middleware = $this->createCsrfMiddlewareWithToken($token);
@@ -69,7 +68,7 @@ final class CsrfTest extends TestCase
     /**
      * @test
      */
-    public function getIsAlwaysAllowed()
+    public function getIsAlwaysAllowed(): void
     {
         $middleware = $this->createCsrfMiddlewareWithToken('');
         $response = $middleware->process($this->createServerRequest(Method::GET), $this->createRequestHandler());
@@ -79,31 +78,31 @@ final class CsrfTest extends TestCase
     /**
      * @test
      */
-    public function invalidTokenResultIn400()
+    public function invalidTokenResultIn422(): void
     {
         $middleware = $this->createCsrfMiddlewareWithToken($this->generateToken());
         $response = $middleware->process($this->createPostServerRequestWithBodyToken($this->generateToken()), $this->createRequestHandler());
-        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals(422, $response->getStatusCode());
     }
 
     /**
      * @test
      */
-    public function emptyTokenInSessionResultIn400()
+    public function emptyTokenInSessionResultIn422(): void
     {
         $middleware = $this->createCsrfMiddlewareWithToken('');
         $response = $middleware->process($this->createPostServerRequestWithBodyToken($this->generateToken()), $this->createRequestHandler());
-        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals(422, $response->getStatusCode());
     }
 
     /**
      * @test
      */
-    public function emptyTokenInRequestResultIn400()
+    public function emptyTokenInRequestResultIn422(): void
     {
         $middleware = $this->createCsrfMiddlewareWithToken($this->generateToken());
         $response = $middleware->process($this->createServerRequest(), $this->createRequestHandler());
-        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals(422, $response->getStatusCode());
     }
 
     private function createServerRequest(string $method = Method::POST, array $bodyParams = [], array $headParams = []): ServerRequestInterface
@@ -144,7 +143,7 @@ final class CsrfTest extends TestCase
         };
     }
 
-    private function createSessionMock(string $returnToken)
+    private function createSessionMock(string $returnToken): SessionInterface
     {
         /**
          * @var SessionInterface|MockObject $sessionMock

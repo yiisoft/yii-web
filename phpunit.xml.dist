@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <phpunit bootstrap="tests/bootstrap.php"
-    backupGlobals="true"
     colors="true"
     verbose="true"
     failOnRisky="true"
@@ -10,7 +9,8 @@
     convertWarningsToExceptions="true"
     stopOnFailure="false"
     executionOrder="random"
-    resolveDependencies="true">
+    resolveDependencies="true"
+    printerClass="Yiisoft\Yii\Web\Tests\ResultPrinter">
 
     <testsuites>
         <testsuite name="Yii Web Test Suite">

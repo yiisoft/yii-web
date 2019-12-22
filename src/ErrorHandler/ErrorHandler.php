@@ -20,6 +20,8 @@ final class ErrorHandler
 
     private $defaultRenderer;
 
+    private $exposeDetails = true;
+
     public function __construct(LoggerInterface $logger, ThrowableRendererInterface $defaultRenderer)
     {
         $this->logger = $logger;
@@ -45,16 +47,6 @@ final class ErrorHandler
             return;
         }
 
-        // in case error appeared in __toString method we can't throw any exception
-        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-        array_shift($trace);
-        foreach ($trace as $frame) {
-            if ($frame['function'] === '__toString') {
-                trigger_error($message, $severity);
-                return;
-            }
-        }
-
         throw new ErrorException($message, $severity, $severity, $file, $line);
     }
 
@@ -73,7 +65,7 @@ final class ErrorHandler
 
         try {
             $this->log($t);
-            return $renderer->render($t);
+            return $this->exposeDetails ? $renderer->renderVerbose($t) : $renderer->render($t);
         } catch (\Throwable $t) {
             return nl2br($t);
         }
@@ -132,7 +124,13 @@ final class ErrorHandler
         unset($this->memoryReserve);
         $error = error_get_last();
         if ($error !== null && ErrorException::isFatalError($error)) {
-            $exception = new ErrorException($error['message'], $error['type'], $error['type'], $error['file'], $error['line']);
+            $exception = new ErrorException(
+                $error['message'],
+                $error['type'],
+                $error['type'],
+                $error['file'],
+                $error['line']
+            );
             $this->handleThrowable($exception);
             exit(1);
         }
@@ -141,9 +139,26 @@ final class ErrorHandler
     private function log(\Throwable $t/*, ServerRequestInterface $request*/): void
     {
         $renderer = new PlainTextRenderer();
-        $this->logger->error($renderer->render($t), [
-            'throwable' => $t,
-            //'request' => $request,
-        ]);
+        $this->logger->error(
+            $renderer->renderVerbose($t),
+            [
+                'throwable' => $t,
+                //'request' => $request,
+            ]
+        );
+    }
+
+    public function withExposedDetails(): self
+    {
+        $new = clone $this;
+        $new->exposeDetails = true;
+        return $new;
+    }
+
+    public function withoutExposedDetails(): self
+    {
+        $new = clone $this;
+        $new->exposeDetails = false;
+        return $new;
     }
 }

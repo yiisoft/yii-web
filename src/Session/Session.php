@@ -37,10 +37,6 @@ class Session implements SessionInterface
             $defaultOptions = array_merge($defaultOptions, self::DEFAULT_OPTIONS_73);
         }
         $this->options = array_merge($defaultOptions, $options);
-
-        if ($this->isActive()) {
-            throw new \RuntimeException('Session is already started');
-        }
     }
 
     public function get(string $key, $default = null)
@@ -98,7 +94,9 @@ class Session implements SessionInterface
     {
         if ($this->isActive()) {
             try {
-                session_regenerate_id(true);
+                if (session_regenerate_id(true)) {
+                    $this->sessionId = session_id();
+                }
             } catch (\Throwable $e) {
                 throw new SessionException('Failed to regenerate ID', $e->getCode(), $e);
             }

@@ -5,8 +5,8 @@ namespace Yiisoft\Yii\Web\Tests\Session;
 
 use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\ResponseInterface;
 use PHPUnit_Framework_MockObject_MockObject;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -54,7 +54,7 @@ class SessionMiddlewareTest extends TestCase
      */
     private $sessionMiddleware;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->requestHandlerMock = $this->createMock(RequestHandlerInterface::class);
@@ -67,7 +67,7 @@ class SessionMiddlewareTest extends TestCase
     /**
      * @test
      */
-    public function processDiscardsSessionWhenRequestHandlerThrowsException()
+    public function processDiscardsSessionWhenRequestHandlerThrowsException(): void
     {
         $this->requestHandlerMock
             ->expects($this->once())
@@ -85,7 +85,7 @@ class SessionMiddlewareTest extends TestCase
     /**
      * @test
      */
-    public function processThrowsSessionExceptionWhenConnectionIsNotUsingHttps()
+    public function processThrowsSessionExceptionWhenConnectionIsNotUsingHttps(): void
     {
         $this->setUpSessionMock();
         $this->setUpRequestMock(false);
@@ -96,7 +96,7 @@ class SessionMiddlewareTest extends TestCase
     /**
      * @test
      */
-    public function processGetsDomainFromRequestWhenDomainCookieParameterNotProvided()
+    public function processGetsDomainFromRequestWhenDomainCookieParameterNotProvided(): void
     {
         $this->setUpSessionMock(false);
         $this->setUpRequestMock();
@@ -114,7 +114,7 @@ class SessionMiddlewareTest extends TestCase
     /**
      * @test
      */
-    public function processDoesNotAlterResponseIfSessionIsNotActive()
+    public function processDoesNotAlterResponseIfSessionIsNotActive(): void
     {
         $this->setUpSessionMock(true, false);
         $this->setUpRequestMock();
@@ -126,7 +126,7 @@ class SessionMiddlewareTest extends TestCase
         $this->assertEquals($response, $result);
     }
 
-    private function setUpRequestHandlerMock(ResponseInterface $response)
+    private function setUpRequestHandlerMock(ResponseInterface $response): void
     {
         $this->requestHandlerMock
             ->expects($this->once())
@@ -134,7 +134,7 @@ class SessionMiddlewareTest extends TestCase
             ->willReturn($response);
     }
 
-    private function setUpSessionMock(bool $cookieDomainProvided = true, bool $isActive = true)
+    private function setUpSessionMock(bool $cookieDomainProvided = true, bool $isActive = true): void
     {
         $this->sessionMock
             ->expects($this->any())
@@ -162,7 +162,7 @@ class SessionMiddlewareTest extends TestCase
             ->willReturn($cookieParams);
     }
 
-    private function setUpRequestMock(bool $isConnectionSecure = true)
+    private function setUpRequestMock(bool $isConnectionSecure = true): void
     {
         $uriScheme = $isConnectionSecure ? 'https' : 'http';
         $this->setUpUriMock($uriScheme);
@@ -181,7 +181,7 @@ class SessionMiddlewareTest extends TestCase
             ->willReturn($requestCookieParams);
     }
 
-    private function setUpUriMock(string $uriScheme)
+    private function setUpUriMock(string $uriScheme): void
     {
         $this->uriMock
             ->expects($this->any())

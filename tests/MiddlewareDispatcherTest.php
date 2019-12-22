@@ -35,7 +35,7 @@ class MiddlewareDispatcherTest extends TestCase
      */
     private $middlewareMocks;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->containerMock = $this->createMock(ContainerInterface::class);
@@ -50,7 +50,7 @@ class MiddlewareDispatcherTest extends TestCase
     /**
      * @test
      */
-    public function constructThrowsExceptionWhenMiddlewaresAreNotDefined()
+    public function constructThrowsExceptionWhenMiddlewaresAreNotDefined(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         new MiddlewareDispatcher(
@@ -63,7 +63,7 @@ class MiddlewareDispatcherTest extends TestCase
     /**
      * @test
      */
-    public function addThrowsInvalidArgumentExceptionWhenMiddlewareIsNotOfCorrectType()
+    public function addThrowsInvalidArgumentExceptionWhenMiddlewareIsNotOfCorrectType(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $exampleInput = new SapiEmitter();
@@ -75,9 +75,9 @@ class MiddlewareDispatcherTest extends TestCase
      * @test
      * @doesNotPerformAssertions
      */
-    public function addAddsCallableToMiddlewareArrayWithoutThrowingException()
+    public function addAddsCallableToMiddlewareArrayWithoutThrowingException(): void
     {
-        $callable = function () {
+        $callable = static function () {
             echo 'example function for testing purposes';
         };
         $this->middlewareDispatcher->add($callable);
@@ -87,7 +87,7 @@ class MiddlewareDispatcherTest extends TestCase
      * @test
      * @doesNotPerformAssertions
      */
-    public function addAddsMiddlewareInterfaceToMiddlewareArrayWithoutThrowingException()
+    public function addAddsMiddlewareInterfaceToMiddlewareArrayWithoutThrowingException(): void
     {
         $middleware = $this->createMock(MiddlewareInterface::class);
         $this->middlewareDispatcher->add($middleware);
@@ -96,7 +96,7 @@ class MiddlewareDispatcherTest extends TestCase
     /**
      * @test
      */
-    public function handleCallsMiddlewareFromQueueToProcessRequest()
+    public function dispatchCallsMiddlewareFromQueueToProcessRequest(): void
     {
         $request = $this->createMock(ServerRequestInterface::class);
         $this->fallbackHandlerMock
@@ -105,10 +105,15 @@ class MiddlewareDispatcherTest extends TestCase
             ->with($request);
 
         $this->middlewareMocks[0]
-            ->expects($this->once())
+            ->expects($this->exactly(2))
             ->method('process')
             ->with($request, $this->middlewareDispatcher);
 
-        $this->middlewareDispatcher->handle($request);
+        // TODO: test that second middleware is called as well
+
+        $this->middlewareDispatcher->dispatch($request);
+
+        // ensure that dispatcher could be called multiple times
+        $this->middlewareDispatcher->dispatch($request);
     }
 }

@@ -17,7 +17,7 @@ final class CallbackTest extends TestCase
     /**
      * @test
      */
-    public function handlerIsPassedToCallback()
+    public function handlerIsPassedToCallback(): void
     {
         $middleware = new Callback(function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
             return $handler->handle($request);
@@ -30,7 +30,7 @@ final class CallbackTest extends TestCase
     /**
      * @test
      */
-    public function callbackResultReturned()
+    public function callbackResultReturned(): void
     {
         $middleware = new Callback(function () {
             return new Response(400);
@@ -43,7 +43,7 @@ final class CallbackTest extends TestCase
     /**
      * @test
      */
-    public function requestIsPassedToCallback()
+    public function requestIsPassedToCallback(): void
     {
         $requestMethod = Method::PUT;
         $requestUri = '/test/request/uri';
@@ -59,7 +59,7 @@ final class CallbackTest extends TestCase
     /**
      * @test
      */
-    public function checkDiContainerCalled()
+    public function checkDiContainerCalled(): void
     {
         $middleware = new Callback(function (Response $response) {
             return $response;

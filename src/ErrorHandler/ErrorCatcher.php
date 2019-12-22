@@ -1,5 +1,5 @@
 <?php
-namespace Yiisoft\Yii\Web\Middleware;
+namespace Yiisoft\Yii\Web\ErrorHandler;
 
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -7,12 +7,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Yiisoft\Yii\Web\ErrorHandler\ErrorHandler;
-use Yiisoft\Yii\Web\ErrorHandler\ThrowableRendererInterface;
-use Yiisoft\Yii\Web\ErrorHandler\HtmlRenderer;
-use Yiisoft\Yii\Web\ErrorHandler\JsonRenderer;
-use Yiisoft\Yii\Web\ErrorHandler\PlainTextRenderer;
-use Yiisoft\Yii\Web\ErrorHandler\XmlRenderer;
+use Yiisoft\Yii\Web\Helper\HeaderHelper;
 
 /**
  * ErrorCatcher catches all throwables from the next middlewares and renders it
@@ -30,6 +25,7 @@ final class ErrorCatcher implements MiddlewareInterface
         'text/xml' => XmlRenderer::class,
         'text/plain' => PlainTextRenderer::class,
         'text/html' => HtmlRenderer::class,
+        '*/*' => HtmlRenderer::class,
     ];
 
     public function __construct(ResponseFactoryInterface $responseFactory, ErrorHandler $errorHandler, ContainerInterface $container)
@@ -39,13 +35,49 @@ final class ErrorCatcher implements MiddlewareInterface
         $this->container = $container;
     }
 
+    public function withAddedRenderer(string $mimeType, string $rendererClass): self
+    {
+        if ($mimeType === '') {
+            throw new \InvalidArgumentException('The mime type cannot be an empty string!');
+        }
+        if ($rendererClass === '') {
+            throw new \InvalidArgumentException('The renderer class cannot be an empty string!');
+        }
+        if (strpos($mimeType, '/') === false) {
+            throw new \InvalidArgumentException('Invalid mime type!');
+        }
+        $new = clone $this;
+        $new->renderers[strtolower($mimeType)] = $rendererClass;
+        return $new;
+    }
+
+    /**
+     * @param string... $mimeTypes MIME types or, if not specified, all will be removed.
+     */
+    public function withoutRenderers(string... $mimeTypes): self
+    {
+        $new = clone $this;
+        if (count($mimeTypes) === 0) {
+            $new->renderers = [];
+            return $new;
+        }
+        foreach ($mimeTypes as $mimeType) {
+            if ($mimeType === '') {
+                throw new \InvalidArgumentException('The mime type cannot be an empty string!');
+            }
+            unset($new->renderers[strtolower($mimeType)]);
+        }
+        return $new;
+    }
+
     private function handleException(\Throwable $e, ServerRequestInterface $request): ResponseInterface
     {
         $contentType = $this->getContentType($request);
-        $renderer = $this->getRenderer($contentType);
-        $renderer->setRequest($request);
+        $renderer = $this->getRenderer(strtolower($contentType));
+        if ($renderer !== null) {
+            $renderer->setRequest($request);
+        }
         $content = $this->errorHandler->handleCaughtThrowable($e, $renderer);
-
         $response = $this->responseFactory->createResponse(500)
             ->withHeader('Content-type', $contentType);
         $response->getBody()->write($content);
@@ -63,13 +95,16 @@ final class ErrorCatcher implements MiddlewareInterface
 
     private function getContentType(ServerRequestInterface $request): string
     {
-        $acceptHeaders = preg_split('~\s*,\s*~', $request->getHeaderLine('Accept'), PREG_SPLIT_NO_EMPTY);
-        foreach ($acceptHeaders as $header) {
-            if (array_key_exists($header, $this->renderers)) {
-                return $header;
+        try {
+            foreach (HeaderHelper::getSortedAcceptTypesFromRequest($request) as $header) {
+                if (array_key_exists($header, $this->renderers)) {
+                    return $header;
+                }
             }
+        } catch (\InvalidArgumentException $e) {
+            // The Accept header contains an invalid q factor
         }
-        return 'text/html';
+        return '*/*';
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
