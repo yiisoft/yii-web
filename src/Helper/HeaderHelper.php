@@ -94,7 +94,7 @@ final class HeaderHelper
      * @link https://developer.mozilla.org/en-US/docs/Glossary/Quality_values
      * @link https://www.ietf.org/rfc/rfc2045.html#section-2
      */
-    public static function getSortedValueAndParameters($values, bool $lowerCaseValue = true, bool $loweCaseParameter = true, bool $lowerCaseParameterValue = true): array
+    public static function getSortedValueAndParameters($values, bool $lowerCaseValue = true, bool $lowerCaseParameter = true, bool $lowerCaseParameterValue = true): array
     {
         if (is_string($values)) {
             $values = preg_split('/\s*,\s*/', trim($values), -1, PREG_SPLIT_NO_EMPTY);
@@ -107,7 +107,7 @@ final class HeaderHelper
         }
         $output = [];
         foreach ($values as $value) {
-            $parse = self::getValueAndParameters($value, $lowerCaseValue, $loweCaseParameter, $lowerCaseParameterValue);
+            $parse = self::getValueAndParameters($value, $lowerCaseValue, $lowerCaseParameter, $lowerCaseParameterValue);
             // case-insensitive "q" parameter
             $q = $parse['q'] ?? $parse['Q'] ?? 1.0;
 
