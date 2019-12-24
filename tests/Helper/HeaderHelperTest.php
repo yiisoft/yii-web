@@ -199,11 +199,6 @@ class HeaderHelperTest extends TestCase
             'brokenToken2' => ['a=foo-ä.html',null, null, ['a' => 'foo-ä.html']],
             # Invalid syntax but most browsers accept the umlaut with warn
             'brokenToken3' => ['a=foo-Ã¤.html',null, null, ['a' => 'foo-Ã¤.html']],
-
-            # RFC 2231/5987 Encoding: Character Sets
-            // '2231iso' => ["filename=iso-8859-1''foo-%E4.html",null, null, ['filename' => 'foo-ä.html']],
-            // '2231utf' => ["filename=UTF-8''foo-%c3%a4-%e2%82%ac.html",null, null, ['filename' => 'foo-ä-€.html']],
-            // '2231noc' => ["filename=''foo-%c3%a4-%e2%82%ac.html", null,null, null, \InvalidArgumentException::class],
         ];
     }
 
