@@ -71,7 +71,7 @@ final class HeaderHelper
         $output = [];
         do {
             $headerValue = preg_replace_callback(
-                '/^(?<parameter>' . self::PATTERN_ATTRIBUTE . ')=(?<value>' . self::PATTERN_VALUE . ')(?:;|$)/',
+                '/^[ \t]*(?<parameter>' . self::PATTERN_ATTRIBUTE . ')[ \t]*=[ \t]*(?<value>' . self::PATTERN_VALUE . ')[ \t]*(?:;|$)/',
                 static function ($matches) use (&$output, $lowerCaseParameter, $lowerCaseValue) {
                     $value = $matches['value'];
                     if (substr($matches['value'], 0, 1) === '"') {

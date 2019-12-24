@@ -177,11 +177,11 @@ class HeaderHelperTest extends TestCase
             'comma' => ['a=test,test',null, null, null, \InvalidArgumentException::class],
 
             # true syntax
-            // 'spaces2' => [' a = b ; c = "d" ',null, null, ['a' => 'b', 'c' => 'd']],
+            'spaces2' => [' a = b ; c = "d" ',null, null, ['a' => 'b', 'c' => 'd']],
             'case' => ['A=TEST;TEST=B',true, false, ['a' => 'TEST', 'test' => 'B']],
             'case2' => ['A=TEST;TEST=B',false, false, ['A' => 'TEST', 'TEST' => 'B']],
             'case3' => ['A=TEST;TEST=B',false, true, ['A' => 'test', 'TEST' => 'b']],
-            // 'spaces1' => ['a=b; c="d" ',null, null, ['a' => 'b', 'c' => 'd']],
+            'spaces1' => ['a=b; c="d" ',null, null, ['a' => 'b', 'c' => 'd']],
             'spaces3' => ['a=b c',null, null, null, \InvalidArgumentException::class],
             'percent' => ['a=%1;b="foo-%32-bar"',null, null, ['a' => '%1', 'b' => 'foo-%32-bar']],
 
