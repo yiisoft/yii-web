@@ -1,4 +1,5 @@
 <?php
+
 namespace Yiisoft\Yii\Web\Tests\Middleware;
 
 use Nyholm\Psr7\Response;
@@ -11,7 +12,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Router\UrlGeneratorInterface;
 use Yiisoft\Yii\Web\Exception\BadUriPrefixException;
-use Yiisoft\Yii\Web\Middleware\SubFolderMiddleware;
+use Yiisoft\Yii\Web\Middleware\SubFolder;
 
 class SubFolderTest extends TestCase
 {
@@ -19,12 +20,11 @@ class SubFolderTest extends TestCase
     protected Aliases $aliases;
     protected ?ServerRequestInterface $lastRequest;
 
-
     public function setUp(): void
     {
         $this->urlGeneratorUriPrefix = '';
         $this->lastRequest = null;
-        $this->aliases = new Aliases(['web' => '/default/web']);
+        $this->aliases = new Aliases(['@web' => '/default/web']);
     }
 
     public function testDefault(): void
@@ -79,7 +79,7 @@ class SubFolderTest extends TestCase
         $this->assertEquals('/', $this->getRequestPath());
     }
 
-    public function testAutoPrefixUriWithoutTrailingSlash(): void
+    public function testAutoPrefixAndUriWithoutTrailingSlash(): void
     {
         $request = $this->createRequest($uri = '/public', $script = '/public/index.php');
         $mw = $this->createMiddleware();
@@ -115,7 +115,7 @@ class SubFolderTest extends TestCase
         $this->assertEquals($uri, $this->getRequestPath());
     }
 
-    public function testWrongCustomPrefix(): void
+    public function testCustomPrefixWithTrailingSlash(): void
     {
         $request = $this->createRequest($uri = '/web/', $script = '/public/index.php');
         $mw = $this->createMiddleware();
@@ -123,6 +123,18 @@ class SubFolderTest extends TestCase
 
         $this->expectException(BadUriPrefixException::class);
         $this->expectExceptionMessage('Wrong URI prefix value');
+
+        $this->process($mw, $request);
+    }
+
+    public function testCustomPrefixFromMiddleOfUri(): void
+    {
+        $request = $this->createRequest($uri = '/web/middle/public', $script = '/public/index.php');
+        $mw = $this->createMiddleware();
+        $mw->prefix = '/middle';
+
+        $this->expectException(BadUriPrefixException::class);
+        $this->expectExceptionMessage('URI prefix does not match');
 
         $this->process($mw, $request);
     }
@@ -163,7 +175,7 @@ class SubFolderTest extends TestCase
         $this->assertEquals($uri, $this->getRequestPath());
     }
 
-    private function process(SubFolderMiddleware $middleware, ServerRequestInterface $request): ResponseInterface
+    private function process(SubFolder $middleware, ServerRequestInterface $request): ResponseInterface
     {
         $handler = new class implements RequestHandlerInterface {
             public ?ServerRequestInterface $request = null;
@@ -181,7 +193,7 @@ class SubFolderTest extends TestCase
         return $this->lastRequest->getUri()->getPath();
     }
 
-    private function createMiddleware(): SubFolderMiddleware
+    private function createMiddleware(): SubFolder
     {
         // URL Generator
         /** @var MockObject|UrlGeneratorInterface $urlGenerator */
@@ -191,7 +203,7 @@ class SubFolderTest extends TestCase
         });
         $urlGenerator->method('getUriPrefix')->willReturnReference($this->urlGeneratorUriPrefix);
 
-        return new SubFolderMiddleware($urlGenerator, $this->aliases);
+        return new SubFolder($urlGenerator, $this->aliases);
     }
 
     private function createRequest(string $uri = '/', string $scriptPath = '/'): ServerRequestInterface {

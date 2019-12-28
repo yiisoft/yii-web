@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Yiisoft\Yii\Web\Middleware;
 
@@ -13,7 +13,7 @@ use Yiisoft\Yii\Web\Exception\BadUriPrefixException;
 /**
  * This middleware supports routing when webroot is not the same folder as public
  */
-final class SubFolderMiddleware implements MiddlewareInterface
+final class SubFolder implements MiddlewareInterface
 {
     public ?string $prefix = null;
     private UrlGeneratorInterface $uriGenerator;
@@ -30,8 +30,8 @@ final class SubFolderMiddleware implements MiddlewareInterface
         $uri = $request->getUri();
         $path = $uri->getPath();
         $auto = $this->prefix === null;
+        $length = $auto ? 0 : strlen($this->prefix);
 
-        $length = strlen($this->prefix);
         if ($auto) {
             // automatically check that the project is in a subfolder
             // and uri contain a prefix
