@@ -64,6 +64,21 @@ class SubFolderTest extends TestCase
         $this->assertEquals('/', $this->getRequestPath());
     }
 
+    public function testAutoPrefixLogn(): void
+    {
+        $prefix = '/root/php/dev-server/project-42/index_html/public/web';
+        $uri = "{$prefix}/";
+        $script = "{$prefix}/index.php";
+        $request = $this->createRequest($uri, $script);
+        $mw = $this->createMiddleware();
+
+        $this->process($mw, $request);
+
+        $this->assertEquals($prefix, $this->aliases->get('@web'));
+        $this->assertEquals($prefix, $this->urlGeneratorUriPrefix);
+        $this->assertEquals('/', $this->getRequestPath());
+    }
+
     public function testAutoPrefixUriWithoutTrailingSlash(): void
     {
         $request = $this->createRequest($uri = '/public', $script = '/public/index.php');
@@ -141,10 +156,11 @@ class SubFolderTest extends TestCase
         $request = $this->createRequest($uri = '/public/web/', $script = '/pub/index.php');
         $mw = $this->createMiddleware();
 
-        $this->expectException(BadUriPrefixException::class);
-        $this->expectExceptionMessage('URI prefix does not match completely');
-
         $this->process($mw, $request);
+
+        $this->assertEquals('/default/web', $this->aliases->get('@web'));
+        $this->assertEquals('', $this->urlGeneratorUriPrefix);
+        $this->assertEquals($uri, $this->getRequestPath());
     }
 
     private function process(SubFolderMiddleware $middleware, ServerRequestInterface $request): ResponseInterface
