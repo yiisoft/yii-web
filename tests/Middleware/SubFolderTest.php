@@ -179,7 +179,8 @@ class SubFolderTest extends TestCase
     {
         $handler = new class implements RequestHandlerInterface {
             public ?ServerRequestInterface $request = null;
-            public function handle(ServerRequestInterface $request): ResponseInterface {
+            public function handle(ServerRequestInterface $request): ResponseInterface
+            {
                 $this->request = $request;
                 return new Response();
             }
@@ -206,7 +207,8 @@ class SubFolderTest extends TestCase
         return new SubFolder($urlGenerator, $this->aliases);
     }
 
-    private function createRequest(string $uri = '/', string $scriptPath = '/'): ServerRequestInterface {
+    private function createRequest(string $uri = '/', string $scriptPath = '/'): ServerRequestInterface
+    {
         $request = new ServerRequest('get', $uri, [], null, '1.1', ['SCRIPT_NAME' => $scriptPath]);
         return $request;
     }
