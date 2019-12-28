@@ -30,32 +30,39 @@ final class SubFolderMiddleware implements MiddlewareInterface
         $uri = $request->getUri();
         $path = $uri->getPath();
 
+        $length = strlen($this->prefix);
         if ($this->prefix === null) {
             // automatically check that the project is in a subfolder
             // and uri contain a prefix
             $scriptName = $request->getServerParams()['SCRIPT_NAME'];
             if (strpos($scriptName, '/', 1) !== false) {
-                $length = strrpos($scriptName, '/');
-                $prefix = substr($scriptName, 0, $length);
+                $prefix = substr($scriptName, 0, strrpos($scriptName, '/'));
                 if (strpos($path, $prefix) === 0) {
                     $this->prefix = $prefix;
-                    $this->uriGenerator->setUriPrefix($prefix);
-                    $request = $request->withUri($uri->withPath(substr($path, $length)));
+                    $length = strlen($this->prefix);
                 }
             }
-        } elseif ($this->prefix !== '') {
+        } elseif ($length > 0) {
             if ($this->prefix[-1] === '/') {
                 throw new BadUriPrefixException('Wrong URI prefix value');
             }
-            $length = strlen($this->prefix);
             if (strpos($path, $this->prefix) !== 0) {
                 throw new BadUriPrefixException('URI prefix does not match');
             }
-            $this->uriGenerator->setUriPrefix($this->prefix);
-            $request = $request->withUri($uri->withPath(substr($path, $length)));
         }
-        // rewrite alias
-        $this->aliases->set('@web', $this->prefix . '/');
+
+        if ($length > 0) {
+            $newPath = substr($path, $length);
+            if ($newPath === '') {
+                $newPath = '/';
+            } elseif ($newPath[0] !== '/') {
+                throw new BadUriPrefixException('URI prefix does not match completely');
+            }
+            $request = $request->withUri($uri->withPath($newPath));
+            $this->uriGenerator->setUriPrefix($this->prefix);
+            // rewrite alias
+            $this->aliases->set('@web', $this->prefix . '/');
+        }
 
         return $handler->handle($request);
     }
