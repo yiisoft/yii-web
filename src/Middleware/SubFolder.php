@@ -29,25 +29,26 @@ final class SubFolder implements MiddlewareInterface
     {
         $uri = $request->getUri();
         $path = $uri->getPath();
-        $auto = $this->prefix === null;
-        $length = $auto ? 0 : strlen($this->prefix);
+        $prefix = $this->prefix;
+        $auto = $prefix === null;
+        $length = $auto ? 0 : strlen($prefix);
 
         if ($auto) {
             // automatically check that the project is in a subfolder
             // and uri contain a prefix
             $scriptName = $request->getServerParams()['SCRIPT_NAME'];
             if (strpos($scriptName, '/', 1) !== false) {
-                $prefix = substr($scriptName, 0, strrpos($scriptName, '/'));
-                if (strpos($path, $prefix) === 0) {
-                    $this->prefix = $prefix;
-                    $length = strlen($this->prefix);
+                $tmpPrefix = substr($scriptName, 0, strrpos($scriptName, '/'));
+                if (strpos($path, $tmpPrefix) === 0) {
+                    $prefix = $tmpPrefix;
+                    $length = strlen($prefix);
                 }
             }
         } elseif ($length > 0) {
-            if ($this->prefix[-1] === '/') {
+            if ($prefix[-1] === '/') {
                 throw new BadUriPrefixException('Wrong URI prefix value');
             }
-            if (strpos($path, $this->prefix) !== 0) {
+            if (strpos($path, $prefix) !== 0) {
                 throw new BadUriPrefixException('URI prefix does not match');
             }
         }
@@ -63,9 +64,9 @@ final class SubFolder implements MiddlewareInterface
                 }
             } else {
                 $request = $request->withUri($uri->withPath($newPath));
-                $this->uriGenerator->setUriPrefix($this->prefix);
+                $this->uriGenerator->setUriPrefix($prefix);
                 // rewrite alias
-                $this->aliases->set('@web', $this->prefix . '/');
+                $this->aliases->set('@web', $prefix . '/');
             }
         }
 
