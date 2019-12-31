@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Yiisoft\Yii\Web\Middleware;
 
@@ -13,7 +13,7 @@ use Yiisoft\Yii\Web\Exception\BadUriPrefixException;
 /**
  * This middleware supports routing when webroot is not the same folder as public
  */
-final class SubFolderMiddleware implements MiddlewareInterface
+final class SubFolder implements MiddlewareInterface
 {
     public ?string $prefix = null;
     private UrlGeneratorInterface $uriGenerator;
@@ -29,33 +29,46 @@ final class SubFolderMiddleware implements MiddlewareInterface
     {
         $uri = $request->getUri();
         $path = $uri->getPath();
+        $prefix = $this->prefix;
+        $auto = $prefix === null;
+        $length = $auto ? 0 : strlen($prefix);
 
-        if ($this->prefix === null) {
-            // automatically check that the project is in a subfolder
-            // and uri contain a prefix
+        if ($auto) {
+            // automatically checks that the project is in a subfolder
+            // and URI contains a prefix
             $scriptName = $request->getServerParams()['SCRIPT_NAME'];
             if (strpos($scriptName, '/', 1) !== false) {
-                $length = strrpos($scriptName, '/');
-                $prefix = substr($scriptName, 0, $length);
-                if (strpos($path, $prefix) === 0) {
-                    $this->prefix = $prefix;
-                    $this->uriGenerator->setUriPrefix($prefix);
-                    $request = $request->withUri($uri->withPath(substr($path, $length)));
+                $tmpPrefix = substr($scriptName, 0, strrpos($scriptName, '/'));
+                if (strpos($path, $tmpPrefix) === 0) {
+                    $prefix = $tmpPrefix;
+                    $length = strlen($prefix);
                 }
             }
-        } elseif ($this->prefix !== '') {
-            if ($this->prefix[-1] === '/') {
+        } elseif ($length > 0) {
+            if ($prefix[-1] === '/') {
                 throw new BadUriPrefixException('Wrong URI prefix value');
             }
-            $length = strlen($this->prefix);
-            if (strpos($path, $this->prefix) !== 0) {
+            if (strpos($path, $prefix) !== 0) {
                 throw new BadUriPrefixException('URI prefix does not match');
             }
-            $this->uriGenerator->setUriPrefix($this->prefix);
-            $request = $request->withUri($uri->withPath(substr($path, $length)));
         }
-        // rewrite alias
-        $this->aliases->set('@web', $this->prefix . '/');
+
+        if ($length > 0) {
+            $newPath = substr($path, $length);
+            if ($newPath === '') {
+                $newPath = '/';
+            }
+            if ($newPath[0] !== '/') {
+                if (!$auto) {
+                    throw new BadUriPrefixException('URI prefix does not match completely');
+                }
+            } else {
+                $request = $request->withUri($uri->withPath($newPath));
+                $this->uriGenerator->setUriPrefix($prefix);
+                // rewrite alias
+                $this->aliases->set('@web', $prefix . '/');
+            }
+        }
 
         return $handler->handle($request);
     }
