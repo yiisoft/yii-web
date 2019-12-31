@@ -34,8 +34,8 @@ final class SubFolder implements MiddlewareInterface
         $length = $auto ? 0 : strlen($prefix);
 
         if ($auto) {
-            // automatically check that the project is in a subfolder
-            // and uri contain a prefix
+            // automatically checks that the project is in a subfolder
+            // and URI contains a prefix
             $scriptName = $request->getServerParams()['SCRIPT_NAME'];
             if (strpos($scriptName, '/', 1) !== false) {
                 $tmpPrefix = substr($scriptName, 0, strrpos($scriptName, '/'));

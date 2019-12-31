@@ -196,7 +196,6 @@ class SubFolderTest extends TestCase
 
     private function createMiddleware(): SubFolder
     {
-        // URL Generator
         /** @var MockObject|UrlGeneratorInterface $urlGenerator */
         $urlGenerator = $this->getMockBuilder(UrlGeneratorInterface::class)->getMock();
         $urlGenerator->method('setUriPrefix')->willReturnCallback(function ($prefix) {
@@ -209,7 +208,6 @@ class SubFolderTest extends TestCase
 
     private function createRequest(string $uri = '/', string $scriptPath = '/'): ServerRequestInterface
     {
-        $request = new ServerRequest('get', $uri, [], null, '1.1', ['SCRIPT_NAME' => $scriptPath]);
-        return $request;
+        return new ServerRequest('get', $uri, [], null, '1.1', ['SCRIPT_NAME' => $scriptPath]);
     }
 }
