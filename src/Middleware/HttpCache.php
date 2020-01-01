@@ -9,6 +9,10 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
 use Yiisoft\Router\Method;
 use Yiisoft\Yii\Web\Session\SessionInterface;
+use function in_array;
+use function preg_split;
+use function reset;
+use function str_replace;
 
 /**
  * HttpCache implements client-side caching by utilizing the `Last-Modified` and `ETag` HTTP headers.
@@ -17,32 +21,39 @@ final class HttpCache implements MiddlewareInterface
 {
     private const DEFAULT_HEADER = 'public, max-age=3600';
     /**
+     * @internal Frozen session data
+     */
+    private ?array $sessionData;
+
+    /**
      * @var callable a PHP callback that returns the UNIX timestamp of the last modification time.
      * The callback's signature should be:
      *
      * ```php
-     * function ($action, $params)
+     * function ($request, $params)
      * ```
      *
-     * where `$action` is the [[Action]] object that this filter is currently handling;
+     * where `$request` is the [[ServerRequestInterface]] object that this filter is currently handling;
      * `$params` takes the value of [[params]]. The callback should return a UNIX timestamp.
      *
      * @see http://tools.ietf.org/html/rfc7232#section-2.2
      */
     private $lastModified;
+
     /**
      * @var callable a PHP callback that generates the ETag seed string.
      * The callback's signature should be:
      *
      * ```php
-     * function ($action, $params)
+     * function ($request, $params)
      * ```
      *
-     * where `$action` is the [[Action]] object that this filter is currently handling;
+     * where `$request` is the [[ServerRequestInterface]] object that this filter is currently handling;
      * `$params` takes the value of [[params]]. The callback should return a string serving
      * as the seed for generating an ETag.
      */
     private $etagSeed;
+
     /**
      * @var bool whether to generate weak ETags.
      *
@@ -50,16 +61,19 @@ final class HttpCache implements MiddlewareInterface
      *
      * @see http://tools.ietf.org/html/rfc7232#section-2.3
      */
-    private $weakEtag = false;
+    private bool $weakEtag = false;
+
     /**
      * @var mixed additional parameters that should be passed to the [[lastModified]] and [[etagSeed]] callbacks.
      */
     private $params;
+
     /**
      * @var string the value of the `Cache-Control` HTTP header. If null, the header will not be sent.
      * @see http://tools.ietf.org/html/rfc2616#section-14.9
      */
-    private $cacheControlHeader = self::DEFAULT_HEADER;
+    private ?string $cacheControlHeader = self::DEFAULT_HEADER;
+
     /**
      * @var string the name of the cache limiter to be set when [session_cache_limiter()](https://secure.php.net/manual/en/function.session-cache-limiter.php)
      * is called. The default value is an empty string, meaning turning off automatic sending of cache headers entirely.
@@ -70,7 +84,8 @@ final class HttpCache implements MiddlewareInterface
      * If this property is `null`, then `session_cache_limiter()` will not be called. As a result,
      * PHP will send headers according to the `session.cache_limiter` PHP ini setting.
      */
-    private string $sessionCacheLimiter = '';
+    private ?string $sessionCacheLimiter = '';
+
     /**
      * @var bool a value indicating whether this filter should be enabled.
      */
@@ -94,7 +109,7 @@ final class HttpCache implements MiddlewareInterface
         }
 
         $method = $request->getMethod();
-        if (!\in_array($method, [Method::GET, Method::HEAD]) || $this->lastModified === null && $this->etagSeed === null) {
+        if (!in_array($method, [Method::GET, Method::HEAD]) || $this->lastModified === null && $this->etagSeed === null) {
             return $handler->handle($request);
         }
 
@@ -148,7 +163,8 @@ final class HttpCache implements MiddlewareInterface
             // http://tools.ietf.org/html/rfc7232#section-3.3
             return $etag !== null && in_array($etag, $this->getETags($request), true);
         } elseif ($request->hasHeader('If-Modified-Since')) {
-            return $lastModified !== null && @strtotime($request->getHeader('If-Modified-Since')) >= $lastModified;
+            $header = reset($request->getHeader('If-Modified-Since'));
+            return $lastModified !== null && @strtotime($header) >= $lastModified;
         }
 
         return false;
@@ -193,7 +209,8 @@ final class HttpCache implements MiddlewareInterface
     private function getETags(ServerRequestInterface $request): array
     {
         if ($request->hasHeader('If-None-Match')) {
-            return \preg_split('/[\s,]+/', \str_replace('-gzip', '', $request->getHeader('If-None-Match')), -1, PREG_SPLIT_NO_EMPTY);
+            $header = reset($request->getHeader('If-None-Match'));
+            return preg_split('/[\s,]+/', str_replace('-gzip', '', $header), -1, PREG_SPLIT_NO_EMPTY);
         }
 
         return [];
@@ -201,22 +218,56 @@ final class HttpCache implements MiddlewareInterface
 
     private function setCacheLimiter()
     {
-        $sessionData = null;
         if ($this->session->isActive()) {
             if (isset($_SESSION)) {
-                $sessionData = $_SESSION;
+                $this->sessionData = $_SESSION;
             }
             $this->session->close();
         }
 
         session_cache_limiter($this->sessionCacheLimiter);
 
-        if (null !== $sessionData) {
+        if (null !== $this->sessionData) {
 
             $this->session->open();
 
-            $_SESSION = $sessionData;
-            $sessionData = null;
+            $_SESSION = $this->sessionData;
+            $this->sessionData = null;
         }
+    }
+
+    public function setLastModified(callable $lastModified): void
+    {
+        $this->lastModified = $lastModified;
+    }
+
+    public function setEtagSeed(callable $etagSeed): void
+    {
+        $this->etagSeed = $etagSeed;
+    }
+
+    public function setWeakTag(bool $weakTag): void
+    {
+        $this->weakEtag = $weakTag;
+    }
+
+    public function setParams($params): void
+    {
+        $this->params = $params;
+    }
+
+    public function setCacheControlHeader(?string $header): void
+    {
+        $this->cacheControlHeader = $header;
+    }
+
+    public function setSessionCacheLimiter(?string $cacheLimiter): void
+    {
+        $this->sessionCacheLimiter = $cacheLimiter;
+    }
+
+    public function setEnabled(bool $enabled): void
+    {
+        $this->enabled = $enabled;
     }
 }
