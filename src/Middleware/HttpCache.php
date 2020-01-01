@@ -95,8 +95,11 @@ final class HttpCache implements MiddlewareInterface
     private SessionInterface $session;
     private LoggerInterface $logger;
 
-    public function __construct(ResponseFactoryInterface $responseFactory, SessionInterface $session, LoggerInterface $logger)
-    {
+    public function __construct(
+        ResponseFactoryInterface $responseFactory,
+        SessionInterface $session,
+        LoggerInterface $logger
+    ) {
         $this->responseFactory = $responseFactory;
         $this->session = $session;
         $this->logger = $logger;
@@ -109,7 +112,11 @@ final class HttpCache implements MiddlewareInterface
         }
 
         $method = $request->getMethod();
-        if (!in_array($method, [Method::GET, Method::HEAD]) || $this->lastModified === null && $this->etagSeed === null) {
+        if (
+            !in_array($method, [Method::GET, Method::HEAD])
+            || $this->lastModified === null
+            && $this->etagSeed === null
+        ) {
             return $handler->handle($request);
         }
 
@@ -137,7 +144,10 @@ final class HttpCache implements MiddlewareInterface
         $cacheValid = $this->validateCache($request, $lastModified, $etag);
         // https://tools.ietf.org/html/rfc7232#section-4.1
         if ($lastModified !== null && (!$cacheValid || ($cacheValid && $etag === null))) {
-            $response = $response->withHeader('Last-Modified', gmdate('D, d M Y H:i:s', $lastModified) . ' GMT');
+            $response = $response->withHeader(
+                'Last-Modified',
+                gmdate('D, d M Y H:i:s', $lastModified) . ' GMT'
+            );
         }
         if ($cacheValid) {
             $response = $this->responseFactory->createResponse(304);
@@ -209,8 +219,8 @@ final class HttpCache implements MiddlewareInterface
     private function getETags(ServerRequestInterface $request): array
     {
         if ($request->hasHeader('If-None-Match')) {
-            $header = reset($request->getHeader('If-None-Match'));
-            return preg_split('/[\s,]+/', str_replace('-gzip', '', $header), -1, PREG_SPLIT_NO_EMPTY) ?? [];
+            $header = str_replace('-gzip', '', reset($request->getHeader('If-None-Match')));
+            return preg_split('/[\s,]+/', $header, -1, PREG_SPLIT_NO_EMPTY) ?: [];
         }
 
         return [];
