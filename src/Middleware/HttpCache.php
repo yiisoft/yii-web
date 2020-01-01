@@ -210,7 +210,7 @@ final class HttpCache implements MiddlewareInterface
     {
         if ($request->hasHeader('If-None-Match')) {
             $header = reset($request->getHeader('If-None-Match'));
-            return preg_split('/[\s,]+/', str_replace('-gzip', '', $header), -1, PREG_SPLIT_NO_EMPTY);
+            return preg_split('/[\s,]+/', str_replace('-gzip', '', $header), -1, PREG_SPLIT_NO_EMPTY) ?? [];
         }
 
         return [];
@@ -228,7 +228,6 @@ final class HttpCache implements MiddlewareInterface
         session_cache_limiter($this->sessionCacheLimiter);
 
         if (null !== $this->sessionData) {
-
             $this->session->open();
 
             $_SESSION = $this->sessionData;
