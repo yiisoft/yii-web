@@ -129,12 +129,12 @@ final class HttpCache implements MiddlewareInterface
      * Validates if the HTTP cache contains valid content.
      * If both Last-Modified and ETag are null, returns false.
      * @param ServerRequestInterface $request
-     * @param int $lastModified the calculated Last-Modified value in terms of a UNIX timestamp.
+     * @param int|null $lastModified the calculated Last-Modified value in terms of a UNIX timestamp.
      * If null, the Last-Modified header will not be validated.
-     * @param string $etag the calculated ETag value. If null, the ETag header will not be validated.
+     * @param string|null $etag the calculated ETag value. If null, the ETag header will not be validated.
      * @return bool whether the HTTP cache is still valid.
      */
-    private function validateCache(ServerRequestInterface $request, $lastModified, $etag): bool
+    private function validateCache(ServerRequestInterface $request, ?int $lastModified, ?string $etag): bool
     {
         if ($request->hasHeader('If-None-Match')) {
             // HTTP_IF_NONE_MATCH takes precedence over HTTP_IF_MODIFIED_SINCE
@@ -156,7 +156,7 @@ final class HttpCache implements MiddlewareInterface
      * @param string $seed Seed for the ETag
      * @return string the generated ETag
      */
-    private function generateEtag($seed): string
+    private function generateEtag(string $seed): string
     {
         $etag = '"' . rtrim(base64_encode(sha1($seed, true)), '=') . '"';
         return $this->weakEtag ? 'W/' . $etag : $etag;
