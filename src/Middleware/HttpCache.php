@@ -6,9 +6,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Psr\Log\LoggerInterface;
 use Yiisoft\Router\Method;
-use Yiisoft\Yii\Web\Session\SessionInterface;
 
 /**
  * HttpCache implements client-side caching by utilizing the `Last-Modified` and `ETag` HTTP headers.
@@ -67,17 +65,10 @@ final class HttpCache implements MiddlewareInterface
     private ?string $cacheControlHeader = self::DEFAULT_HEADER;
 
     private ResponseFactoryInterface $responseFactory;
-    private SessionInterface $session;
-    private LoggerInterface $logger;
 
-    public function __construct(
-        ResponseFactoryInterface $responseFactory,
-        SessionInterface $session,
-        LoggerInterface $logger
-    ) {
+    public function __construct(ResponseFactoryInterface $responseFactory)
+    {
         $this->responseFactory = $responseFactory;
-        $this->session = $session;
-        $this->logger = $logger;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -129,12 +120,12 @@ final class HttpCache implements MiddlewareInterface
      * Validates if the HTTP cache contains valid content.
      * If both Last-Modified and ETag are null, returns false.
      * @param ServerRequestInterface $request
-     * @param int $lastModified the calculated Last-Modified value in terms of a UNIX timestamp.
+     * @param int|null $lastModified the calculated Last-Modified value in terms of a UNIX timestamp.
      * If null, the Last-Modified header will not be validated.
-     * @param string $etag the calculated ETag value. If null, the ETag header will not be validated.
+     * @param string|null $etag the calculated ETag value. If null, the ETag header will not be validated.
      * @return bool whether the HTTP cache is still valid.
      */
-    private function validateCache(ServerRequestInterface $request, $lastModified, $etag): bool
+    private function validateCache(ServerRequestInterface $request, ?int $lastModified, ?string $etag): bool
     {
         if ($request->hasHeader('If-None-Match')) {
             // HTTP_IF_NONE_MATCH takes precedence over HTTP_IF_MODIFIED_SINCE
@@ -156,7 +147,7 @@ final class HttpCache implements MiddlewareInterface
      * @param string $seed Seed for the ETag
      * @return string the generated ETag
      */
-    private function generateEtag($seed): string
+    private function generateEtag(string $seed): string
     {
         $etag = '"' . rtrim(base64_encode(sha1($seed, true)), '=') . '"';
         return $this->weakEtag ? 'W/' . $etag : $etag;
