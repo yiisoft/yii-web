@@ -18,9 +18,6 @@ class Session implements SessionInterface
         'sid_bits_per_character' => 6,
         'sid_length' => 48,
         'cache_limiter' => 'nocache',
-    ];
-
-    private const DEFAULT_OPTIONS_73 = [
         'cookie_samesite' => 'Lax',
     ];
 
@@ -33,9 +30,6 @@ class Session implements SessionInterface
         }
 
         $defaultOptions = self::DEFAULT_OPTIONS;
-        if (PHP_VERSION_ID >= 73000) {
-            $defaultOptions = array_merge($defaultOptions, self::DEFAULT_OPTIONS_73);
-        }
         $this->options = array_merge($defaultOptions, $options);
     }
 
