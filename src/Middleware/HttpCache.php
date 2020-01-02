@@ -67,17 +67,10 @@ final class HttpCache implements MiddlewareInterface
     private ?string $cacheControlHeader = self::DEFAULT_HEADER;
 
     private ResponseFactoryInterface $responseFactory;
-    private SessionInterface $session;
-    private LoggerInterface $logger;
 
-    public function __construct(
-        ResponseFactoryInterface $responseFactory,
-        SessionInterface $session,
-        LoggerInterface $logger
-    ) {
+    public function __construct(ResponseFactoryInterface $responseFactory)
+    {
         $this->responseFactory = $responseFactory;
-        $this->session = $session;
-        $this->logger = $logger;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
