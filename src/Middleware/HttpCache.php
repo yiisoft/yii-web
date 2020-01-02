@@ -16,10 +16,6 @@ use Yiisoft\Yii\Web\Session\SessionInterface;
 final class HttpCache implements MiddlewareInterface
 {
     private const DEFAULT_HEADER = 'public, max-age=3600';
-    /**
-     * @internal Frozen session data
-     */
-    private ?array $sessionData;
 
     /**
      * @var callable a PHP callback that returns the UNIX timestamp of the last modification time.
