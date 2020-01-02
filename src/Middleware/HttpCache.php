@@ -9,10 +9,6 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
 use Yiisoft\Router\Method;
 use Yiisoft\Yii\Web\Session\SessionInterface;
-use function in_array;
-use function preg_split;
-use function reset;
-use function str_replace;
 
 /**
  * HttpCache implements client-side caching by utilizing the `Last-Modified` and `ETag` HTTP headers.
@@ -74,23 +70,6 @@ final class HttpCache implements MiddlewareInterface
      */
     private ?string $cacheControlHeader = self::DEFAULT_HEADER;
 
-    /**
-     * @var string the name of the cache limiter to be set when [session_cache_limiter()](https://secure.php.net/manual/en/function.session-cache-limiter.php)
-     * is called. The default value is an empty string, meaning turning off automatic sending of cache headers entirely.
-     * You may set this property to be `public`, `private`, `private_no_expire`, and `nocache`.
-     * Please refer to [session_cache_limiter()](https://secure.php.net/manual/en/function.session-cache-limiter.php)
-     * for detailed explanation of these values.
-     *
-     * If this property is `null`, then `session_cache_limiter()` will not be called. As a result,
-     * PHP will send headers according to the `session.cache_limiter` PHP ini setting.
-     */
-    private ?string $sessionCacheLimiter = '';
-
-    /**
-     * @var bool a value indicating whether this filter should be enabled.
-     */
-    private bool $enabled = true;
-
     private ResponseFactoryInterface $responseFactory;
     private SessionInterface $session;
     private LoggerInterface $logger;
@@ -107,15 +86,10 @@ final class HttpCache implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        if (!$this->enabled) {
-            return $handler->handle($request);
-        }
-
         $method = $request->getMethod();
         if (
-            !in_array($method, [Method::GET, Method::HEAD])
-            || $this->lastModified === null
-            && $this->etagSeed === null
+            !\in_array($method, [Method::GET, Method::HEAD])
+            || ($this->lastModified === null && $this->etagSeed === null)
         ) {
             return $handler->handle($request);
         }
@@ -130,8 +104,6 @@ final class HttpCache implements MiddlewareInterface
                 $etag = $this->generateEtag($seed);
             }
         }
-
-        $this->sendCacheControlHeader($request);
 
         $response = $handler->handle($request);
         if ($this->cacheControlHeader !== null) {
@@ -166,37 +138,21 @@ final class HttpCache implements MiddlewareInterface
      * @param string $etag the calculated ETag value. If null, the ETag header will not be validated.
      * @return bool whether the HTTP cache is still valid.
      */
-    private function validateCache(ServerRequestInterface $request, $lastModified, $etag)
+    private function validateCache(ServerRequestInterface $request, $lastModified, $etag): bool
     {
         if ($request->hasHeader('If-None-Match')) {
             // HTTP_IF_NONE_MATCH takes precedence over HTTP_IF_MODIFIED_SINCE
             // http://tools.ietf.org/html/rfc7232#section-3.3
-            return $etag !== null && in_array($etag, $this->getETags($request), true);
-        } elseif ($request->hasHeader('If-Modified-Since')) {
-            $header = reset($request->getHeader('If-Modified-Since'));
+            return $etag !== null && \in_array($etag, $this->getETags($request), true);
+        }
+
+        if ($request->hasHeader('If-Modified-Since')) {
+            $headers = $request->getHeader('If-Modified-Since');
+            $header = \reset($headers);
             return $lastModified !== null && @strtotime($header) >= $lastModified;
         }
 
         return false;
-    }
-
-    /**
-     * Sends the cache control header to the client.
-     * @param ServerRequestInterface $request
-     * @see cacheControlHeader
-     */
-    private function sendCacheControlHeader(ServerRequestInterface $request): void
-    {
-        if ($this->sessionCacheLimiter !== null) {
-            if ($this->sessionCacheLimiter === '' && !headers_sent() && $this->session->isActive()) {
-                header_remove('Expires');
-                header_remove('Cache-Control');
-                header_remove('Last-Modified');
-                header_remove('Pragma');
-            }
-
-            $this->setCacheLimiter();
-        }
     }
 
     /**
@@ -219,30 +175,12 @@ final class HttpCache implements MiddlewareInterface
     private function getETags(ServerRequestInterface $request): array
     {
         if ($request->hasHeader('If-None-Match')) {
-            $header = str_replace('-gzip', '', reset($request->getHeader('If-None-Match')));
-            return preg_split('/[\s,]+/', $header, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+            $headers = $request->getHeader('If-None-Match');
+            $header = \str_replace('-gzip', '', \reset($headers));
+            return \preg_split('/[\s,]+/', $header, -1, PREG_SPLIT_NO_EMPTY) ?: [];
         }
 
         return [];
-    }
-
-    private function setCacheLimiter()
-    {
-        if ($this->session->isActive()) {
-            if (isset($_SESSION)) {
-                $this->sessionData = $_SESSION;
-            }
-            $this->session->close();
-        }
-
-        session_cache_limiter($this->sessionCacheLimiter);
-
-        if (null !== $this->sessionData) {
-            $this->session->open();
-
-            $_SESSION = $this->sessionData;
-            $this->sessionData = null;
-        }
     }
 
     public function setLastModified(callable $lastModified): void
@@ -268,15 +206,5 @@ final class HttpCache implements MiddlewareInterface
     public function setCacheControlHeader(?string $header): void
     {
         $this->cacheControlHeader = $header;
-    }
-
-    public function setSessionCacheLimiter(?string $cacheLimiter): void
-    {
-        $this->sessionCacheLimiter = $cacheLimiter;
-    }
-
-    public function setEnabled(bool $enabled): void
-    {
-        $this->enabled = $enabled;
     }
 }
