@@ -78,7 +78,12 @@ final class HeaderHelper
                         // unescape + remove first and last quote
                         $value = preg_replace('/\\\\(.)/', '$1', substr($value, 1, -1));
                     }
-                    $output[$lowerCaseParameter ? strtolower($matches['parameter']) : $matches['parameter']] = $lowerCaseValue ? strtolower($value) : $value;
+                    $key = $lowerCaseParameter ? strtolower($matches['parameter']) : $matches['parameter'];
+                    if(isset($output[$key])) {
+                        // The first is the winner.
+                        return;
+                    }
+                    $output[$key] = $lowerCaseValue ? strtolower($value) : $value;
                 }, $headerValue, 1, $count);
             if ($count !== 1) {
                 throw new \InvalidArgumentException('Invalid input: ' . $headerValue);

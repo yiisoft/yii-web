@@ -186,8 +186,8 @@ class HeaderHelperTest extends TestCase
             'percent' => ['a=%1;b="foo-%32-bar"',null, null, ['a' => '%1', 'b' => 'foo-%32-bar']],
 
             # Invalid syntax but most browsers take a first parameter
-            // 'sameName' => ['a=T1;a="T2"',null, null, ['a' => 'T1']],
-            // 'sameNameCase' => ['aa=T1;Aa="T2"',null, null, ['aa' => 'T1']],
+            'sameName' => ['a=T1;a="T2"',true, false, ['a' => 'T1']],
+            'sameNameCase' => ['aa=T1;Aa="T2"',true, false, ['aa' => 'T1']],
 
             # Invalid syntax but most browsers accept the unquoted value with warn
             # What is better for us to do?
