@@ -79,7 +79,7 @@ final class HeaderHelper
                         $value = preg_replace('/\\\\(.)/', '$1', substr($value, 1, -1));
                     }
                     $key = $lowerCaseParameter ? strtolower($matches['parameter']) : $matches['parameter'];
-                    if(isset($output[$key])) {
+                    if (isset($output[$key])) {
                         // The first is the winner.
                         return;
                     }

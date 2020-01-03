@@ -210,7 +210,7 @@ class HeaderHelperTest extends TestCase
         if ($expectedException !== null) {
             $this->expectException($expectedException);
         }
-        if($lowerCaseValue === null && $lowerCaseParameter === null) {
+        if ($lowerCaseValue === null && $lowerCaseParameter === null) {
             $this->assertSame($expected, HeaderHelper::getParameters($input));
         } else {
             $this->assertSame($expected, HeaderHelper::getParameters($input, $lowerCaseParameter, $lowerCaseValue));
