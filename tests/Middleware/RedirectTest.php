@@ -115,19 +115,18 @@ final class RedirectTest extends TestCase
     private function createUrlGenerator(): UrlGeneratorInterface
     {
         return new class implements UrlGeneratorInterface {
+            private $prefix = '';
             public function generate(string $name, array $parameters = []): string
             {
                 return $name . '?' . http_build_query($parameters);
             }
-
             public function getUriPrefix(): string
             {
-                // TODO: Implement getUriPrefix() method.
+                return $this->prefix;
             }
-
-            public function setUriPrefix(string $name): void
+            public function setUriPrefix(string $prefix): void
             {
-                // TODO: Implement setUriPrefix() method.
+                $this->prefix = $prefix;
             }
         };
     }

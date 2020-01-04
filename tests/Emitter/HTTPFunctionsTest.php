@@ -24,6 +24,7 @@ class HTTPFunctionsTest extends TestCase
     {
         $this->assertEquals(200, $this->getResponseCode());
         $this->assertEquals([], $this->getHeaders());
+        $this->assertFalse(HTTPFunctions::headers_sent());
     }
 
     public function testHeaderAndHasHeader(): void
@@ -39,11 +40,24 @@ class HTTPFunctionsTest extends TestCase
     {
         HTTPFunctions::header('X-Test: 1');
         HTTPFunctions::header('X-Test: 2', false, 500);
+        HTTPFunctions::set_headers_sent(true, 'test', 123);
 
         HTTPFunctions::reset();
 
         $this->assertEquals(200, $this->getResponseCode());
         $this->assertEquals([], $this->getHeaders());
+        $this->assertFalse(HTTPFunctions::headers_sent($file, $line));
+        $this->assertEquals('', $file);
+        $this->assertEquals(0, $line);
+    }
+
+    public function testHeadersSent(): void
+    {
+        HTTPFunctions::set_headers_sent(true, 'path/to/test/file.php', 123);
+
+        $this->assertTrue(HTTPFunctions::headers_sent($file, $line));
+        $this->assertEquals('path/to/test/file.php', $file);
+        $this->assertEquals(123, $line);
     }
 
     public function testAddedHeaders(): void

@@ -187,7 +187,7 @@ class User
     public function logout($destroySession = true): bool
     {
         $identity = $this->getIdentity();
-        if (!$this->isGuest()) {
+        if ($this->isGuest()) {
             return false;
         }
         if ($this->beforeLogout($identity)) {
