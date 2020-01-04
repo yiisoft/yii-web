@@ -119,6 +119,16 @@ final class RedirectTest extends TestCase
             {
                 return $name . '?' . http_build_query($parameters);
             }
+
+            public function getUriPrefix(): string
+            {
+                // TODO: Implement getUriPrefix() method.
+            }
+
+            public function setUriPrefix(string $name): void
+            {
+                // TODO: Implement setUriPrefix() method.
+            }
         };
     }
 

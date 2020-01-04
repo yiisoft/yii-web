@@ -368,6 +368,6 @@ class User
             return false;
         }
 
-        return $this->accessChecker->hasPermission($this->getId(), $permissionName, $params);
+        return $this->accessChecker->userHasPermission($this->getId(), $permissionName, $params);
     }
 }
