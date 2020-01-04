@@ -6,7 +6,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Yiisoft\Router\Method;
+use Yiisoft\Http\Method;
 
 /**
  * HttpCache implements client-side caching by utilizing the `Last-Modified` and `ETag` HTTP headers.
@@ -85,11 +85,20 @@ final class HttpCache implements MiddlewareInterface
         if ($this->lastModified !== null) {
             $lastModified = call_user_func($this->lastModified, $request, $this->params);
         }
+
         if ($this->etagSeed !== null) {
             $seed = call_user_func($this->etagSeed, $request, $this->params);
             if ($seed !== null) {
                 $etag = $this->generateEtag($seed);
             }
+        }
+
+        $cacheValid = $this->validateCache($request, $lastModified, $etag);
+        if ($cacheValid) {
+            //var_dump($cacheValid);die;
+            $response = $this->responseFactory->createResponse(304);
+            $response->getBody()->write('Not Modified');
+            return $response;
         }
 
         $response = $handler->handle($request);
@@ -100,7 +109,6 @@ final class HttpCache implements MiddlewareInterface
             $response = $response->withHeader('Etag', $etag);
         }
 
-        $cacheValid = $this->validateCache($request, $lastModified, $etag);
         // https://tools.ietf.org/html/rfc7232#section-4.1
         if ($lastModified !== null && (!$cacheValid || ($cacheValid && $etag === null))) {
             $response = $response->withHeader(
@@ -108,11 +116,7 @@ final class HttpCache implements MiddlewareInterface
                 gmdate('D, d M Y H:i:s', $lastModified) . ' GMT'
             );
         }
-        if ($cacheValid) {
-            $response = $this->responseFactory->createResponse(304);
-            $response->getBody()->write('Not Modified');
-            return $response;
-        }
+
         return $response;
     }
 
@@ -134,8 +138,7 @@ final class HttpCache implements MiddlewareInterface
         }
 
         if ($request->hasHeader('If-Modified-Since')) {
-            $headers = $request->getHeader('If-Modified-Since');
-            $header = \reset($headers);
+            $header = $request->getHeaderLine('If-Modified-Since');
             return $lastModified !== null && @strtotime($header) >= $lastModified;
         }
 
@@ -162,8 +165,8 @@ final class HttpCache implements MiddlewareInterface
     private function getETags(ServerRequestInterface $request): array
     {
         if ($request->hasHeader('If-None-Match')) {
-            $headers = $request->getHeader('If-None-Match');
-            $header = \str_replace('-gzip', '', \reset($headers));
+            $header = $request->getHeaderLine('If-None-Match');
+            $header = \str_replace('-gzip', '', $header);
             return \preg_split('/[\s,]+/', $header, -1, PREG_SPLIT_NO_EMPTY) ?: [];
         }
 

@@ -28,10 +28,24 @@ class HttpCacheTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    /**
+     * @test
+     */
+    public function invalidCacheResult(): void
+    {
+        $time = \time();
+        $middleware = $this->createMiddlewareWithLastModified($time - 1);
+        $headers = [
+            'If-Modified-Since' => gmdate('D, d M Y H:i:s', $time) . 'GMT',
+        ];
+        $response = $middleware->process($this->createServerRequest(Method::GET, $headers), $this->createRequestHandler());
+        $this->assertEquals(304, $response->getStatusCode());
+    }
+
     private function createMiddlewareWithLastModified(int $lastModified)
     {
         $middleware = new HttpCache(new Psr17Factory());
-        $middleware->setLastModified(static function (ServerRequestInterface $request, array $params) use ($lastModified) {
+        $middleware->setLastModified(static function (ServerRequestInterface $request, $params) use ($lastModified) {
             return $lastModified;
         });
         return $middleware;
