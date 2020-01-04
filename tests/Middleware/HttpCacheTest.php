@@ -6,10 +6,10 @@ use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Yiisoft\Router\Method;
+use Yiisoft\Http\Method;
 use Yiisoft\Yii\Web\Middleware\HttpCache;
 
 class HttpCacheTest extends TestCase
@@ -19,9 +19,10 @@ class HttpCacheTest extends TestCase
      */
     public function validCacheResult(): void
     {
-        $middleware = $this->createMiddlewareWithLastModified(\time());
+        $time = \time();
+        $middleware = $this->createMiddlewareWithLastModified($time);
         $headers = [
-
+            'If-Modified-Since' => $time,
         ];
         $response = $middleware->process($this->createServerRequest(Method::GET, $headers), $this->createRequestHandler());
         $this->assertEquals(200, $response->getStatusCode());
