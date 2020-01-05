@@ -10,9 +10,6 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\SimpleCache\CacheInterface;
 
-/**
- * Rate limiter limits the number of requests that could be made within a certain period of time
- */
 final class RateLimiter implements MiddlewareInterface
 {
     private int $limit = 1000;
@@ -42,7 +39,7 @@ final class RateLimiter implements MiddlewareInterface
     {
         $this->setupCacheParams($request);
 
-        if (!$this->isAllowed()) {
+        if (!$this->isAllow()) {
             return $this->createErrorResponse();
         }
 
@@ -96,7 +93,7 @@ final class RateLimiter implements MiddlewareInterface
         return $response;
     }
 
-    private function isAllowed(): bool
+    private function isAllow(): bool
     {
         return $this->getCounterValue() < $this->limit;
     }

@@ -19,7 +19,7 @@ final class RateLimiterTest extends TestCase
     /**
      * @test
      */
-    public function singleRequestIsAllowed(): void
+    public function isAllowed(): void
     {
         $middleware = $this->createRateLimiter($this->getCache());
         $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
@@ -29,10 +29,10 @@ final class RateLimiterTest extends TestCase
     /**
      * @test
      */
-    public function moreThanDefaultNumberOfRequestsIsNotAllowed(): void
+    public function isNotAllowed(): void
     {
         $cache = $this->getCache();
-        $this->setRateLimiterCurrentRequestNumber($cache, 1000);
+        $cache->set('rate-limiter-get-/', 1000);
 
         $middleware = $this->createRateLimiter($cache);
         $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
@@ -42,10 +42,10 @@ final class RateLimiterTest extends TestCase
     /**
      * @test
      */
-    public function customLimitWorksAsExpected(): void
+    public function customLimit(): void
     {
         $cache = $this->getCache();
-        $this->setRateLimiterCurrentRequestNumber($cache, 10);
+        $cache->set('rate-limiter-get-/', 10);
 
         $middleware = $this->createRateLimiter($cache)->setLimit(11);
 
@@ -83,7 +83,7 @@ final class RateLimiterTest extends TestCase
 
         $middleware = $this->createRateLimiter($cache)
             ->setCacheKeyByCallback(
-                static function (ServerRequestInterface $request) {
+                function (ServerRequestInterface $request) {
                     return $request->getMethod();
                 }
             );
@@ -127,11 +127,6 @@ final class RateLimiterTest extends TestCase
         $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(0, $cache->get('rate-limiter-get-/'));
-    }
-
-    private function setRateLimiterCurrentRequestNumber(CacheInterface $cache, int $number, $method = 'get', $path = '/'): void
-    {
-        $cache->set("rate-limiter-$method-$path", 1000);
     }
 
     private function getCache(): CacheInterface
