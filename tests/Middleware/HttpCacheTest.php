@@ -42,7 +42,7 @@ class HttpCacheTest extends TestCase
         $this->assertEquals(304, $response->getStatusCode());
     }
 
-    private function createMiddlewareWithLastModified(int $lastModified)
+    private function createMiddlewareWithLastModified(int $lastModified): HttpCache
     {
         $middleware = new HttpCache(new Psr17Factory());
         $middleware->setLastModified(static function (ServerRequestInterface $request, $params) use ($lastModified) {
@@ -61,7 +61,7 @@ class HttpCacheTest extends TestCase
         };
     }
 
-    private function createServerRequest(string $method = Method::GET, $headers = [])
+    private function createServerRequest(string $method = Method::GET, $headers = []): ServerRequestInterface
     {
         return new ServerRequest($method, '/', $headers);
     }
