@@ -95,7 +95,6 @@ final class HttpCache implements MiddlewareInterface
 
         $cacheValid = $this->validateCache($request, $lastModified, $etag);
         if ($cacheValid) {
-            //var_dump($cacheValid);die;
             $response = $this->responseFactory->createResponse(304);
             $response->getBody()->write('Not Modified');
             return $response;
