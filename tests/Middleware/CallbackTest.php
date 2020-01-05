@@ -9,7 +9,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Yiisoft\Router\Method;
+use Yiisoft\Http\Method;
 use Yiisoft\Yii\Web\Middleware\Callback;
 
 final class CallbackTest extends TestCase
