@@ -31,10 +31,12 @@ final class RateLimiterTest extends TestCase
      */
     public function isNotAllowed(): void
     {
-        $cache = $this->getCache();
-        $cache->set('rate-limiter-get-/', 1000);
+        $middleware = $this->createRateLimiter($this->getCache());
 
-        $middleware = $this->createRateLimiter($cache);
+        for ($i = 0; $i < 1000; $i++) {
+            $middleware->process($this->createRequest(), $this->createRequestHandler());
+        }
+
         $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
         $this->assertEquals(429, $response->getStatusCode());
     }
@@ -44,10 +46,11 @@ final class RateLimiterTest extends TestCase
      */
     public function customLimit(): void
     {
-        $cache = $this->getCache();
-        $cache->set('rate-limiter-get-/', 10);
+        $middleware = $this->createRateLimiter($this->getCache())->setLimit(11);
 
-        $middleware = $this->createRateLimiter($cache)->setLimit(11);
+        for ($i = 0; $i < 10; $i++) {
+            $middleware->process($this->createRequest(), $this->createRequestHandler());
+        }
 
         $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
         $this->assertEquals(200, $response->getStatusCode());
