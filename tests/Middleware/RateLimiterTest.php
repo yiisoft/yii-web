@@ -19,7 +19,7 @@ final class RateLimiterTest extends TestCase
     /**
      * @test
      */
-    public function isAllowed(): void
+    public function singleRequestIsAllowed(): void
     {
         $middleware = $this->createRateLimiter($this->getCache());
         $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
@@ -29,7 +29,7 @@ final class RateLimiterTest extends TestCase
     /**
      * @test
      */
-    public function isNotAllowed(): void
+    public function moreThanDefaultNumberOfRequestsIsNotAllowed(): void
     {
         $middleware = $this->createRateLimiter($this->getCache());
 
@@ -44,9 +44,9 @@ final class RateLimiterTest extends TestCase
     /**
      * @test
      */
-    public function customLimit(): void
+    public function customLimitWorksAsExpected(): void
     {
-        $middleware = $this->createRateLimiter($this->getCache())->setLimit(11);
+        $middleware = $this->createRateLimiter($this->getCache())->withLimit(11);
 
         for ($i = 0; $i < 10; $i++) {
             $middleware->process($this->createRequest(), $this->createRequestHandler());
@@ -101,11 +101,11 @@ final class RateLimiterTest extends TestCase
     /**
      * @test
      */
-    public function customCacheTtl(): void
+    public function customInterval(): void
     {
         $middleware = $this->createRateLimiter($this->getCache())
-            ->setLimit(1)
-            ->setInterval(1);
+            ->withLimit(1)
+            ->withInterval(1);
 
         $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
         $this->assertEquals(200, $response->getStatusCode());
@@ -125,7 +125,6 @@ final class RateLimiterTest extends TestCase
     public function disableAutoIncrement(): void
     {
         $cache = $this->getCache();
-
         $middleware = $this->createRateLimiter($cache)->setAutoIncrement(false);
         $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
         $this->assertEquals(200, $response->getStatusCode());

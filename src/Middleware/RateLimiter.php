@@ -40,7 +40,7 @@ final class RateLimiter implements MiddlewareInterface
     {
         $this->setupCacheParams($request);
 
-        if (!$this->isAllow()) {
+        if (!$this->isAllowed()) {
             return $this->createErrorResponse();
         }
 
@@ -51,7 +51,7 @@ final class RateLimiter implements MiddlewareInterface
         return $handler->handle($request);
     }
 
-    public function setLimit(int $limit): self
+    public function withLimit(int $limit): self
     {
         $this->limit = $limit;
 
@@ -62,7 +62,7 @@ final class RateLimiter implements MiddlewareInterface
      * @param int $interval in seconds
      * @return $this
      */
-    public function setInterval(int $interval): self
+    public function withInterval(int $interval): self
     {
         $this->interval = $interval;
 
@@ -98,7 +98,7 @@ final class RateLimiter implements MiddlewareInterface
         return $response;
     }
 
-    private function isAllow(): bool
+    private function isAllowed(): bool
     {
         return $this->getCounterValue() < $this->limit;
     }
