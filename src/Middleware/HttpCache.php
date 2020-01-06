@@ -96,7 +96,10 @@ final class HttpCache implements MiddlewareInterface
         $cacheValid = $this->validateCache($request, $lastModified, $etag);
         if ($cacheValid) {
             $response = $this->responseFactory->createResponse(304);
-            $response->getBody()->write('Not Modified');
+            $response = $response->withHeader(
+                'Last-Modified',
+                gmdate('D, d M Y H:i:s', $lastModified) . ' GMT'
+            );
             return $response;
         }
 
