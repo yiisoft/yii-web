@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Yii\Web\Middleware;
@@ -14,14 +15,14 @@ final class RateLimiter implements MiddlewareInterface
 {
     private int $limit = 1000;
 
+    private int $interval = 360;
+
     private ?string $cacheKey = null;
 
     /**
      * @var callable
      */
     private $cacheKeyCallback;
-
-    private int $cacheTtl = 360;
 
     private CacheInterface $cache;
 
@@ -57,6 +58,17 @@ final class RateLimiter implements MiddlewareInterface
         return $this;
     }
 
+    /**
+     * @param int $interval in seconds
+     * @return $this
+     */
+    public function setInterval(int $interval): self
+    {
+        $this->interval = $interval;
+
+        return $this;
+    }
+
     public function setCacheKey(string $key): self
     {
         $this->cacheKey = $key;
@@ -64,16 +76,9 @@ final class RateLimiter implements MiddlewareInterface
         return $this;
     }
 
-    public function setCacheKeyByCallback(callable $callback): self
+    public function setCacheKeyCallback(callable $callback): self
     {
         $this->cacheKeyCallback = $callback;
-
-        return $this;
-    }
-
-    public function setCacheTtl(int $ttl): self
-    {
-        $this->cacheTtl = $ttl;
 
         return $this;
     }
@@ -109,10 +114,6 @@ final class RateLimiter implements MiddlewareInterface
     private function setupCacheParams(ServerRequestInterface $request): void
     {
         $this->cacheKey = $this->setupCacheKey($request);
-
-        if (!$this->hasCounterValue()) {
-            $this->setCounterValue(0);
-        }
     }
 
     private function setupCacheKey(ServerRequestInterface $request): string
@@ -136,11 +137,6 @@ final class RateLimiter implements MiddlewareInterface
 
     private function setCounterValue(int $value): void
     {
-        $this->cache->set($this->cacheKey, $value, $this->cacheTtl);
-    }
-
-    private function hasCounterValue(): bool
-    {
-        return $this->cache->has($this->cacheKey);
+        $this->cache->set($this->cacheKey, $value, $this->interval);
     }
 }

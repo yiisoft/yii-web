@@ -82,8 +82,8 @@ final class RateLimiterTest extends TestCase
         $cache->set('POST', 1000);
 
         $middleware = $this->createRateLimiter($cache)
-            ->setCacheKeyByCallback(
-                function (ServerRequestInterface $request) {
+            ->setCacheKeyCallback(
+                static function (ServerRequestInterface $request) {
                     return $request->getMethod();
                 }
             );
@@ -102,7 +102,7 @@ final class RateLimiterTest extends TestCase
     {
         $middleware = $this->createRateLimiter($this->getCache())
             ->setLimit(1)
-            ->setCacheTtl(1);
+            ->setInterval(1);
 
         $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
         $this->assertEquals(200, $response->getStatusCode());
