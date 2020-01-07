@@ -10,6 +10,11 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+/**
+ * RateLimiter limits the number of consequential requests ({@see RateLimiter::$limit}) that could be processed per
+ * {@see Counter::$interval}. If the number is exceeded, middleware responds with HTTP code 429, "Too Many Requests"
+ * until limit expires.
+ */
 final class RateLimiter implements MiddlewareInterface
 {
     private int $limit = 1000;
@@ -48,7 +53,7 @@ final class RateLimiter implements MiddlewareInterface
         return $this;
     }
 
-    public function setAutoIncrement(bool $increment): self
+    public function withAutoIncrement(bool $increment): self
     {
         $this->autoincrement = $increment;
 

@@ -7,7 +7,7 @@ namespace Yiisoft\Yii\Web\RateLimiter;
 use Psr\SimpleCache\CacheInterface;
 
 /**
- * Stores counter values in cache
+ * CacheCounterStorage stores counter value in cache
  */
 final class CacheCounterStorage implements CounterStorageInterface
 {

@@ -66,7 +66,7 @@ final class RateLimiterTest extends TestCase
     public function disableAutoIncrement(): void
     {
         $counter = $this->getCounter();
-        $middleware = $this->createRateLimiter($counter)->setAutoIncrement(false);
+        $middleware = $this->createRateLimiter($counter)->withAutoIncrement(false);
         $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(0, $counter->getCounterValue());
