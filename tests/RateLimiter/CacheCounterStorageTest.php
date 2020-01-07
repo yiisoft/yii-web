@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Yii\Web\RateLimiter\CacheCounterStorage;
 
-final class CacheStorageTest extends TestCase
+final class CacheCounterStorageTest extends TestCase
 {
     /**
      * @test
