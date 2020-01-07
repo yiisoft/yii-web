@@ -6,7 +6,7 @@ namespace Yiisoft\Yii\Web\RateLimiter;
 
 use Psr\Http\Message\ServerRequestInterface;
 
-final class Counter implements CounterInterface
+final class Counter
 {
     private int $interval = 360;
 

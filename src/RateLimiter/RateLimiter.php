@@ -14,13 +14,13 @@ final class RateLimiter implements MiddlewareInterface
 {
     private int $limit = 1000;
 
-    private CounterInterface $counter;
+    private Counter $counter;
 
     private ResponseFactoryInterface $responseFactory;
 
     private bool $autoincrement = true;
 
-    public function __construct(CounterInterface $counter, ResponseFactoryInterface $responseFactory)
+    public function __construct(Counter $counter, ResponseFactoryInterface $responseFactory)
     {
         $this->counter = $counter;
         $this->responseFactory = $responseFactory;

@@ -9,9 +9,11 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Http\Method;
+use Yiisoft\Yii\Web\RateLimiter\CacheStorage;
+use Yiisoft\Yii\Web\RateLimiter\Counter;
 use Yiisoft\Yii\Web\RateLimiter\RateLimiter;
-use Yiisoft\Yii\Web\RateLimiter\CounterInterface;
 
 final class RateLimiterTest extends TestCase
 {
@@ -70,41 +72,9 @@ final class RateLimiterTest extends TestCase
         $this->assertEquals(0, $counter->getCounterValue());
     }
 
-    private function getCounter(): CounterInterface
+    private function getCounter(): Counter
     {
-        return new class implements CounterInterface {
-            private int $count = 0;
-
-            public function init(ServerRequestInterface $request): CounterInterface
-            {
-                return $this;
-            }
-
-            public function setIdCallback(callable $callback): CounterInterface
-            {
-                return $this;
-            }
-
-            public function setId(string $id): CounterInterface
-            {
-                return $this;
-            }
-
-            public function setInterval(int $interval): CounterInterface
-            {
-                return $this;
-            }
-
-            public function increment(): void
-            {
-                $this->count++;
-            }
-
-            public function getCounterValue(): int
-            {
-                return $this->count;
-            }
-        };
+        return new Counter(new CacheStorage(new ArrayCache()));
     }
 
     private function createRequestHandler(): RequestHandlerInterface
@@ -122,7 +92,7 @@ final class RateLimiterTest extends TestCase
         return new ServerRequest($method, $uri);
     }
 
-    private function createRateLimiter(CounterInterface $counter): RateLimiter
+    private function createRateLimiter(Counter $counter): RateLimiter
     {
         return new RateLimiter($counter, new Psr17Factory());
     }
