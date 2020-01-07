@@ -19,9 +19,9 @@ final class Counter
 
     private bool $init = false;
 
-    private StorageInterface $storage;
+    private CounterStorageInterface $storage;
 
-    public function __construct(StorageInterface $storage)
+    public function __construct(CounterStorageInterface $storage)
     {
         $this->storage = $storage;
     }
@@ -30,8 +30,8 @@ final class Counter
     {
         $this->id = $this->generateId($request);
 
-        if (!$this->storage->hasCounterValue($this->id)) {
-            $this->storage->setCounterValue($this->id, 0, $this->interval);
+        if (!$this->storage->has($this->id)) {
+            $this->storage->set($this->id, 0, $this->interval);
         }
 
         $this->init = true;
@@ -65,13 +65,13 @@ final class Counter
         $value = $this->getCounterValue();
         $value++;
 
-        $this->storage->setCounterValue($this->id, $value, $this->interval);
+        $this->storage->set($this->id, $value, $this->interval);
     }
 
     public function getCounterValue(): int
     {
         $this->checkInit();
-        return $this->storage->getCounterValue($this->id);
+        return $this->storage->get($this->id);
     }
 
     private function hasIdCallback(): bool

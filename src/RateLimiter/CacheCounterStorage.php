@@ -6,7 +6,10 @@ namespace Yiisoft\Yii\Web\RateLimiter;
 
 use Psr\SimpleCache\CacheInterface;
 
-final class CacheStorage implements StorageInterface
+/**
+ * Stores counter values in cache
+ */
+final class CacheCounterStorage implements CounterStorageInterface
 {
     private CacheInterface $cache;
 
@@ -15,17 +18,17 @@ final class CacheStorage implements StorageInterface
         $this->cache = $cache;
     }
 
-    public function getCounterValue(string $id): int
+    public function get(string $id): int
     {
         return $this->cache->get($id, 0);
     }
 
-    public function setCounterValue(string $id, int $value, int $interval): void
+    public function set(string $id, int $value, int $interval): void
     {
         $this->cache->set($id, $value, $interval);
     }
 
-    public function hasCounterValue(string $id): bool
+    public function has(string $id): bool
     {
         return $this->cache->has($id);
     }

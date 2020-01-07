@@ -11,7 +11,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Http\Method;
-use Yiisoft\Yii\Web\RateLimiter\CacheStorage;
+use Yiisoft\Yii\Web\RateLimiter\CacheCounterStorage;
 use Yiisoft\Yii\Web\RateLimiter\Counter;
 use Yiisoft\Yii\Web\RateLimiter\RateLimiter;
 
@@ -74,7 +74,7 @@ final class RateLimiterTest extends TestCase
 
     private function getCounter(): Counter
     {
-        return new Counter(new CacheStorage(new ArrayCache()));
+        return new Counter(new CacheCounterStorage(new ArrayCache()));
     }
 
     private function createRequestHandler(): RequestHandlerInterface

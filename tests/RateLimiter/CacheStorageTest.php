@@ -4,7 +4,7 @@ namespace Yiisoft\Yii\Web\Tests\RateLimiter;
 
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Cache\ArrayCache;
-use Yiisoft\Yii\Web\RateLimiter\CacheStorage;
+use Yiisoft\Yii\Web\RateLimiter\CacheCounterStorage;
 
 final class CacheStorageTest extends TestCase
 {
@@ -13,8 +13,8 @@ final class CacheStorageTest extends TestCase
      */
     public function getCounterNonExistValue(): void
     {
-        $storage = new CacheStorage(new ArrayCache());
-        $this->assertEquals(0, $storage->getCounterValue('test'));
+        $storage = new CacheCounterStorage(new ArrayCache());
+        $this->assertEquals(0, $storage->get('test'));
     }
 
     /**
@@ -25,8 +25,8 @@ final class CacheStorageTest extends TestCase
         $cache = new ArrayCache();
         $cache->set('test', 100);
 
-        $storage = new CacheStorage($cache);
-        $this->assertEquals(100, $storage->getCounterValue('test'));
+        $storage = new CacheCounterStorage($cache);
+        $this->assertEquals(100, $storage->get('test'));
     }
 
     /**
@@ -35,9 +35,9 @@ final class CacheStorageTest extends TestCase
     public function setCounterValue(): void
     {
         $cache = new ArrayCache();
-        $storage = new CacheStorage($cache);
+        $storage = new CacheCounterStorage($cache);
 
-        $storage->setCounterValue('test', 1000, 10);
+        $storage->set('test', 1000, 10);
 
         $this->assertEquals(1000, $cache->get('test'));
     }
@@ -49,9 +49,9 @@ final class CacheStorageTest extends TestCase
     {
         $cache = new ArrayCache();
         $cache->set('test', 10);
-        $storage = new CacheStorage($cache);
+        $storage = new CacheCounterStorage($cache);
 
-        $this->assertTrue($storage->hasCounterValue('test'));
+        $this->assertTrue($storage->has('test'));
     }
 
     /**
@@ -59,7 +59,7 @@ final class CacheStorageTest extends TestCase
      */
     public function hasCounterValueNotExist(): void
     {
-        $storage = new CacheStorage(new ArrayCache());
-        $this->assertFalse($storage->hasCounterValue('test'));
+        $storage = new CacheCounterStorage(new ArrayCache());
+        $this->assertFalse($storage->has('test'));
     }
 }

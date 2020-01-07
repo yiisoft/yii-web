@@ -7,9 +7,9 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Http\Method;
-use Yiisoft\Yii\Web\RateLimiter\CacheStorage;
+use Yiisoft\Yii\Web\RateLimiter\CacheCounterStorage;
 use Yiisoft\Yii\Web\RateLimiter\Counter;
-use Yiisoft\Yii\Web\RateLimiter\StorageInterface;
+use Yiisoft\Yii\Web\RateLimiter\CounterStorageInterface;
 
 final class CounterTest extends TestCase
 {
@@ -31,7 +31,7 @@ final class CounterTest extends TestCase
     public function expectedCounterValue(): void
     {
         $storage = $this->getStorage();
-        $storage->setCounterValue('test-id', 30, 10);
+        $storage->set('test-id', 30, 10);
 
         $counter = (new Counter($storage))
             ->setId('test-id')
@@ -48,7 +48,7 @@ final class CounterTest extends TestCase
         $storage = $this->getStorage();
         (new Counter($storage))->init($this->createRequest());
 
-        $this->assertTrue($storage->hasCounterValue('rate-limiter-get-/'));
+        $this->assertTrue($storage->has('rate-limiter-get-/'));
     }
 
     /**
@@ -72,7 +72,7 @@ final class CounterTest extends TestCase
     public function generateIdByCallback(): void
     {
         $storage = $this->getStorage();
-        $storage->setCounterValue('POST', 101, 10);
+        $storage->set('POST', 101, 10);
 
         $counter = (new Counter($storage))
             ->setIdCallback(
@@ -111,7 +111,7 @@ final class CounterTest extends TestCase
             ->setId('test')
             ->init($this->createRequest());
 
-        $this->assertTrue($storage->hasCounterValue('test'));
+        $this->assertTrue($storage->has('test'));
     }
 
     /**
@@ -124,9 +124,9 @@ final class CounterTest extends TestCase
         (new Counter($this->getStorage()))->increment();
     }
 
-    private function getStorage(): StorageInterface
+    private function getStorage(): CounterStorageInterface
     {
-        return new CacheStorage(new ArrayCache());
+        return new CacheCounterStorage(new ArrayCache());
     }
 
     private function createRequest(string $method = Method::GET, string $uri = '/'): ServerRequestInterface
