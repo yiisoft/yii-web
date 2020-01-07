@@ -73,7 +73,6 @@ final class RateLimiterTest extends TestCase
     private function getCounter(): CounterInterface
     {
         return new class implements CounterInterface {
-
             private int $count = 0;
 
             public function init(ServerRequestInterface $request): CounterInterface
