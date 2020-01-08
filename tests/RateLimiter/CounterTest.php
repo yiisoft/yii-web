@@ -34,7 +34,7 @@ final class CounterTest extends TestCase
         $storage->set('test-id', 30, 10);
 
         $counter = (new Counter($storage))
-            ->setId('test-id')
+            ->withId('test-id')
             ->init($this->createRequest());
 
         $this->assertEquals(30, $counter->getCounterValue());
@@ -75,7 +75,7 @@ final class CounterTest extends TestCase
         $storage->set('POST', 101, 10);
 
         $counter = (new Counter($storage))
-            ->setIdCallback(
+            ->withIdCallback(
                 static function (ServerRequestInterface $request) {
                     return $request->getMethod();
                 }
@@ -91,7 +91,7 @@ final class CounterTest extends TestCase
     public function setInterval(): void
     {
         $counter = (new Counter($this->getStorage()))
-            ->setInterval(3)
+            ->withInterval(3)
             ->init($this->createRequest());
 
         $counter->increment();
@@ -108,7 +108,7 @@ final class CounterTest extends TestCase
     {
         $storage = $this->getStorage();
         (new Counter($storage))
-            ->setId('test')
+            ->withId('test')
             ->init($this->createRequest());
 
         $this->assertTrue($storage->has('test'));

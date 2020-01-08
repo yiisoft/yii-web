@@ -39,21 +39,21 @@ final class Counter
         return $this;
     }
 
-    public function setIdCallback(callable $callback): self
+    public function withIdCallback(callable $callback): self
     {
         $this->idCallback = $callback;
 
         return $this;
     }
 
-    public function setId(string $id): self
+    public function withId(string $id): self
     {
         $this->id = $id;
 
         return $this;
     }
 
-    public function setInterval(int $interval): self
+    public function withInterval(int $interval): self
     {
         $this->interval = $interval;
 
