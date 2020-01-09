@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\Web\RateLimiter;
 
-use Psr\SimpleCache\CacheInterface;
-
 final class GenericCellRateAlgorithm
 {
     private int $arrivalTime;
