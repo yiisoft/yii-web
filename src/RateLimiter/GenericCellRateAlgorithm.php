@@ -35,12 +35,12 @@ final class GenericCellRateAlgorithm
 
     private function getEmissionInterval(): float
     {
-        return (float)($this->quota->getPeriod() / $this->quota->getLimit());
+        return (float)($this->quota->getPeriod() / $this->getLimit());
     }
 
     private function getDelayVariationTolerance(float $emissionInterval)
     {
-        return $emissionInterval * $this->quota->getLimit();
+        return $emissionInterval * $this->getLimit();
     }
 
     private function calculateTheoreticalArrivalTime(float $theoreticalArrivalTime, float $emissionInterval): float
@@ -53,5 +53,10 @@ final class GenericCellRateAlgorithm
         $allowAt = $theoreticalArrivalTime - $this->getDelayVariationTolerance($emissionInterval);
 
         return floor((($this->arrivalTime - $allowAt) / $emissionInterval) + 0.5);
+    }
+
+    private function getLimit(): int
+    {
+        return $this->quota->getLimit() + 1;
     }
 }

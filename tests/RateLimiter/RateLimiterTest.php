@@ -35,7 +35,7 @@ final class RateLimiterTest extends TestCase
     {
         $middleware = $this->createRateLimiter($this->getCounter(1000));
 
-        for ($i = 0; $i < 999; $i++) {
+        for ($i = 0; $i < 1000; $i++) {
             $middleware->process($this->createRequest(), $this->createRequestHandler());
         }
 
@@ -48,9 +48,9 @@ final class RateLimiterTest extends TestCase
      */
     public function customLimitWorksAsExpected(): void
     {
-        $middleware = $this->createRateLimiter($this->getCounter(10));
+        $middleware = $this->createRateLimiter($this->getCounter(11));
 
-        for ($i = 0; $i < 8; $i++) {
+        for ($i = 0; $i < 10; $i++) {
             $middleware->process($this->createRequest(), $this->createRequestHandler());
         }
 
