@@ -37,8 +37,7 @@ final class CacheCounter
     {
         $this->checkParams();
         $this->arrivalTime = time();
-        $storageValue = $this->getStorageValue();
-        $theoreticalArrivalTime = $this->calculateTheoreticalArrivalTime($storageValue);
+        $theoreticalArrivalTime = $this->calculateTheoreticalArrivalTime($this->getStorageValue());
         if ($this->remainingEmpty($theoreticalArrivalTime)) {
             return true;
         }
