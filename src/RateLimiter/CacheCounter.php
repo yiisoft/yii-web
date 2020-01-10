@@ -6,35 +6,44 @@ namespace Yiisoft\Yii\Web\RateLimiter;
 
 use Psr\SimpleCache\CacheInterface;
 
-final class CacheCounter implements CounterInterface
+final class CacheCounter
 {
-    private string $id;
+    private int $period;
+
+    private int $limit;
+
+    private ?string $id = null;
 
     private CacheInterface $storage;
 
-    private CounterQuota $quota;
+    private int $arrivalTime;
 
-    private GenericCellRateAlgorithm $algorithm;
-
-    public function __construct(CounterQuota $quota, CacheInterface $storage, GenericCellRateAlgorithm $algorithm)
+    public function __construct(int $limit, int $period, CacheInterface $storage)
     {
-        $this->quota = $quota;
+        $this->limit = $limit;
+        $this->period = $period;
         $this->storage = $storage;
-        $this->algorithm = $algorithm;
-    }
-
-    public function limitIsReached(): bool
-    {
-        $this->checkParams();
-        $remaining = $this->algorithm->getRemaining($this->quota, $this->getStorageValue());
-        $this->setStorageValue($this->algorithm->getActualTheoreticalArrivalTime());
-
-        return $remaining < 1;
     }
 
     public function setId(string $id): void
     {
         $this->id = $id;
+    }
+
+    public function limitIsReached(): bool
+    {
+        $this->checkParams();
+        $this->arrivalTime = time();
+        $emissionInterval = $this->getEmissionInterval();
+        $theoreticalArrivalTime = $this->getStorageValue();
+        $updatedTheoreticalArrivalTime = $this->calculateTheoreticalArrivalTime(
+            $theoreticalArrivalTime,
+            $emissionInterval
+        );
+        $remainingEmpty = $this->remainingEmpty($updatedTheoreticalArrivalTime, $emissionInterval);
+        $this->updateStorageValue($remainingEmpty ? $theoreticalArrivalTime : $updatedTheoreticalArrivalTime);
+
+        return $remainingEmpty;
     }
 
     private function checkParams(): void
@@ -44,13 +53,35 @@ final class CacheCounter implements CounterInterface
         }
     }
 
-    private function getStorageValue(): float
+    private function getEmissionInterval(): float
     {
-        return (float)$this->storage->get($this->id, time());
+        return (float)($this->period / $this->limit);
     }
 
-    private function setStorageValue(float $value): void
+    private function getDelayVariationTolerance(float $emissionInterval)
     {
-        $this->storage->set($this->id, $value);
+        return $emissionInterval * $this->limit;
+    }
+
+    private function calculateTheoreticalArrivalTime(float $theoreticalArrivalTime, float $emissionInterval): float
+    {
+        return max($this->arrivalTime, $theoreticalArrivalTime) + $emissionInterval;
+    }
+
+    private function remainingEmpty(float $theoreticalArrivalTime, float $emissionInterval): bool
+    {
+        $allowAt = $theoreticalArrivalTime - $this->getDelayVariationTolerance($emissionInterval);
+
+        return floor((($this->arrivalTime - $allowAt) / $emissionInterval) + 0.5) < 1;
+    }
+
+    private function getStorageValue(): float
+    {
+        return $this->storage->get($this->id, (float)$this->arrivalTime);
+    }
+
+    private function updateStorageValue(float $theoreticalArrivalTime): void
+    {
+        $this->storage->set($this->id, $theoreticalArrivalTime);
     }
 }

@@ -17,7 +17,7 @@ use Psr\Http\Server\RequestHandlerInterface;
  */
 final class RateLimiter implements MiddlewareInterface
 {
-    private CounterInterface $counter;
+    private CacheCounter $counter;
 
     private ResponseFactoryInterface $responseFactory;
 
@@ -28,7 +28,7 @@ final class RateLimiter implements MiddlewareInterface
      */
     private $counterIdCallback;
 
-    public function __construct(CounterInterface $counter, ResponseFactoryInterface $responseFactory)
+    public function __construct(CacheCounter $counter, ResponseFactoryInterface $responseFactory)
     {
         $this->counter = $counter;
         $this->responseFactory = $responseFactory;

@@ -12,8 +12,6 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Http\Method;
 use Yiisoft\Yii\Web\RateLimiter\CacheCounter;
-use Yiisoft\Yii\Web\RateLimiter\CounterQuota;
-use Yiisoft\Yii\Web\RateLimiter\GenericCellRateAlgorithm;
 use Yiisoft\Yii\Web\RateLimiter\RateLimiter;
 
 final class RateLimiterTest extends TestCase
@@ -35,7 +33,7 @@ final class RateLimiterTest extends TestCase
     {
         $middleware = $this->createRateLimiter($this->getCounter(1000));
 
-        for ($i = 0; $i < 1000; $i++) {
+        for ($i = 0; $i < 999; $i++) {
             $middleware->process($this->createRequest(), $this->createRequestHandler());
         }
 
@@ -48,9 +46,9 @@ final class RateLimiterTest extends TestCase
      */
     public function customLimitWorksAsExpected(): void
     {
-        $middleware = $this->createRateLimiter($this->getCounter(11));
+        $middleware = $this->createRateLimiter($this->getCounter(10));
 
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 8; $i++) {
             $middleware->process($this->createRequest(), $this->createRequestHandler());
         }
 
@@ -63,7 +61,7 @@ final class RateLimiterTest extends TestCase
 
     private function getCounter(int $limit): CacheCounter
     {
-        return new CacheCounter(new CounterQuota($limit, 3600), new ArrayCache(), new GenericCellRateAlgorithm());
+        return new CacheCounter($limit, 3600, new ArrayCache());
     }
 
     private function createRequestHandler(): RequestHandlerInterface
