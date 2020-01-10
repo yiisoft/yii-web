@@ -50,6 +50,14 @@ final class CacheCounter
         if ($this->id === null) {
             throw new \RuntimeException('The counter id not set');
         }
+
+        if ($this->limit < 1) {
+            throw new \InvalidArgumentException('The limit must be a positive value.');
+        }
+
+        if ($this->period < 1) {
+            throw new \InvalidArgumentException('The period must be a positive value.');
+        }
     }
 
     private function getEmissionInterval(): float
