@@ -59,6 +59,38 @@ final class RateLimiterTest extends TestCase
         $this->assertEquals(429, $response->getStatusCode());
     }
 
+    /**
+     * @test
+     */
+    public function withManualCounterId(): void
+    {
+        $cache = new ArrayCache();
+        $counter = new CacheCounter(100, 3600, $cache);
+
+        $middleware = $this->createRateLimiter($counter)->withCounterId('custom-id');
+        $middleware->process($this->createRequest(), $this->createRequestHandler());
+
+        $this->assertTrue($cache->has('custom-id'));
+    }
+
+    /**
+     * @test
+     */
+    public function withManualCounterByCallback(): void
+    {
+        $cache = new ArrayCache();
+        $counter = new CacheCounter(100, 3600, $cache);
+
+        $middleware = $this->createRateLimiter($counter)->withCounterIdCallback(
+            static function (ServerRequestInterface $request) {
+                return $request->getMethod();
+            }
+        );
+
+        $middleware->process($this->createRequest(), $this->createRequestHandler());
+        $this->assertTrue($cache->has('GET'));
+    }
+
     private function getCounter(int $limit): CacheCounter
     {
         return new CacheCounter($limit, 3600, new ArrayCache());

@@ -6,6 +6,9 @@ namespace Yiisoft\Yii\Web\RateLimiter;
 
 use Psr\SimpleCache\CacheInterface;
 
+/**
+ * CacheCounter implements generic сell rate limit algorithm https://en.wikipedia.org/wiki/Generic_cell_rate_algorithm
+ */
 final class CacheCounter
 {
     private int $period;
@@ -34,13 +37,9 @@ final class CacheCounter
     {
         $this->checkParams();
         $this->arrivalTime = time();
-        $emissionInterval = $this->getEmissionInterval();
         $theoreticalArrivalTime = $this->getStorageValue();
-        $updatedTheoreticalArrivalTime = $this->calculateTheoreticalArrivalTime(
-            $theoreticalArrivalTime,
-            $emissionInterval
-        );
-        $remainingEmpty = $this->remainingEmpty($updatedTheoreticalArrivalTime, $emissionInterval);
+        $updatedTheoreticalArrivalTime = $this->calculateTheoreticalArrivalTime($theoreticalArrivalTime);
+        $remainingEmpty = $this->remainingEmpty($updatedTheoreticalArrivalTime);
         $this->updateStorageValue($remainingEmpty ? $theoreticalArrivalTime : $updatedTheoreticalArrivalTime);
 
         return $remainingEmpty;
@@ -58,21 +57,16 @@ final class CacheCounter
         return (float)($this->period / $this->limit);
     }
 
-    private function getDelayVariationTolerance(float $emissionInterval)
+    private function calculateTheoreticalArrivalTime(float $theoreticalArrivalTime): float
     {
-        return $emissionInterval * $this->limit;
+        return max($this->arrivalTime, $theoreticalArrivalTime) + $this->getEmissionInterval();
     }
 
-    private function calculateTheoreticalArrivalTime(float $theoreticalArrivalTime, float $emissionInterval): float
+    private function remainingEmpty(float $theoreticalArrivalTime): bool
     {
-        return max($this->arrivalTime, $theoreticalArrivalTime) + $emissionInterval;
-    }
+        $allowAt = $theoreticalArrivalTime - $this->period;
 
-    private function remainingEmpty(float $theoreticalArrivalTime, float $emissionInterval): bool
-    {
-        $allowAt = $theoreticalArrivalTime - $this->getDelayVariationTolerance($emissionInterval);
-
-        return floor((($this->arrivalTime - $allowAt) / $emissionInterval) + 0.5) < 1;
+        return ((floor($this->arrivalTime - $allowAt) / $this->getEmissionInterval()) + 0.5) < 1;
     }
 
     private function getStorageValue(): float
