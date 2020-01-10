@@ -37,12 +37,15 @@ final class CacheCounter
     {
         $this->checkParams();
         $this->arrivalTime = time();
-        $theoreticalArrivalTime = $this->getStorageValue();
-        $updatedTheoreticalArrivalTime = $this->calculateTheoreticalArrivalTime($theoreticalArrivalTime);
-        $remainingEmpty = $this->remainingEmpty($updatedTheoreticalArrivalTime);
-        $this->updateStorageValue($remainingEmpty ? $theoreticalArrivalTime : $updatedTheoreticalArrivalTime);
+        $storageValue = $this->getStorageValue();
+        $theoreticalArrivalTime = $this->calculateTheoreticalArrivalTime($storageValue);
+        if ($this->remainingEmpty($theoreticalArrivalTime)) {
+            return true;
+        }
 
-        return $remainingEmpty;
+        $this->setStorageValue($theoreticalArrivalTime);
+
+        return false;
     }
 
     private function checkParams(): void
@@ -82,7 +85,7 @@ final class CacheCounter
         return $this->storage->get($this->id, (float)$this->arrivalTime);
     }
 
-    private function updateStorageValue(float $theoreticalArrivalTime): void
+    private function setStorageValue(float $theoreticalArrivalTime): void
     {
         $this->storage->set($this->id, $theoreticalArrivalTime);
     }
