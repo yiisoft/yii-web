@@ -84,7 +84,7 @@ final class CacheCounter
 
     private function getStorageValue(): float
     {
-        return $this->storage->get($this->id, $this->arrivalTime);
+        return $this->storage->get($this->id, (float)$this->arrivalTime);
     }
 
     private function setStorageValue(float $theoreticalArrivalTime): void
