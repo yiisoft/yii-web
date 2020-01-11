@@ -11,6 +11,8 @@ use Psr\SimpleCache\CacheInterface;
  */
 final class CacheCounter
 {
+    public const ID_PREFIX = 'rate-limiter-';
+
     private const MILLISECONDS_PER_SECOND = 1000;
 
     private int $period;
@@ -40,7 +42,7 @@ final class CacheCounter
 
     public function setId(string $id): void
     {
-        $this->id = $id;
+        $this->id = self::ID_PREFIX . $id;
     }
 
     public function limitIsReached(): bool

@@ -45,18 +45,20 @@ final class RateLimiter implements MiddlewareInterface
         return $handler->handle($request);
     }
 
-    public function withCounterIdCallback(callable $callback): self
+    public function withCounterIdCallback(?callable $callback): self
     {
-        $this->counterIdCallback = $callback;
+        $new = clone $this;
+        $new->counterIdCallback = $callback;
 
-        return $this;
+        return $new;
     }
 
     public function withCounterId(string $id): self
     {
-        $this->counterId = $id;
+        $new = clone $this;
+        $new->counterId = $id;
 
-        return $this;
+        return $new;
     }
 
     private function createErrorResponse(): ResponseInterface
@@ -78,6 +80,6 @@ final class RateLimiter implements MiddlewareInterface
 
     private function generateIdFromRequest(ServerRequestInterface $request): string
     {
-        return strtolower('rate-limiter-' . $request->getMethod() . '-' . $request->getUri()->getPath());
+        return strtolower($request->getMethod() . '-' . $request->getUri()->getPath());
     }
 }

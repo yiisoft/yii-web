@@ -70,7 +70,7 @@ final class RateLimiterTest extends TestCase
         $middleware = $this->createRateLimiter($counter)->withCounterId('custom-id');
         $middleware->process($this->createRequest(), $this->createRequestHandler());
 
-        $this->assertTrue($cache->has('custom-id'));
+        $this->assertTrue($cache->has(CacheCounter::ID_PREFIX . 'custom-id'));
     }
 
     /**
@@ -88,7 +88,7 @@ final class RateLimiterTest extends TestCase
         );
 
         $middleware->process($this->createRequest(), $this->createRequestHandler());
-        $this->assertTrue($cache->has('GET'));
+        $this->assertTrue($cache->has(CacheCounter::ID_PREFIX . 'GET'));
     }
 
     private function getCounter(int $limit): CacheCounter
