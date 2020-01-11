@@ -20,11 +20,11 @@ final class HttpCache implements MiddlewareInterface
      * The callback's signature should be:
      *
      * ```php
-     * function ($request, $params)
+     * function (ServerRequestInterface $request, $params): int
      * ```
      *
-     * where `$request` is the [[ServerRequestInterface]] object that this filter is currently handling;
-     * `$params` takes the value of [[params]]. The callback should return a UNIX timestamp.
+     * where `$request` is the {@see ServerRequestInterface} object that this filter is currently handling;
+     * `$params` takes the value of {@see params}. The callback should return a UNIX timestamp.
      *
      * @see http://tools.ietf.org/html/rfc7232#section-2.2
      */
@@ -35,11 +35,11 @@ final class HttpCache implements MiddlewareInterface
      * The callback's signature should be:
      *
      * ```php
-     * function ($request, $params)
+     * function (ServerRequestInterface $request, $params): string
      * ```
      *
-     * where `$request` is the [[ServerRequestInterface]] object that this filter is currently handling;
-     * `$params` takes the value of [[params]]. The callback should return a string serving
+     * where `$request` is the {@see ServerRequestInterface} object that this middleware is currently handling;
+     * `$params` takes the value of {@see $params}. The callback should return a string serving
      * as the seed for generating an ETag.
      */
     private $etagSeed;
@@ -54,7 +54,7 @@ final class HttpCache implements MiddlewareInterface
     private bool $weakEtag = false;
 
     /**
-     * @var mixed additional parameters that should be passed to the [[lastModified]] and [[etagSeed]] callbacks.
+     * @var mixed additional parameters that should be passed to the {@see $lastModified} and {@see etagSeed} callbacks.
      */
     private $params;
 
@@ -95,9 +95,11 @@ final class HttpCache implements MiddlewareInterface
 
         $cacheValid = $this->validateCache($request, $lastModified, $etag);
         if ($cacheValid) {
-            //var_dump($cacheValid);die;
             $response = $this->responseFactory->createResponse(304);
-            $response->getBody()->write('Not Modified');
+            $response = $response->withHeader(
+                'Last-Modified',
+                gmdate('D, d M Y H:i:s', $lastModified) . ' GMT'
+            );
             return $response;
         }
 

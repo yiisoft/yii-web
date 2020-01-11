@@ -17,12 +17,12 @@ class HttpCacheTest extends TestCase
     /**
      * @test
      */
-    public function validCacheResult(): void
+    public function modifiedResult(): void
     {
         $time = \time();
-        $middleware = $this->createMiddlewareWithLastModified($time);
+        $middleware = $this->createMiddlewareWithLastModified($time + 1);
         $headers = [
-            'If-Modified-Since' => $time,
+            'If-Modified-Since' => gmdate('D, d M Y H:i:s', $time) . 'GMT',
         ];
         $response = $middleware->process($this->createServerRequest(Method::GET, $headers), $this->createRequestHandler());
         $this->assertEquals(200, $response->getStatusCode());
@@ -31,7 +31,7 @@ class HttpCacheTest extends TestCase
     /**
      * @test
      */
-    public function invalidCacheResult(): void
+    public function notModifiedResult(): void
     {
         $time = \time();
         $middleware = $this->createMiddlewareWithLastModified($time - 1);
@@ -40,9 +40,11 @@ class HttpCacheTest extends TestCase
         ];
         $response = $middleware->process($this->createServerRequest(Method::GET, $headers), $this->createRequestHandler());
         $this->assertEquals(304, $response->getStatusCode());
+        $this->assertEmpty((string)$response->getBody());
+        $this->assertEquals(gmdate('D, d M Y H:i:s', $time - 1) . ' GMT', $response->getHeaderLine('Last-Modified'));
     }
 
-    private function createMiddlewareWithLastModified(int $lastModified)
+    private function createMiddlewareWithLastModified(int $lastModified): HttpCache
     {
         $middleware = new HttpCache(new Psr17Factory());
         $middleware->setLastModified(static function (ServerRequestInterface $request, $params) use ($lastModified) {
@@ -61,7 +63,7 @@ class HttpCacheTest extends TestCase
         };
     }
 
-    private function createServerRequest(string $method = Method::GET, $headers = [])
+    private function createServerRequest(string $method = Method::GET, $headers = []): ServerRequestInterface
     {
         return new ServerRequest($method, '/', $headers);
     }
