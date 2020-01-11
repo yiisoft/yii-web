@@ -50,9 +50,7 @@ final class CacheCounterTest extends TestCase
     public function invalidLimitArgument(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $counter = new CacheCounter(0, 60, new ArrayCache());
-        $counter->setId('key');
-        $counter->limitIsReached();
+        new CacheCounter(0, 60, new ArrayCache());
     }
 
     /**
@@ -61,8 +59,6 @@ final class CacheCounterTest extends TestCase
     public function invalidPeriodArgument(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $counter = new CacheCounter(10, 0, new ArrayCache());
-        $counter->setId('key');
-        $counter->limitIsReached();
+        new CacheCounter(10, 0, new ArrayCache());
     }
 }

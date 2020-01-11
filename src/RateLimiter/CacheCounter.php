@@ -25,6 +25,14 @@ final class CacheCounter
 
     public function __construct(int $limit, int $period, CacheInterface $storage)
     {
+        if ($limit < 1) {
+            throw new \InvalidArgumentException('The limit must be a positive value.');
+        }
+
+        if ($period < 1) {
+            throw new \InvalidArgumentException('The period must be a positive value.');
+        }
+
         $this->limit = $limit;
         $this->period = $period * self::MILLISECONDS_PER_SECOND;
         $this->storage = $storage;
@@ -37,7 +45,10 @@ final class CacheCounter
 
     public function limitIsReached(): bool
     {
-        $this->checkParams();
+        if ($this->id === null) {
+            throw new \RuntimeException('The counter id not set');
+        }
+
         $this->arrivalTime = $this->getArrivalTime();
         $theoreticalArrivalTime = $this->calculateTheoreticalArrivalTime($this->getStorageValue());
 
@@ -48,21 +59,6 @@ final class CacheCounter
         $this->setStorageValue($theoreticalArrivalTime);
 
         return false;
-    }
-
-    private function checkParams(): void
-    {
-        if ($this->id === null) {
-            throw new \RuntimeException('The counter id not set');
-        }
-
-        if ($this->limit < 1) {
-            throw new \InvalidArgumentException('The limit must be a positive value.');
-        }
-
-        if ($this->period < 1) {
-            throw new \InvalidArgumentException('The period must be a positive value.');
-        }
     }
 
     private function getEmissionInterval(): float
