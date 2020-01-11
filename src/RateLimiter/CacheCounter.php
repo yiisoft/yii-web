@@ -11,6 +11,8 @@ use Psr\SimpleCache\CacheInterface;
  */
 final class CacheCounter
 {
+    private const MILLISECONDS_PER_SECOND = 1000;
+
     private int $period;
 
     private int $limit;
@@ -24,7 +26,7 @@ final class CacheCounter
     public function __construct(int $limit, int $period, CacheInterface $storage)
     {
         $this->limit = $limit;
-        $this->period = $period;
+        $this->period = $period * self::MILLISECONDS_PER_SECOND;
         $this->storage = $storage;
     }
 
@@ -36,8 +38,9 @@ final class CacheCounter
     public function limitIsReached(): bool
     {
         $this->checkParams();
-        $this->arrivalTime = time();
+        $this->arrivalTime = $this->getArrivalTime();
         $theoreticalArrivalTime = $this->calculateTheoreticalArrivalTime($this->getStorageValue());
+
         if ($this->remainingEmpty($theoreticalArrivalTime)) {
             return true;
         }
@@ -81,11 +84,16 @@ final class CacheCounter
 
     private function getStorageValue(): float
     {
-        return $this->storage->get($this->id, (float)$this->arrivalTime);
+        return $this->storage->get($this->id, $this->arrivalTime);
     }
 
     private function setStorageValue(float $theoreticalArrivalTime): void
     {
         $this->storage->set($this->id, $theoreticalArrivalTime);
+    }
+
+    private function getArrivalTime(): int
+    {
+        return time() * self::MILLISECONDS_PER_SECOND;
     }
 }

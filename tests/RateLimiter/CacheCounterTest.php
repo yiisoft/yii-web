@@ -27,7 +27,7 @@ final class CacheCounterTest extends TestCase
     public function limitIsExhausted(): void
     {
         $cache = new ArrayCache();
-        $cache->set('key', time() + 55);
+        $cache->set('key', (time() * 1000) + 55000);
 
         $counter = new CacheCounter(10, 60, $cache);
         $counter->setId('key');
