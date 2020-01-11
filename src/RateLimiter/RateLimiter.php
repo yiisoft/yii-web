@@ -11,8 +11,8 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * RateLimiter limits the number of consequential requests ({@see CacheCounter::$limit}) that could be processed per
- * {@see CacheCounter::$interval}. If the number is reached, middleware responds with HTTP code 429, "Too Many Requests"
+ * RateLimiter limits the number of consequential requests ({@see CacheCounter::$period}) that could be processed per
+ * {@see CacheCounter::$limit}. If the number is reached, middleware responds with HTTP code 429, "Too Many Requests"
  * until limit expires.
  */
 final class RateLimiter implements MiddlewareInterface
