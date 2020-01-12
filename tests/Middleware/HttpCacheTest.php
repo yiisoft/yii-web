@@ -14,10 +14,7 @@ use Yiisoft\Yii\Web\Middleware\HttpCache;
 
 class HttpCacheTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function notCacheableMethods(): void
+    public function testNotCacheableMethods(): void
     {
         $time = \time();
         $middleware = $this->createMiddlewareWithLastModified($time + 1);
@@ -26,10 +23,7 @@ class HttpCacheTest extends TestCase
         $this->assertFalse($response->hasHeader('Last-Modified'));
     }
 
-    /**
-     * @test
-     */
-    public function modifiedResultWithLastModified(): void
+    public function testModifiedResultWithLastModified(): void
     {
         $time = \time();
         $middleware = $this->createMiddlewareWithLastModified($time + 1);
@@ -40,10 +34,7 @@ class HttpCacheTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    /**
-     * @test
-     */
-    public function modifiedResultWithEtag(): void
+    public function testModifiedResultWithEtag(): void
     {
         $etag = 'test-etag';
         $middleware = $this->createMiddlewareWithETag($etag);
@@ -55,10 +46,7 @@ class HttpCacheTest extends TestCase
         $this->assertEquals($response->getHeaderLine('Etag'), $this->generateEtag($etag));
     }
 
-    /**
-     * @test
-     */
-    public function notModifiedResultWithLastModified(): void
+    public function testNotModifiedResultWithLastModified(): void
     {
         $time = \time();
         $middleware = $this->createMiddlewareWithLastModified($time - 1);
@@ -71,10 +59,7 @@ class HttpCacheTest extends TestCase
         $this->assertEquals(gmdate('D, d M Y H:i:s', $time - 1) . ' GMT', $response->getHeaderLine('Last-Modified'));
     }
 
-    /**
-     * @test
-     */
-    public function notModifiedResultWithEtag(): void
+    public function testNotModifiedResultWithEtag(): void
     {
         $etag = 'test-etag';
         $middleware = $this->createMiddlewareWithETag($etag);
