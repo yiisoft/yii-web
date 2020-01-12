@@ -15,7 +15,7 @@ use Psr\Http\Server\RequestHandlerInterface;
  * {@see CacheCounter::$limit}. If the number is reached, middleware responds with HTTP code 429, "Too Many Requests"
  * until limit expires.
  */
-final class RateLimiter implements MiddlewareInterface
+final class RateLimiterMiddleware implements MiddlewareInterface
 {
     private CacheCounter $counter;
 
@@ -37,12 +37,15 @@ final class RateLimiter implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $this->counter->setId($this->generateId($request));
+        $result = $this->counter->incrementAndGetResult();
 
-        if ($this->counter->limitIsReached()) {
-            return $this->createErrorResponse();
+        if ($result->remainingIsEmpty()) {
+            $response = $this->createErrorResponse();
+        } else {
+            $response = $handler->handle($request);
         }
 
-        return $handler->handle($request);
+        return $this->addHeaders($response, $result);
     }
 
     public function withCounterIdCallback(?callable $callback): self
@@ -81,5 +84,13 @@ final class RateLimiter implements MiddlewareInterface
     private function generateIdFromRequest(ServerRequestInterface $request): string
     {
         return strtolower($request->getMethod() . '-' . $request->getUri()->getPath());
+    }
+
+    public function addHeaders(ResponseInterface $response, RateLimitResult $result): ResponseInterface
+    {
+        return $response
+            ->withHeader('X-Rate-Limit-Limit', $result->getLimit())
+            ->withHeader('X-Rate-Limit-Remaining', $result->getRemaining())
+            ->withHeader('X-Rate-Limit-Reset', $result->getReset());
     }
 }

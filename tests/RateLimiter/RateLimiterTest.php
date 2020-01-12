@@ -12,7 +12,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Http\Method;
 use Yiisoft\Yii\Web\RateLimiter\CacheCounter;
-use Yiisoft\Yii\Web\RateLimiter\RateLimiter;
+use Yiisoft\Yii\Web\RateLimiter\RateLimiterMiddleware;
 
 final class RateLimiterTest extends TestCase
 {
@@ -24,6 +24,14 @@ final class RateLimiterTest extends TestCase
         $middleware = $this->createRateLimiter($this->getCounter(1000));
         $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
         $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame(
+            [
+                'X-Rate-Limit-Limit' => ['1000'],
+                'X-Rate-Limit-Remaining' => ['999'],
+                'X-Rate-Limit-Reset' => ['3600']
+            ],
+            $response->getHeaders()
+        );
     }
 
     /**
@@ -39,6 +47,14 @@ final class RateLimiterTest extends TestCase
 
         $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
         $this->assertEquals(429, $response->getStatusCode());
+        $this->assertSame(
+            [
+                'X-Rate-Limit-Limit' => ['1000'],
+                'X-Rate-Limit-Remaining' => ['0'],
+                'X-Rate-Limit-Reset' => ['3600000']
+            ],
+            $response->getHeaders()
+        );
     }
 
     /**
@@ -111,8 +127,8 @@ final class RateLimiterTest extends TestCase
         return new ServerRequest($method, $uri);
     }
 
-    private function createRateLimiter(CacheCounter $counter): RateLimiter
+    private function createRateLimiter(CacheCounter $counter): RateLimiterMiddleware
     {
-        return new RateLimiter($counter, new Psr17Factory());
+        return new RateLimiterMiddleware($counter, new Psr17Factory());
     }
 }

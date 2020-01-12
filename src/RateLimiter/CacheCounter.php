@@ -45,22 +45,23 @@ final class CacheCounter
         $this->id = self::ID_PREFIX . $id;
     }
 
-    public function limitIsReached(): bool
+    public function incrementAndGetResult(): RateLimitResult
     {
         if ($this->id === null) {
-            throw new \RuntimeException('The counter id not set');
+            throw new \LogicException('The counter id not set');
         }
 
         $this->arrivalTime = $this->getArrivalTime();
         $theoreticalArrivalTime = $this->calculateTheoreticalArrivalTime($this->getStorageValue());
+        $remaining = $this->getRemaining($theoreticalArrivalTime);
 
-        if ($this->remainingEmpty($theoreticalArrivalTime)) {
-            return true;
+        if ($remaining < 1) {
+            return new RateLimitResult($this->limit, 0, $this->getResetAfter($theoreticalArrivalTime));
         }
 
         $this->setStorageValue($theoreticalArrivalTime);
 
-        return false;
+        return new RateLimitResult($this->limit, (int)$remaining, $this->getResetAfter($theoreticalArrivalTime));
     }
 
     private function getEmissionInterval(): float
@@ -73,11 +74,11 @@ final class CacheCounter
         return max($this->arrivalTime, $theoreticalArrivalTime) + $this->getEmissionInterval();
     }
 
-    private function remainingEmpty(float $theoreticalArrivalTime): bool
+    private function getRemaining(float $theoreticalArrivalTime): float
     {
         $allowAt = $theoreticalArrivalTime - $this->period;
 
-        return ((floor($this->arrivalTime - $allowAt) / $this->getEmissionInterval()) + 0.5) < 1;
+        return (floor($this->arrivalTime - $allowAt) / $this->getEmissionInterval()) + 0.5;
     }
 
     private function getStorageValue(): float
@@ -93,5 +94,10 @@ final class CacheCounter
     private function getArrivalTime(): int
     {
         return time() * self::MILLISECONDS_PER_SECOND;
+    }
+
+    private function getResetAfter(float $theoreticalArrivalTime): int
+    {
+        return (int)($theoreticalArrivalTime - $this->arrivalTime);
     }
 }

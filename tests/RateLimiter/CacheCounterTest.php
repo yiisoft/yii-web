@@ -2,7 +2,6 @@
 
 namespace Yiisoft\Yii\Web\Tests\RateLimiter;
 
-use RuntimeException;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Cache\ArrayCache;
@@ -18,7 +17,10 @@ final class CacheCounterTest extends TestCase
         $counter = new CacheCounter(2, 5, new ArrayCache());
         $counter->setId('key');
 
-        $this->assertFalse($counter->limitIsReached());
+        $result = $counter->incrementAndGetResult();
+        $this->assertEquals(2, $result->getLimit());
+        $this->assertEquals(1, $result->getRemaining());
+        $this->assertEquals(2500, $result->getReset());
     }
 
     /**
@@ -32,7 +34,10 @@ final class CacheCounterTest extends TestCase
         $counter = new CacheCounter(10, 60, $cache);
         $counter->setId('key');
 
-        $this->assertTrue($counter->limitIsReached());
+        $result = $counter->incrementAndGetResult();
+        $this->assertEquals(10, $result->getLimit());
+        $this->assertEquals(0, $result->getRemaining());
+        $this->assertEquals(61000, $result->getReset());
     }
 
     /**
@@ -40,8 +45,8 @@ final class CacheCounterTest extends TestCase
      */
     public function invalidIdArgument(): void
     {
-        $this->expectException(RuntimeException::class);
-        (new CacheCounter(10, 60, new ArrayCache()))->limitIsReached();
+        $this->expectException(\LogicException::class);
+        (new CacheCounter(10, 60, new ArrayCache()))->incrementAndGetResult();
     }
 
     /**
