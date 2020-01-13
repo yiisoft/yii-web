@@ -63,9 +63,7 @@ final class Counter implements CounterInterface
         $remaining = $this->calculateRemaining($theoreticalArrivalTime);
         $resetAfter = $this->calculateResetAfter($theoreticalArrivalTime);
 
-        if ($remaining < 1) {
-            $remaining = 0;
-        } else {
+        if ($remaining >= 1) {
             $this->setStorageValue($theoreticalArrivalTime);
         }
 
