@@ -14,12 +14,12 @@ use Yiisoft\Http\Method;
 use Yiisoft\Yii\Web\RateLimiter\Counter;
 use Yiisoft\Yii\Web\RateLimiter\RateLimiterMiddleware;
 
-final class RateLimiterTest extends TestCase
+final class RateLimiterMiddlewareTest extends TestCase
 {
     /**
      * @test
      */
-    public function singleRequestIsAllowed(): void
+    public function singleRequestWorksAsExpected(): void
     {
         $middleware = $this->createRateLimiter($this->getCounter(1000));
         $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
@@ -37,19 +37,32 @@ final class RateLimiterTest extends TestCase
     /**
      * @test
      */
-    public function moreThanDefaultNumberOfRequestsIsNotAllowed(): void
+    public function limitingIsStartedWhenExpected(): void
     {
-        $middleware = $this->createRateLimiter($this->getCounter(100));
+        $middleware = $this->createRateLimiter($this->getCounter(10));
 
-        for ($i = 0; $i < 99; $i++) {
+        for ($i = 0; $i < 8; $i++) {
             $middleware->process($this->createRequest(), $this->createRequestHandler());
         }
 
+        // last allowed request
+        $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame(
+            [
+                'X-Rate-Limit-Limit' => ['10'],
+                'X-Rate-Limit-Remaining' => ['1'],
+                'X-Rate-Limit-Reset' => ['3240000']
+            ],
+            $response->getHeaders()
+        );
+
+        // first denied request
         $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
         $this->assertEquals(429, $response->getStatusCode());
         $this->assertSame(
             [
-                'X-Rate-Limit-Limit' => ['100'],
+                'X-Rate-Limit-Limit' => ['10'],
                 'X-Rate-Limit-Remaining' => ['0'],
                 'X-Rate-Limit-Reset' => ['3600000']
             ],
@@ -60,25 +73,7 @@ final class RateLimiterTest extends TestCase
     /**
      * @test
      */
-    public function customLimitWorksAsExpected(): void
-    {
-        $middleware = $this->createRateLimiter($this->getCounter(10));
-
-        for ($i = 0; $i < 8; $i++) {
-            $middleware->process($this->createRequest(), $this->createRequestHandler());
-        }
-
-        $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
-        $this->assertEquals(200, $response->getStatusCode());
-
-        $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
-        $this->assertEquals(429, $response->getStatusCode());
-    }
-
-    /**
-     * @test
-     */
-    public function withManualCounterId(): void
+    public function counterIdCouldBeSet(): void
     {
         $cache = new ArrayCache();
         $counter = new Counter(100, 3600, $cache);
@@ -92,7 +87,7 @@ final class RateLimiterTest extends TestCase
     /**
      * @test
      */
-    public function withManualCounterByCallback(): void
+    public function counterIdCouldBeSetWithCallback(): void
     {
         $cache = new ArrayCache();
         $counter = new Counter(100, 3600, $cache);
