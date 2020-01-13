@@ -11,7 +11,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Http\Method;
-use Yiisoft\Yii\Web\RateLimiter\CacheCounter;
+use Yiisoft\Yii\Web\RateLimiter\Counter;
 use Yiisoft\Yii\Web\RateLimiter\RateLimiterMiddleware;
 
 final class RateLimiterTest extends TestCase
@@ -81,12 +81,12 @@ final class RateLimiterTest extends TestCase
     public function withManualCounterId(): void
     {
         $cache = new ArrayCache();
-        $counter = new CacheCounter(100, 3600, $cache);
+        $counter = new Counter(100, 3600, $cache);
 
         $middleware = $this->createRateLimiter($counter)->withCounterId('custom-id');
         $middleware->process($this->createRequest(), $this->createRequestHandler());
 
-        $this->assertTrue($cache->has(CacheCounter::ID_PREFIX . 'custom-id'));
+        $this->assertTrue($cache->has(Counter::ID_PREFIX . 'custom-id'));
     }
 
     /**
@@ -95,7 +95,7 @@ final class RateLimiterTest extends TestCase
     public function withManualCounterByCallback(): void
     {
         $cache = new ArrayCache();
-        $counter = new CacheCounter(100, 3600, $cache);
+        $counter = new Counter(100, 3600, $cache);
 
         $middleware = $this->createRateLimiter($counter)->withCounterIdCallback(
             static function (ServerRequestInterface $request) {
@@ -104,12 +104,12 @@ final class RateLimiterTest extends TestCase
         );
 
         $middleware->process($this->createRequest(), $this->createRequestHandler());
-        $this->assertTrue($cache->has(CacheCounter::ID_PREFIX . 'GET'));
+        $this->assertTrue($cache->has(Counter::ID_PREFIX . 'GET'));
     }
 
-    private function getCounter(int $limit): CacheCounter
+    private function getCounter(int $limit): Counter
     {
-        return new CacheCounter($limit, 3600, new ArrayCache());
+        return new Counter($limit, 3600, new ArrayCache());
     }
 
     private function createRequestHandler(): RequestHandlerInterface
@@ -127,7 +127,7 @@ final class RateLimiterTest extends TestCase
         return new ServerRequest($method, $uri);
     }
 
-    private function createRateLimiter(CacheCounter $counter): RateLimiterMiddleware
+    private function createRateLimiter(Counter $counter): RateLimiterMiddleware
     {
         return new RateLimiterMiddleware($counter, new Psr17Factory());
     }

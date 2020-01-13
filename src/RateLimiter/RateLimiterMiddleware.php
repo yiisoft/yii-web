@@ -88,7 +88,7 @@ final class RateLimiterMiddleware implements MiddlewareInterface
         return strtolower($request->getMethod() . '-' . $request->getUri()->getPath());
     }
 
-    private function addHeaders(ResponseInterface $response, RateLimitResult $result): ResponseInterface
+    private function addHeaders(ResponseInterface $response, CounterStatistics $result): ResponseInterface
     {
         return $response
             ->withHeader('X-Rate-Limit-Limit', $result->getLimit())

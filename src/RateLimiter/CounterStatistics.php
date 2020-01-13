@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\Web\RateLimiter;
 
-final class RateLimitResult
+/**
+ * Rate limit counter statistics
+ */
+final class CounterStatistics
 {
     private int $limit;
     private int $remaining;

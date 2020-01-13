@@ -7,9 +7,12 @@ namespace Yiisoft\Yii\Web\RateLimiter;
 use Psr\SimpleCache\CacheInterface;
 
 /**
- * CacheCounter implements generic сell rate limit algorithm https://en.wikipedia.org/wiki/Generic_cell_rate_algorithm
+ * Counter implements generic сell rate limit algorithm (GCRA) that ensures that after reaching the limit futher
+ * requests are distributed equally.
+ *
+ * @link https://en.wikipedia.org/wiki/Generic_cell_rate_algorithm
  */
-final class CacheCounter implements CounterInterface
+final class Counter implements CounterInterface
 {
     public const ID_PREFIX = 'rate-limiter-';
 
@@ -45,7 +48,7 @@ final class CacheCounter implements CounterInterface
         $this->id = self::ID_PREFIX . $id;
     }
 
-    public function incrementAndGetResult(): RateLimitResult
+    public function incrementAndGetResult(): CounterStatistics
     {
         if ($this->id === null) {
             throw new \LogicException('The counter id not set');
@@ -56,12 +59,12 @@ final class CacheCounter implements CounterInterface
         $remaining = $this->getRemaining($theoreticalArrivalTime);
 
         if ($remaining < 1) {
-            return new RateLimitResult($this->limit, 0, $this->getResetAfter($theoreticalArrivalTime));
+            return new CounterStatistics($this->limit, 0, $this->getResetAfter($theoreticalArrivalTime));
         }
 
         $this->setStorageValue($theoreticalArrivalTime);
 
-        return new RateLimitResult($this->limit, (int)$remaining, $this->getResetAfter($theoreticalArrivalTime));
+        return new CounterStatistics($this->limit, (int)$remaining, $this->getResetAfter($theoreticalArrivalTime));
     }
 
     private function getEmissionInterval(): float

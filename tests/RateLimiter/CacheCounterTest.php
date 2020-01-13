@@ -5,7 +5,7 @@ namespace Yiisoft\Yii\Web\Tests\RateLimiter;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Cache\ArrayCache;
-use Yiisoft\Yii\Web\RateLimiter\CacheCounter;
+use Yiisoft\Yii\Web\RateLimiter\Counter;
 
 final class CacheCounterTest extends TestCase
 {
@@ -14,7 +14,7 @@ final class CacheCounterTest extends TestCase
      */
     public function limitNotExhausted(): void
     {
-        $counter = new CacheCounter(2, 5, new ArrayCache());
+        $counter = new Counter(2, 5, new ArrayCache());
         $counter->setId('key');
 
         $result = $counter->incrementAndGetResult();
@@ -29,9 +29,9 @@ final class CacheCounterTest extends TestCase
     public function limitIsExhausted(): void
     {
         $cache = new ArrayCache();
-        $cache->set(CacheCounter::ID_PREFIX . 'key', (time() * 1000) + 55000);
+        $cache->set(Counter::ID_PREFIX . 'key', (time() * 1000) + 55000);
 
-        $counter = new CacheCounter(10, 60, $cache);
+        $counter = new Counter(10, 60, $cache);
         $counter->setId('key');
 
         $result = $counter->incrementAndGetResult();
@@ -46,7 +46,7 @@ final class CacheCounterTest extends TestCase
     public function invalidIdArgument(): void
     {
         $this->expectException(\LogicException::class);
-        (new CacheCounter(10, 60, new ArrayCache()))->incrementAndGetResult();
+        (new Counter(10, 60, new ArrayCache()))->incrementAndGetResult();
     }
 
     /**
@@ -55,7 +55,7 @@ final class CacheCounterTest extends TestCase
     public function invalidLimitArgument(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        new CacheCounter(0, 60, new ArrayCache());
+        new Counter(0, 60, new ArrayCache());
     }
 
     /**
@@ -64,6 +64,6 @@ final class CacheCounterTest extends TestCase
     public function invalidPeriodArgument(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        new CacheCounter(10, 0, new ArrayCache());
+        new Counter(10, 0, new ArrayCache());
     }
 }
