@@ -39,7 +39,7 @@ final class RateLimiterMiddleware implements MiddlewareInterface
         $this->counter->setId($this->generateId($request));
         $result = $this->counter->incrementAndGetResult();
 
-        if ($result->remainingIsEmpty()) {
+        if ($result->isLimitReached()) {
             $response = $this->createErrorResponse();
         } else {
             $response = $handler->handle($request);
