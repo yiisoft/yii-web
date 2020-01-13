@@ -11,9 +11,11 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * RateLimiter limits the number of consequential requests ({@see CacheCounter::$period}) that could be processed per
- * {@see CacheCounter::$limit}. If the number is reached, middleware responds with HTTP code 429, "Too Many Requests"
- * until limit expires.
+ * RateLimiter helps to prevent abuse by limiting the number of requests that could be me made consequentially.
+ *
+ * For example, you may want to limit the API usage of each user to be at most 100 API calls within a period of 10 minutes.
+ * If too many requests are received from a user within the stated period of the time, a response with status code 429
+ * (meaning "Too Many Requests") should be returned.
  */
 final class RateLimiterMiddleware implements MiddlewareInterface
 {
