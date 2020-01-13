@@ -39,9 +39,9 @@ final class RateLimiterTest extends TestCase
      */
     public function moreThanDefaultNumberOfRequestsIsNotAllowed(): void
     {
-        $middleware = $this->createRateLimiter($this->getCounter(1000));
+        $middleware = $this->createRateLimiter($this->getCounter(100));
 
-        for ($i = 0; $i < 999; $i++) {
+        for ($i = 0; $i < 99; $i++) {
             $middleware->process($this->createRequest(), $this->createRequestHandler());
         }
 
@@ -49,7 +49,7 @@ final class RateLimiterTest extends TestCase
         $this->assertEquals(429, $response->getStatusCode());
         $this->assertSame(
             [
-                'X-Rate-Limit-Limit' => ['1000'],
+                'X-Rate-Limit-Limit' => ['100'],
                 'X-Rate-Limit-Remaining' => ['0'],
                 'X-Rate-Limit-Reset' => ['3600000']
             ],
