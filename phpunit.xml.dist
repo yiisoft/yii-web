@@ -3,6 +3,7 @@
     colors="true"
     verbose="true"
     failOnRisky="true"
+    backupGlobals="false"
     failOnWarning="true"
     convertErrorsToExceptions="true"
     convertNoticesToExceptions="true"
