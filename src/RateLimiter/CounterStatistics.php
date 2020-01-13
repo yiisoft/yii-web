@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Yii\Web\RateLimiter;
 
 /**
- * Rate limit counter statistics
+ * Rate limiter counter statistics
  */
 final class CounterStatistics
 {

@@ -12,21 +12,22 @@ final class CacheCounterTest extends TestCase
     /**
      * @test
      */
-    public function limitNotExhausted(): void
+    public function statisticsShouldBeCorrectWhenLimitIsNotReached(): void
     {
         $counter = new Counter(2, 5, new ArrayCache());
         $counter->setId('key');
 
-        $result = $counter->incrementAndGetResult();
-        $this->assertEquals(2, $result->getLimit());
-        $this->assertEquals(1, $result->getRemaining());
-        $this->assertEquals(2500, $result->getReset());
+        $statistics = $counter->incrementAndGetResult();
+        $this->assertEquals(2, $statistics->getLimit());
+        $this->assertEquals(1, $statistics->getRemaining());
+        $this->assertEquals(2500, $statistics->getReset());
+        $this->assertFalse($statistics->isLimitReached());
     }
 
     /**
      * @test
      */
-    public function limitIsExhausted(): void
+    public function statisticsShouldBeCorrectWhenLimitIsReached(): void
     {
         $cache = new ArrayCache();
         $cache->set(Counter::ID_PREFIX . 'key', (time() * 1000) + 55000);
@@ -34,16 +35,17 @@ final class CacheCounterTest extends TestCase
         $counter = new Counter(10, 60, $cache);
         $counter->setId('key');
 
-        $result = $counter->incrementAndGetResult();
-        $this->assertEquals(10, $result->getLimit());
-        $this->assertEquals(0, $result->getRemaining());
-        $this->assertEquals(61000, $result->getReset());
+        $statistics = $counter->incrementAndGetResult();
+        $this->assertEquals(10, $statistics->getLimit());
+        $this->assertEquals(0, $statistics->getRemaining());
+        $this->assertEquals(61000, $statistics->getReset());
+        $this->assertTrue($statistics->isLimitReached());
     }
 
     /**
      * @test
      */
-    public function invalidIdArgument(): void
+    public function shouldNotBeAbleToSetInvalidId(): void
     {
         $this->expectException(\LogicException::class);
         (new Counter(10, 60, new ArrayCache()))->incrementAndGetResult();
@@ -52,7 +54,7 @@ final class CacheCounterTest extends TestCase
     /**
      * @test
      */
-    public function invalidLimitArgument(): void
+    public function shouldNotBeAbleToSetInvalidLimit(): void
     {
         $this->expectException(InvalidArgumentException::class);
         new Counter(0, 60, new ArrayCache());
@@ -61,7 +63,7 @@ final class CacheCounterTest extends TestCase
     /**
      * @test
      */
-    public function invalidPeriodArgument(): void
+    public function shouldNotBeAbleToSetInvalidPeriod(): void
     {
         $this->expectException(InvalidArgumentException::class);
         new Counter(10, 0, new ArrayCache());

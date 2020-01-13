@@ -8,7 +8,7 @@ use Psr\SimpleCache\CacheInterface;
 
 /**
  * Counter implements generic сell rate limit algorithm (GCRA) that ensures that after reaching the limit futher
- * requests are distributed equally.
+ * increments are distributed equally.
  *
  * @link https://en.wikipedia.org/wiki/Generic_cell_rate_algorithm
  */
@@ -18,18 +18,34 @@ final class Counter implements CounterInterface
 
     private const MILLISECONDS_PER_SECOND = 1000;
 
+    /**
+     * @var int period to apply limit to, in milliseconds
+     */
     private int $period;
 
     private int $limit;
 
-    private float $emissionInterval;
+    /**
+     * @var float maximum interval before next increment, in milliseconds
+     * In GCRA it is known as emission interval.
+     */
+    private float $incrementInterval;
 
     private ?string $id = null;
 
     private CacheInterface $storage;
 
-    private int $arrivalTime;
+    /**
+     * @var int last increment time
+     * In GCRA it's known as arrival time
+     */
+    private int $lastIncrementTime;
 
+    /**
+     * @param int $limit maximum number of increments that could be performed before increments are limited
+     * @param int $period period to apply limit to, in seconds
+     * @param CacheInterface $storage
+     */
     public function __construct(int $limit, int $period, CacheInterface $storage)
     {
         if ($limit < 1) {
@@ -42,9 +58,9 @@ final class Counter implements CounterInterface
 
         $this->limit = $limit;
         $this->period = $period * self::MILLISECONDS_PER_SECOND;
-
-        $this->emissionInterval = (float)($this->period / $this->limit);
         $this->storage = $storage;
+
+        $this->incrementInterval = (float)($this->period / $this->limit);
     }
 
     public function setId(string $id): void
@@ -58,47 +74,55 @@ final class Counter implements CounterInterface
             throw new \LogicException('The counter ID should be set');
         }
 
-        $this->arrivalTime = $this->calculateArrivalTime();
-        $theoreticalArrivalTime = $this->calculateTheoreticalArrivalTime($this->getStorageValue());
-        $remaining = $this->calculateRemaining($theoreticalArrivalTime);
-        $resetAfter = $this->calculateResetAfter($theoreticalArrivalTime);
+        $this->lastIncrementTime = time() * self::MILLISECONDS_PER_SECOND;
+        $theoreticalNextIncrementTime = $this->calculateTheoreticalNextIncrementTime($this->getLastStoredTheoreticalNextIncrementTime());
+        $remaining = $this->calculateRemaining($theoreticalNextIncrementTime);
+        $resetAfter = $this->calculateResetAfter($theoreticalNextIncrementTime);
 
         if ($remaining >= 1) {
-            $this->setStorageValue($theoreticalArrivalTime);
+            $this->storeTheoreticalNextIncrementTime($theoreticalNextIncrementTime);
         }
 
         return new CounterStatistics($this->limit, $remaining, $resetAfter);
     }
 
-    private function calculateTheoreticalArrivalTime(float $theoreticalArrivalTime): float
+    /**
+     * @param float $storedTheoreticalNextIncrementTime
+     * @return float theoretical increment time that would be expected from equally spaced increments at exactly rate limit
+     * In GCRA it is known as TAT, theoretical arrival time.
+     */
+    private function calculateTheoreticalNextIncrementTime(float $storedTheoreticalNextIncrementTime): float
     {
-        return max($this->arrivalTime, $theoreticalArrivalTime) + $this->emissionInterval;
+        return max($this->lastIncrementTime, $storedTheoreticalNextIncrementTime) + $this->incrementInterval;
     }
 
-    private function calculateRemaining(float $theoreticalArrivalTime): int
+    /**
+     * @param float $theoreticalNextIncrementTime
+     * @return int the number of remaining requests in the current time period
+     */
+    private function calculateRemaining(float $theoreticalNextIncrementTime): int
     {
-        $allowAt = $theoreticalArrivalTime - $this->period;
+        $incrementAllowedAt = $theoreticalNextIncrementTime - $this->period;
 
-        return (int)((floor($this->arrivalTime - $allowAt) / $this->emissionInterval) + 0.5);
+        return (int)((floor($this->lastIncrementTime - $incrementAllowedAt) / $this->incrementInterval) + 0.5);
     }
 
-    private function getStorageValue(): float
+    private function getLastStoredTheoreticalNextIncrementTime(): float
     {
-        return $this->storage->get($this->id, (float)$this->arrivalTime);
+        return $this->storage->get($this->id, (float)$this->lastIncrementTime);
     }
 
-    private function setStorageValue(float $theoreticalArrivalTime): void
+    private function storeTheoreticalNextIncrementTime(float $theoreticalNextIncrementTime): void
     {
-        $this->storage->set($this->id, $theoreticalArrivalTime);
+        $this->storage->set($this->id, $theoreticalNextIncrementTime);
     }
 
-    private function calculateArrivalTime(): int
+    /**
+     * @param float $theoreticalNextIncrementTime
+     * @return int milliseconds to wait until the rate limit resets
+     */
+    private function calculateResetAfter(float $theoreticalNextIncrementTime): int
     {
-        return time() * self::MILLISECONDS_PER_SECOND;
-    }
-
-    private function calculateResetAfter(float $theoreticalArrivalTime): int
-    {
-        return (int)($theoreticalArrivalTime - $this->arrivalTime);
+        return (int)($theoreticalNextIncrementTime - $this->lastIncrementTime);
     }
 }
