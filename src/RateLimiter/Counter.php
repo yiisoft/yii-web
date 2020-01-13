@@ -22,6 +22,8 @@ final class Counter implements CounterInterface
 
     private int $limit;
 
+    private float $emissionInterval;
+
     private ?string $id = null;
 
     private CacheInterface $storage;
@@ -40,6 +42,8 @@ final class Counter implements CounterInterface
 
         $this->limit = $limit;
         $this->period = $period * self::MILLISECONDS_PER_SECOND;
+
+        $this->emissionInterval = (float)($this->period / $this->limit);
         $this->storage = $storage;
     }
 
@@ -51,37 +55,33 @@ final class Counter implements CounterInterface
     public function incrementAndGetResult(): CounterStatistics
     {
         if ($this->id === null) {
-            throw new \LogicException('The counter id not set');
+            throw new \LogicException('The counter ID should be set');
         }
 
-        $this->arrivalTime = $this->getArrivalTime();
+        $this->arrivalTime = $this->calculateArrivalTime();
         $theoreticalArrivalTime = $this->calculateTheoreticalArrivalTime($this->getStorageValue());
-        $remaining = $this->getRemaining($theoreticalArrivalTime);
+        $remaining = $this->calculateRemaining($theoreticalArrivalTime);
+        $resetAfter = $this->calculateResetAfter($theoreticalArrivalTime);
 
         if ($remaining < 1) {
-            return new CounterStatistics($this->limit, 0, $this->getResetAfter($theoreticalArrivalTime));
+            $remaining = 0;
+        } else {
+            $this->setStorageValue($theoreticalArrivalTime);
         }
 
-        $this->setStorageValue($theoreticalArrivalTime);
-
-        return new CounterStatistics($this->limit, (int)$remaining, $this->getResetAfter($theoreticalArrivalTime));
-    }
-
-    private function getEmissionInterval(): float
-    {
-        return (float)($this->period / $this->limit);
+        return new CounterStatistics($this->limit, $remaining, $resetAfter);
     }
 
     private function calculateTheoreticalArrivalTime(float $theoreticalArrivalTime): float
     {
-        return max($this->arrivalTime, $theoreticalArrivalTime) + $this->getEmissionInterval();
+        return max($this->arrivalTime, $theoreticalArrivalTime) + $this->emissionInterval;
     }
 
-    private function getRemaining(float $theoreticalArrivalTime): float
+    private function calculateRemaining(float $theoreticalArrivalTime): int
     {
         $allowAt = $theoreticalArrivalTime - $this->period;
 
-        return (floor($this->arrivalTime - $allowAt) / $this->getEmissionInterval()) + 0.5;
+        return (int)((floor($this->arrivalTime - $allowAt) / $this->emissionInterval) + 0.5);
     }
 
     private function getStorageValue(): float
@@ -94,12 +94,12 @@ final class Counter implements CounterInterface
         $this->storage->set($this->id, $theoreticalArrivalTime);
     }
 
-    private function getArrivalTime(): int
+    private function calculateArrivalTime(): int
     {
         return time() * self::MILLISECONDS_PER_SECOND;
     }
 
-    private function getResetAfter(float $theoreticalArrivalTime): int
+    private function calculateResetAfter(float $theoreticalArrivalTime): int
     {
         return (int)($theoreticalArrivalTime - $this->arrivalTime);
     }
