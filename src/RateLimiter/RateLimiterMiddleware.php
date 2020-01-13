@@ -19,7 +19,7 @@ use Psr\Http\Server\RequestHandlerInterface;
  */
 final class RateLimiterMiddleware implements MiddlewareInterface
 {
-    private CacheCounter $counter;
+    private CounterInterface $counter;
 
     private ResponseFactoryInterface $responseFactory;
 
@@ -30,7 +30,7 @@ final class RateLimiterMiddleware implements MiddlewareInterface
      */
     private $counterIdCallback;
 
-    public function __construct(CacheCounter $counter, ResponseFactoryInterface $responseFactory)
+    public function __construct(CounterInterface $counter, ResponseFactoryInterface $responseFactory)
     {
         $this->counter = $counter;
         $this->responseFactory = $responseFactory;
@@ -88,7 +88,7 @@ final class RateLimiterMiddleware implements MiddlewareInterface
         return strtolower($request->getMethod() . '-' . $request->getUri()->getPath());
     }
 
-    public function addHeaders(ResponseInterface $response, RateLimitResult $result): ResponseInterface
+    private function addHeaders(ResponseInterface $response, RateLimitResult $result): ResponseInterface
     {
         return $response
             ->withHeader('X-Rate-Limit-Limit', $result->getLimit())

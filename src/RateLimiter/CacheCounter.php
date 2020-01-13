@@ -9,7 +9,7 @@ use Psr\SimpleCache\CacheInterface;
 /**
  * CacheCounter implements generic сell rate limit algorithm https://en.wikipedia.org/wiki/Generic_cell_rate_algorithm
  */
-final class CacheCounter
+final class CacheCounter implements CounterInterface
 {
     public const ID_PREFIX = 'rate-limiter-';
 
