@@ -104,7 +104,7 @@ final class Counter implements CounterInterface
     {
         $incrementAllowedAt = $theoreticalNextIncrementTime - $this->period;
 
-        return (int)((floor($this->lastIncrementTime - $incrementAllowedAt) / $this->incrementInterval) + 0.5);
+        return (int)(round($this->lastIncrementTime - $incrementAllowedAt) / $this->incrementInterval);
     }
 
     private function getLastStoredTheoreticalNextIncrementTime(): float
