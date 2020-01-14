@@ -14,7 +14,7 @@ use Psr\SimpleCache\CacheInterface;
  */
 final class Counter implements CounterInterface
 {
-    public const ID_PREFIX = 'rate-limiter-';
+    private const ID_PREFIX = 'rate-limiter-';
 
     private const MILLISECONDS_PER_SECOND = 1000;
 
@@ -65,7 +65,12 @@ final class Counter implements CounterInterface
 
     public function setId(string $id): void
     {
-        $this->id = self::ID_PREFIX . $id;
+        $this->id = $id;
+    }
+
+    public function getCacheKey(): string
+    {
+        return self::ID_PREFIX . $this->id;
     }
 
     public function incrementAndGetResult(): CounterStatistics
@@ -109,12 +114,12 @@ final class Counter implements CounterInterface
 
     private function getLastStoredTheoreticalNextIncrementTime(): float
     {
-        return $this->storage->get($this->id, (float)$this->lastIncrementTime);
+        return $this->storage->get($this->getCacheKey(), (float)$this->lastIncrementTime);
     }
 
     private function storeTheoreticalNextIncrementTime(float $theoreticalNextIncrementTime): void
     {
-        $this->storage->set($this->id, $theoreticalNextIncrementTime);
+        $this->storage->set($this->getCacheKey(), $theoreticalNextIncrementTime);
     }
 
     /**

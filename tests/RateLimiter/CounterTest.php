@@ -30,10 +30,9 @@ final class CounterTest extends TestCase
     public function statisticsShouldBeCorrectWhenLimitIsReached(): void
     {
         $cache = new ArrayCache();
-        $cache->set(Counter::ID_PREFIX . 'key', (time() * 1000) + 55000);
-
         $counter = new Counter(10, 60, $cache);
         $counter->setId('key');
+        $cache->set($counter->getCacheKey(), (time() * 1000) + 55000);
 
         $statistics = $counter->incrementAndGetResult();
         $this->assertEquals(10, $statistics->getLimit());
