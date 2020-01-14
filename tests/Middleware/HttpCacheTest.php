@@ -39,7 +39,7 @@ class HttpCacheTest extends TestCase
         $etag = 'test-etag';
         $middleware = $this->createMiddlewareWithETag($etag);
         $headers = [
-            'If-None-Match' => implode(',', [$etag]),
+            'If-None-Match' => $etag,
         ];
         $response = $middleware->process($this->createServerRequest(Method::GET, $headers), $this->createRequestHandler());
         $this->assertEquals(200, $response->getStatusCode());
@@ -64,7 +64,7 @@ class HttpCacheTest extends TestCase
         $etag = 'test-etag';
         $middleware = $this->createMiddlewareWithETag($etag);
         $headers = [
-            'If-None-Match' => implode(',', [$this->generateEtag($etag)]),
+            'If-None-Match' => $this->generateEtag($etag),
         ];
         $response = $middleware->process($this->createServerRequest(Method::GET, $headers), $this->createRequestHandler());
         $this->assertEquals(304, $response->getStatusCode());
