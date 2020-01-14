@@ -1,8 +1,4 @@
 <?php
-if (!isset($this)) {
-    // @link https://github.com/sebastianbergmann/phpunit/issues/3952
-    return;
-}
 
 use Yiisoft\Yii\Web\ErrorHandler\UserException;
 

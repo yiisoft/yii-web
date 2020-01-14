@@ -1,8 +1,5 @@
 <?php
-if (!isset($this)) {
-    // @link https://github.com/sebastianbergmann/phpunit/issues/3952
-    return;
-}
+
 /* @var $throwable \Throwable */
 /* @var $this \Yiisoft\Yii\Web\ErrorHandler\HtmlRenderer */
 
