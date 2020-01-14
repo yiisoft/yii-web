@@ -73,19 +73,19 @@ final class HttpCache implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $method = $request->getMethod();
         if (
-            !\in_array($method, [Method::GET, Method::HEAD])
-            || ($this->lastModified === null && $this->etagSeed === null)
+            ($this->lastModified === null && $this->etagSeed === null) ||
+            !\in_array($request->getMethod(), [Method::GET, Method::HEAD], true)
         ) {
             return $handler->handle($request);
         }
 
-        $lastModified = $etag = null;
+        $lastModified = null;
         if ($this->lastModified !== null) {
             $lastModified = call_user_func($this->lastModified, $request, $this->params);
         }
 
+        $etag = null;
         if ($this->etagSeed !== null) {
             $seed = call_user_func($this->etagSeed, $request, $this->params);
             if ($seed !== null) {
@@ -93,14 +93,14 @@ final class HttpCache implements MiddlewareInterface
             }
         }
 
-        $cacheValid = $this->validateCache($request, $lastModified, $etag);
-        if ($cacheValid) {
-            $response = $this->responseFactory->createResponse(304);
-            $response = $response->withHeader(
-                'Last-Modified',
-                gmdate('D, d M Y H:i:s', $lastModified) . ' GMT'
-            );
-            return $response;
+        $cacheIsValid = $this->validateCache($request, $lastModified, $etag);
+        if ($cacheIsValid) {
+            return $this->responseFactory
+                ->createResponse(304)
+                ->withHeader(
+                    'Last-Modified',
+                    gmdate('D, d M Y H:i:s', $lastModified) . ' GMT'
+                );
         }
 
         $response = $handler->handle($request);
@@ -112,7 +112,7 @@ final class HttpCache implements MiddlewareInterface
         }
 
         // https://tools.ietf.org/html/rfc7232#section-4.1
-        if ($lastModified !== null && (!$cacheValid || ($cacheValid && $etag === null))) {
+        if ($lastModified !== null && (!$cacheIsValid || ($cacheIsValid && $etag === null))) {
             $response = $response->withHeader(
                 'Last-Modified',
                 gmdate('D, d M Y H:i:s', $lastModified) . ' GMT'
