@@ -9,6 +9,7 @@
 /* @var $end int */
 /* @var $args array */
 /* @var $this \Yiisoft\Yii\Web\ErrorHandler\HtmlRenderer */
+
 $html = <<<HTML
 IDE
 <svg class="icon icon--new-window" focusable="false" aria-hidden="true" width="16" height="16">
