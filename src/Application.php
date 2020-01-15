@@ -3,7 +3,7 @@ namespace Yiisoft\Yii\Web;
 
 use Exception;
 use Psr\Http\Message\ServerRequestInterface;
-use Yiisoft\Router\Method;
+use Yiisoft\Http\Method;
 use Yiisoft\Yii\Web\Emitter\EmitterInterface;
 use Yiisoft\Yii\Web\ErrorHandler\ErrorHandler;
 
@@ -15,14 +15,8 @@ use Yiisoft\Yii\Web\ErrorHandler\ErrorHandler;
 final class Application
 {
     private MiddlewareDispatcher $dispatcher;
-
     private EmitterInterface $emitter;
 
-    /**
-     * Application constructor.
-     * @param MiddlewareDispatcher $dispatcher
-     * @param EmitterInterface $emitter
-     */
     public function __construct(MiddlewareDispatcher $dispatcher, EmitterInterface $emitter, ErrorHandler $errorHandler)
     {
         $this->dispatcher = $dispatcher;

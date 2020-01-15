@@ -6,7 +6,7 @@ use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
-use Yiisoft\Router\Method;
+use Yiisoft\Http\Method;
 use Yiisoft\Yii\Web\NotFoundHandler;
 
 final class NotFoundHandlerTest extends TestCase

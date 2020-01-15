@@ -14,6 +14,7 @@ use Yiisoft\Yii\Web\Exception\HeadersHaveBeenSentException;
 
 /**
  * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
  */
 class SapiEmitterTest extends TestCase
 {

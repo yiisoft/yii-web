@@ -1,8 +1,4 @@
 <?php
-if (!isset($this)) {
-    // @link https://github.com/sebastianbergmann/phpunit/issues/3952
-    return;
-}
 /* @var $file string|null */
 /* @var $line int|null */
 /* @var $class string|null */
@@ -13,6 +9,7 @@ if (!isset($this)) {
 /* @var $end int */
 /* @var $args array */
 /* @var $this \Yiisoft\Yii\Web\ErrorHandler\HtmlRenderer */
+
 $html = <<<HTML
 IDE
 <svg class="icon icon--new-window" focusable="false" aria-hidden="true" width="16" height="16">
