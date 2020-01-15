@@ -7,6 +7,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Yiisoft\Http\Status;
 use Yiisoft\Yii\Web\Helper\HeaderHelper;
 
 /**
@@ -78,7 +79,7 @@ final class ErrorCatcher implements MiddlewareInterface
             $renderer->setRequest($request);
         }
         $content = $this->errorHandler->handleCaughtThrowable($e, $renderer);
-        $response = $this->responseFactory->createResponse(500)
+        $response = $this->responseFactory->createResponse(Status::INTERNAL_SERVER_ERROR)
             ->withHeader('Content-type', $contentType);
         $response->getBody()->write($content);
         return $response;

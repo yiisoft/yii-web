@@ -3,6 +3,7 @@
 namespace Yiisoft\Yii\Web\ErrorHandler;
 
 use Psr\Log\LoggerInterface;
+use Yiisoft\Http\Status;
 
 final class ErrorHandler
 {
@@ -82,7 +83,7 @@ final class ErrorHandler
         $this->unregister();
 
         // set preventive HTTP status code to 500 in case error handling somehow fails and headers are sent
-        http_response_code(500);
+        http_response_code(Status::INTERNAL_SERVER_ERROR);
 
         echo $this->handleCaughtThrowable($t);
         exit(1);

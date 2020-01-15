@@ -6,6 +6,7 @@ use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Yiisoft\Http\Status;
 
 final class NotFoundHandler implements RequestHandlerInterface
 {
@@ -31,7 +32,7 @@ final class NotFoundHandler implements RequestHandlerInterface
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $path = $request->getUri()->getPath();
-        $response = $this->responseFactory->createResponse(404);
+        $response = $this->responseFactory->createResponse(Status::NOT_FOUND);
         $response->getBody()->write("We were unable to find the page $path.");
         return $response;
     }

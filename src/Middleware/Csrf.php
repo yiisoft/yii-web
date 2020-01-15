@@ -8,6 +8,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Http\Method;
+use Yiisoft\Http\Status;
 use Yiisoft\Security\Random;
 use Yiisoft\Security\TokenMask;
 use Yiisoft\Yii\Web\Session\SessionInterface;
@@ -36,8 +37,8 @@ final class Csrf implements MiddlewareInterface
         if (!$this->validateCsrfToken($request, $token)) {
             $this->session->remove($this->name);
 
-            $response = $this->responseFactory->createResponse(422);
-            $response->getBody()->write('Unable to verify your data submission.');
+            $response = $this->responseFactory->createResponse(Status::UNPROCESSABLE_ENTITY);
+            $response->getBody()->write(Status::TEXTS[Status::UNPROCESSABLE_ENTITY]);
             return $response;
         }
 
