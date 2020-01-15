@@ -44,7 +44,7 @@ final class RedirectTest extends TestCase
     /**
      * @test
      */
-    public function temporaryReturnCode307(): void
+    public function temporaryReturnCode303(): void
     {
         $middleware = $this->createRedirectMiddleware()
             ->toRoute('test/route')
@@ -52,7 +52,7 @@ final class RedirectTest extends TestCase
 
         $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
 
-        $this->assertSame($response->getStatusCode(), 307);
+        $this->assertSame($response->getStatusCode(), 303);
     }
 
     /**

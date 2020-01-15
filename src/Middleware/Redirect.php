@@ -51,7 +51,7 @@ final class Redirect implements MiddlewareInterface
 
     public function temporary(): self
     {
-        $this->statusCode = Status::TEMPORARY_REDIRECT;
+        $this->statusCode = Status::SEE_OTHER;
         return $this;
     }
 
