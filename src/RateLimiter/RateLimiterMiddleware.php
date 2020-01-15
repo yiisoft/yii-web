@@ -9,6 +9,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Yiisoft\Http\Status;
 
 /**
  * RateLimiter helps to prevent abuse by limiting the number of requests that could be me made consequentially.
@@ -68,8 +69,8 @@ final class RateLimiterMiddleware implements MiddlewareInterface
 
     private function createErrorResponse(): ResponseInterface
     {
-        $response = $this->responseFactory->createResponse(429);
-        $response->getBody()->write('Too Many Requests');
+        $response = $this->responseFactory->createResponse(Status::TOO_MANY_REQUESTS);
+        $response->getBody()->write(Status::TEXTS[Status::TOO_MANY_REQUESTS]);
 
         return $response;
     }

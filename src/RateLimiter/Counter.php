@@ -79,8 +79,10 @@ final class Counter implements CounterInterface
             throw new \LogicException('The counter ID should be set');
         }
 
-        $this->lastIncrementTime = time() * self::MILLISECONDS_PER_SECOND;
-        $theoreticalNextIncrementTime = $this->calculateTheoreticalNextIncrementTime($this->getLastStoredTheoreticalNextIncrementTime());
+        $this->lastIncrementTime = $this->getCurrentTime();
+        $theoreticalNextIncrementTime = $this->calculateTheoreticalNextIncrementTime(
+            $this->getLastStoredTheoreticalNextIncrementTime()
+        );
         $remaining = $this->calculateRemaining($theoreticalNextIncrementTime);
         $resetAfter = $this->calculateResetAfter($theoreticalNextIncrementTime);
 
@@ -124,10 +126,15 @@ final class Counter implements CounterInterface
 
     /**
      * @param float $theoreticalNextIncrementTime
-     * @return int milliseconds to wait until the rate limit resets
+     * @return int seconds to wait until the rate limit resets
      */
     private function calculateResetAfter(float $theoreticalNextIncrementTime): int
     {
-        return (int)($theoreticalNextIncrementTime - $this->lastIncrementTime);
+        return (int)ceil(($theoreticalNextIncrementTime - $this->lastIncrementTime) / self::MILLISECONDS_PER_SECOND);
+    }
+
+    private function getCurrentTime(): int
+    {
+        return (int)round(microtime(true) * self::MILLISECONDS_PER_SECOND);
     }
 }

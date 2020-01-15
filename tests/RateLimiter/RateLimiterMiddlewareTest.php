@@ -28,7 +28,7 @@ final class RateLimiterMiddlewareTest extends TestCase
             [
                 'X-Rate-Limit-Limit' => ['1000'],
                 'X-Rate-Limit-Remaining' => ['999'],
-                'X-Rate-Limit-Reset' => ['3600']
+                'X-Rate-Limit-Reset' => ['4']
             ],
             $response->getHeaders()
         );
@@ -52,7 +52,7 @@ final class RateLimiterMiddlewareTest extends TestCase
             [
                 'X-Rate-Limit-Limit' => ['10'],
                 'X-Rate-Limit-Remaining' => ['1'],
-                'X-Rate-Limit-Reset' => ['3240000']
+                'X-Rate-Limit-Reset' => ['3240']
             ],
             $response->getHeaders()
         );
@@ -64,7 +64,7 @@ final class RateLimiterMiddlewareTest extends TestCase
             [
                 'X-Rate-Limit-Limit' => ['10'],
                 'X-Rate-Limit-Remaining' => ['0'],
-                'X-Rate-Limit-Reset' => ['3600000']
+                'X-Rate-Limit-Reset' => ['3600']
             ],
             $response->getHeaders()
         );

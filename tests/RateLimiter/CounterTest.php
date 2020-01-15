@@ -20,7 +20,7 @@ final class CounterTest extends TestCase
         $statistics = $counter->incrementAndGetResult();
         $this->assertEquals(2, $statistics->getLimit());
         $this->assertEquals(1, $statistics->getRemaining());
-        $this->assertEquals(2500, $statistics->getReset());
+        $this->assertEquals(3, $statistics->getReset());
         $this->assertFalse($statistics->isLimitReached());
     }
 
@@ -29,15 +29,19 @@ final class CounterTest extends TestCase
      */
     public function statisticsShouldBeCorrectWhenLimitIsReached(): void
     {
-        $cache = new ArrayCache();
-        $counter = new Counter(10, 60, $cache);
+        $counter = new Counter(2, 4, new ArrayCache());
         $counter->setId('key');
-        $cache->set($counter->getCacheKey(), (time() * 1000) + 55000);
 
         $statistics = $counter->incrementAndGetResult();
-        $this->assertEquals(10, $statistics->getLimit());
+        $this->assertEquals(2, $statistics->getLimit());
+        $this->assertEquals(1, $statistics->getRemaining());
+        $this->assertEquals(2, $statistics->getReset());
+        $this->assertFalse($statistics->isLimitReached());
+
+        $statistics = $counter->incrementAndGetResult();
+        $this->assertEquals(2, $statistics->getLimit());
         $this->assertEquals(0, $statistics->getRemaining());
-        $this->assertEquals(61000, $statistics->getReset());
+        $this->assertEquals(4, $statistics->getReset());
         $this->assertTrue($statistics->isLimitReached());
     }
 
@@ -66,5 +70,24 @@ final class CounterTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         new Counter(10, 0, new ArrayCache());
+    }
+
+    /**
+     * @test
+     */
+    public function incrementMustBeUniformAfterLimitIsReached(): void
+    {
+        $counter = new Counter(10, 1, new ArrayCache());
+        $counter->setId('key');
+
+        for ($i = 0; $i < 10; $i++) {
+            $counter->incrementAndGetResult();
+        }
+
+        for ($i = 0; $i < 5; $i++) {
+            usleep(110000); // period(microseconds) / limit + 10ms(cost work)
+            $statistics = $counter->incrementAndGetResult();
+            $this->assertEquals(1, $statistics->getRemaining());
+        }
     }
 }

@@ -16,7 +16,7 @@ final class CounterStatistics
     /**
      * @param int $limit the maximum number of requests allowed with a time period
      * @param int $remaining the number of remaining requests in the current time period
-     * @param int $reset milliseconds to wait until the rate limit resets
+     * @param int $reset seconds to wait until the rate limit resets
      */
     public function __construct(int $limit, int $remaining, int $reset)
     {
@@ -42,7 +42,7 @@ final class CounterStatistics
     }
 
     /**
-     * @return int milliseconds to wait until the rate limit resets
+     * @return int seconds to wait until the rate limit resets
      */
     public function getReset(): int
     {
