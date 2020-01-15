@@ -7,6 +7,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Http\Method;
+use Yiisoft\Http\Status;
 
 /**
  * HttpCache implements client-side caching by utilizing the `Last-Modified` and `ETag` HTTP headers.
@@ -96,7 +97,7 @@ final class HttpCache implements MiddlewareInterface
         $cacheIsValid = $this->validateCache($request, $lastModified, $etag);
         if ($cacheIsValid) {
             return $this->responseFactory
-                ->createResponse(304)
+                ->createResponse(Status::NOT_MODIFIED)
                 ->withHeader(
                     'Last-Modified',
                     gmdate('D, d M Y H:i:s', $lastModified) . ' GMT'
