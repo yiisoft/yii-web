@@ -94,6 +94,6 @@ final class RateLimiterMiddleware implements MiddlewareInterface
         return $response
             ->withHeader('X-Rate-Limit-Limit', $result->getLimit())
             ->withHeader('X-Rate-Limit-Remaining', $result->getRemaining())
-            ->withHeader('X-Rate-Limit-Reset', $result->getReset());
+            ->withHeader('X-Rate-Limit-Reset', $result->getResetTime());
     }
 }

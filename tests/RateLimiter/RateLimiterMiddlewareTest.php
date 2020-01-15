@@ -24,14 +24,10 @@ final class RateLimiterMiddlewareTest extends TestCase
         $middleware = $this->createRateLimiter($this->getCounter(1000));
         $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertSame(
-            [
-                'X-Rate-Limit-Limit' => ['1000'],
-                'X-Rate-Limit-Remaining' => ['999'],
-                'X-Rate-Limit-Reset' => ['4']
-            ],
-            $response->getHeaders()
-        );
+        $headers = $response->getHeaders();
+        $this->assertEquals(['1000'], $headers['X-Rate-Limit-Limit']);
+        $this->assertEquals(['999'], $headers['X-Rate-Limit-Remaining']);
+        $this->assertGreaterThanOrEqual(time(), (int)$headers['X-Rate-Limit-Reset'][0]);
     }
 
     /**
@@ -48,26 +44,18 @@ final class RateLimiterMiddlewareTest extends TestCase
         // last allowed request
         $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertSame(
-            [
-                'X-Rate-Limit-Limit' => ['10'],
-                'X-Rate-Limit-Remaining' => ['1'],
-                'X-Rate-Limit-Reset' => ['3240']
-            ],
-            $response->getHeaders()
-        );
+        $headers = $response->getHeaders();
+        $this->assertEquals(['10'], $headers['X-Rate-Limit-Limit']);
+        $this->assertEquals(['1'], $headers['X-Rate-Limit-Remaining']);
+        $this->assertGreaterThanOrEqual(time(), (int)$headers['X-Rate-Limit-Reset'][0]);
 
         // first denied request
         $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
         $this->assertEquals(429, $response->getStatusCode());
-        $this->assertSame(
-            [
-                'X-Rate-Limit-Limit' => ['10'],
-                'X-Rate-Limit-Remaining' => ['0'],
-                'X-Rate-Limit-Reset' => ['3600']
-            ],
-            $response->getHeaders()
-        );
+        $headers = $response->getHeaders();
+        $this->assertEquals(['10'], $headers['X-Rate-Limit-Limit']);
+        $this->assertEquals(['0'], $headers['X-Rate-Limit-Remaining']);
+        $this->assertGreaterThanOrEqual(time(), (int)$headers['X-Rate-Limit-Reset'][0]);
     }
 
     /**

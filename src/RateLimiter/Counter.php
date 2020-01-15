@@ -126,11 +126,11 @@ final class Counter implements CounterInterface
 
     /**
      * @param float $theoreticalNextIncrementTime
-     * @return int seconds to wait until the rate limit resets
+     * @return int timestamp to wait until the rate limit resets
      */
     private function calculateResetAfter(float $theoreticalNextIncrementTime): int
     {
-        return (int)ceil(($theoreticalNextIncrementTime - $this->lastIncrementTime) / self::MILLISECONDS_PER_SECOND);
+        return (int)($theoreticalNextIncrementTime / self::MILLISECONDS_PER_SECOND);
     }
 
     private function getCurrentTime(): int

@@ -20,7 +20,7 @@ final class CounterTest extends TestCase
         $statistics = $counter->incrementAndGetResult();
         $this->assertEquals(2, $statistics->getLimit());
         $this->assertEquals(1, $statistics->getRemaining());
-        $this->assertEquals(3, $statistics->getReset());
+        $this->assertGreaterThanOrEqual(time(), $statistics->getResetTime());
         $this->assertFalse($statistics->isLimitReached());
     }
 
@@ -35,13 +35,13 @@ final class CounterTest extends TestCase
         $statistics = $counter->incrementAndGetResult();
         $this->assertEquals(2, $statistics->getLimit());
         $this->assertEquals(1, $statistics->getRemaining());
-        $this->assertEquals(2, $statistics->getReset());
+        $this->assertGreaterThanOrEqual(time(), $statistics->getResetTime());
         $this->assertFalse($statistics->isLimitReached());
 
         $statistics = $counter->incrementAndGetResult();
         $this->assertEquals(2, $statistics->getLimit());
         $this->assertEquals(0, $statistics->getRemaining());
-        $this->assertEquals(4, $statistics->getReset());
+        $this->assertGreaterThanOrEqual(time(), $statistics->getResetTime());
         $this->assertTrue($statistics->isLimitReached());
     }
 
