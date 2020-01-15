@@ -38,7 +38,7 @@ final class Csrf implements MiddlewareInterface
             $this->session->remove($this->name);
 
             $response = $this->responseFactory->createResponse(Status::UNPROCESSABLE_ENTITY);
-            $response->getBody()->write('Unable to verify your data submission.');
+            $response->getBody()->write(Status::TEXTS[Status::UNPROCESSABLE_ENTITY]);
             return $response;
         }
 

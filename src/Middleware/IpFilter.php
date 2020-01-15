@@ -30,7 +30,7 @@ final class IpFilter implements MiddlewareInterface
     {
         if ($request->getServerParams()['REMOTE_ADDR'] !== $this->allowedIp) {
             $response = $this->responseFactory->createResponse(Status::FORBIDDEN);
-            $response->getBody()->write('Access denied!');
+            $response->getBody()->write(Status::TEXTS[Status::FORBIDDEN]);
             return $response;
         }
 
