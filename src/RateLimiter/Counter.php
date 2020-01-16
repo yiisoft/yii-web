@@ -73,7 +73,7 @@ final class Counter implements CounterInterface
         return self::ID_PREFIX . $this->id;
     }
 
-    public function incrementAndGetResult(): CounterStatistics
+    public function incrementAndGetState(): CounterState
     {
         if ($this->id === null) {
             throw new \LogicException('The counter ID should be set');
@@ -90,7 +90,7 @@ final class Counter implements CounterInterface
             $this->storeTheoreticalNextIncrementTime($theoreticalNextIncrementTime);
         }
 
-        return new CounterStatistics($this->limit, $remaining, $resetAfter);
+        return new CounterState($this->limit, $remaining, $resetAfter);
     }
 
     /**

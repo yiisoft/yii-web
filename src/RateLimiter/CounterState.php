@@ -7,7 +7,7 @@ namespace Yiisoft\Yii\Web\RateLimiter;
 /**
  * Rate limiter counter statistics
  */
-final class CounterStatistics
+final class CounterState
 {
     private int $limit;
     private int $remaining;

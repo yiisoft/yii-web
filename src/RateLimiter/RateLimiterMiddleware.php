@@ -40,7 +40,7 @@ final class RateLimiterMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $this->counter->setId($this->generateId($request));
-        $result = $this->counter->incrementAndGetResult();
+        $result = $this->counter->incrementAndGetState();
 
         if ($result->isLimitReached()) {
             $response = $this->createErrorResponse();
@@ -89,7 +89,7 @@ final class RateLimiterMiddleware implements MiddlewareInterface
         return strtolower($request->getMethod() . '-' . $request->getUri()->getPath());
     }
 
-    private function addHeaders(ResponseInterface $response, CounterStatistics $result): ResponseInterface
+    private function addHeaders(ResponseInterface $response, CounterState $result): ResponseInterface
     {
         return $response
             ->withHeader('X-Rate-Limit-Limit', $result->getLimit())

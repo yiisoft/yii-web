@@ -17,7 +17,7 @@ final class CounterTest extends TestCase
         $counter = new Counter(2, 5, new ArrayCache());
         $counter->setId('key');
 
-        $statistics = $counter->incrementAndGetResult();
+        $statistics = $counter->incrementAndGetState();
         $this->assertEquals(2, $statistics->getLimit());
         $this->assertEquals(1, $statistics->getRemaining());
         $this->assertGreaterThanOrEqual(time(), $statistics->getResetTime());
@@ -32,13 +32,13 @@ final class CounterTest extends TestCase
         $counter = new Counter(2, 4, new ArrayCache());
         $counter->setId('key');
 
-        $statistics = $counter->incrementAndGetResult();
+        $statistics = $counter->incrementAndGetState();
         $this->assertEquals(2, $statistics->getLimit());
         $this->assertEquals(1, $statistics->getRemaining());
         $this->assertGreaterThanOrEqual(time(), $statistics->getResetTime());
         $this->assertFalse($statistics->isLimitReached());
 
-        $statistics = $counter->incrementAndGetResult();
+        $statistics = $counter->incrementAndGetState();
         $this->assertEquals(2, $statistics->getLimit());
         $this->assertEquals(0, $statistics->getRemaining());
         $this->assertGreaterThanOrEqual(time(), $statistics->getResetTime());
@@ -51,7 +51,7 @@ final class CounterTest extends TestCase
     public function shouldNotBeAbleToSetInvalidId(): void
     {
         $this->expectException(\LogicException::class);
-        (new Counter(10, 60, new ArrayCache()))->incrementAndGetResult();
+        (new Counter(10, 60, new ArrayCache()))->incrementAndGetState();
     }
 
     /**
@@ -81,12 +81,12 @@ final class CounterTest extends TestCase
         $counter->setId('key');
 
         for ($i = 0; $i < 10; $i++) {
-            $counter->incrementAndGetResult();
+            $counter->incrementAndGetState();
         }
 
         for ($i = 0; $i < 5; $i++) {
             usleep(110000); // period(microseconds) / limit + 10ms(cost work)
-            $statistics = $counter->incrementAndGetResult();
+            $statistics = $counter->incrementAndGetState();
             $this->assertEquals(1, $statistics->getRemaining());
         }
     }

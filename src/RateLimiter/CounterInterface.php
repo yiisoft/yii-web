@@ -16,8 +16,8 @@ interface CounterInterface
     public function setId(string $id): void;
 
     /**
-     * Counts one request as done and returns result containing statistics and rate limiting decision
-     * @return CounterStatistics
+     * Counts one request as done and returns object containing current counter state
+     * @return CounterState
      */
-    public function incrementAndGetResult(): CounterStatistics;
+    public function incrementAndGetState(): CounterState;
 }
