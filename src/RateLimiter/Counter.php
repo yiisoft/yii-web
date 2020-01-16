@@ -14,6 +14,8 @@ use Psr\SimpleCache\CacheInterface;
  */
 final class Counter implements CounterInterface
 {
+    private const DEFAULT_TTL = 86400;
+
     private const ID_PREFIX = 'rate-limiter-';
 
     private const MILLISECONDS_PER_SECOND = 1000;
@@ -34,6 +36,8 @@ final class Counter implements CounterInterface
     private ?string $id = null;
 
     private CacheInterface $storage;
+
+    private int $ttl = self::DEFAULT_TTL;
 
     /**
      * @var int last increment time
@@ -66,6 +70,16 @@ final class Counter implements CounterInterface
     public function setId(string $id): void
     {
         $this->id = $id;
+    }
+
+    /**
+     * @param int $ttl cache TTL that is used to store counter values
+     * Default is one day.
+     * Note that period can not exceed TTL.
+     */
+    public function setTtl(int $ttl): void
+    {
+        $this->ttl = $ttl;
     }
 
     public function getCacheKey(): string
@@ -121,7 +135,7 @@ final class Counter implements CounterInterface
 
     private function storeTheoreticalNextIncrementTime(float $theoreticalNextIncrementTime): void
     {
-        $this->storage->set($this->getCacheKey(), $theoreticalNextIncrementTime);
+        $this->storage->set($this->getCacheKey(), $theoreticalNextIncrementTime, $this->ttl);
     }
 
     /**
