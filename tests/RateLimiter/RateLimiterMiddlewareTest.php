@@ -9,9 +9,8 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Http\Method;
-use Yiisoft\Yii\Web\RateLimiter\Counter;
+use Yiisoft\Yii\Web\RateLimiter\CounterInterface;
 use Yiisoft\Yii\Web\RateLimiter\RateLimiterMiddleware;
 
 final class RateLimiterMiddlewareTest extends TestCase
@@ -21,13 +20,18 @@ final class RateLimiterMiddlewareTest extends TestCase
      */
     public function singleRequestWorksAsExpected(): void
     {
-        $middleware = $this->createRateLimiter($this->getCounter(1000));
-        $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
+        $counter = new FakeCounter(100, 100);
+        $response = $this->createRateLimiter($counter)->process($this->createRequest(), $this->createRequestHandler());
         $this->assertEquals(200, $response->getStatusCode());
-        $headers = $response->getHeaders();
-        $this->assertEquals(['1000'], $headers['X-Rate-Limit-Limit']);
-        $this->assertEquals(['999'], $headers['X-Rate-Limit-Remaining']);
-        $this->assertGreaterThanOrEqual(time(), (int)$headers['X-Rate-Limit-Reset'][0]);
+
+        $this->assertEquals(
+            [
+                'X-Rate-Limit-Limit' => ['100'],
+                'X-Rate-Limit-Remaining' => ['99'],
+                'X-Rate-Limit-Reset' => ['100'],
+            ],
+            $response->getHeaders()
+        );
     }
 
     /**
@@ -35,27 +39,32 @@ final class RateLimiterMiddlewareTest extends TestCase
      */
     public function limitingIsStartedWhenExpected(): void
     {
-        $middleware = $this->createRateLimiter($this->getCounter(10));
-
-        for ($i = 0; $i < 8; $i++) {
-            $middleware->process($this->createRequest(), $this->createRequestHandler());
-        }
+        $counter = new FakeCounter(2, 100);
+        $middleware = $this->createRateLimiter($counter);
 
         // last allowed request
         $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
         $this->assertEquals(200, $response->getStatusCode());
-        $headers = $response->getHeaders();
-        $this->assertEquals(['10'], $headers['X-Rate-Limit-Limit']);
-        $this->assertEquals(['1'], $headers['X-Rate-Limit-Remaining']);
-        $this->assertGreaterThanOrEqual(time(), (int)$headers['X-Rate-Limit-Reset'][0]);
+        $this->assertEquals(
+            [
+                'X-Rate-Limit-Limit' => ['2'],
+                'X-Rate-Limit-Remaining' => ['1'],
+                'X-Rate-Limit-Reset' => ['100'],
+            ],
+            $response->getHeaders()
+        );
 
         // first denied request
         $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
         $this->assertEquals(429, $response->getStatusCode());
-        $headers = $response->getHeaders();
-        $this->assertEquals(['10'], $headers['X-Rate-Limit-Limit']);
-        $this->assertEquals(['0'], $headers['X-Rate-Limit-Remaining']);
-        $this->assertGreaterThanOrEqual(time(), (int)$headers['X-Rate-Limit-Reset'][0]);
+        $this->assertEquals(
+            [
+                'X-Rate-Limit-Limit' => ['2'],
+                'X-Rate-Limit-Remaining' => ['0'],
+                'X-Rate-Limit-Reset' => ['100'],
+            ],
+            $response->getHeaders()
+        );
     }
 
     /**
@@ -63,13 +72,10 @@ final class RateLimiterMiddlewareTest extends TestCase
      */
     public function counterIdCouldBeSet(): void
     {
-        $cache = new ArrayCache();
-        $counter = new Counter(100, 3600, $cache);
-
+        $counter = new FakeCounter(100, 100);
         $middleware = $this->createRateLimiter($counter)->withCounterId('custom-id');
         $middleware->process($this->createRequest(), $this->createRequestHandler());
-
-        $this->assertTrue($cache->has($counter->getCacheKey()));
+        $this->assertEquals('custom-id', $counter->getId());
     }
 
     /**
@@ -77,9 +83,7 @@ final class RateLimiterMiddlewareTest extends TestCase
      */
     public function counterIdCouldBeSetWithCallback(): void
     {
-        $cache = new ArrayCache();
-        $counter = new Counter(100, 3600, $cache);
-
+        $counter = new FakeCounter(100, 100);
         $middleware = $this->createRateLimiter($counter)->withCounterIdCallback(
             static function (ServerRequestInterface $request) {
                 return $request->getMethod();
@@ -87,12 +91,7 @@ final class RateLimiterMiddlewareTest extends TestCase
         );
 
         $middleware->process($this->createRequest(), $this->createRequestHandler());
-        $this->assertTrue($cache->has($counter->getCacheKey()));
-    }
-
-    private function getCounter(int $limit): Counter
-    {
-        return new Counter($limit, 3600, new ArrayCache());
+        $this->assertEquals('GET', $counter->getId());
     }
 
     private function createRequestHandler(): RequestHandlerInterface
@@ -110,7 +109,7 @@ final class RateLimiterMiddlewareTest extends TestCase
         return new ServerRequest($method, $uri);
     }
 
-    private function createRateLimiter(Counter $counter): RateLimiterMiddleware
+    private function createRateLimiter(CounterInterface $counter): RateLimiterMiddleware
     {
         return new RateLimiterMiddleware($counter, new Psr17Factory());
     }
