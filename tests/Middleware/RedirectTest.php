@@ -99,7 +99,7 @@ final class RedirectTest extends TestCase
 
     private function createRequestHandler(): RequestHandlerInterface
     {
-        return new class implements RequestHandlerInterface {
+        return new class() implements RequestHandlerInterface {
             public function handle(ServerRequestInterface $request): ResponseInterface
             {
                 return new Response(200);
@@ -114,7 +114,7 @@ final class RedirectTest extends TestCase
 
     private function createUrlGenerator(): UrlGeneratorInterface
     {
-        return new class implements UrlGeneratorInterface {
+        return new class() implements UrlGeneratorInterface {
             private $prefix = '';
             public function generate(string $name, array $parameters = []): string
             {

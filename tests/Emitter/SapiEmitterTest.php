@@ -1,4 +1,5 @@
 <?php
+
 namespace Yiisoft\Yii\Web\Tests\Emitter;
 
 include 'httpFunctionMocks.php';
