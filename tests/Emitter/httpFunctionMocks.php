@@ -1,4 +1,5 @@
 <?php
+
 namespace Yiisoft\Yii\Web\Emitter;
 
 use Yiisoft\Yii\Web\Tests\Emitter\HTTPFunctions;

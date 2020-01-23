@@ -1,4 +1,5 @@
 <?php
+
 namespace Yiisoft\Yii\Web\ErrorHandler;
 
 use Psr\Container\ContainerInterface;
@@ -55,7 +56,7 @@ final class ErrorCatcher implements MiddlewareInterface
     /**
      * @param string... $mimeTypes MIME types or, if not specified, all will be removed.
      */
-    public function withoutRenderers(string... $mimeTypes): self
+    public function withoutRenderers(string ... $mimeTypes): self
     {
         $new = clone $this;
         if (count($mimeTypes) === 0) {

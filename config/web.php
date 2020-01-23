@@ -1,4 +1,5 @@
 <?php
+
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Yii\Web\ErrorHandler\HtmlRenderer;
 use Yiisoft\Yii\Web\ErrorHandler\ThrowableRendererInterface;
