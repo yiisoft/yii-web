@@ -1,8 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Yiisoft\Yii\Web\Emitter;
 
 use Psr\Http\Message\ResponseInterface;
+use Yiisoft\Http\Status;
 use Yiisoft\Yii\Web\Exception\HeadersHaveBeenSentException;
 
 /**
@@ -10,7 +13,15 @@ use Yiisoft\Yii\Web\Exception\HeadersHaveBeenSentException;
  */
 final class SapiEmitter implements EmitterInterface
 {
-    private const NO_BODY_RESPONSE_CODES = [100, 101, 102, 204, 205, 304];
+    private const NO_BODY_RESPONSE_CODES = [
+        Status::CONTINUE,
+        Status::SWITCHING_PROTOCOLS,
+        Status::PROCESSING,
+        Status::NO_CONTENT,
+        Status::RESET_CONTENT,
+        Status::NOT_MODIFIED
+    ];
+
     private const DEFAULT_BUFFER_SIZE = 8388608; // 8MB
 
     private int $bufferSize;

@@ -1,4 +1,5 @@
 <?php
+
 namespace Yiisoft\Yii\Web;
 
 use Exception;
@@ -15,14 +16,8 @@ use Yiisoft\Yii\Web\ErrorHandler\ErrorHandler;
 final class Application
 {
     private MiddlewareDispatcher $dispatcher;
-
     private EmitterInterface $emitter;
 
-    /**
-     * Application constructor.
-     * @param MiddlewareDispatcher $dispatcher
-     * @param EmitterInterface $emitter
-     */
     public function __construct(MiddlewareDispatcher $dispatcher, EmitterInterface $emitter, ErrorHandler $errorHandler)
     {
         $this->dispatcher = $dispatcher;

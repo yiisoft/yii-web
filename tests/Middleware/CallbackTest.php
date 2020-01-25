@@ -71,7 +71,7 @@ final class CallbackTest extends TestCase
 
     private function createContainer(): ContainerInterface
     {
-        return new class implements ContainerInterface {
+        return new class() implements ContainerInterface {
             public function get($id)
             {
                 return new Response(404);
@@ -86,7 +86,7 @@ final class CallbackTest extends TestCase
 
     private function createRequestHandler(): RequestHandlerInterface
     {
-        return new class implements RequestHandlerInterface {
+        return new class() implements RequestHandlerInterface {
             public function handle(ServerRequestInterface $request): ResponseInterface
             {
                 return new Response(200);

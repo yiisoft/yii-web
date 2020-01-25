@@ -44,7 +44,7 @@ final class RedirectTest extends TestCase
     /**
      * @test
      */
-    public function temporaryReturnCode302(): void
+    public function temporaryReturnCode303(): void
     {
         $middleware = $this->createRedirectMiddleware()
             ->toRoute('test/route')
@@ -52,7 +52,7 @@ final class RedirectTest extends TestCase
 
         $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
 
-        $this->assertSame($response->getStatusCode(), 302);
+        $this->assertSame($response->getStatusCode(), 303);
     }
 
     /**
@@ -99,7 +99,7 @@ final class RedirectTest extends TestCase
 
     private function createRequestHandler(): RequestHandlerInterface
     {
-        return new class implements RequestHandlerInterface {
+        return new class() implements RequestHandlerInterface {
             public function handle(ServerRequestInterface $request): ResponseInterface
             {
                 return new Response(200);
@@ -114,7 +114,7 @@ final class RedirectTest extends TestCase
 
     private function createUrlGenerator(): UrlGeneratorInterface
     {
-        return new class implements UrlGeneratorInterface {
+        return new class() implements UrlGeneratorInterface {
             private $prefix = '';
             public function generate(string $name, array $parameters = []): string
             {

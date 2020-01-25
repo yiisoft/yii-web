@@ -1,4 +1,5 @@
 <?php
+
 namespace Yiisoft\Yii\Web\Middleware;
 
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -6,6 +7,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Yiisoft\Http\Status;
 
 final class IpFilter implements MiddlewareInterface
 {
@@ -28,8 +30,8 @@ final class IpFilter implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if ($request->getServerParams()['REMOTE_ADDR'] !== $this->allowedIp) {
-            $response = $this->responseFactory->createResponse(403);
-            $response->getBody()->write('Access denied!');
+            $response = $this->responseFactory->createResponse(Status::FORBIDDEN);
+            $response->getBody()->write(Status::TEXTS[Status::FORBIDDEN]);
             return $response;
         }
 

@@ -1,4 +1,5 @@
 <?php
+
 namespace Yiisoft\Yii\Web\Tests\Emitter;
 
 include 'httpFunctionMocks.php';
@@ -7,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
  */
 class HTTPFunctionsTest extends TestCase
 {

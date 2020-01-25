@@ -1,4 +1,5 @@
 <?php
+
 namespace Yiisoft\Yii\Web\ErrorHandler;
 
 final class PlainTextRenderer extends ThrowableRenderer
