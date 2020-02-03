@@ -48,7 +48,7 @@ final class IpFilter implements MiddlewareInterface
         if ($this->clientIpAttribute !== null) {
             $clientIp = $request->getAttribute($clientIp);
         }
-        if ($clientIp === null || !$this->ipValidator->disallowNegation()->disallowSubnet()->validateValue($clientIp)->isValid()) {
+        if ($clientIp === null || !$this->ipValidator->disallowNegation()->disallowSubnet()->validate($clientIp)->isValid()) {
             $response = $this->responseFactory->createResponse(403);
             $response->getBody()->write('Access denied!');
             return $response;
