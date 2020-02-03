@@ -50,7 +50,7 @@
         "yiisoft/var-dumper": "^3.0@dev",
         "ezyang/htmlpurifier": "~4.6",
         "phpunit/phpunit": "^8.4",
-        "cebe/indent": "~1.0.2",
+        "cebe/indent": "~1.0.2 || ~1.1.0",
         "friendsofphp/php-cs-fixer": "^2.2",
         "nyholm/psr7": "^1.0",
         "yiisoft/router-fastroute": "^3.0@dev"
