@@ -1,18 +1,30 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Yiisoft\Yii\Web\Emitter;
 
 use Psr\Http\Message\ResponseInterface;
+use Yiisoft\Http\Status;
+use Yiisoft\Yii\Web\Exception\HeadersHaveBeenSentException;
 
 /**
  * SapiEmitter sends a response using PHP Server API
  */
 final class SapiEmitter implements EmitterInterface
 {
-    private const NO_BODY_RESPONSE_CODES = [100, 101, 102, 204, 205, 304];
+    private const NO_BODY_RESPONSE_CODES = [
+        Status::CONTINUE,
+        Status::SWITCHING_PROTOCOLS,
+        Status::PROCESSING,
+        Status::NO_CONTENT,
+        Status::RESET_CONTENT,
+        Status::NOT_MODIFIED
+    ];
+
     private const DEFAULT_BUFFER_SIZE = 8388608; // 8MB
 
-    private $bufferSize;
+    private int $bufferSize;
 
     public function __construct(?int $bufferSize = null)
     {
@@ -28,31 +40,30 @@ final class SapiEmitter implements EmitterInterface
         $withoutBody = $withoutBody || !$this->shouldOutputBody($response);
         $withoutContentLength = $withoutBody || $response->hasHeader('Transfer-Encoding');
 
-        // we can't replace headers if they are already sent
-        if (!headers_sent()) {
-            header_remove();
-            // send HTTP Status-Line
-            header(sprintf(
-                'HTTP/%s %d %s',
-                $response->getProtocolVersion(),
-                $status,
-                $response->getReasonPhrase()
-            ), true, $status);
-            // filter headers
-            $headers = $withoutContentLength
-                ? $response->withoutHeader('Content-Length')
-                           ->getHeaders()
-                : $response->getHeaders();
-            // send headers
-            foreach ($headers as $header => $values) {
-                $replaceFirst = strtolower($header) !== 'set-cookie';
-                foreach ($values as $value) {
-                    header(sprintf('%s: %s', $header, $value), $replaceFirst);
-                    $replaceFirst = false;
-                }
+        // we can't send headers if they are already sent
+        if (headers_sent()) {
+            throw new HeadersHaveBeenSentException();
+        }
+        header_remove();
+        // send HTTP Status-Line
+        header(sprintf(
+            'HTTP/%s %d %s',
+            $response->getProtocolVersion(),
+            $status,
+            $response->getReasonPhrase()
+        ), true, $status);
+        // filter headers
+        $headers = $withoutContentLength
+            ? $response->withoutHeader('Content-Length')
+                       ->getHeaders()
+            : $response->getHeaders();
+        // send headers
+        foreach ($headers as $header => $values) {
+            $replaceFirst = strtolower($header) !== 'set-cookie';
+            foreach ($values as $value) {
+                header(sprintf('%s: %s', $header, $value), $replaceFirst);
+                $replaceFirst = false;
             }
-        } else {
-            $withoutContentLength = false;
         }
 
         if (!$withoutBody) {

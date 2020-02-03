@@ -21,7 +21,7 @@ This [Yii Framework] extension allows easy creation of web applications.
 Installation
 ------------
 
-- The minimum required PHP version of Yii 3.0 is PHP 7.1.
+- The minimum required PHP version of Yii 3.0 is PHP 7.4.
 - [Follow the Definitive Guide](https://github.com/yiisoft/docs/tree/master/guide/en)
 in order to get step by step instructions.
 

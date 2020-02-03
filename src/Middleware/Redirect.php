@@ -1,4 +1,5 @@
 <?php
+
 namespace Yiisoft\Yii\Web\Middleware;
 
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -6,17 +7,15 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Yiisoft\Http\Status;
 use Yiisoft\Router\UrlGeneratorInterface;
 
 final class Redirect implements MiddlewareInterface
 {
-    public const PERMANENT = 301;
-    public const TEMPORARY = 302;
-
     private $uri;
     private $route;
     private $parameters = [];
-    private $statusCode = self::PERMANENT;
+    private $statusCode = Status::MOVED_PERMANENTLY;
     private $responseFactory;
     private $urlGenerator;
 
@@ -47,13 +46,13 @@ final class Redirect implements MiddlewareInterface
 
     public function permanent(): self
     {
-        $this->statusCode = self::PERMANENT;
+        $this->statusCode = Status::MOVED_PERMANENTLY;
         return $this;
     }
 
     public function temporary(): self
     {
-        $this->statusCode = self::TEMPORARY;
+        $this->statusCode = Status::SEE_OTHER;
         return $this;
     }
 

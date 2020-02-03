@@ -1,4 +1,5 @@
 <?php
+
 namespace Yiisoft\Yii\Web\Emitter;
 
 use Yiisoft\Yii\Web\Tests\Emitter\HTTPFunctions;
@@ -7,9 +8,9 @@ if (!function_exists(__NAMESPACE__ . '\\headers_sent')) {
     /**
      * Mock for the headers_sent() function for Emitter class.
      */
-    function headers_sent(): bool
+    function headers_sent(&$file = null, &$line = null): bool
     {
-        return false;
+        return HTTPFunctions::headers_sent($file, $line);
     }
 
     /**

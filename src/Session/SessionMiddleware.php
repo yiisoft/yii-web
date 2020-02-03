@@ -1,4 +1,5 @@
 <?php
+
 namespace Yiisoft\Yii\Web\Session;
 
 use Psr\Http\Message\ResponseInterface;

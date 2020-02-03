@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Yiisoft\Router\Method;
+use Yiisoft\Http\Method;
 use Yiisoft\Security\Random;
 use Yiisoft\Security\TokenMask;
 use Yiisoft\Yii\Web\Middleware\Csrf;
@@ -135,7 +135,7 @@ final class CsrfTest extends TestCase
 
     private function createRequestHandler(): RequestHandlerInterface
     {
-        return new class implements RequestHandlerInterface {
+        return new class() implements RequestHandlerInterface {
             public function handle(ServerRequestInterface $request): ResponseInterface
             {
                 return new Response(200);

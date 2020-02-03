@@ -1,4 +1,5 @@
 <?php
+
 namespace Yiisoft\Yii\Web\Middleware;
 
 use Psr\Container\ContainerInterface;
@@ -30,6 +31,8 @@ final class ActionCaller implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $controller = $this->container->get($this->class);
-        return (new Injector($this->container))->invoke([$controller, $this->method], [$request, $handler]);
+        $response = (new Injector($this->container))->invoke([$controller, $this->method], [$request, $handler]);
+        $handler->handle($request);
+        return $response;
     }
 }

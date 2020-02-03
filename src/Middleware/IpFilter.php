@@ -1,4 +1,5 @@
 <?php
+
 namespace Yiisoft\Yii\Web\Middleware;
 
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -7,6 +8,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Validator\Rule\Ip;
+use Yiisoft\Http\Status;
 
 final class IpFilter implements MiddlewareInterface
 {
@@ -49,8 +51,8 @@ final class IpFilter implements MiddlewareInterface
             $clientIp = $request->getAttribute($clientIp);
         }
         if ($clientIp === null || !$this->ipValidator->disallowNegation()->disallowSubnet()->validate($clientIp)->isValid()) {
-            $response = $this->responseFactory->createResponse(403);
-            $response->getBody()->write('Access denied!');
+            $response = $this->responseFactory->createResponse(Status::FORBIDDEN);
+            $response->getBody()->write(Status::TEXTS[Status::FORBIDDEN]);
             return $response;
         }
 

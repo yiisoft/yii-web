@@ -1,4 +1,5 @@
 <?php
+
 namespace Yiisoft\Yii\Web\User;
 
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -187,7 +188,7 @@ class User
     public function logout($destroySession = true): bool
     {
         $identity = $this->getIdentity();
-        if (!$this->isGuest()) {
+        if ($this->isGuest()) {
             return false;
         }
         if ($this->beforeLogout($identity)) {
@@ -368,6 +369,6 @@ class User
             return false;
         }
 
-        return $this->accessChecker->hasPermission($this->getId(), $permissionName, $params);
+        return $this->accessChecker->userHasPermission($this->getId(), $permissionName, $params);
     }
 }

@@ -1,13 +1,8 @@
 <?php
-if (!isset($this)) {
-    // @link https://github.com/sebastianbergmann/phpunit/issues/3952
-    return;
-}
-
-use Yiisoft\Yii\Web\ErrorHandler\UserException;
-
 /* @var $throwable \Throwable */
 /* @var $this \Yiisoft\Yii\Web\ErrorHandler\HtmlRenderer */
+
+use Yiisoft\Yii\Web\ErrorHandler\UserException;
 
 if ($throwable instanceof UserException) {
     $name = $this->getThrowableName($throwable);
