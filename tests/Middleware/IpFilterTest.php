@@ -11,7 +11,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Validator\Rule\Ip;
 use Yiisoft\Yii\Web\Middleware\IpFilter;
-use PHPUnit_Framework_MockObject_MockObject;
 
 class IpFilterTest extends TestCase
 {
@@ -22,16 +21,16 @@ class IpFilterTest extends TestCase
     private const ALLOWED_IP = '1.1.1.1';
 
     /**
-     * @var ResponseFactory|PHPUnit_Framework_MockObject_MockObject
+     * @var ResponseFactory|\PHPUnit\Framework\MockObject\MockObject
      */
     private $responseFactoryMock;
 
     /**
-     * @var RequestHandlerInterface|PHPUnit_Framework_MockObject_MockObject
+     * @var RequestHandlerInterface|\PHPUnit\Framework\MockObject\MockObject
      */
     private $requestHandlerMock;
 
-    private $ipFilter;
+    private IpFilter $ipFilter;
 
     public function setUp(): void
     {
