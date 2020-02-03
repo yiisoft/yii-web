@@ -31,9 +31,9 @@ class HTTPFunctions
      */
     public static function header(string $string, bool $replace = true, ?int $http_response_code = null): void
     {
-        if (substr($string, 0, 5) !== 'HTTP/') {
-            $header = strtolower(explode(':', $string)[0]);
-            if ($replace || !key_exists($header, self::$headers)) {
+        if (strpos($string, 'HTTP/') !== 0) {
+            $header = strtolower(explode(':', $string, 2)[0]);
+            if ($replace || !array_key_exists($header, self::$headers)) {
                 self::$headers[$header] = [];
             }
             self::$headers[$header][] = $string;

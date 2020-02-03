@@ -33,7 +33,7 @@ class IpFilterTest extends TestCase
 
     private $ipFilter;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->responseFactoryMock = $this->createMock(ResponseFactoryInterface::class);
