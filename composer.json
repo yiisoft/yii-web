@@ -44,7 +44,7 @@
         "yiisoft/di": "^3.0@dev",
         "yiisoft/log": "^3.0@dev",
         "yiisoft/cache": "^3.0@dev",
-        "phpunit/phpunit": "^8.4",
+        "phpunit/phpunit": "^8.4 || ^9.0",
         "nyholm/psr7": "^1.0",
         "yiisoft/router-fastroute": "^3.0@dev"
     },
