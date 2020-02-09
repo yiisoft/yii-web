@@ -10,6 +10,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Http\Method;
+use Yiisoft\Router\RouteNotFoundException;
 use Yiisoft\Router\UrlGeneratorInterface;
 use Yiisoft\Yii\Web\Middleware\Redirect;
 
@@ -127,6 +128,15 @@ final class RedirectTest extends TestCase
             public function setUriPrefix(string $prefix): void
             {
                 $this->prefix = $prefix;
+            }
+
+            public function generateAbsolute(
+                string $name,
+                array $parameters = [],
+                string $scheme = null,
+                string $host = null
+            ): string {
+                return $name . '?' . http_build_query($parameters);
             }
         };
     }
