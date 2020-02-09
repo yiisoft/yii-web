@@ -198,7 +198,7 @@ class HeaderHelperTest extends TestCase
             # Invalid syntax but most browsers accept the umlaut with warn
             'brokenToken2' => ['a=foo-ä.html',null, null, ['a' => 'foo-ä.html']],
             # Invalid syntax but most browsers accept the umlaut with warn
-            'brokenToken3' => ['a=foo-Ã¤.html',null, null, ['a' => 'foo-Ã¤.html']],
+            'brokenToken3' => ['a=foo-Ã¤.html',null, null, ['a' => 'foo-ã¤.html']],
         ];
     }
 
