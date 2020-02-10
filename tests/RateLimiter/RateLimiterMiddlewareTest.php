@@ -14,10 +14,7 @@ use Yiisoft\Yii\Web\RateLimiter\RateLimiterMiddleware;
 
 final class RateLimiterMiddlewareTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function singleRequestWorksAsExpected(): void
+    public function testSingleRequestWorksAsExpected(): void
     {
         $counter = new FakeCounter(100, 100);
         $response = $this->createRateLimiter($counter)->process($this->createRequest(), $this->createRequestHandler());
@@ -33,10 +30,7 @@ final class RateLimiterMiddlewareTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
-    public function limitingIsStartedWhenExpected(): void
+    public function testLimitingIsStartedWhenExpected(): void
     {
         $counter = new FakeCounter(2, 100);
         $middleware = $this->createRateLimiter($counter);
@@ -66,10 +60,7 @@ final class RateLimiterMiddlewareTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
-    public function counterIdCouldBeSet(): void
+    public function testCounterIdCouldBeSet(): void
     {
         $counter = new FakeCounter(100, 100);
         $middleware = $this->createRateLimiter($counter)->withCounterId('custom-id');
@@ -77,10 +68,7 @@ final class RateLimiterMiddlewareTest extends TestCase
         $this->assertEquals('custom-id', $counter->getId());
     }
 
-    /**
-     * @test
-     */
-    public function counterIdCouldBeSetWithCallback(): void
+    public function testCounterIdCouldBeSetWithCallback(): void
     {
         $counter = new FakeCounter(100, 100);
         $middleware = $this->createRateLimiter($counter)->withCounterIdCallback(

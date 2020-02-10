@@ -13,10 +13,7 @@ use Yiisoft\Yii\Web\Middleware\Callback;
 
 final class CallbackTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function handlerIsPassedToCallback(): void
+    public function testHandlerIsPassedToCallback(): void
     {
         $middleware = new Callback(function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
             return $handler->handle($request);
@@ -26,10 +23,7 @@ final class CallbackTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    /**
-     * @test
-     */
-    public function callbackResultReturned(): void
+    public function testCallbackResultReturned(): void
     {
         $middleware = new Callback(function () {
             return new Response(400);
@@ -39,10 +33,7 @@ final class CallbackTest extends TestCase
         $this->assertEquals(400, $response->getStatusCode());
     }
 
-    /**
-     * @test
-     */
-    public function requestIsPassedToCallback(): void
+    public function testRequestIsPassedToCallback(): void
     {
         $requestMethod = Method::PUT;
         $requestUri = '/test/request/uri';
@@ -55,10 +46,7 @@ final class CallbackTest extends TestCase
         $middleware->process($this->createRequest($requestMethod, $requestUri), $this->createRequestHandler());
     }
 
-    /**
-     * @test
-     */
-    public function checkDiContainerCalled(): void
+    public function testCheckDiContainerCalled(): void
     {
         $middleware = new Callback(function (Response $response) {
             return $response;

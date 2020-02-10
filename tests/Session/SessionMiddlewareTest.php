@@ -64,10 +64,7 @@ class SessionMiddlewareTest extends TestCase
         $this->uriMock = $this->createMock(UriInterface::class);
     }
 
-    /**
-     * @test
-     */
-    public function processDiscardsSessionWhenRequestHandlerThrowsException(): void
+    public function testProcessDiscardsSessionWhenRequestHandlerThrowsException(): void
     {
         $this->requestHandlerMock
             ->expects($this->once())
@@ -82,10 +79,7 @@ class SessionMiddlewareTest extends TestCase
         $this->sessionMiddleware->process($this->requestMock, $this->requestHandlerMock);
     }
 
-    /**
-     * @test
-     */
-    public function processThrowsSessionExceptionWhenConnectionIsNotUsingHttps(): void
+    public function testProcessThrowsSessionExceptionWhenConnectionIsNotUsingHttps(): void
     {
         $this->setUpSessionMock();
         $this->setUpRequestMock(false);
@@ -93,10 +87,7 @@ class SessionMiddlewareTest extends TestCase
         $this->sessionMiddleware->process($this->requestMock, $this->requestHandlerMock);
     }
 
-    /**
-     * @test
-     */
-    public function processGetsDomainFromRequestWhenDomainCookieParameterNotProvided(): void
+    public function testProcessGetsDomainFromRequestWhenDomainCookieParameterNotProvided(): void
     {
         $this->setUpSessionMock(false);
         $this->setUpRequestMock();
@@ -111,10 +102,7 @@ class SessionMiddlewareTest extends TestCase
         $this->sessionMiddleware->process($this->requestMock, $this->requestHandlerMock);
     }
 
-    /**
-     * @test
-     */
-    public function processDoesNotAlterResponseIfSessionIsNotActive(): void
+    public function testProcessDoesNotAlterResponseIfSessionIsNotActive(): void
     {
         $this->setUpSessionMock(true, false);
         $this->setUpRequestMock();

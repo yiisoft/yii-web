@@ -20,10 +20,7 @@ final class CsrfTest extends TestCase
 {
     private const PARAM_NAME = 'csrf';
 
-    /**
-     * @test
-     */
-    public function validTokenInBodyPostRequestResultIn200(): void
+    public function testValidTokenInBodyPostRequestResultIn200(): void
     {
         $token = $this->generateToken();
         $middleware = $this->createCsrfMiddlewareWithToken($token);
@@ -31,10 +28,7 @@ final class CsrfTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    /**
-     * @test
-     */
-    public function validTokenInBodyPutRequestResultIn200(): void
+    public function testValidTokenInBodyPutRequestResultIn200(): void
     {
         $token = $this->generateToken();
         $middleware = $this->createCsrfMiddlewareWithToken($token);
@@ -42,10 +36,7 @@ final class CsrfTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    /**
-     * @test
-     */
-    public function validTokenInBodyDeleteRequestResultIn200(): void
+    public function testValidTokenInBodyDeleteRequestResultIn200(): void
     {
         $token = $this->generateToken();
         $middleware = $this->createCsrfMiddlewareWithToken($token);
@@ -53,10 +44,7 @@ final class CsrfTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    /**
-     * @test
-     */
-    public function validTokenInHeaderResultIn200(): void
+    public function testValidTokenInHeaderResultIn200(): void
     {
         $token = $this->generateToken();
         $middleware = $this->createCsrfMiddlewareWithToken($token);
@@ -64,40 +52,28 @@ final class CsrfTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    /**
-     * @test
-     */
-    public function getIsAlwaysAllowed(): void
+    public function testGetIsAlwaysAllowed(): void
     {
         $middleware = $this->createCsrfMiddlewareWithToken('');
         $response = $middleware->process($this->createServerRequest(Method::GET), $this->createRequestHandler());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    /**
-     * @test
-     */
-    public function invalidTokenResultIn422(): void
+    public function testInvalidTokenResultIn422(): void
     {
         $middleware = $this->createCsrfMiddlewareWithToken($this->generateToken());
         $response = $middleware->process($this->createPostServerRequestWithBodyToken($this->generateToken()), $this->createRequestHandler());
         $this->assertEquals(422, $response->getStatusCode());
     }
 
-    /**
-     * @test
-     */
-    public function emptyTokenInSessionResultIn422(): void
+    public function testEmptyTokenInSessionResultIn422(): void
     {
         $middleware = $this->createCsrfMiddlewareWithToken('');
         $response = $middleware->process($this->createPostServerRequestWithBodyToken($this->generateToken()), $this->createRequestHandler());
         $this->assertEquals(422, $response->getStatusCode());
     }
 
-    /**
-     * @test
-     */
-    public function emptyTokenInRequestResultIn422(): void
+    public function testEmptyTokenInRequestResultIn422(): void
     {
         $middleware = $this->createCsrfMiddlewareWithToken($this->generateToken());
         $response = $middleware->process($this->createServerRequest(), $this->createRequestHandler());

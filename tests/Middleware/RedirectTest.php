@@ -14,19 +14,13 @@ use Yiisoft\Yii\Web\Middleware\Redirect;
 
 final class RedirectTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function invalidArguments(): void
+    public function testInvalidArguments(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->createRedirectMiddleware()->process($this->createRequest(), $this->createRequestHandler());
     }
 
-    /**
-     * @test
-     */
-    public function generateUri(): void
+    public function testGenerateUri(): void
     {
         $middleware = $this->createRedirectMiddleware()
             ->toRoute('test/route', [
@@ -40,10 +34,7 @@ final class RedirectTest extends TestCase
         $this->assertSame($header[0], 'test/route?param1=1&param2=2');
     }
 
-    /**
-     * @test
-     */
-    public function temporaryReturnCode303(): void
+    public function testTemporaryReturnCode303(): void
     {
         $middleware = $this->createRedirectMiddleware()
             ->toRoute('test/route')
@@ -54,10 +45,7 @@ final class RedirectTest extends TestCase
         $this->assertSame($response->getStatusCode(), 303);
     }
 
-    /**
-     * @test
-     */
-    public function permanentReturnCode301(): void
+    public function testPermanentReturnCode301(): void
     {
         $middleware = $this->createRedirectMiddleware()
             ->toRoute('test/route')
@@ -68,10 +56,7 @@ final class RedirectTest extends TestCase
         $this->assertSame($response->getStatusCode(), 301);
     }
 
-    /**
-     * @test
-     */
-    public function statusReturnCode400(): void
+    public function testStatusReturnCode400(): void
     {
         $middleware = $this->createRedirectMiddleware()
             ->toRoute('test/route')
@@ -82,10 +67,7 @@ final class RedirectTest extends TestCase
         $this->assertSame($response->getStatusCode(), 400);
     }
 
-    /**
-     * @test
-     */
-    public function setUri(): void
+    public function testSetUri(): void
     {
         $middleware = $this->createRedirectMiddleware()
             ->toUrl('test/custom/route');
