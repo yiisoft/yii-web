@@ -6,7 +6,6 @@ use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Http\Method;
@@ -91,12 +90,12 @@ class HttpCacheTest extends TestCase
 
     private function createRequestHandler(): RequestHandlerInterface
     {
-        return new class() implements RequestHandlerInterface {
-            public function handle(ServerRequestInterface $request): ResponseInterface
-            {
-                return new Response(200);
-            }
-        };
+        $requestHandler = $this->createMock(RequestHandlerInterface::class);
+        $requestHandler
+            ->method('handle')
+            ->willReturn(new Response(200));
+
+        return $requestHandler;
     }
 
     private function createServerRequest(string $method = Method::GET, $headers = []): ServerRequestInterface

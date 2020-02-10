@@ -6,11 +6,9 @@ use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Http\Method;
-use Yiisoft\Router\RouteNotFoundException;
 use Yiisoft\Router\UrlGeneratorInterface;
 use Yiisoft\Yii\Web\Middleware\Redirect;
 
@@ -100,12 +98,12 @@ final class RedirectTest extends TestCase
 
     private function createRequestHandler(): RequestHandlerInterface
     {
-        return new class() implements RequestHandlerInterface {
-            public function handle(ServerRequestInterface $request): ResponseInterface
-            {
-                return new Response(200);
-            }
-        };
+        $requestHandler = $this->createMock(RequestHandlerInterface::class);
+        $requestHandler
+            ->method('handle')
+            ->willReturn(new Response(200));
+
+        return $requestHandler;
     }
 
     private function createRequest(string $method = Method::GET, string $uri = '/'): ServerRequestInterface
@@ -143,6 +141,11 @@ final class RedirectTest extends TestCase
 
     private function createRedirectMiddleware(): Redirect
     {
-        return new Redirect(new Psr17Factory(), $this->createUrlGenerator());
+        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
+        $urlGenerator
+            ->method('generate')
+            ->willReturnCallback(fn($name, $params) => $name . '?' . http_build_query($params));
+
+        return new Redirect(new Psr17Factory(), $urlGenerator);
     }
 }
