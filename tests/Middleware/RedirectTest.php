@@ -126,7 +126,7 @@ final class RedirectTest extends TestCase
         $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
         $urlGenerator
             ->method('generate')
-            ->willReturnCallback(fn($name, $params) => $name . '?' . http_build_query($params));
+            ->willReturnCallback(fn ($name, $params) => $name . '?' . http_build_query($params));
 
         return new Redirect(new Psr17Factory(), $urlGenerator);
     }
