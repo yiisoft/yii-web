@@ -58,17 +58,12 @@ final class CallbackTest extends TestCase
 
     private function createContainer(): ContainerInterface
     {
-        return new class() implements ContainerInterface {
-            public function get($id)
-            {
-                return new Response(404);
-            }
+        $container = $this->createMock(ContainerInterface::class);
+        $container
+            ->method('get')
+            ->willReturn(new Response(404));
 
-            public function has($id)
-            {
-                // do nothing
-            }
-        };
+        return $container;
     }
 
     private function createRequestHandler(): RequestHandlerInterface
