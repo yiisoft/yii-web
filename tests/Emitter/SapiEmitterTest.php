@@ -16,7 +16,7 @@ use Yiisoft\Yii\Web\Exception\HeadersHaveBeenSentException;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-class SapiEmitterTest extends TestCase
+final class SapiEmitterTest extends TestCase
 {
     public function setUp(): void
     {
@@ -28,7 +28,7 @@ class SapiEmitterTest extends TestCase
         HTTPFunctions::reset();
     }
 
-    public function noBodyHTTPCodeProvider(): array
+    public function noBodyResponseCodeProvider(): array
     {
         return [[100], [101], [102], [204], [205], [304]];
     }
@@ -48,9 +48,9 @@ class SapiEmitterTest extends TestCase
     }
 
     /**
-     * @dataProvider noBodyHTTPCodeProvider
+     * @dataProvider noBodyResponseCodeProvider
      */
-    public function testShouldNotOutputBodyByResponseCode(int $code): void
+    public function testNoBodyForResponseCode(int $code): void
     {
         $response = $this->createResponse($code, ['X-Test' => 1], 'Example body');
 
@@ -62,7 +62,7 @@ class SapiEmitterTest extends TestCase
         $this->expectOutputString('');
     }
 
-    public function testShouldNotOutputBodyAndContentLengthIfEmitToldSo(): void
+    public function testNoBodyAndContentLengthIfEmitToldSo(): void
     {
         $response = $this->createResponse(200, ['X-Test' => 1], 'Example body');
 
@@ -74,7 +74,7 @@ class SapiEmitterTest extends TestCase
         $this->expectOutputString('');
     }
 
-    public function testContentLengthShouldNotBeOverwrittenIfPresent(): void
+    public function testContentLengthNotOverwrittenIfPresent(): void
     {
         $length = 100;
         $response = $this->createResponse(200, ['Content-Length' => $length, 'X-Test' => 1], 'Example body');
@@ -88,7 +88,7 @@ class SapiEmitterTest extends TestCase
         $this->expectOutputString('Example body');
     }
 
-    public function testContentLengthShouldNotOutputWhenBodyIsEmpty(): void
+    public function testNoContentLengthHeaderWhenBodyIsEmpty(): void
     {
         $length = 100;
         $response = $this->createResponse(200, ['Content-Length' => $length, 'X-Test' => 1], '');
@@ -100,7 +100,7 @@ class SapiEmitterTest extends TestCase
         $this->expectOutputString('');
     }
 
-    public function testContentAlwaysShouldBeFullyEmitted(): void
+    public function testContentFullyEmitted(): void
     {
         $body = 'Example body';
         $response = $this->createResponse(200, ['Content-length' => 1, 'X-Test' => 1], $body);
@@ -110,7 +110,7 @@ class SapiEmitterTest extends TestCase
         $this->expectOutputString($body);
     }
 
-    public function testSentHeadersShouldBeRemoved(): void
+    public function testSentHeadersRemoved(): void
     {
         HTTPFunctions::header('Cookie-Set: First Cookie');
         HTTPFunctions::header('X-Test: 1');
@@ -133,7 +133,7 @@ class SapiEmitterTest extends TestCase
         $this->createEmitter()->emit($response);
     }
 
-    public function testShouldEmitDuplicateHeaders(): void
+    public function testEmitDuplicateHeaders(): void
     {
         $body = 'Example body';
         $response = $this->createResponse(200, [], $body)
