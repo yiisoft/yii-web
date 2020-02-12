@@ -9,10 +9,7 @@ use Yiisoft\Yii\Web\RateLimiter\Counter;
 
 final class CounterTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function statisticsShouldBeCorrectWhenLimitIsNotReached(): void
+    public function testStatisticsShouldBeCorrectWhenLimitIsNotReached(): void
     {
         $counter = new Counter(2, 5, new ArrayCache());
         $counter->setId('key');
@@ -24,10 +21,7 @@ final class CounterTest extends TestCase
         $this->assertFalse($statistics->isLimitReached());
     }
 
-    /**
-     * @test
-     */
-    public function statisticsShouldBeCorrectWhenLimitIsReached(): void
+    public function testStatisticsShouldBeCorrectWhenLimitIsReached(): void
     {
         $counter = new Counter(2, 4, new ArrayCache());
         $counter->setId('key');
@@ -45,37 +39,25 @@ final class CounterTest extends TestCase
         $this->assertTrue($statistics->isLimitReached());
     }
 
-    /**
-     * @test
-     */
-    public function shouldNotBeAbleToSetInvalidId(): void
+    public function testShouldNotBeAbleToSetInvalidId(): void
     {
         $this->expectException(\LogicException::class);
         (new Counter(10, 60, new ArrayCache()))->incrementAndGetState();
     }
 
-    /**
-     * @test
-     */
-    public function shouldNotBeAbleToSetInvalidLimit(): void
+    public function testShouldNotBeAbleToSetInvalidLimit(): void
     {
         $this->expectException(InvalidArgumentException::class);
         new Counter(0, 60, new ArrayCache());
     }
 
-    /**
-     * @test
-     */
-    public function shouldNotBeAbleToSetInvalidPeriod(): void
+    public function testShouldNotBeAbleToSetInvalidPeriod(): void
     {
         $this->expectException(InvalidArgumentException::class);
         new Counter(10, 0, new ArrayCache());
     }
 
-    /**
-     * @test
-     */
-    public function incrementMustBeUniformAfterLimitIsReached(): void
+    public function testIncrementMustBeUniformAfterLimitIsReached(): void
     {
         $counter = new Counter(10, 1, new ArrayCache());
         $counter->setId('key');

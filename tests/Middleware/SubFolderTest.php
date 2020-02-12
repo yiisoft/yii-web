@@ -4,7 +4,6 @@ namespace Yiisoft\Yii\Web\Tests\Middleware;
 
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -196,8 +195,7 @@ class SubFolderTest extends TestCase
 
     private function createMiddleware(): SubFolder
     {
-        /** @var MockObject|UrlGeneratorInterface $urlGenerator */
-        $urlGenerator = $this->getMockBuilder(UrlGeneratorInterface::class)->getMock();
+        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
         $urlGenerator->method('setUriPrefix')->willReturnCallback(function ($prefix) {
             $this->urlGeneratorUriPrefix = $prefix;
         });

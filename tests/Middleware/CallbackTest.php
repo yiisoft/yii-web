@@ -6,7 +6,6 @@ use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Http\Method;
@@ -14,10 +13,7 @@ use Yiisoft\Yii\Web\Middleware\Callback;
 
 final class CallbackTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function handlerIsPassedToCallback(): void
+    public function testHandlerIsPassedToCallback(): void
     {
         $middleware = new Callback(function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
             return $handler->handle($request);
@@ -27,10 +23,7 @@ final class CallbackTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    /**
-     * @test
-     */
-    public function callbackResultReturned(): void
+    public function testCallbackResultReturned(): void
     {
         $middleware = new Callback(function () {
             return new Response(400);
@@ -40,10 +33,7 @@ final class CallbackTest extends TestCase
         $this->assertEquals(400, $response->getStatusCode());
     }
 
-    /**
-     * @test
-     */
-    public function requestIsPassedToCallback(): void
+    public function testRequestIsPassedToCallback(): void
     {
         $requestMethod = Method::PUT;
         $requestUri = '/test/request/uri';
@@ -56,10 +46,7 @@ final class CallbackTest extends TestCase
         $middleware->process($this->createRequest($requestMethod, $requestUri), $this->createRequestHandler());
     }
 
-    /**
-     * @test
-     */
-    public function checkDiContainerCalled(): void
+    public function testCheckDiContainerCalled(): void
     {
         $middleware = new Callback(function (Response $response) {
             return $response;
@@ -71,27 +58,22 @@ final class CallbackTest extends TestCase
 
     private function createContainer(): ContainerInterface
     {
-        return new class() implements ContainerInterface {
-            public function get($id)
-            {
-                return new Response(404);
-            }
+        $container = $this->createMock(ContainerInterface::class);
+        $container
+            ->method('get')
+            ->willReturn(new Response(404));
 
-            public function has($id)
-            {
-                // do nothing
-            }
-        };
+        return $container;
     }
 
     private function createRequestHandler(): RequestHandlerInterface
     {
-        return new class() implements RequestHandlerInterface {
-            public function handle(ServerRequestInterface $request): ResponseInterface
-            {
-                return new Response(200);
-            }
-        };
+        $requestHandler = $this->createMock(RequestHandlerInterface::class);
+        $requestHandler
+            ->method('handle')
+            ->willReturn(new Response(200));
+
+        return $requestHandler;
     }
 
     private function createRequest(string $method = Method::GET, string $uri = '/'): ServerRequestInterface

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Yiisoft\Yii\Web\Tests;
 
 use PHPUnit\Framework\TestCase;
@@ -9,7 +8,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Di\Container;
-use PHPUnit_Framework_MockObject_MockObject;
 use Yiisoft\Yii\Web\Emitter\SapiEmitter;
 use Yiisoft\Yii\Web\MiddlewareDispatcher;
 
@@ -21,17 +19,17 @@ class MiddlewareDispatcherTest extends TestCase
     private $middlewareDispatcher;
 
     /**
-     * @var Container|PHPUnit_Framework_MockObject_MockObject
+     * @var Container
      */
     private $containerMock;
 
     /**
-     * @var RequestHandlerInterface|PHPUnit_Framework_MockObject_MockObject
+     * @var RequestHandlerInterface
      */
     private $fallbackHandlerMock;
 
     /**
-     * @var MiddlewareInterface[]|PHPUnit_Framework_MockObject_MockObject[]
+     * @var MiddlewareInterface[]
      */
     private $middlewareMocks;
 
@@ -47,10 +45,7 @@ class MiddlewareDispatcherTest extends TestCase
         $this->middlewareDispatcher = new MiddlewareDispatcher($this->middlewareMocks, $this->containerMock, $this->fallbackHandlerMock);
     }
 
-    /**
-     * @test
-     */
-    public function constructThrowsExceptionWhenMiddlewaresAreNotDefined(): void
+    public function testConstructThrowsExceptionWhenMiddlewaresAreNotDefined(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         new MiddlewareDispatcher(
@@ -60,10 +55,7 @@ class MiddlewareDispatcherTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
-    public function addThrowsInvalidArgumentExceptionWhenMiddlewareIsNotOfCorrectType(): void
+    public function testAddThrowsInvalidArgumentExceptionWhenMiddlewareIsNotOfCorrectType(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $exampleInput = new SapiEmitter();
@@ -72,10 +64,9 @@ class MiddlewareDispatcherTest extends TestCase
     }
 
     /**
-     * @test
      * @doesNotPerformAssertions
      */
-    public function addAddsCallableToMiddlewareArrayWithoutThrowingException(): void
+    public function testAddAddsCallableToMiddlewareArrayWithoutThrowingException(): void
     {
         $callable = static function () {
             echo 'example function for testing purposes';
@@ -84,19 +75,15 @@ class MiddlewareDispatcherTest extends TestCase
     }
 
     /**
-     * @test
      * @doesNotPerformAssertions
      */
-    public function addAddsMiddlewareInterfaceToMiddlewareArrayWithoutThrowingException(): void
+    public function testAddAddsMiddlewareInterfaceToMiddlewareArrayWithoutThrowingException(): void
     {
         $middleware = $this->createMock(MiddlewareInterface::class);
         $this->middlewareDispatcher->add($middleware);
     }
 
-    /**
-     * @test
-     */
-    public function dispatchCallsMiddlewareFromQueueToProcessRequest(): void
+    public function testDispatchCallsMiddlewareFromQueueToProcessRequest(): void
     {
         $request = $this->createMock(ServerRequestInterface::class);
         $this->fallbackHandlerMock
