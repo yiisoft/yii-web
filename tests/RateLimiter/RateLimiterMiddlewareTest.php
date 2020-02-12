@@ -6,7 +6,6 @@ use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Http\Method;
@@ -15,10 +14,7 @@ use Yiisoft\Yii\Web\RateLimiter\RateLimiterMiddleware;
 
 final class RateLimiterMiddlewareTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function singleRequestWorksAsExpected(): void
+    public function testSingleRequestWorksAsExpected(): void
     {
         $counter = new FakeCounter(100, 100);
         $response = $this->createRateLimiter($counter)->process($this->createRequest(), $this->createRequestHandler());
@@ -34,10 +30,7 @@ final class RateLimiterMiddlewareTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
-    public function limitingIsStartedWhenExpected(): void
+    public function testLimitingIsStartedWhenExpected(): void
     {
         $counter = new FakeCounter(2, 100);
         $middleware = $this->createRateLimiter($counter);
@@ -67,10 +60,7 @@ final class RateLimiterMiddlewareTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
-    public function counterIdCouldBeSet(): void
+    public function testCounterIdCouldBeSet(): void
     {
         $counter = new FakeCounter(100, 100);
         $middleware = $this->createRateLimiter($counter)->withCounterId('custom-id');
@@ -78,10 +68,7 @@ final class RateLimiterMiddlewareTest extends TestCase
         $this->assertEquals('custom-id', $counter->getId());
     }
 
-    /**
-     * @test
-     */
-    public function counterIdCouldBeSetWithCallback(): void
+    public function testCounterIdCouldBeSetWithCallback(): void
     {
         $counter = new FakeCounter(100, 100);
         $middleware = $this->createRateLimiter($counter)->withCounterIdCallback(
@@ -96,12 +83,12 @@ final class RateLimiterMiddlewareTest extends TestCase
 
     private function createRequestHandler(): RequestHandlerInterface
     {
-        return new class() implements RequestHandlerInterface {
-            public function handle(ServerRequestInterface $request): ResponseInterface
-            {
-                return new Response(200);
-            }
-        };
+        $requestHandler = $this->createMock(RequestHandlerInterface::class);
+        $requestHandler
+            ->method('handle')
+            ->willReturn(new Response(200));
+
+        return $requestHandler;
     }
 
     private function createRequest(string $method = Method::GET, string $uri = '/'): ServerRequestInterface
