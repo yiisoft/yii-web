@@ -13,7 +13,7 @@ use Yiisoft\Yii\Web\Middleware\Callback;
 /**
  * MiddlewareDispatcher
  */
-final class MiddlewareDispatcher implements RequestHandlerInterface, MiddlewareInterface
+final class MiddlewareDispatcher
 {
     /**
      * @var MiddlewareInterface[]
@@ -30,6 +30,13 @@ final class MiddlewareDispatcher implements RequestHandlerInterface, MiddlewareI
      */
     private $container;
 
+    /**
+     * Contains a chain of middleware wrapped in handlers.
+     * Each handler points to the handler of middleware that will be processed next.
+     * @var RequestHandlerInterface|null stack of middleware
+     */
+    private ?RequestHandlerInterface $stack = null;
+
     public function __construct(
         array $middlewares,
         ContainerInterface $container,
@@ -41,8 +48,8 @@ final class MiddlewareDispatcher implements RequestHandlerInterface, MiddlewareI
 
         $this->container = $container;
 
-        foreach ($middlewares as $middleware) {
-            $this->add($middleware);
+        for ($i = count($middlewares) - 1; $i >= 0; $i--) {
+            $this->addMiddleware($middlewares[$i]);
         }
 
         $responseFactory = $container->get(ResponseFactoryInterface::class);
@@ -52,49 +59,58 @@ final class MiddlewareDispatcher implements RequestHandlerInterface, MiddlewareI
 
     private function addCallable(callable $callback): void
     {
-        $this->middlewares[] = new Callback($callback, $this->container);
+        array_unshift($this->middlewares, new Callback($callback, $this->container));
     }
 
-    public function add($middleware): void
+    public function addMiddleware($middleware): self
     {
         if (is_callable($middleware)) {
             $this->addCallable($middleware);
         } elseif ($middleware instanceof MiddlewareInterface) {
-            $this->middlewares[] = $middleware;
+            array_unshift($this->middlewares, $middleware);
         } else {
             throw new \InvalidArgumentException('Middleware should be either callable or MiddlewareInterface instance. ' . get_class($middleware) . ' given.');
         }
+
+        return $this;
     }
 
     public function dispatch(ServerRequestInterface $request): ResponseInterface
     {
-        reset($this->middlewares);
-        return $this->handle($request);
+        return $this->process($request, $this->nextHandler);
+    }
+
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    {
+        if ($this->stack === null) {
+            for ($i = count($this->middlewares) - 1; $i >= 0; $i--) {
+                $handler = $this->wrap($this->middlewares[$i], $handler);
+            }
+            $this->stack = $handler;
+        }
+
+        return $this->stack->handle($request);
     }
 
     /**
-     * @internal Please use {@see dispatch()} or {@see process()} instead
-     * @param ServerRequestInterface $request
-     * @return ResponseInterface
+     * Wraps handler by middlewares
      */
-    public function handle(ServerRequestInterface $request): ResponseInterface
+    private function wrap(MiddlewareInterface $middleware, RequestHandlerInterface $handler): RequestHandlerInterface
     {
-        $middleware = current($this->middlewares);
-        next($this->middlewares);
-        if ($middleware === false) {
-            if ($this->nextHandler !== null) {
-                return $this->nextHandler->handle($request);
+        return new class($middleware, $handler) implements RequestHandlerInterface {
+            private MiddlewareInterface $middleware;
+            private RequestHandlerInterface $handler;
+
+            public function __construct(MiddlewareInterface $middleware, RequestHandlerInterface $handler)
+            {
+                $this->middleware = $middleware;
+                $this->handler = $handler;
             }
 
-            throw new \LogicException('Middleware stack exhausted');
-        }
-
-        return $middleware->process($request, $this);
-    }
-
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $nextHandler): ResponseInterface
-    {
-        $this->nextHandler = $nextHandler;
-        return $this->dispatch($request);
+            public function handle(ServerRequestInterface $request): ResponseInterface
+            {
+                return $this->middleware->process($request, $this->handler);
+            }
+        };
     }
 }

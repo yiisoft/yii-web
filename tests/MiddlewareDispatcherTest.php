@@ -2,6 +2,8 @@
 
 namespace Yiisoft\Yii\Web\Tests;
 
+use Nyholm\Psr7\Response;
+use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -60,7 +62,7 @@ class MiddlewareDispatcherTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $exampleInput = new SapiEmitter();
 
-        $this->middlewareDispatcher->add($exampleInput);
+        $this->middlewareDispatcher->addMiddleware($exampleInput);
     }
 
     /**
@@ -71,7 +73,7 @@ class MiddlewareDispatcherTest extends TestCase
         $callable = static function () {
             echo 'example function for testing purposes';
         };
-        $this->middlewareDispatcher->add($callable);
+        $this->middlewareDispatcher->addMiddleware($callable);
     }
 
     /**
@@ -80,26 +82,29 @@ class MiddlewareDispatcherTest extends TestCase
     public function testAddAddsMiddlewareInterfaceToMiddlewareArrayWithoutThrowingException(): void
     {
         $middleware = $this->createMock(MiddlewareInterface::class);
-        $this->middlewareDispatcher->add($middleware);
+        $this->middlewareDispatcher->addMiddleware($middleware);
     }
 
-    public function testDispatchCallsMiddlewareFromQueueToProcessRequest(): void
+    public function testDispatchCallsMiddlewareFullStack(): void
     {
-        $request = $this->createMock(ServerRequestInterface::class);
+        $request = new ServerRequest('GET', '/');
         $this->fallbackHandlerMock
             ->expects($this->never())
             ->method('handle')
             ->with($request);
 
-        $this->middlewareMocks[0]
-            ->expects($this->exactly(2))
-            ->method('process')
-            ->with($request, $this->middlewareDispatcher);
+        $middleware1 = function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
+            $request = $request->withAttribute('middleware', 'middleware1');
+            return $handler->handle($request);
+        };
+        $middleware2 = function (ServerRequestInterface $request) {
+            return new Response(200, [], null, '1.1', implode($request->getAttributes()));
+        };
+        $middlewareDispatcher = new MiddlewareDispatcher([$middleware1, $middleware2], $this->containerMock, $this->fallbackHandlerMock);
+        $response = $middlewareDispatcher->dispatch($request);
 
-        // TODO: test that second middleware is called as well
-
-        $this->middlewareDispatcher->dispatch($request);
-
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame('middleware1', $response->getReasonPhrase());
         // ensure that dispatcher could be called multiple times
         $this->middlewareDispatcher->dispatch($request);
     }
