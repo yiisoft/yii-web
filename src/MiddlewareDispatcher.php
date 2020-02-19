@@ -13,7 +13,7 @@ use Yiisoft\Yii\Web\Middleware\Callback;
 /**
  * MiddlewareDispatcher
  */
-final class MiddlewareDispatcher
+final class MiddlewareDispatcher implements MiddlewareInterface
 {
     /**
      * @var MiddlewareInterface[]
@@ -65,7 +65,7 @@ final class MiddlewareDispatcher
         return $this->process($request, $this->nextHandler);
     }
 
-    private function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if ($this->stack === null) {
             for ($i = count($this->middlewares) - 1; $i >= 0; $i--) {
