@@ -9,7 +9,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Injector\Injector;
-use Yiisoft\Yii\Web\Middleware\Callback;
 
 /**
  * MiddlewareDispatcher
@@ -56,7 +55,7 @@ final class MiddlewareDispatcher implements MiddlewareInterface
             throw new \InvalidArgumentException('Middleware should be either callable or MiddlewareInterface instance. ' . get_class($middleware) . ' given.');
         }
 
-        array_unshift($this->middlewares, $middleware);
+        $this->middlewares[] = $middleware;
 
         return $this;
     }
@@ -69,8 +68,8 @@ final class MiddlewareDispatcher implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if ($this->stack === null) {
-            for ($i = count($this->middlewares) - 1; $i >= 0; $i--) {
-                $handler = $this->wrap($this->middlewares[$i], $handler);
+            foreach ($this->middlewares as $middleware ) {
+                $handler = $this->wrap($middleware, $handler);
             }
             $this->stack = $handler;
         }
