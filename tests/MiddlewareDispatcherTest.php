@@ -29,9 +29,9 @@ class MiddlewareDispatcherTest extends TestCase
     public function testAddThrowsInvalidArgumentExceptionWhenMiddlewareIsNotOfCorrectType(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $exampleInput = new SapiEmitter();
+        $incorrectInput = new SapiEmitter();
 
-        $this->middlewareDispatcher->addMiddleware($exampleInput);
+        $this->middlewareDispatcher->addMiddleware($incorrectInput);
     }
 
     /**
@@ -54,7 +54,7 @@ class MiddlewareDispatcherTest extends TestCase
         $this->middlewareDispatcher->addMiddleware($middleware);
     }
 
-    public function testDispatchCallsMiddlewareFullStack(): void
+    public function testDispatchExecutesMiddlewareStack(): void
     {
         $request = new ServerRequest('GET', '/');
         $this->fallbackHandlerMock

@@ -106,7 +106,7 @@ final class MiddlewareDispatcher implements MiddlewareInterface
              * @var callable a PHP callback matching signature of [[MiddlewareInterface::process()]].
              */
             private $callback;
-            private $container;
+            private ContainerInterface $container;
 
             public function __construct(callable $callback, ContainerInterface $container)
             {
