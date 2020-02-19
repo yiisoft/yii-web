@@ -35,10 +35,7 @@ final class MiddlewareDispatcher implements MiddlewareInterface
         RequestHandlerInterface $nextHandler = null
     ) {
         $this->container = $container;
-
-        $responseFactory = $container->get(ResponseFactoryInterface::class);
-
-        $this->nextHandler = $nextHandler ?? new NotFoundHandler($responseFactory);
+        $this->nextHandler = $nextHandler ?? new NotFoundHandler($container->get(ResponseFactoryInterface::class));
     }
 
     /**
