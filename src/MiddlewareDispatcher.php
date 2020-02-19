@@ -8,6 +8,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Yiisoft\Injector\Injector;
 use Yiisoft\Yii\Web\Middleware\Callback;
 
 /**
@@ -48,7 +49,7 @@ final class MiddlewareDispatcher implements MiddlewareInterface
     public function addMiddleware($middleware): self
     {
         if (is_callable($middleware)) {
-            $middleware = new Callback($middleware, $this->container);
+            $middleware = $this->getCallbackMiddleware($middleware, $this->container);
         }
 
         if (!$middleware instanceof MiddlewareInterface) {
@@ -95,6 +96,29 @@ final class MiddlewareDispatcher implements MiddlewareInterface
             public function handle(ServerRequestInterface $request): ResponseInterface
             {
                 return $this->middleware->process($request, $this->handler);
+            }
+        };
+    }
+
+    private function getCallbackMiddleware(callable $callback, ContainerInterface $container)
+    {
+        return new class($callback, $container) implements MiddlewareInterface
+        {
+            /**
+             * @var callable a PHP callback matching signature of [[MiddlewareInterface::process()]].
+             */
+            private $callback;
+            private $container;
+
+            public function __construct(callable $callback, ContainerInterface $container)
+            {
+                $this->callback = $callback;
+                $this->container = $container;
+            }
+
+            public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+            {
+                return (new Injector($this->container))->invoke($this->callback, [$request, $handler]);
             }
         };
     }
