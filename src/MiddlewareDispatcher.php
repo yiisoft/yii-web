@@ -18,17 +18,10 @@ final class MiddlewareDispatcher
     /**
      * @var MiddlewareInterface[]
      */
-    private $middlewares = [];
+    private array $middlewares = [];
 
-    /**
-     * @var RequestHandlerInterface|null
-     */
-    private $nextHandler;
-
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
+    private RequestHandlerInterface $nextHandler;
+    private ContainerInterface $container;
 
     /**
      * Contains a chain of middleware wrapped in handlers.
@@ -48,20 +41,21 @@ final class MiddlewareDispatcher
         $this->nextHandler = $nextHandler ?? new NotFoundHandler($responseFactory);
     }
 
-    private function addCallable(callable $callback): void
-    {
-        array_unshift($this->middlewares, new Callback($callback, $this->container));
-    }
-
+    /**
+     * @param callable|MiddlewareInterface $middleware
+     * @return self
+     */
     public function addMiddleware($middleware): self
     {
         if (is_callable($middleware)) {
-            $this->addCallable($middleware);
-        } elseif ($middleware instanceof MiddlewareInterface) {
-            array_unshift($this->middlewares, $middleware);
-        } else {
+            $middleware = new Callback($middleware, $this->container);
+        }
+
+        if (!$middleware instanceof MiddlewareInterface) {
             throw new \InvalidArgumentException('Middleware should be either callable or MiddlewareInterface instance. ' . get_class($middleware) . ' given.');
         }
+
+        array_unshift($this->middlewares, $middleware);
 
         return $this;
     }

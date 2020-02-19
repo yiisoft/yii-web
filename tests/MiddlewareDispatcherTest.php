@@ -9,31 +9,19 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Yiisoft\Di\Container;
 use Yiisoft\Yii\Web\Emitter\SapiEmitter;
 use Yiisoft\Yii\Web\MiddlewareDispatcher;
 
 class MiddlewareDispatcherTest extends TestCase
 {
-    /**
-     * @var MiddlewareDispatcher
-     */
-    private $middlewareDispatcher;
-
-    /**
-     * @var Container
-     */
-    private $containerMock;
-
-    /**
-     * @var RequestHandlerInterface
-     */
-    private $fallbackHandlerMock;
+    private MiddlewareDispatcher $middlewareDispatcher;
+    private ContainerInterface $containerMock;
+    private RequestHandlerInterface $fallbackHandlerMock;
 
     /**
      * @var MiddlewareInterface[]
      */
-    private $middlewareMocks;
+    private array $middlewareMocks;
 
     public function setUp(): void
     {
@@ -93,11 +81,11 @@ class MiddlewareDispatcherTest extends TestCase
             ->method('handle')
             ->with($request);
 
-        $middleware1 = function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
+        $middleware1 = static function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
             $request = $request->withAttribute('middleware', 'middleware1');
             return $handler->handle($request);
         };
-        $middleware2 = function (ServerRequestInterface $request) {
+        $middleware2 = static function (ServerRequestInterface $request) {
             return new Response(200, [], null, '1.1', implode($request->getAttributes()));
         };
         $middlewareDispatcher = new MiddlewareDispatcher([$middleware1, $middleware2], $this->containerMock, $this->fallbackHandlerMock);
