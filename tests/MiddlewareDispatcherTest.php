@@ -18,11 +18,6 @@ class MiddlewareDispatcherTest extends TestCase
     private ContainerInterface $containerMock;
     private RequestHandlerInterface $fallbackHandlerMock;
 
-    /**
-     * @var MiddlewareInterface[]
-     */
-    private array $middlewareMocks;
-
     public function setUp(): void
     {
         parent::setUp();
