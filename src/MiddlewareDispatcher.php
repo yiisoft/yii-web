@@ -50,11 +50,6 @@ final class MiddlewareDispatcher
         $this->nextHandler = $nextHandler ?? new NotFoundHandler($responseFactory);
     }
 
-    private function addCallable(callable $callback): void
-    {
-        array_unshift($this->middlewares, new Callback($callback, $this->container));
-    }
-
     /**
      * @param callable|MiddlewareInterface $middleware
      * @return self
@@ -62,12 +57,14 @@ final class MiddlewareDispatcher
     public function addMiddleware($middleware): self
     {
         if (is_callable($middleware)) {
-            $this->addCallable($middleware);
-        } elseif ($middleware instanceof MiddlewareInterface) {
-            array_unshift($this->middlewares, $middleware);
-        } else {
+            $middleware = new Callback($middleware, $this->container);
+        }
+
+        if (!$middleware instanceof MiddlewareInterface) {
             throw new \InvalidArgumentException('Middleware should be either callable or MiddlewareInterface instance. ' . get_class($middleware) . ' given.');
         }
+
+        array_unshift($this->middlewares, $middleware);
 
         return $this;
     }
