@@ -38,19 +38,10 @@ final class MiddlewareDispatcher
     private ?RequestHandlerInterface $stack = null;
 
     public function __construct(
-        array $middlewares,
         ContainerInterface $container,
         RequestHandlerInterface $nextHandler = null
     ) {
-        if ($middlewares === []) {
-            throw new \InvalidArgumentException('Middlewares should be defined.');
-        }
-
         $this->container = $container;
-
-        for ($i = count($middlewares) - 1; $i >= 0; $i--) {
-            $this->addMiddleware($middlewares[$i]);
-        }
 
         $responseFactory = $container->get(ResponseFactoryInterface::class);
 
@@ -80,7 +71,7 @@ final class MiddlewareDispatcher
         return $this->process($request, $this->nextHandler);
     }
 
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    private function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if ($this->stack === null) {
             for ($i = count($this->middlewares) - 1; $i >= 0; $i--) {
