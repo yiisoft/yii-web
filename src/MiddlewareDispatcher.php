@@ -102,8 +102,7 @@ final class MiddlewareDispatcher implements MiddlewareInterface
 
     private function getCallbackMiddleware(callable $callback, ContainerInterface $container)
     {
-        return new class($callback, $container) implements MiddlewareInterface
-        {
+        return new class($callback, $container) implements MiddlewareInterface {
             /**
              * @var callable a PHP callback matching signature of [[MiddlewareInterface::process()]].
              */
