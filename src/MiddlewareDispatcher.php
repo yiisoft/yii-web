@@ -68,7 +68,7 @@ final class MiddlewareDispatcher implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if ($this->stack === null) {
-            foreach ($this->middlewares as $middleware ) {
+            foreach ($this->middlewares as $middleware) {
                 $handler = $this->wrap($middleware, $handler);
             }
             $this->stack = $handler;
@@ -99,7 +99,7 @@ final class MiddlewareDispatcher implements MiddlewareInterface
         };
     }
 
-    private function getCallbackMiddleware(callable $callback, ContainerInterface $container)
+    private function getCallbackMiddleware(callable $callback, ContainerInterface $container): MiddlewareInterface
     {
         return new class($callback, $container) implements MiddlewareInterface {
             /**
