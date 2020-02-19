@@ -18,17 +18,10 @@ final class MiddlewareDispatcher
     /**
      * @var MiddlewareInterface[]
      */
-    private $middlewares = [];
+    private array $middlewares = [];
 
-    /**
-     * @var RequestHandlerInterface|null
-     */
-    private $nextHandler;
-
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
+    private RequestHandlerInterface $nextHandler;
+    private ContainerInterface $container;
 
     /**
      * Contains a chain of middleware wrapped in handlers.
@@ -62,6 +55,10 @@ final class MiddlewareDispatcher
         array_unshift($this->middlewares, new Callback($callback, $this->container));
     }
 
+    /**
+     * @param callable|MiddlewareInterface $middleware
+     * @return self
+     */
     public function addMiddleware($middleware): self
     {
         if (is_callable($middleware)) {
