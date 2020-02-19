@@ -28,21 +28,7 @@ class MiddlewareDispatcherTest extends TestCase
         parent::setUp();
         $this->containerMock = $this->createMock(ContainerInterface::class);
         $this->fallbackHandlerMock = $this->createMock(RequestHandlerInterface::class);
-        $this->middlewareMocks = [
-            $this->createMock(MiddlewareInterface::class),
-            $this->createMock(MiddlewareInterface::class)
-        ];
-        $this->middlewareDispatcher = new MiddlewareDispatcher($this->middlewareMocks, $this->containerMock, $this->fallbackHandlerMock);
-    }
-
-    public function testConstructThrowsExceptionWhenMiddlewaresAreNotDefined(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        new MiddlewareDispatcher(
-            [],
-            $this->containerMock,
-            $this->fallbackHandlerMock
-        );
+        $this->middlewareDispatcher = new MiddlewareDispatcher($this->containerMock, $this->fallbackHandlerMock);
     }
 
     public function testAddThrowsInvalidArgumentExceptionWhenMiddlewareIsNotOfCorrectType(): void
@@ -88,8 +74,9 @@ class MiddlewareDispatcherTest extends TestCase
         $middleware2 = static function (ServerRequestInterface $request) {
             return new Response(200, [], null, '1.1', implode($request->getAttributes()));
         };
-        $middlewareDispatcher = new MiddlewareDispatcher([$middleware1, $middleware2], $this->containerMock, $this->fallbackHandlerMock);
-        $response = $middlewareDispatcher->dispatch($request);
+
+        $this->middlewareDispatcher->addMiddleware($middleware2)->addMiddleware($middleware1);
+        $response = $this->middlewareDispatcher->dispatch($request);
 
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('middleware1', $response->getReasonPhrase());
