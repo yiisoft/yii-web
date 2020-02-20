@@ -7,8 +7,8 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Yiisoft\Validator\Rule\Ip;
 use Yiisoft\Http\Status;
+use Yiisoft\Validator\Rule\Ip;
 
 final class IpFilter implements MiddlewareInterface
 {
@@ -18,6 +18,7 @@ final class IpFilter implements MiddlewareInterface
 
     /**
      * @param Ip $ipValidator Client IP validator. The properties of the validator can be modified up to the moment of processing.
+     * @param \Psr\Http\Message\ResponseFactoryInterface $responseFactory
      * @param string|null $clientIpAttribute Attribute name of client IP. If NULL, then 'REMOTE_ADDR' value of the server parameters is processed.
      * If the value is not null, then the attribute specified must have a value, otherwise the request will closed with forbidden.
      */

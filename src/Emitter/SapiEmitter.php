@@ -22,7 +22,7 @@ final class SapiEmitter implements EmitterInterface
         Status::NOT_MODIFIED
     ];
 
-    private const DEFAULT_BUFFER_SIZE = 8388608; // 8MB
+    private const DEFAULT_BUFFER_SIZE = 8_388_608; // 8MB
 
     private int $bufferSize;
 

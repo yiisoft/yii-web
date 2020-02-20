@@ -13,15 +13,12 @@ final class ErrorHandler
      * the help of this reserved memory. If you set this value to be 0, no memory will be reserved.
      * Defaults to 256KB.
      */
-    private $memoryReserveSize = 262144;
+    private int $memoryReserveSize = 262_144;
+    private string $memoryReserve = '';
+    private bool $exposeDetails = true;
 
-    private $memoryReserve;
-
-    private $logger;
-
-    private $defaultRenderer;
-
-    private $exposeDetails = true;
+    private LoggerInterface $logger;
+    private ThrowableRendererInterface $defaultRenderer;
 
     public function __construct(LoggerInterface $logger, ThrowableRendererInterface $defaultRenderer)
     {
