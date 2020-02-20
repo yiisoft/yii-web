@@ -3,25 +3,34 @@
 namespace Yiisoft\Yii\Web;
 
 use Exception;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Yiisoft\Http\Method;
 use Yiisoft\Yii\Web\Emitter\EmitterInterface;
 use Yiisoft\Yii\Web\ErrorHandler\ErrorHandler;
+use Yiisoft\Yii\Web\Event\ApplicationShutdown;
+use Yiisoft\Yii\Web\Event\ApplicationStartup;
 
 /**
  * Application is the entry point for a web application.
- *
- * For more details and usage information on Application, see the [guide article on applications](guide:structure-applications).
+ * For more details and usage information on Application, see the [guide article on
+ * applications](guide:structure-applications).
  */
 final class Application
 {
     private MiddlewareDispatcher $dispatcher;
     private EmitterInterface $emitter;
+    private EventDispatcherInterface $eventDispatcher;
 
-    public function __construct(MiddlewareDispatcher $dispatcher, EmitterInterface $emitter, ErrorHandler $errorHandler)
-    {
+    public function __construct(
+        MiddlewareDispatcher $dispatcher,
+        EmitterInterface $emitter,
+        ErrorHandler $errorHandler,
+        EventDispatcherInterface $eventDispatcher
+    ) {
         $this->dispatcher = $dispatcher;
         $this->emitter = $emitter;
+        $this->eventDispatcher = $eventDispatcher;
 
         $errorHandler->register();
     }
@@ -33,7 +42,14 @@ final class Application
      */
     public function handle(ServerRequestInterface $request): bool
     {
-        $response = $this->dispatcher->dispatch($request);
-        return $this->emitter->emit($response, $request->getMethod() === Method::HEAD);
+        $this->eventDispatcher->dispatch(new ApplicationStartup());
+
+        try {
+            $response = $this->dispatcher->dispatch($request);
+
+            return $this->emitter->emit($response, $request->getMethod() === Method::HEAD);
+        } finally {
+            $this->eventDispatcher->dispatch(new ApplicationShutdown());
+        }
     }
 }
