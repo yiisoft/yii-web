@@ -6,7 +6,7 @@ use Yiisoft\Auth\IdentityInterface;
 
 class AfterLogoutEvent
 {
-    private $identity;
+    private IdentityInterface $identity;
 
     public function __construct(IdentityInterface $identity)
     {

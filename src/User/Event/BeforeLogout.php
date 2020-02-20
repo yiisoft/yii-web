@@ -6,8 +6,8 @@ use Yiisoft\Auth\IdentityInterface;
 
 class BeforeLogout
 {
-    private $identity;
-    private $isValid = true;
+    private IdentityInterface $identity;
+    private bool $isValid = true;
 
     public function __construct(IdentityInterface $identity)
     {
