@@ -12,12 +12,12 @@ use Yiisoft\Router\UrlGeneratorInterface;
 
 final class Redirect implements MiddlewareInterface
 {
-    private $uri;
-    private $route;
-    private $parameters = [];
-    private $statusCode = Status::MOVED_PERMANENTLY;
-    private $responseFactory;
-    private $urlGenerator;
+    private ?string $uri = null;
+    private ?string $route = null;
+    private array $parameters = [];
+    private int $statusCode = Status::MOVED_PERMANENTLY;
+    private ResponseFactoryInterface $responseFactory;
+    private UrlGeneratorInterface $urlGenerator;
 
     public function __construct(ResponseFactoryInterface $responseFactory, UrlGeneratorInterface $urlGenerator)
     {
@@ -62,12 +62,10 @@ final class Redirect implements MiddlewareInterface
             throw new \InvalidArgumentException('Either toUrl() or toRoute() should be used.');
         }
 
-        $uri = $this->uri;
-        if ($uri === null) {
-            $uri = $this->urlGenerator->generate($this->route, $this->parameters);
-        }
+        $uri = $this->uri ?? $this->urlGenerator->generate($this->route, $this->parameters);
 
-        return $this->responseFactory->createResponse($this->statusCode)
-             ->withAddedHeader('Location', $uri);
+        return $this->responseFactory
+            ->createResponse($this->statusCode)
+            ->withAddedHeader('Location', $uri);
     }
 }

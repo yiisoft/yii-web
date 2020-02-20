@@ -17,11 +17,7 @@ use Yiisoft\Yii\Web\Helper\HeaderHelper;
  */
 final class ErrorCatcher implements MiddlewareInterface
 {
-    private $responseFactory;
-    private $errorHandler;
-    private $container;
-
-    private $renderers = [
+    private array $renderers = [
         'application/json' => JsonRenderer::class,
         'application/xml' => XmlRenderer::class,
         'text/xml' => XmlRenderer::class,
@@ -29,6 +25,10 @@ final class ErrorCatcher implements MiddlewareInterface
         'text/html' => HtmlRenderer::class,
         '*/*' => HtmlRenderer::class,
     ];
+
+    private ResponseFactoryInterface $responseFactory;
+    private ErrorHandler $errorHandler;
+    private ContainerInterface $container;
 
     public function __construct(ResponseFactoryInterface $responseFactory, ErrorHandler $errorHandler, ContainerInterface $container)
     {
@@ -54,7 +54,7 @@ final class ErrorCatcher implements MiddlewareInterface
     }
 
     /**
-     * @param string... $mimeTypes MIME types or, if not specified, all will be removed.
+     * @param string[] $mimeTypes MIME types or, if not specified, all will be removed.
      */
     public function withoutRenderers(string ... $mimeTypes): self
     {

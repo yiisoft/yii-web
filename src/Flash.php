@@ -10,12 +10,9 @@ final class Flash implements FlashInterface
 
     private const FLASH_PARAM = '__flash';
 
-    private $sessionId;
+    private ?string $sessionId = null;
 
-    /**
-     * @var SessionInterface
-     */
-    private $session;
+    private SessionInterface $session;
 
     public function __construct(SessionInterface $session)
     {

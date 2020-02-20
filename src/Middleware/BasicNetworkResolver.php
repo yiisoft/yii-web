@@ -22,7 +22,7 @@ class BasicNetworkResolver implements MiddlewareInterface
         'https' => ['https', 'on'],
     ];
 
-    private $protocolHeaders = [];
+    private array $protocolHeaders = [];
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {

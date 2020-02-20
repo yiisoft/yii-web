@@ -10,7 +10,7 @@ use Yiisoft\Yii\Web\Cookie;
 
 class SessionMiddleware implements MiddlewareInterface
 {
-    private $session;
+    private SessionInterface $session;
 
     public function __construct(SessionInterface $session)
     {
