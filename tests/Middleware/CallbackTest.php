@@ -53,5 +53,4 @@ final class CallbackTest extends TestCase
 
         $this->assertSame($response, $result);
     }
-
 }
