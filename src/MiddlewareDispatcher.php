@@ -15,7 +15,7 @@ use Yiisoft\Yii\Web\RequestHandler\NotFoundHandler;
 /**
  * MiddlewareDispatcher
  */
-final class MiddlewareDispatcher implements MiddlewareInterface
+final class MiddlewareDispatcher
 {
     /**
      * @var MiddlewareInterface[]
@@ -64,7 +64,7 @@ final class MiddlewareDispatcher implements MiddlewareInterface
         return $this->process($request, $this->nextHandler);
     }
 
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    private function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if ($this->stack === null) {
             foreach ($this->middlewares as $middleware) {
