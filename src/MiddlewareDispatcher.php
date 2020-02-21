@@ -8,7 +8,8 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Yiisoft\Injector\Injector;
+use Yiisoft\Yii\Web\Middleware\Callback;
+use Yiisoft\Yii\Web\RequestHandler\MiddlewareHandler;
 
 /**
  * MiddlewareDispatcher
@@ -45,7 +46,7 @@ final class MiddlewareDispatcher implements MiddlewareInterface
     public function addMiddleware($middleware): self
     {
         if (is_callable($middleware)) {
-            $middleware = $this->getCallbackMiddleware($middleware, $this->container);
+            $middleware = new Callback($middleware, $this->container);
         }
 
         if (!$middleware instanceof MiddlewareInterface) {
@@ -66,55 +67,11 @@ final class MiddlewareDispatcher implements MiddlewareInterface
     {
         if ($this->stack === null) {
             foreach ($this->middlewares as $middleware) {
-                $handler = $this->wrap($middleware, $handler);
+                $handler = new MiddlewareHandler($middleware, $handler);
             }
             $this->stack = $handler;
         }
 
         return $this->stack->handle($request);
-    }
-
-    /**
-     * Wraps handler by middlewares
-     */
-    private function wrap(MiddlewareInterface $middleware, RequestHandlerInterface $handler): RequestHandlerInterface
-    {
-        return new class($middleware, $handler) implements RequestHandlerInterface {
-            private MiddlewareInterface $middleware;
-            private RequestHandlerInterface $handler;
-
-            public function __construct(MiddlewareInterface $middleware, RequestHandlerInterface $handler)
-            {
-                $this->middleware = $middleware;
-                $this->handler = $handler;
-            }
-
-            public function handle(ServerRequestInterface $request): ResponseInterface
-            {
-                return $this->middleware->process($request, $this->handler);
-            }
-        };
-    }
-
-    private function getCallbackMiddleware(callable $callback, ContainerInterface $container): MiddlewareInterface
-    {
-        return new class($callback, $container) implements MiddlewareInterface {
-            /**
-             * @var callable a PHP callback matching signature of [[MiddlewareInterface::process()]].
-             */
-            private $callback;
-            private ContainerInterface $container;
-
-            public function __construct(callable $callback, ContainerInterface $container)
-            {
-                $this->callback = $callback;
-                $this->container = $container;
-            }
-
-            public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
-            {
-                return (new Injector($this->container))->invoke($this->callback, [$request, $handler]);
-            }
-        };
     }
 }
