@@ -10,6 +10,7 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Yii\Web\Middleware\Callback;
 use Yiisoft\Yii\Web\RequestHandler\MiddlewareHandler;
+use Yiisoft\Yii\Web\RequestHandler\NotFoundHandler;
 
 /**
  * MiddlewareDispatcher

@@ -1,13 +1,13 @@
 <?php
 
-namespace Yiisoft\Yii\Web\Tests;
+namespace Yiisoft\Yii\Web\Tests\RequestHandler;
 
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use Yiisoft\Http\Method;
-use Yiisoft\Yii\Web\NotFoundHandler;
+use Yiisoft\Yii\Web\RequestHandler\NotFoundHandler;
 
 final class NotFoundHandlerTest extends TestCase
 {
