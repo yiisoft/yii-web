@@ -8,8 +8,10 @@ use Psr\Http\Message\ServerRequestInterface;
 use Yiisoft\Http\Method;
 use Yiisoft\Yii\Web\Emitter\EmitterInterface;
 use Yiisoft\Yii\Web\ErrorHandler\ErrorHandler;
+use Yiisoft\Yii\Web\Event\AfterRequest;
 use Yiisoft\Yii\Web\Event\ApplicationShutdown;
 use Yiisoft\Yii\Web\Event\ApplicationStartup;
+use Yiisoft\Yii\Web\Event\BeforeRequest;
 
 /**
  * Application is the entry point for a web application.
@@ -45,7 +47,9 @@ final class Application
         $this->eventDispatcher->dispatch(new ApplicationStartup());
 
         try {
+            $this->eventDispatcher->dispatch(new BeforeRequest($request));
             $response = $this->dispatcher->dispatch($request);
+            $this->eventDispatcher->dispatch(new AfterRequest($response));
 
             return $this->emitter->emit($response, $request->getMethod() === Method::HEAD);
         } finally {
