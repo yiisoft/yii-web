@@ -15,15 +15,16 @@ use Yiisoft\Yii\Web\MiddlewareDispatcher;
 class MiddlewareDispatcherTest extends TestCase
 {
     private MiddlewareDispatcher $middlewareDispatcher;
-    private ContainerInterface $containerMock;
     private RequestHandlerInterface $fallbackHandlerMock;
 
     public function setUp(): void
     {
         parent::setUp();
-        $this->containerMock = $this->createMock(ContainerInterface::class);
         $this->fallbackHandlerMock = $this->createMock(RequestHandlerInterface::class);
-        $this->middlewareDispatcher = new MiddlewareDispatcher($this->containerMock, $this->fallbackHandlerMock);
+        $this->middlewareDispatcher = new MiddlewareDispatcher(
+            $this->createMock(ContainerInterface::class),
+            $this->fallbackHandlerMock
+        );
     }
 
     public function testAddThrowsInvalidArgumentExceptionWhenMiddlewareIsNotOfCorrectType(): void
