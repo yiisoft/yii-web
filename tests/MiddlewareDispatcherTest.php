@@ -5,25 +5,29 @@ namespace Yiisoft\Yii\Web\Tests;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
-use Psr\Container\ContainerInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Yiisoft\Di\Container;
 use Yiisoft\Yii\Web\Emitter\SapiEmitter;
 use Yiisoft\Yii\Web\MiddlewareDispatcher;
 
 class MiddlewareDispatcherTest extends TestCase
 {
     private MiddlewareDispatcher $middlewareDispatcher;
-    private ContainerInterface $containerMock;
     private RequestHandlerInterface $fallbackHandlerMock;
 
     public function setUp(): void
     {
         parent::setUp();
-        $this->containerMock = $this->createMock(ContainerInterface::class);
+        $container = new Container(
+            [
+                EventDispatcherInterface::class => $this->createMock(EventDispatcherInterface::class),
+            ]
+        );
         $this->fallbackHandlerMock = $this->createMock(RequestHandlerInterface::class);
-        $this->middlewareDispatcher = new MiddlewareDispatcher($this->containerMock, $this->fallbackHandlerMock);
+        $this->middlewareDispatcher = new MiddlewareDispatcher($container, $this->fallbackHandlerMock);
     }
 
     public function testAddThrowsInvalidArgumentExceptionWhenMiddlewareIsNotOfCorrectType(): void
@@ -64,6 +68,7 @@ class MiddlewareDispatcherTest extends TestCase
 
         $middleware1 = static function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
             $request = $request->withAttribute('middleware', 'middleware1');
+
             return $handler->handle($request);
         };
         $middleware2 = static function (ServerRequestInterface $request) {
