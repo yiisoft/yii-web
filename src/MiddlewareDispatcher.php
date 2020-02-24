@@ -111,6 +111,7 @@ final class MiddlewareDispatcher
             {
                 $this->dispatcher->dispatch(new BeforeMiddleware($this->middleware, $request));
 
+                $response = null;
                 try {
                     return $response = $this->middleware->process($request, $this->handler);
                 } finally {
