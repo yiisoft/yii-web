@@ -10,7 +10,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Di\Container;
-use Yiisoft\Yii\Web\Emitter\SapiEmitter;
+use Yiisoft\Yii\Web\SapiEmitter;
 use Yiisoft\Yii\Web\MiddlewareDispatcher;
 
 class MiddlewareDispatcherTest extends TestCase
