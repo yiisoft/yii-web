@@ -8,9 +8,8 @@ use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
-use Yiisoft\Yii\Web\Emitter\EmitterInterface;
-use Yiisoft\Yii\Web\Emitter\SapiEmitter;
 use Yiisoft\Yii\Web\Exception\HeadersHaveBeenSentException;
+use Yiisoft\Yii\Web\SapiEmitter;
 
 /**
  * @runTestsInSeparateProcesses
@@ -144,7 +143,7 @@ final class SapiEmitterTest extends TestCase
                          ->withAddedHeader('cookie-Set', '2')
                          ->withAddedHeader('Cookie-set', '3');
 
-        $this->createEmitter()->emit($response);
+        (new SapiEmitter())->emit($response);
         $this->assertEquals(200, $this->getResponseCode());
         $this->assertContains('X-Test: 1', $this->getHeaders());
         $this->assertContains('X-Test: 2', $this->getHeaders());
@@ -156,7 +155,7 @@ final class SapiEmitterTest extends TestCase
         $this->expectOutputString($body);
     }
 
-    private function createEmitter(?int $bufferSize = null): EmitterInterface
+    private function createEmitter(?int $bufferSize = null): SapiEmitter
     {
         return new SapiEmitter($bufferSize);
     }

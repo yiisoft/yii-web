@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\Web\Emitter;
+namespace Yiisoft\Yii\Web;
 
 use Psr\Http\Message\ResponseInterface;
 use Yiisoft\Http\Status;
@@ -11,7 +11,7 @@ use Yiisoft\Yii\Web\Exception\HeadersHaveBeenSentException;
 /**
  * SapiEmitter sends a response using PHP Server API
  */
-final class SapiEmitter implements EmitterInterface
+final class SapiEmitter
 {
     private const NO_BODY_RESPONSE_CODES = [
         Status::CONTINUE,
