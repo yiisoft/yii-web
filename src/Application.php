@@ -2,11 +2,9 @@
 
 namespace Yiisoft\Yii\Web;
 
-use Exception;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Yiisoft\Http\Method;
-use Yiisoft\Yii\Web\Emitter\EmitterInterface;
 use Yiisoft\Yii\Web\ErrorHandler\ErrorHandler;
 use Yiisoft\Yii\Web\Event\AfterRequest;
 use Yiisoft\Yii\Web\Event\ApplicationShutdown;
@@ -21,39 +19,35 @@ use Yiisoft\Yii\Web\Event\BeforeRequest;
 final class Application
 {
     private MiddlewareDispatcher $dispatcher;
-    private EmitterInterface $emitter;
     private EventDispatcherInterface $eventDispatcher;
+    private ErrorHandler $errorHandler;
 
     public function __construct(
         MiddlewareDispatcher $dispatcher,
-        EmitterInterface $emitter,
         ErrorHandler $errorHandler,
         EventDispatcherInterface $eventDispatcher
     ) {
         $this->dispatcher = $dispatcher;
-        $this->emitter = $emitter;
+        $this->errorHandler = $errorHandler;
         $this->eventDispatcher = $eventDispatcher;
-
-        $errorHandler->register();
     }
 
-    /**
-     * @param ServerRequestInterface $request
-     * @return bool
-     * @throws Exception
-     */
-    public function handle(ServerRequestInterface $request): bool
+    public function start(): void
     {
+        $this->errorHandler->register();
         $this->eventDispatcher->dispatch(new ApplicationStartup());
+    }
 
-        try {
-            $this->eventDispatcher->dispatch(new BeforeRequest($request));
-            $response = $this->dispatcher->dispatch($request);
-            $this->eventDispatcher->dispatch(new AfterRequest($response));
+    public function shutdown(): void
+    {
+        $this->eventDispatcher->dispatch(new ApplicationShutdown());
+    }
 
-            return $this->emitter->emit($response, $request->getMethod() === Method::HEAD);
-        } finally {
-            $this->eventDispatcher->dispatch(new ApplicationShutdown());
-        }
+    public function handle(ServerRequestInterface $request): ResponseInterface
+    {
+        $this->eventDispatcher->dispatch(new BeforeRequest($request));
+        $response = $this->dispatcher->dispatch($request);
+        $this->eventDispatcher->dispatch(new AfterRequest($response));
+        return $response;
     }
 }
