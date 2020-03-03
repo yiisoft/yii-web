@@ -71,19 +71,19 @@ final class HeaderHelper
         $output = [];
         do {
             $headerValue = preg_replace_callback(
-                '/^[ \t]*(?<parameter>' . self::PATTERN_ATTRIBUTE . ')[ \t]*=[ \t]*(?<value>' . self::PATTERN_VALUE . ')[ \t]*(?:;|$)/',
+                '/^[ \t]*(?<parameter>' . self::PATTERN_ATTRIBUTE . ')[ \t]*=[ \t]*(?<value>' . self::PATTERN_VALUE . ')[ \t]*(?:;|$)/u',
                 static function ($matches) use (&$output, $lowerCaseParameter, $lowerCaseValue) {
                     $value = $matches['value'];
-                    if (substr($matches['value'], 0, 1) === '"') {
+                    if (mb_strpos($matches['value'], '"') === 0) {
                         // unescape + remove first and last quote
-                        $value = preg_replace('/\\\\(.)/', '$1', substr($value, 1, -1));
+                        $value = preg_replace('/\\\\(.)/u', '$1', mb_substr($value, 1, -1));
                     }
-                    $key = $lowerCaseParameter ? strtolower($matches['parameter']) : $matches['parameter'];
+                    $key = $lowerCaseParameter ? mb_strtolower($matches['parameter']) : $matches['parameter'];
                     if (isset($output[$key])) {
                         // The first is the winner.
                         return;
                     }
-                    $output[$key] = $lowerCaseValue ? strtolower($value) : $value;
+                    $output[$key] = $lowerCaseValue ? mb_strtolower($value) : $value;
                 }, $headerValue, 1, $count);
             if ($count !== 1) {
                 throw new \InvalidArgumentException('Invalid input: ' . $headerValue);

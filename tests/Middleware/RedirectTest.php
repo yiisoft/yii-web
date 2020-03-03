@@ -6,7 +6,6 @@ use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Http\Method;
@@ -15,19 +14,13 @@ use Yiisoft\Yii\Web\Middleware\Redirect;
 
 final class RedirectTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function invalidArguments(): void
+    public function testInvalidArguments(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->createRedirectMiddleware()->process($this->createRequest(), $this->createRequestHandler());
     }
 
-    /**
-     * @test
-     */
-    public function generateUri(): void
+    public function testGenerateUri(): void
     {
         $middleware = $this->createRedirectMiddleware()
             ->toRoute('test/route', [
@@ -41,10 +34,7 @@ final class RedirectTest extends TestCase
         $this->assertSame($header[0], 'test/route?param1=1&param2=2');
     }
 
-    /**
-     * @test
-     */
-    public function temporaryReturnCode303(): void
+    public function testTemporaryReturnCode303(): void
     {
         $middleware = $this->createRedirectMiddleware()
             ->toRoute('test/route')
@@ -55,10 +45,7 @@ final class RedirectTest extends TestCase
         $this->assertSame($response->getStatusCode(), 303);
     }
 
-    /**
-     * @test
-     */
-    public function permanentReturnCode301(): void
+    public function testPermanentReturnCode301(): void
     {
         $middleware = $this->createRedirectMiddleware()
             ->toRoute('test/route')
@@ -69,10 +56,7 @@ final class RedirectTest extends TestCase
         $this->assertSame($response->getStatusCode(), 301);
     }
 
-    /**
-     * @test
-     */
-    public function statusReturnCode400(): void
+    public function testStatusReturnCode400(): void
     {
         $middleware = $this->createRedirectMiddleware()
             ->toRoute('test/route')
@@ -83,10 +67,7 @@ final class RedirectTest extends TestCase
         $this->assertSame($response->getStatusCode(), 400);
     }
 
-    /**
-     * @test
-     */
-    public function setUri(): void
+    public function testSetUri(): void
     {
         $middleware = $this->createRedirectMiddleware()
             ->toUrl('test/custom/route');
@@ -99,12 +80,12 @@ final class RedirectTest extends TestCase
 
     private function createRequestHandler(): RequestHandlerInterface
     {
-        return new class() implements RequestHandlerInterface {
-            public function handle(ServerRequestInterface $request): ResponseInterface
-            {
-                return new Response(200);
-            }
-        };
+        $requestHandler = $this->createMock(RequestHandlerInterface::class);
+        $requestHandler
+            ->method('handle')
+            ->willReturn(new Response(200));
+
+        return $requestHandler;
     }
 
     private function createRequest(string $method = Method::GET, string $uri = '/'): ServerRequestInterface
@@ -128,11 +109,25 @@ final class RedirectTest extends TestCase
             {
                 $this->prefix = $prefix;
             }
+
+            public function generateAbsolute(
+                string $name,
+                array $parameters = [],
+                string $scheme = null,
+                string $host = null
+            ): string {
+                return $name . '?' . http_build_query($parameters);
+            }
         };
     }
 
     private function createRedirectMiddleware(): Redirect
     {
-        return new Redirect(new Psr17Factory(), $this->createUrlGenerator());
+        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
+        $urlGenerator
+            ->method('generate')
+            ->willReturnCallback(fn ($name, $params) => $name . '?' . http_build_query($params));
+
+        return new Redirect(new Psr17Factory(), $urlGenerator);
     }
 }
