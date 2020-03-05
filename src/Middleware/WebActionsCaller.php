@@ -1,4 +1,5 @@
 <?php
+
 namespace Yiisoft\Yii\Web\Middleware;
 
 use Psr\Container\ContainerInterface;
@@ -16,13 +17,13 @@ use Yiisoft\Injector\Injector;
  * and constructor based on types specified.
  *
  * ```php
- * Route::anyMethod('/test/{action:\w+}')->to(new WebActionsCaller(TestController::class, $container)),
+ * Route::anyMethod('/test/{action:\w+}', new WebActionsCaller(TestController::class, $container)),
  * ```
  */
 final class WebActionsCaller implements MiddlewareInterface
 {
-    private $class;
-    private $container;
+    private string $class;
+    private ContainerInterface $container;
 
     public function __construct(string $class, ContainerInterface $container)
     {

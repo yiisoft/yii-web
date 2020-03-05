@@ -9,8 +9,8 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Yiisoft\Validator\Rule\Ip;
 use Yiisoft\Yii\Web\Middleware\IpFilter;
-use PHPUnit_Framework_MockObject_MockObject;
 
 class IpFilterTest extends TestCase
 {
@@ -21,29 +21,26 @@ class IpFilterTest extends TestCase
     private const ALLOWED_IP = '1.1.1.1';
 
     /**
-     * @var ResponseFactory|PHPUnit_Framework_MockObject_MockObject
+     * @var ResponseFactory|\PHPUnit\Framework\MockObject\MockObject
      */
     private $responseFactoryMock;
 
     /**
-     * @var RequestHandlerInterface|PHPUnit_Framework_MockObject_MockObject
+     * @var RequestHandlerInterface|\PHPUnit\Framework\MockObject\MockObject
      */
     private $requestHandlerMock;
 
-    private $ipFilter;
+    private IpFilter $ipFilter;
 
     public function setUp(): void
     {
         parent::setUp();
         $this->responseFactoryMock = $this->createMock(ResponseFactoryInterface::class);
         $this->requestHandlerMock = $this->createMock(RequestHandlerInterface::class);
-        $this->ipFilter = new IpFilter(self::ALLOWED_IP, $this->responseFactoryMock);
+        $this->ipFilter = new IpFilter((new Ip())->ranges([self::ALLOWED_IP]), $this->responseFactoryMock);
     }
 
-    /**
-     * @test
-     */
-    public function processReturnsAccessDeniedResponseWhenIpIsNotAllowed(): void
+    public function testProcessReturnsAccessDeniedResponseWhenIpIsNotAllowed(): void
     {
         $this->setUpResponseFactory();
         $requestMock = $this->createMock(ServerRequestInterface::class);
@@ -61,10 +58,7 @@ class IpFilterTest extends TestCase
         $this->assertEquals(403, $response->getStatusCode());
     }
 
-    /**
-     * @test
-     */
-    public function processCallsRequestHandlerWhenRemoteAddressIsAllowed(): void
+    public function testProcessCallsRequestHandlerWhenRemoteAddressIsAllowed(): void
     {
         $requestParams = [
             'REMOTE_ADDR' => self::ALLOWED_IP,

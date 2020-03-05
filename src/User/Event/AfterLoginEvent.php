@@ -1,12 +1,13 @@
 <?php
+
 namespace Yiisoft\Yii\Web\User\Event;
 
 use Yiisoft\Auth\IdentityInterface;
 
 class AfterLoginEvent
 {
-    private $identity;
-    private $duration;
+    private IdentityInterface $identity;
+    private int $duration;
 
     public function __construct(IdentityInterface $identity, int $duration)
     {

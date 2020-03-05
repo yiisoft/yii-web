@@ -7,8 +7,6 @@ namespace Yiisoft\Yii\Web\Session;
  */
 class Session implements SessionInterface
 {
-    private $sessionId;
-
     private const DEFAULT_OPTIONS = [
         'use_cookies' => 1,
         'cookie_secure' => 1,
@@ -21,7 +19,8 @@ class Session implements SessionInterface
         'cookie_samesite' => 'Lax',
     ];
 
-    private $options;
+    private ?string $sessionId = null;
+    private array $options;
 
     public function __construct(array $options = [], \SessionHandlerInterface $handler = null)
     {

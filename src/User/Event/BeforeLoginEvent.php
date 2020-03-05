@@ -1,13 +1,14 @@
 <?php
+
 namespace Yiisoft\Yii\Web\User\Event;
 
 use Yiisoft\Auth\IdentityInterface;
 
 class BeforeLoginEvent
 {
-    private $identity;
-    private $duration;
-    private $isValid = true;
+    private IdentityInterface $identity;
+    private int $duration;
+    private bool $isValid = true;
 
     public function __construct(IdentityInterface $identity, int $duration)
     {

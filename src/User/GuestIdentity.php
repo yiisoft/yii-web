@@ -1,4 +1,5 @@
 <?php
+
 namespace Yiisoft\Yii\Web\User;
 
 use Yiisoft\Auth\IdentityInterface;

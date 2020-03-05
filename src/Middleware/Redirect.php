@@ -1,4 +1,5 @@
 <?php
+
 namespace Yiisoft\Yii\Web\Middleware;
 
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -6,19 +7,17 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Yiisoft\Http\Status;
 use Yiisoft\Router\UrlGeneratorInterface;
 
 final class Redirect implements MiddlewareInterface
 {
-    public const PERMANENT = 301;
-    public const TEMPORARY = 302;
-
-    private $uri;
-    private $route;
-    private $parameters = [];
-    private $statusCode = self::PERMANENT;
-    private $responseFactory;
-    private $urlGenerator;
+    private ?string $uri = null;
+    private ?string $route = null;
+    private array $parameters = [];
+    private int $statusCode = Status::MOVED_PERMANENTLY;
+    private ResponseFactoryInterface $responseFactory;
+    private UrlGeneratorInterface $urlGenerator;
 
     public function __construct(ResponseFactoryInterface $responseFactory, UrlGeneratorInterface $urlGenerator)
     {
@@ -47,13 +46,13 @@ final class Redirect implements MiddlewareInterface
 
     public function permanent(): self
     {
-        $this->statusCode = self::PERMANENT;
+        $this->statusCode = Status::MOVED_PERMANENTLY;
         return $this;
     }
 
     public function temporary(): self
     {
-        $this->statusCode = self::TEMPORARY;
+        $this->statusCode = Status::SEE_OTHER;
         return $this;
     }
 
@@ -63,12 +62,10 @@ final class Redirect implements MiddlewareInterface
             throw new \InvalidArgumentException('Either toUrl() or toRoute() should be used.');
         }
 
-        $uri = $this->uri;
-        if ($uri === null) {
-            $uri = $this->urlGenerator->generate($this->route, $this->parameters);
-        }
+        $uri = $this->uri ?? $this->urlGenerator->generate($this->route, $this->parameters);
 
-        return $this->responseFactory->createResponse($this->statusCode)
-             ->withAddedHeader('Location', $uri);
+        return $this->responseFactory
+            ->createResponse($this->statusCode)
+            ->withAddedHeader('Location', $uri);
     }
 }

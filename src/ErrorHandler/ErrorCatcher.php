@@ -1,4 +1,5 @@
 <?php
+
 namespace Yiisoft\Yii\Web\ErrorHandler;
 
 use Psr\Container\ContainerInterface;
@@ -7,6 +8,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Yiisoft\Http\Status;
 use Yiisoft\Yii\Web\Helper\HeaderHelper;
 
 /**
@@ -15,11 +17,7 @@ use Yiisoft\Yii\Web\Helper\HeaderHelper;
  */
 final class ErrorCatcher implements MiddlewareInterface
 {
-    private $responseFactory;
-    private $errorHandler;
-    private $container;
-
-    private $renderers = [
+    private array $renderers = [
         'application/json' => JsonRenderer::class,
         'application/xml' => XmlRenderer::class,
         'text/xml' => XmlRenderer::class,
@@ -27,6 +25,10 @@ final class ErrorCatcher implements MiddlewareInterface
         'text/html' => HtmlRenderer::class,
         '*/*' => HtmlRenderer::class,
     ];
+
+    private ResponseFactoryInterface $responseFactory;
+    private ErrorHandler $errorHandler;
+    private ContainerInterface $container;
 
     public function __construct(ResponseFactoryInterface $responseFactory, ErrorHandler $errorHandler, ContainerInterface $container)
     {
@@ -52,9 +54,9 @@ final class ErrorCatcher implements MiddlewareInterface
     }
 
     /**
-     * @param string... $mimeTypes MIME types or, if not specified, all will be removed.
+     * @param string[] $mimeTypes MIME types or, if not specified, all will be removed.
      */
-    public function withoutRenderers(string... $mimeTypes): self
+    public function withoutRenderers(string ... $mimeTypes): self
     {
         $new = clone $this;
         if (count($mimeTypes) === 0) {
@@ -78,7 +80,7 @@ final class ErrorCatcher implements MiddlewareInterface
             $renderer->setRequest($request);
         }
         $content = $this->errorHandler->handleCaughtThrowable($e, $renderer);
-        $response = $this->responseFactory->createResponse(500)
+        $response = $this->responseFactory->createResponse(Status::INTERNAL_SERVER_ERROR)
             ->withHeader('Content-type', $contentType);
         $response->getBody()->write($content);
         return $response;

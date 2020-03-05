@@ -19,43 +19,35 @@
     "require": {
         "php": "^7.4",
         "ext-json": "*",
+        "alexkart/curl-builder": "^1.0",
         "psr/container": "1.0.0",
         "psr/container-implementation": "1.0.0",
+        "psr/event-dispatcher": "^1.0",
         "psr/http-factory": "^1.0",
         "psr/http-factory-implementation": "1.0",
         "psr/http-message": "^1.0",
         "psr/http-message-implementation": "1.0",
         "psr/http-server-handler": "^1.0",
         "psr/http-server-middleware": "^1.0",
-        "yiisoft/arrays": "^3.0@dev",
-        "yiisoft/router": "^3.0@dev",
-        "yiisoft/strings": "^3.0@dev",
         "yiisoft/access": "^3.0@dev",
-        "yiisoft/injector": "^3.0@dev",
         "yiisoft/aliases": "^3.0@dev",
         "yiisoft/auth": "^3.0@dev",
-        "alexkart/curl-builder": "^1.0",
-        "yiisoft/security": "^3.0@dev",
         "yiisoft/friendly-exception": "dev-master",
-        "yiisoft/validator": "^3.0@dev",
-        "yiisoft/network-utilities": "^3.0@dev"
+        "yiisoft/http": "1.0.x-dev",
+        "yiisoft/injector": "^3.0@dev",
+        "yiisoft/network-utilities": "^3.0@dev",
+        "yiisoft/router": "^3.0@dev",
+        "yiisoft/security": "^3.0@dev",
+        "yiisoft/validator": "^3.0@dev"
     },
     "require-dev": {
         "hiqdev/composer-config-plugin": "^1.0@dev",
         "yiisoft/di": "^3.0@dev",
-        "yiisoft/factory": "^3.0@dev",
         "yiisoft/log": "^3.0@dev",
         "yiisoft/cache": "^3.0@dev",
-        "yiisoft/var-dumper": "^3.0@dev",
-        "ezyang/htmlpurifier": "~4.6",
-        "phpunit/phpunit": "^8.4",
-        "cebe/indent": "~1.0.2",
-        "friendsofphp/php-cs-fixer": "^2.2",
+        "phpunit/phpunit": "^9.0",
         "nyholm/psr7": "^1.0",
         "yiisoft/router-fastroute": "^3.0@dev"
-    },
-    "suggest": {
-        "yiisoft/yii2-coding-standards": "you can use this package to check for code style issues when contributing to yii"
     },
     "provide": {
         "psr/http-message-implementation": "1.0"

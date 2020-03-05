@@ -1,11 +1,12 @@
 <?php
+
 namespace Yiisoft\Yii\Web\User;
 
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Yiisoft\Access\AccessCheckerInterface;
 use Yiisoft\Auth\IdentityInterface;
 use Yiisoft\Auth\IdentityRepositoryInterface;
-use Yiisoft\Yii\Web\Session\Session;
+use Yiisoft\Yii\Web\Session\SessionInterface;
 use Yiisoft\Yii\Web\User\Event\AfterLoginEvent;
 use Yiisoft\Yii\Web\User\Event\AfterLogoutEvent;
 use Yiisoft\Yii\Web\User\Event\BeforeLoginEvent;
@@ -17,73 +18,56 @@ class User
     private const SESSION_AUTH_EXPIRE = '__auth_expire';
     private const SESSION_AUTH_ABSOLUTE_EXPIRE = '__auth_absolute_expire';
 
-    /**
-     * @var IdentityRepositoryInterface
-     */
-    private $identityRepository;
+    private IdentityRepositoryInterface $identityRepository;
+    private EventDispatcherInterface $eventDispatcher;
 
-    /**
-     * @var AccessCheckerInterface
-     */
-    private $accessChecker;
+    private ?AccessCheckerInterface $accessChecker = null;
+    private ?IdentityInterface $identity = null;
+    private ?SessionInterface $session = null;
 
-    /**
-     * @var IdentityInterface
-     */
-    private $identity;
-
-    /**
-     * @var Session
-     */
-    private $session;
-
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $eventDispatcher;
-
-    public function __construct(IdentityRepositoryInterface $identityRepository, EventDispatcherInterface $eventDispatcher)
-    {
+    public function __construct(
+        IdentityRepositoryInterface $identityRepository,
+        EventDispatcherInterface $eventDispatcher
+    ) {
         $this->identityRepository = $identityRepository;
         $this->eventDispatcher = $eventDispatcher;
     }
 
-    public function setAccessChecker(AccessCheckerInterface $accessChecker): void
-    {
-        $this->accessChecker = $accessChecker;
-    }
+    /**
+     * @var int|null the number of seconds in which the user will be logged out automatically if he
+     * remains inactive. If this property is not set, the user will be logged out after
+     * the current session expires (c.f. [[Session::timeout]]).
+     */
+    public ?int $authTimeout = null;
+
+    /**
+     * @var int|null the number of seconds in which the user will be logged out automatically
+     * regardless of activity.
+     * Note that this will not work if [[enableAutoLogin]] is `true`.
+     */
+    public ?int $absoluteAuthTimeout = null;
+
+    /**
+     * @var array MIME types for which this component should redirect to the [[loginUrl]].
+     */
+    public array $acceptableRedirectTypes = ['text/html', 'application/xhtml+xml'];
 
     /**
      * Set session to persist authentication status across multiple requests.
      * If not set, authentication has to be performed on each request, which is often the case
      * for stateless application such as RESTful API.
      *
-     * @param Session $session
+     * @param SessionInterface $session
      */
-    public function setSession(Session $session): void
+    public function setSession(SessionInterface $session): void
     {
         $this->session = $session;
     }
 
-    /**
-     * @var int the number of seconds in which the user will be logged out automatically if he
-     * remains inactive. If this property is not set, the user will be logged out after
-     * the current session expires (c.f. [[Session::timeout]]).
-     */
-    public $authTimeout;
-
-    /**
-     * @var int the number of seconds in which the user will be logged out automatically
-     * regardless of activity.
-     * Note that this will not work if [[enableAutoLogin]] is `true`.
-     */
-    public $absoluteAuthTimeout;
-
-
-    /**
-     * @var array MIME types for which this component should redirect to the [[loginUrl]].
-     */
-    public $acceptableRedirectTypes = ['text/html', 'application/xhtml+xml'];
+    public function setAccessChecker(AccessCheckerInterface $accessChecker): void
+    {
+        $this->accessChecker = $accessChecker;
+    }
 
     /**
      * Returns the identity object associated with the currently logged-in user.

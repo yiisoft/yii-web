@@ -7,10 +7,10 @@ use Yiisoft\Yii\Web\Info;
 
 final class HtmlRenderer extends ThrowableRenderer
 {
-    private $maxSourceLines = 19;
-    private $maxTraceLines = 13;
+    private int $maxSourceLines = 19;
+    private int $maxTraceLines = 13;
 
-    private $traceLine = '{html}';
+    private string $traceLine = '{html}';
 
     public function withMaxSourceLines(int $maxSourceLines): self
     {
@@ -286,10 +286,7 @@ final class HtmlRenderer extends ThrowableRenderer
         }
 
         $request = $this->request;
-
-        $output = '';
-
-        $output .= $request->getMethod() . ' ' . $request->getUri() . "\n";
+        $output = $request->getMethod() . ' ' . $request->getUri() . "\n";
 
         foreach ($request->getHeaders() as $name => $values) {
             if ($name === 'Host') {

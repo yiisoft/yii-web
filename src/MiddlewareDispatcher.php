@@ -1,99 +1,147 @@
 <?php
+
 namespace Yiisoft\Yii\Web;
 
 use Psr\Container\ContainerInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Yiisoft\Yii\Web\Middleware\Callback;
+use Yiisoft\Injector\Injector;
+use Yiisoft\Yii\Web\Event\AfterMiddleware;
+use Yiisoft\Yii\Web\Event\BeforeMiddleware;
 
 /**
  * MiddlewareDispatcher
  */
-final class MiddlewareDispatcher implements RequestHandlerInterface, MiddlewareInterface
+final class MiddlewareDispatcher
 {
     /**
      * @var MiddlewareInterface[]
      */
-    private $middlewares = [];
+    private array $middlewares = [];
+
+    private RequestHandlerInterface $nextHandler;
+    private ContainerInterface $container;
 
     /**
-     * @var RequestHandlerInterface|null
+     * Contains a chain of middleware wrapped in handlers.
+     * Each handler points to the handler of middleware that will be processed next.
+     *
+     * @var RequestHandlerInterface|null stack of middleware
      */
-    private $nextHandler;
-
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
+    private ?RequestHandlerInterface $stack = null;
 
     public function __construct(
-        array $middlewares,
         ContainerInterface $container,
         RequestHandlerInterface $nextHandler = null
     ) {
-        if ($middlewares === []) {
-            throw new \InvalidArgumentException('Middlewares should be defined.');
-        }
-
         $this->container = $container;
-
-        foreach ($middlewares as $middleware) {
-            $this->add($middleware);
-        }
-
-        $responseFactory = $container->get(ResponseFactoryInterface::class);
-
-        $this->nextHandler = $nextHandler ?? new NotFoundHandler($responseFactory);
+        $this->nextHandler = $nextHandler ?? new NotFoundHandler($container->get(ResponseFactoryInterface::class));
     }
 
-    private function addCallable(callable $callback): void
-    {
-        $this->middlewares[] = new Callback($callback, $this->container);
-    }
-
-    public function add($middleware): void
+    /**
+     * @param callable|MiddlewareInterface $middleware
+     * @return self
+     */
+    public function addMiddleware($middleware): self
     {
         if (is_callable($middleware)) {
-            $this->addCallable($middleware);
-        } elseif ($middleware instanceof MiddlewareInterface) {
-            $this->middlewares[] = $middleware;
-        } else {
-            throw new \InvalidArgumentException('Middleware should be either callable or MiddlewareInterface instance. ' . get_class($middleware) . ' given.');
+            $middleware = $this->getCallbackMiddleware($middleware, $this->container);
         }
+
+        if (!$middleware instanceof MiddlewareInterface) {
+            throw new \InvalidArgumentException(
+                'Middleware should be either callable or MiddlewareInterface instance. ' . get_class(
+                    $middleware
+                ) . ' given.'
+            );
+        }
+
+        $this->middlewares[] = $middleware;
+
+        return $this;
     }
 
     public function dispatch(ServerRequestInterface $request): ResponseInterface
     {
-        reset($this->middlewares);
-        return $this->handle($request);
+        return $this->process($request, $this->nextHandler);
+    }
+
+    private function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    {
+        if ($this->stack === null) {
+            $dispatcher = $this->container->get(EventDispatcherInterface::class);
+
+            foreach ($this->middlewares as $middleware) {
+                $handler = $this->wrap($middleware, $handler, $dispatcher);
+            }
+            $this->stack = $handler;
+        }
+
+        return $this->stack->handle($request);
     }
 
     /**
-     * @internal Please use {@see dispatch()} or {@see process()} instead
-     * @param ServerRequestInterface $request
-     * @return ResponseInterface
+     * Wraps handler by middlewares
      */
-    public function handle(ServerRequestInterface $request): ResponseInterface
-    {
-        $middleware = current($this->middlewares);
-        next($this->middlewares);
-        if ($middleware === false) {
-            if ($this->nextHandler !== null) {
-                return $this->nextHandler->handle($request);
+    private function wrap(
+        MiddlewareInterface $middleware,
+        RequestHandlerInterface $handler,
+        EventDispatcherInterface $dispatcher
+    ): RequestHandlerInterface {
+        return new class($middleware, $handler, $dispatcher) implements RequestHandlerInterface {
+            private MiddlewareInterface $middleware;
+            private RequestHandlerInterface $handler;
+            private EventDispatcherInterface $dispatcher;
+
+            public function __construct(
+                MiddlewareInterface $middleware,
+                RequestHandlerInterface $handler,
+                EventDispatcherInterface $dispatcher
+            ) {
+                $this->middleware = $middleware;
+                $this->handler = $handler;
+                $this->dispatcher = $dispatcher;
             }
 
-            throw new \LogicException('Middleware stack exhausted');
-        }
+            public function handle(ServerRequestInterface $request): ResponseInterface
+            {
+                $this->dispatcher->dispatch(new BeforeMiddleware($this->middleware, $request));
 
-        return $middleware->process($request, $this);
+                $response = null;
+                try {
+                    return $response = $this->middleware->process($request, $this->handler);
+                } finally {
+                    $this->dispatcher->dispatch(new AfterMiddleware($this->middleware, $response));
+                }
+            }
+        };
     }
 
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $nextHandler): ResponseInterface
+    private function getCallbackMiddleware(callable $callback, ContainerInterface $container): MiddlewareInterface
     {
-        $this->nextHandler = $nextHandler;
-        return $this->dispatch($request);
+        return new class($callback, $container) implements MiddlewareInterface {
+            /**
+             * @var callable a PHP callback matching signature of [[MiddlewareInterface::process()]].
+             */
+            private $callback;
+            private ContainerInterface $container;
+
+            public function __construct(callable $callback, ContainerInterface $container)
+            {
+                $this->callback = $callback;
+                $this->container = $container;
+            }
+
+            public function process(
+                ServerRequestInterface $request,
+                RequestHandlerInterface $handler
+            ): ResponseInterface {
+                return (new Injector($this->container))->invoke($this->callback, [$request, $handler]);
+            }
+        };
     }
 }

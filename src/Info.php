@@ -1,4 +1,5 @@
 <?php
+
 namespace Yiisoft\Yii\Web;
 
 final class Info

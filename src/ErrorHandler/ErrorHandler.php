@@ -3,6 +3,7 @@
 namespace Yiisoft\Yii\Web\ErrorHandler;
 
 use Psr\Log\LoggerInterface;
+use Yiisoft\Http\Status;
 
 final class ErrorHandler
 {
@@ -12,15 +13,12 @@ final class ErrorHandler
      * the help of this reserved memory. If you set this value to be 0, no memory will be reserved.
      * Defaults to 256KB.
      */
-    private $memoryReserveSize = 262144;
+    private int $memoryReserveSize = 262_144;
+    private string $memoryReserve = '';
+    private bool $exposeDetails = true;
 
-    private $memoryReserve;
-
-    private $logger;
-
-    private $defaultRenderer;
-
-    private $exposeDetails = true;
+    private LoggerInterface $logger;
+    private ThrowableRendererInterface $defaultRenderer;
 
     public function __construct(LoggerInterface $logger, ThrowableRendererInterface $defaultRenderer)
     {
@@ -82,7 +80,7 @@ final class ErrorHandler
         $this->unregister();
 
         // set preventive HTTP status code to 500 in case error handling somehow fails and headers are sent
-        http_response_code(500);
+        http_response_code(Status::INTERNAL_SERVER_ERROR);
 
         echo $this->handleCaughtThrowable($t);
         exit(1);

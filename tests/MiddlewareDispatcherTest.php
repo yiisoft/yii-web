@@ -1,118 +1,85 @@
 <?php
 
-
 namespace Yiisoft\Yii\Web\Tests;
 
+use Nyholm\Psr7\Response;
+use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
-use Psr\Container\ContainerInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Di\Container;
-use PHPUnit_Framework_MockObject_MockObject;
-use Yiisoft\Yii\Web\Emitter\SapiEmitter;
+use Yiisoft\Yii\Web\SapiEmitter;
 use Yiisoft\Yii\Web\MiddlewareDispatcher;
 
 class MiddlewareDispatcherTest extends TestCase
 {
-    /**
-     * @var MiddlewareDispatcher
-     */
-    private $middlewareDispatcher;
-
-    /**
-     * @var Container|PHPUnit_Framework_MockObject_MockObject
-     */
-    private $containerMock;
-
-    /**
-     * @var RequestHandlerInterface|PHPUnit_Framework_MockObject_MockObject
-     */
-    private $fallbackHandlerMock;
-
-    /**
-     * @var MiddlewareInterface[]|PHPUnit_Framework_MockObject_MockObject[]
-     */
-    private $middlewareMocks;
+    private MiddlewareDispatcher $middlewareDispatcher;
+    private RequestHandlerInterface $fallbackHandlerMock;
 
     public function setUp(): void
     {
         parent::setUp();
-        $this->containerMock = $this->createMock(ContainerInterface::class);
-        $this->fallbackHandlerMock = $this->createMock(RequestHandlerInterface::class);
-        $this->middlewareMocks = [
-            $this->createMock(MiddlewareInterface::class),
-            $this->createMock(MiddlewareInterface::class)
-        ];
-        $this->middlewareDispatcher = new MiddlewareDispatcher($this->middlewareMocks, $this->containerMock, $this->fallbackHandlerMock);
-    }
-
-    /**
-     * @test
-     */
-    public function constructThrowsExceptionWhenMiddlewaresAreNotDefined(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        new MiddlewareDispatcher(
-            [],
-            $this->containerMock,
-            $this->fallbackHandlerMock
+        $container = new Container(
+            [
+                EventDispatcherInterface::class => $this->createMock(EventDispatcherInterface::class),
+            ]
         );
+        $this->fallbackHandlerMock = $this->createMock(RequestHandlerInterface::class);
+        $this->middlewareDispatcher = new MiddlewareDispatcher($container, $this->fallbackHandlerMock);
     }
 
-    /**
-     * @test
-     */
-    public function addThrowsInvalidArgumentExceptionWhenMiddlewareIsNotOfCorrectType(): void
+    public function testAddThrowsInvalidArgumentExceptionWhenMiddlewareIsNotOfCorrectType(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $exampleInput = new SapiEmitter();
+        $incorrectInput = new SapiEmitter();
 
-        $this->middlewareDispatcher->add($exampleInput);
+        $this->middlewareDispatcher->addMiddleware($incorrectInput);
     }
 
     /**
-     * @test
      * @doesNotPerformAssertions
      */
-    public function addAddsCallableToMiddlewareArrayWithoutThrowingException(): void
+    public function testAddAddsCallableToMiddlewareArrayWithoutThrowingException(): void
     {
         $callable = static function () {
             echo 'example function for testing purposes';
         };
-        $this->middlewareDispatcher->add($callable);
+        $this->middlewareDispatcher->addMiddleware($callable);
     }
 
     /**
-     * @test
      * @doesNotPerformAssertions
      */
-    public function addAddsMiddlewareInterfaceToMiddlewareArrayWithoutThrowingException(): void
+    public function testAddAddsMiddlewareInterfaceToMiddlewareArrayWithoutThrowingException(): void
     {
         $middleware = $this->createMock(MiddlewareInterface::class);
-        $this->middlewareDispatcher->add($middleware);
+        $this->middlewareDispatcher->addMiddleware($middleware);
     }
 
-    /**
-     * @test
-     */
-    public function dispatchCallsMiddlewareFromQueueToProcessRequest(): void
+    public function testDispatchExecutesMiddlewareStack(): void
     {
-        $request = $this->createMock(ServerRequestInterface::class);
+        $request = new ServerRequest('GET', '/');
         $this->fallbackHandlerMock
             ->expects($this->never())
             ->method('handle')
             ->with($request);
 
-        $this->middlewareMocks[0]
-            ->expects($this->exactly(2))
-            ->method('process')
-            ->with($request, $this->middlewareDispatcher);
+        $middleware1 = static function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
+            $request = $request->withAttribute('middleware', 'middleware1');
 
-        // TODO: test that second middleware is called as well
+            return $handler->handle($request);
+        };
+        $middleware2 = static function (ServerRequestInterface $request) {
+            return new Response(200, [], null, '1.1', implode($request->getAttributes()));
+        };
 
-        $this->middlewareDispatcher->dispatch($request);
+        $this->middlewareDispatcher->addMiddleware($middleware2)->addMiddleware($middleware1);
+        $response = $this->middlewareDispatcher->dispatch($request);
 
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame('middleware1', $response->getReasonPhrase());
         // ensure that dispatcher could be called multiple times
         $this->middlewareDispatcher->dispatch($request);
     }
