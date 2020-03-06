@@ -182,7 +182,8 @@ class TrustedHostsNetworkResolverTest extends TestCase
                 $data['hostHeaders'] ?? [],
                 $data['urlHeaders'] ?? [],
                 $data['portHeaders'] ?? [],
-                $data['trustedHeaders'] ?? null);
+                $data['trustedHeaders'] ?? null
+            );
         }
         $response = $middleware->process($request, $requestHandler);
         $this->assertSame(200, $response->getStatusCode());
@@ -234,7 +235,8 @@ class TrustedHostsNetworkResolverTest extends TestCase
                 [],
                 [],
                 [],
-                $data['trustedHeaders'] ?? []);
+                $data['trustedHeaders'] ?? []
+            );
         }
         $middleware->process($request, $requestHandler);
         $this->assertNull($request->getAttribute('requestClientIp'));
@@ -276,7 +278,8 @@ class TrustedHostsNetworkResolverTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
         (new TrustedHostsNetworkResolver(new Psr17Factory()))
-            ->withAddedTrustedHosts($data['hosts'] ?? [],
+            ->withAddedTrustedHosts(
+                $data['hosts'] ?? [],
                 $data['ipHeaders'] ?? [],
                 $data['protocolHeaders'] ?? [],
                 $data['hostHeaders'] ?? [],

@@ -68,8 +68,10 @@ class ServerRequestFactoryTest extends TestCase
         $factory = new Psr17Factory();
 
         $serverRequestFactory = new ServerRequestFactory(
-            $factory, $factory,
-            $factory, $factory
+            $factory,
+            $factory,
+            $factory,
+            $factory
         );
         if (!isset($serverParams['REQUEST_METHOD'])) {
             $serverParams['REQUEST_METHOD'] = 'GET';
