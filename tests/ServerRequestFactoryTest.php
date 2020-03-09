@@ -13,7 +13,7 @@ class ServerRequestFactoryTest extends TestCase
     /**
      * @dataProvider hostParsingDataProvider
      */
-    public function testHostParsing(array $serverParams, array $expectParams): void
+    public function testHostParsingFromParameters(array $serverParams, array $expectParams): void
     {
         $serverRequest = $this->getServerRequestFactory()->createFromParameters($serverParams);
         $this->assertSame($expectParams['host'], $serverRequest->getUri()->getHost());
@@ -29,7 +29,7 @@ class ServerRequestFactoryTest extends TestCase
      * @dataProvider hostParsingDataProvider
      * @backupGlobals enabled
      */
-    public function testCreateFromGlobals(array $serverParams, array $expectParams): void
+    public function testHostParsingFromGlobals(array $serverParams, array $expectParams): void
     {
         $_SERVER = $serverParams;
         $serverRequest = $this->getServerRequestFactory()->createFromGlobals();
