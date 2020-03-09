@@ -126,8 +126,6 @@ final class ServerRequestFactory
             $uri = $uri->withQuery($server['QUERY_STRING']);
         }
 
-
-
         return $uri;
     }
 
