@@ -68,7 +68,7 @@ final class ServerRequestFactory
         }
 
         $protocol = '1.1';
-        if (!empty($server['SERVER_PROTOCOL'])) {
+        if (array_key_exists('SERVER_PROTOCOL', $server) && $server['SERVER_PROTOCOL'] !== '') {
             $protocol = str_replace('HTTP/', '', $server['SERVER_PROTOCOL']);
         }
 
@@ -98,7 +98,7 @@ final class ServerRequestFactory
     {
         $uri = $this->uriFactory->createUri();
 
-        if (isset($server['HTTPS']) && !empty($server['HTTPS']) && $server['HTTPS'] !== 'off') {
+        if (array_key_exists('HTTPS', $server) && $server['HTTPS'] !== '' && $server['HTTPS'] !== 'off') {
             $uri = $uri->withScheme('https');
         } else {
             $uri = $uri->withScheme('http');
