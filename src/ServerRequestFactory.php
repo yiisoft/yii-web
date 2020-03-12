@@ -12,10 +12,10 @@ use Psr\Http\Message\UriInterface;
 
 final class ServerRequestFactory
 {
-    private $serverRequestFactory;
-    private $uriFactory;
-    private $uploadedFileFactory;
-    private $streamFactory;
+    private ServerRequestFactoryInterface $serverRequestFactory;
+    private UriFactoryInterface $uriFactory;
+    private UploadedFileFactoryInterface $uploadedFileFactory;
+    private StreamFactoryInterface $streamFactory;
 
     public function __construct(
         ServerRequestFactoryInterface $serverRequestFactory,
@@ -68,8 +68,8 @@ final class ServerRequestFactory
         }
 
         $protocol = '1.1';
-        if (!empty($_SERVER['SERVER_PROTOCOL'])) {
-            $protocol = str_replace('HTTP/', '', $_SERVER['SERVER_PROTOCOL']);
+        if (array_key_exists('SERVER_PROTOCOL', $server) && $server['SERVER_PROTOCOL'] !== '') {
+            $protocol = str_replace('HTTP/', '', $server['SERVER_PROTOCOL']);
         }
 
         $request = $request
@@ -98,7 +98,7 @@ final class ServerRequestFactory
     {
         $uri = $this->uriFactory->createUri();
 
-        if (isset($server['HTTPS']) && !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
+        if (array_key_exists('HTTPS', $server) && $server['HTTPS'] !== '' && $server['HTTPS'] !== 'off') {
             $uri = $uri->withScheme('https');
         } else {
             $uri = $uri->withScheme('http');
