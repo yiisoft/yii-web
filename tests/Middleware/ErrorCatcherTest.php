@@ -5,6 +5,7 @@ namespace Yiisoft\Yii\Web\Tests\Middleware;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Yiisoft\Di\Container;
 use Yiisoft\Log\Logger;
 use Yiisoft\Yii\Web\ErrorHandler\ErrorHandler;
@@ -18,15 +19,11 @@ class ErrorCatcherTest extends TestCase
 
     public function testAddedRenderer(): void
     {
-        $factory = new Psr17Factory();
-        $errorHandler = new ErrorHandler(new Logger(), new MockThrowableRenderer(self::DEFAULT_RENDERER_RESPONSE));
-        $container = new Container();
-        $mimeType = 'test/test';
+        $expectedRendererOutput = 'expectedRendererOutput';
         $containerId = 'testRenderer';
-        $catcher = (new ErrorCatcher($factory, $errorHandler, $container))
-            ->withAddedRenderer($mimeType, $containerId);
-        $expectedRendererOutput = 'expectedRendereOutput';
-        $container->set($containerId, new MockThrowableRenderer($expectedRendererOutput));
+        $container = $this->getContainerWithThrowableRenderer($containerId, $expectedRendererOutput);
+        $mimeType = 'test/test';
+        $catcher = $this->getErrorCatcher($container)->withAddedRenderer($mimeType, $containerId);
         $requestHandler = (new MockRequestHandler())->setHandleExcaption(new \RuntimeException());
         $response = $catcher->process(new ServerRequest('GET', '/', ['Accept' => [$mimeType]]), $requestHandler);
         $response->getBody()->rewind();
@@ -37,11 +34,8 @@ class ErrorCatcherTest extends TestCase
 
     public function testWithoutRenderers(): void
     {
-        $factory = new Psr17Factory();
-        $errorHandler = new ErrorHandler(new Logger(), new MockThrowableRenderer(self::DEFAULT_RENDERER_RESPONSE));
         $container = new Container();
-        $catcher = (new ErrorCatcher($factory, $errorHandler, $container))
-            ->withoutRenderers();
+        $catcher = $this->getErrorCatcher($container)->withoutRenderers();
         $requestHandler = (new MockRequestHandler())->setHandleExcaption(new \RuntimeException());
         $response = $catcher->process(new ServerRequest('GET', '/', ['Accept' => ['test/html']]), $requestHandler);
         $response->getBody()->rewind();
@@ -51,11 +45,8 @@ class ErrorCatcherTest extends TestCase
 
     public function testWithoutRenderer(): void
     {
-        $factory = new Psr17Factory();
-        $errorHandler = new ErrorHandler(new Logger(), new MockThrowableRenderer(self::DEFAULT_RENDERER_RESPONSE));
         $container = new Container();
-        $catcher = (new ErrorCatcher($factory, $errorHandler, $container))
-            ->withoutRenderers('*/*');
+        $catcher = $this->getErrorCatcher($container)->withoutRenderers('*/*');
         $requestHandler = (new MockRequestHandler())->setHandleExcaption(new \RuntimeException());
         $response = $catcher->process(new ServerRequest('GET', '/', ['Accept' => ['test/html']]), $requestHandler);
         $response->getBody()->rewind();
@@ -65,18 +56,16 @@ class ErrorCatcherTest extends TestCase
 
     public function testAdvancedAcceptHeader(): void
     {
-        $factory = new Psr17Factory();
-        $errorHandler = new ErrorHandler(new Logger(), new MockThrowableRenderer(self::DEFAULT_RENDERER_RESPONSE));
-        $container = new Container();
-        $mimeType = 'text/html;version=2';
         $containerId = 'testRenderer';
-        $catcher = (new ErrorCatcher($factory, $errorHandler, $container))
-            ->withAddedRenderer($mimeType, $containerId);
-        $expectedRendererOutput = 'expectedRendereOutput';
-        $container->set($containerId, new MockThrowableRenderer($expectedRendererOutput));
+        $expectedRendererOutput = 'expectedRendererOutput';
+        $container = $this->getContainerWithThrowableRenderer($containerId, $expectedRendererOutput);
+        $mimeType = 'text/html;version=2';
+        $catcher = $this->getErrorCatcher($container)->withAddedRenderer($mimeType, $containerId);
         $requestHandler = (new MockRequestHandler())->setHandleExcaption(new \RuntimeException());
-        $response = $catcher->process(new ServerRequest('GET', '/', ['Accept' => ['text/html', $mimeType]]),
-            $requestHandler);
+        $response = $catcher->process(
+            new ServerRequest('GET', '/', ['Accept' => ['text/html', $mimeType]]),
+            $requestHandler
+        );
         $response->getBody()->rewind();
         $content = $response->getBody()->getContents();
         $this->assertNotSame(self::DEFAULT_RENDERER_RESPONSE, $content);
@@ -84,20 +73,43 @@ class ErrorCatcherTest extends TestCase
 
     public function testDefaultContentType(): void
     {
-        $factory = new Psr17Factory();
-        $errorHandler = new ErrorHandler(new Logger(), new MockThrowableRenderer(self::DEFAULT_RENDERER_RESPONSE));
-        $container = new Container();
+        $expectedRendererOutput = 'expectedRendererOutput';
         $containerId = 'testRenderer';
-        $catcher = (new ErrorCatcher($factory, $errorHandler, $container))
+        $container = $this->getContainerWithThrowableRenderer($containerId, $expectedRendererOutput);
+        $catcher = $this->getErrorCatcher($container)
             ->withAddedRenderer('*/*', $containerId);
-        $expectedRendererOutput = 'expectedRendereOutput';
-        $container->set($containerId, new MockThrowableRenderer($expectedRendererOutput));
         $requestHandler = (new MockRequestHandler())->setHandleExcaption(new \RuntimeException());
-        $response = $catcher->process(new ServerRequest('GET', '/', ['Accept' => ['test/test']]),
-            $requestHandler);
+        $response = $catcher->process(
+            new ServerRequest('GET', '/', ['Accept' => ['test/test']]),
+            $requestHandler
+        );
         $response->getBody()->rewind();
         $content = $response->getBody()->getContents();
         $this->assertNotSame(self::DEFAULT_RENDERER_RESPONSE, $content);
         $this->assertSame($expectedRendererOutput, $content);
+    }
+
+    private function getContainerWithThrowableRenderer(string $id, string $expectedOutput): Container
+    {
+        return new Container(
+            [
+                $id => new MockThrowableRenderer($expectedOutput)
+            ]
+        );
+    }
+
+    private function getErrorHandler(): ErrorHandler
+    {
+        return new ErrorHandler(new Logger(), new MockThrowableRenderer(self::DEFAULT_RENDERER_RESPONSE));
+    }
+
+    private function getFactory(): ResponseFactoryInterface
+    {
+        return new Psr17Factory();
+    }
+
+    private function getErrorCatcher(Container $container): ErrorCatcher
+    {
+        return new ErrorCatcher($this->getFactory(), $this->getErrorHandler(), $container);
     }
 }

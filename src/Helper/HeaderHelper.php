@@ -84,7 +84,11 @@ final class HeaderHelper
                         return;
                     }
                     $output[$key] = $lowerCaseValue ? mb_strtolower($value) : $value;
-                }, $headerValue, 1, $count);
+                },
+                $headerValue,
+                1,
+                $count
+            );
             if ($count !== 1) {
                 throw new \InvalidArgumentException('Invalid input: ' . $headerValue);
             }
