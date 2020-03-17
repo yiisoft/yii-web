@@ -23,6 +23,9 @@ class SessionMiddleware implements MiddlewareInterface
         if ($requestSessionId !== null) {
             $this->session->setId($requestSessionId);
         }
+        if ($request->hasHeader('Yii-Request-ID')) {
+            $this->session->set('YiiRequestID', current($request->getHeader('Yii-Request-ID')));
+        }
 
         try {
             $response = $handler->handle($request);
