@@ -19,6 +19,6 @@ final class TagRequest implements MiddlewareInterface
 
     private function getRequestTag(): string
     {
-        return dechex(microtime(true) * 1000000);
+        return $request = uniqid('yii-request-', true);
     }
 }

@@ -45,7 +45,6 @@ final class Application
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $request = $request->withHeader('Yii-Request-ID', uniqid('yii-request-', true));
         $this->eventDispatcher->dispatch(new BeforeRequest($request));
         $response = $this->dispatcher->dispatch($request);
         $this->eventDispatcher->dispatch(new AfterRequest($response));
