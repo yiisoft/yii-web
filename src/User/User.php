@@ -7,9 +7,9 @@ use Yiisoft\Access\AccessCheckerInterface;
 use Yiisoft\Auth\IdentityInterface;
 use Yiisoft\Auth\IdentityRepositoryInterface;
 use Yiisoft\Yii\Web\Session\SessionInterface;
-use Yiisoft\Yii\Web\User\Event\AfterLoginEvent;
-use Yiisoft\Yii\Web\User\Event\AfterLogoutEvent;
-use Yiisoft\Yii\Web\User\Event\BeforeLoginEvent;
+use Yiisoft\Yii\Web\User\Event\AfterLogin;
+use Yiisoft\Yii\Web\User\Event\AfterLogout;
+use Yiisoft\Yii\Web\User\Event\BeforeLogin;
 use Yiisoft\Yii\Web\User\Event\BeforeLogout;
 
 class User
@@ -217,7 +217,7 @@ class User
      */
     protected function beforeLogin(IdentityInterface $identity, int $duration): bool
     {
-        $event = new BeforeLoginEvent($identity, $duration);
+        $event = new BeforeLogin($identity, $duration);
         $this->eventDispatcher->dispatch($event);
         return $event->isValid();
     }
@@ -233,7 +233,7 @@ class User
      */
     protected function afterLogin(IdentityInterface $identity, int $duration): void
     {
-        $this->eventDispatcher->dispatch(new AfterLoginEvent($identity, $duration));
+        $this->eventDispatcher->dispatch(new AfterLogin($identity, $duration));
     }
 
     /**
@@ -260,7 +260,7 @@ class User
      */
     protected function afterLogout(IdentityInterface $identity): void
     {
-        $this->eventDispatcher->dispatch(new AfterLogoutEvent($identity));
+        $this->eventDispatcher->dispatch(new AfterLogout($identity));
     }
 
     /**
