@@ -32,7 +32,7 @@
         "yiisoft/access": "^3.0@dev",
         "yiisoft/aliases": "^3.0@dev",
         "yiisoft/auth": "^3.0@dev",
-        "yiisoft/friendly-exception": "dev-master",
+        "yiisoft/friendly-exception": "^1.0",
         "yiisoft/http": "1.0.x-dev",
         "yiisoft/injector": "^3.0@dev",
         "yiisoft/network-utilities": "^3.0@dev",
@@ -41,12 +41,12 @@
         "yiisoft/validator": "^3.0@dev"
     },
     "require-dev": {
+        "nyholm/psr7": "^1.0",
+        "phpunit/phpunit": "^9.0",
+        "yiisoft/cache": "^3.0@dev",
         "yiisoft/composer-config-plugin": "^1.0@dev",
         "yiisoft/di": "^3.0@dev",
         "yiisoft/log": "^3.0@dev",
-        "yiisoft/cache": "^3.0@dev",
-        "phpunit/phpunit": "^9.0",
-        "nyholm/psr7": "^1.0",
         "yiisoft/router-fastroute": "^3.0@dev"
     },
     "provide": {
