@@ -68,7 +68,7 @@ final class XmlResponseFormatter implements ResponseFormatterInterface
         $response = $deferredResponse->getResponse();
         $response->getBody()->write($content);
 
-        return $response->withHeader('Content-Type', $this->contentType . ';' . $this->encoding);
+        return $response->withHeader('Content-Type', $this->contentType . '; ' . $this->encoding);
     }
 
     public function setVersion(string $version): void
