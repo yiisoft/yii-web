@@ -16,7 +16,7 @@ use Yiisoft\Yii\Web\Formatter\JsonResponseFormatter;
 use Yiisoft\Yii\Web\Middleware\DeferredResponseFormatter;
 use Yiisoft\Yii\Web\Response as WebResponse;
 
-class DeferrredResponseFormatterTest extends TestCase
+class DeferredResponseFormatterTest extends TestCase
 {
     public function testFormatter(): void
     {
