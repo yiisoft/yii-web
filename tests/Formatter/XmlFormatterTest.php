@@ -25,4 +25,21 @@ class XmlFormatterTest extends TestCase
         );
         $this->assertSame(['application/xml; UTF-8'], $result->getHeader('Content-Type'));
     }
+
+    public function testFormatterEncoding(): void
+    {
+        $streamFactory = new Psr17Factory();
+        $response = new Response();
+        $webResponse = new WebResponse('test', $response, $streamFactory);
+        $formatter = new XmlResponseFormatter($streamFactory);
+        $formatter->setEncoding('ISO-8859-1');
+        $result = $formatter->format($webResponse);
+        $result->getBody()->rewind();
+
+        $this->assertSame(
+            "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<response>test</response>\n",
+            $response->getBody()->getContents()
+        );
+        $this->assertSame(['application/xml; ISO-8859-1'], $result->getHeader('Content-Type'));
+    }
 }
