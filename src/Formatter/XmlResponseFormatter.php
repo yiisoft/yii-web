@@ -11,7 +11,7 @@ use Psr\Http\Message\StreamFactoryInterface;
 use Yiisoft\Strings\StringHelper;
 use Yiisoft\Yii\Web\Response;
 
-class XmlResponseFormatter implements ResponseFormatterInterface
+final class XmlResponseFormatter implements ResponseFormatterInterface
 {
     /**
      * @var string the Content-Type header for the response

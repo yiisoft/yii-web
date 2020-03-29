@@ -2,29 +2,12 @@
 
 namespace Yiisoft\Yii\Web\Middleware;
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Server\RequestHandlerInterface;
-use Yiisoft\Yii\Web\Formatter\XmlResponseFormatter as ResponseFormatter;
-use Yiisoft\Yii\Web\Response;
+use Yiisoft\Yii\Web\Formatter\XmlResponseFormatter as XmlFormatter;
 
-class XmlResponseFormatter implements MiddlewareInterface
+class XmlResponseFormatter extends ResponseFormatter
 {
-    private ResponseFormatter $responseFormatter;
-
-    public function __construct(ResponseFormatter $responseFormatter)
+    public function __construct(XmlFormatter $responseFormatter)
     {
-        $this->responseFormatter = $responseFormatter;
-    }
-
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
-    {
-        $response = $handler->handle($request);
-        if ($response instanceof Response && !$response->hasResponseFormatter()) {
-            $response = $this->responseFormatter->format($response);
-        }
-
-        return $response;
+        parent::__construct($responseFormatter);
     }
 }
