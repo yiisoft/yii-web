@@ -8,9 +8,9 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Yiisoft\Http\HeaderHelper;
 use Yiisoft\NetworkUtilities\IpHelper;
 use Yiisoft\Validator\Rule\Ip;
-use Yiisoft\Yii\Web\Helper\HeaderHelper;
 
 /**
  * Trusted hosts network resolver
