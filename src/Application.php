@@ -6,6 +6,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Yiisoft\Yii\Web\ErrorHandler\ErrorHandler;
+use Yiisoft\Yii\Web\Event\AfterEmit;
 use Yiisoft\Yii\Web\Event\AfterRequest;
 use Yiisoft\Yii\Web\Event\ApplicationShutdown;
 use Yiisoft\Yii\Web\Event\ApplicationStartup;
@@ -41,6 +42,11 @@ final class Application
     public function shutdown(): void
     {
         $this->eventDispatcher->dispatch(new ApplicationShutdown());
+    }
+
+    public function afterEmit(ResponseInterface $response): void
+    {
+        $this->eventDispatcher->dispatch(new AfterEmit($response));
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
