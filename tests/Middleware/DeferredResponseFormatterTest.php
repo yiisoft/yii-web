@@ -29,7 +29,7 @@ class DeferredResponseFormatterTest extends TestCase
         $responseFormatter = new DeferredResponseFormatter($formatter);
         $route = Route::get('/test', function () use ($webResponse) {
             return $webResponse;
-        }, $container)->addMiddleware($responseFormatter);
+        }, $container)->addMiddleware([$responseFormatter, 'process']);
         $result = $route->process($request, $this->getRequestHandler());
         $result->getBody()->rewind();
 
