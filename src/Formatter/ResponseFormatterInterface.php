@@ -3,9 +3,9 @@
 namespace Yiisoft\Yii\Web\Formatter;
 
 use Psr\Http\Message\ResponseInterface;
-use Yiisoft\Yii\Web\Response;
+use Yiisoft\Yii\Web\WebResponse;
 
 interface ResponseFormatterInterface
 {
-    public function format(Response $response): ResponseInterface;
+    public function format(WebResponse $response): ResponseInterface;
 }

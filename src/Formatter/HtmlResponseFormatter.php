@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Yii\Web\Formatter;
 
 use Psr\Http\Message\ResponseInterface;
-use Yiisoft\Yii\Web\Response;
+use Yiisoft\Yii\Web\WebResponse;
 
 final class HtmlResponseFormatter implements ResponseFormatterInterface
 {
@@ -19,10 +19,10 @@ final class HtmlResponseFormatter implements ResponseFormatterInterface
      */
     private string $encoding = 'UTF-8';
 
-    public function format(Response $deferredResponse): ResponseInterface
+    public function format(WebResponse $webResponse): ResponseInterface
     {
-        $data = $deferredResponse->getData();
-        $response = $deferredResponse->getResponse();
+        $data = $webResponse->getData();
+        $response = $webResponse->getResponse();
         $response->getBody()->write((string)$data);
 
         return $response->withHeader('Content-Type', $this->contentType . '; charset=' . $this->encoding);

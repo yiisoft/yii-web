@@ -6,7 +6,7 @@ use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Yii\Web\Formatter\HtmlResponseFormatter;
-use Yiisoft\Yii\Web\Response as WebResponse;
+use Yiisoft\Yii\Web\WebResponse as WebResponse;
 
 class HtmlFormatterTest extends TestCase
 {

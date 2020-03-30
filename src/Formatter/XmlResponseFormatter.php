@@ -9,7 +9,7 @@ use DOMText;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Yiisoft\Strings\StringHelper;
-use Yiisoft\Yii\Web\Response;
+use Yiisoft\Yii\Web\WebResponse;
 
 final class XmlResponseFormatter implements ResponseFormatterInterface
 {
@@ -43,17 +43,10 @@ final class XmlResponseFormatter implements ResponseFormatterInterface
      */
     private bool $useObjectTags = true;
 
-    private StreamFactoryInterface $streamFactory;
-
-    public function __construct(StreamFactoryInterface $streamFactory)
-    {
-        $this->streamFactory = $streamFactory;
-    }
-
-    public function format(Response $deferredResponse): ResponseInterface
+    public function format(WebResponse $webResponse): ResponseInterface
     {
         $content = '';
-        $data = $deferredResponse->getData();
+        $data = $webResponse->getData();
         if ($data !== null) {
             $dom = new DOMDocument($this->version, $this->encoding);
             if (!empty($this->rootTag)) {
@@ -65,7 +58,7 @@ final class XmlResponseFormatter implements ResponseFormatterInterface
             }
             $content = $dom->saveXML();
         }
-        $response = $deferredResponse->getResponse();
+        $response = $webResponse->getResponse();
         $response->getBody()->write($content);
 
         return $response->withHeader('Content-Type', $this->contentType . '; ' . $this->encoding);
@@ -157,7 +150,7 @@ final class XmlResponseFormatter implements ResponseFormatterInterface
         if (is_float($value)) {
             return StringHelper::floatToString($value);
         }
-        return (string) $value;
+        return (string)$value;
     }
 
     /**

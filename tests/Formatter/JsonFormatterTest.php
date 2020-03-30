@@ -7,7 +7,7 @@ use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Serializer\JsonSerializer;
 use Yiisoft\Yii\Web\Formatter\JsonResponseFormatter;
-use Yiisoft\Yii\Web\Response as WebResponse;
+use Yiisoft\Yii\Web\WebResponse as WebResponse;
 
 class JsonFormatterTest extends TestCase
 {
@@ -16,7 +16,7 @@ class JsonFormatterTest extends TestCase
         $streamFactory = new Psr17Factory();
         $response = new Response();
         $webResponse = new WebResponse(['test' => 'test'], $response, $streamFactory);
-        $formatter = new JsonResponseFormatter(new JsonSerializer(), $streamFactory);
+        $formatter = new JsonResponseFormatter(new JsonSerializer());
         $result = $formatter->format($webResponse);
         $result->getBody()->rewind();
 

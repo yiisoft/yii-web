@@ -7,7 +7,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Yii\Web\Formatter\ResponseFormatterInterface;
-use Yiisoft\Yii\Web\Response;
+use Yiisoft\Yii\Web\WebResponse;
 
 class ResponseFormatter implements MiddlewareInterface
 {
@@ -21,7 +21,7 @@ class ResponseFormatter implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $response = $handler->handle($request);
-        if ($response instanceof Response && !$response->hasResponseFormatter()) {
+        if ($response instanceof WebResponse && !$response->hasResponseFormatter()) {
             $response = $this->responseFormatter->format($response);
         }
 

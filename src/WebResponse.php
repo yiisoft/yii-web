@@ -7,7 +7,7 @@ use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\StreamInterface;
 use Yiisoft\Yii\Web\Formatter\ResponseFormatterInterface;
 
-class Response implements ResponseInterface
+class WebResponse implements ResponseInterface
 {
     private ResponseInterface $response;
 
@@ -26,7 +26,7 @@ class Response implements ResponseInterface
         $this->data = $data;
     }
 
-    public function getBody()
+    public function getBody(): StreamInterface
     {
         if ($this->dataStream !== null) {
             return $this->dataStream;
@@ -49,91 +49,91 @@ class Response implements ResponseInterface
         throw new \RuntimeException('Data must be a string value.');
     }
 
-    public function getHeader($name)
+    public function getHeader($name): array
     {
         return $this->response->getHeader($name);
     }
 
-    public function getHeaderLine($name)
+    public function getHeaderLine($name): string
     {
         return $this->response->getHeaderLine($name);
     }
 
-    public function getHeaders()
+    public function getHeaders(): array
     {
         return $this->response->getHeaders();
     }
 
-    public function getProtocolVersion()
+    public function getProtocolVersion(): string
     {
         return $this->response->getProtocolVersion();
     }
 
-    public function getReasonPhrase()
+    public function getReasonPhrase(): string
     {
         return $this->response->getReasonPhrase();
     }
 
-    public function getStatusCode()
+    public function getStatusCode(): int
     {
         return $this->response->getStatusCode();
     }
 
-    public function hasHeader($name)
+    public function hasHeader($name): bool
     {
         return $this->response->hasHeader($name);
     }
 
-    public function withAddedHeader($name, $value)
+    public function withAddedHeader($name, $value): WebResponse
     {
         $response = clone $this;
         $response->response = $this->response->withAddedHeader($name, $value);
         return $response;
     }
 
-    public function withBody(StreamInterface $body)
+    public function withBody(StreamInterface $body): WebResponse
     {
         $response = clone $this;
         $response->dataStream = $body;
         return $response;
     }
 
-    public function withHeader($name, $value)
+    public function withHeader($name, $value): WebResponse
     {
         $response = clone $this;
         $response->response = $this->response->withHeader($name, $value);
         return $response;
     }
 
-    public function withoutHeader($name)
+    public function withoutHeader($name): WebResponse
     {
         $response = clone $this;
         $response->response = $this->response->withoutHeader($name);
         return $response;
     }
 
-    public function withProtocolVersion($version)
+    public function withProtocolVersion($version): WebResponse
     {
         $response = clone $this;
         $response->response = $this->response->withProtocolVersion($version);
         return $response;
     }
 
-    public function withStatus($code, $reasonPhrase = '')
+    public function withStatus($code, $reasonPhrase = ''): WebResponse
     {
         $response = clone $this;
         $response->response = $this->response->withStatus($code, $reasonPhrase);
         return $response;
     }
 
-    public function withResponseFormatter(ResponseFormatterInterface $responseFormatter): self
+    public function withResponseFormatter(ResponseFormatterInterface $responseFormatter): WebResponse
     {
         $response = clone $this;
         $response->responseFormatter = $responseFormatter;
         return $response;
     }
 
-    public function withData($data): self
+    public function withData($data): WebResponse
     {
         $response = clone $this;
         $response->data = $data;

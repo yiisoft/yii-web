@@ -6,11 +6,11 @@ use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 
-class ResponseFactory implements ResponseFactoryInterface
+class WebResponseFactory implements WebResponseFactoryInterface
 {
-    private StreamFactoryInterface $streamFactory;
+    protected StreamFactoryInterface $streamFactory;
 
-    private ResponseFactoryInterface $responseFactory;
+    protected ResponseFactoryInterface $responseFactory;
 
     public function __construct(ResponseFactoryInterface $responseFactory, StreamFactoryInterface $streamFactory)
     {
@@ -20,6 +20,6 @@ class ResponseFactory implements ResponseFactoryInterface
 
     public function createResponse(int $code = 200, string $reasonPhrase = '', $data = null): ResponseInterface
     {
-        return new Response($data, $this->responseFactory->createResponse($code, $reasonPhrase), $this->streamFactory);
+        return new WebResponse($data, $this->responseFactory->createResponse($code, $reasonPhrase), $this->streamFactory);
     }
 }

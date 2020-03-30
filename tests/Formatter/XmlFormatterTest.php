@@ -6,7 +6,7 @@ use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Yii\Web\Formatter\XmlResponseFormatter;
-use Yiisoft\Yii\Web\Response as WebResponse;
+use Yiisoft\Yii\Web\WebResponse as WebResponse;
 
 class XmlFormatterTest extends TestCase
 {
@@ -15,7 +15,7 @@ class XmlFormatterTest extends TestCase
         $streamFactory = new Psr17Factory();
         $response = new Response();
         $webResponse = new WebResponse('test', $response, $streamFactory);
-        $formatter = new XmlResponseFormatter($streamFactory);
+        $formatter = new XmlResponseFormatter();
         $result = $formatter->format($webResponse);
         $result->getBody()->rewind();
 
