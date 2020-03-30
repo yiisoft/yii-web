@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Yii\Web\Formatter;
 
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Yiisoft\Serializer\JsonSerializer;
 use Yiisoft\Yii\Web\WebResponse;
 

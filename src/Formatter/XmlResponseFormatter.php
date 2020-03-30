@@ -7,7 +7,6 @@ use DOMElement;
 use DOMException;
 use DOMText;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Yiisoft\Strings\StringHelper;
 use Yiisoft\Yii\Web\WebResponse;
 
