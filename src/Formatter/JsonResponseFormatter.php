@@ -15,19 +15,20 @@ final class JsonResponseFormatter implements ResponseFormatterInterface
      */
     private string $contentType = 'application/json';
 
-    private JsonSerializer $jsonSerializer;
-
-    public function __construct()
-    {
-        $this->jsonSerializer = new JsonSerializer();
-    }
+    private int $options = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
 
     public function format(WebResponse $webResponse): ResponseInterface
     {
-        $content = $this->jsonSerializer->serialize($webResponse->getData());
+        $jsonSerializer = new JsonSerializer($this->options);
+        $content = $jsonSerializer->serialize($webResponse->getData());
         $response = $webResponse->getResponse();
         $response->getBody()->write($content);
 
         return $response->withHeader('Content-Type', $this->contentType);
+    }
+
+    public function setOptions(int $options): void
+    {
+        $this->options = $options;
     }
 }
