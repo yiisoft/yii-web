@@ -27,13 +27,17 @@ final class JsonResponseFormatter implements ResponseFormatterInterface
         return $response->withHeader('Content-Type', $this->contentType);
     }
 
-    public function setOptions(int $options): void
+    public function withOptions(int $options): self
     {
-        $this->options = $options;
+        $formatter = clone $this;
+        $formatter->options = $options;
+        return $formatter;
     }
 
-    public function setContentType(string $contentType): void
+    public function withContentType(string $contentType): self
     {
-        $this->contentType = $contentType;
+        $formatter = clone $this;
+        $formatter->contentType = $contentType;
+        return $formatter;
     }
 }

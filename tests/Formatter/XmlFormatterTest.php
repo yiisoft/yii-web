@@ -29,7 +29,7 @@ class XmlFormatterTest extends TestCase
         $factory = new Psr17Factory();
         $webResponse = new WebResponse('test', 200, '', $factory);
         $formatter = new XmlResponseFormatter();
-        $formatter->setEncoding('ISO-8859-1');
+        $formatter = $formatter->withEncoding('ISO-8859-1');
         $result = $formatter->format($webResponse);
         $result->getBody()->rewind();
 

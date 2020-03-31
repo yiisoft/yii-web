@@ -63,39 +63,53 @@ final class XmlResponseFormatter implements ResponseFormatterInterface
         return $response->withHeader('Content-Type', $this->contentType . '; ' . $this->encoding);
     }
 
-    public function setVersion(string $version): void
+    public function withVersion(string $version): self
     {
-        $this->version = $version;
+        $formatter = clone $this;
+        $formatter->version = $version;
+        return $formatter;
     }
 
-    public function setEncoding(string $encoding): void
+    public function withEncoding(string $encoding): self
     {
-        $this->encoding = $encoding;
+        $formatter = clone $this;
+        $formatter->encoding = $encoding;
+        return $formatter;
     }
 
-    public function setRootTag(string $rootTag): void
+    public function withRootTag(string $rootTag): self
     {
-        $this->rootTag = $rootTag;
+        $formatter = clone $this;
+        $formatter->rootTag = $rootTag;
+        return $formatter;
     }
 
-    public function setItemTag(string $itemTag): void
+    public function withItemTag(string $itemTag): self
     {
-        $this->itemTag = $itemTag;
+        $formatter = clone $this;
+        $formatter->itemTag = $itemTag;
+        return $formatter;
     }
 
-    public function setUseTraversableAsArray(bool $useTraversableAsArray): void
+    public function withUseTraversableAsArray(bool $useTraversableAsArray): self
     {
-        $this->useTraversableAsArray = $useTraversableAsArray;
+        $formatter = clone $this;
+        $formatter->useTraversableAsArray = $useTraversableAsArray;
+        return $formatter;
     }
 
-    public function setUseObjectTags(bool $useObjectTags): void
+    public function withUseObjectTags(bool $useObjectTags): self
     {
-        $this->useObjectTags = $useObjectTags;
+        $formatter = clone $this;
+        $formatter->useObjectTags = $useObjectTags;
+        return $formatter;
     }
 
-    public function setContentType(string $contentType): void
+    public function withContentType(string $contentType): self
     {
-        $this->contentType = $contentType;
+        $formatter = clone $this;
+        $formatter->contentType = $contentType;
+        return $formatter;
     }
 
     /**

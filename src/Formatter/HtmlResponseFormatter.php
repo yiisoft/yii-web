@@ -28,13 +28,17 @@ final class HtmlResponseFormatter implements ResponseFormatterInterface
         return $response->withHeader('Content-Type', $this->contentType . '; charset=' . $this->encoding);
     }
 
-    public function setEncoding(string $encoding): void
+    public function withEncoding(string $encoding): self
     {
-        $this->encoding = $encoding;
+        $formatter = clone $this;
+        $formatter->encoding = $encoding;
+        return $formatter;
     }
 
-    public function setContentType(string $contentType): void
+    public function withContentType(string $contentType): self
     {
+        $formatter = clone $this;
         $this->contentType = $contentType;
+        return $formatter;
     }
 }
