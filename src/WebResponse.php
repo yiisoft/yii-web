@@ -92,6 +92,7 @@ class WebResponse implements ResponseInterface
     public function withBody(StreamInterface $body): WebResponse
     {
         $response = clone $this;
+        $response->response = $this->response->withBody($body);
         $response->dataStream = $body;
         return $response;
     }
