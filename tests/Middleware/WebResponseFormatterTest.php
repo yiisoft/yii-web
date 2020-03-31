@@ -13,10 +13,10 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Router\Route;
 use Yiisoft\Serializer\JsonSerializer;
 use Yiisoft\Yii\Web\Formatter\JsonResponseFormatter;
-use Yiisoft\Yii\Web\Middleware\DeferredResponseFormatter;
+use Yiisoft\Yii\Web\Middleware\WebResponseFormatter;
 use Yiisoft\Yii\Web\WebResponse as WebResponse;
 
-class DeferredResponseFormatterTest extends TestCase
+class WebResponseFormatterTest extends TestCase
 {
     public function testFormatter(): void
     {
@@ -26,7 +26,7 @@ class DeferredResponseFormatterTest extends TestCase
         $response = new Response();
         $webResponse = new WebResponse(['test' => 'test'], $response, $streamFactory);
         $formatter = new JsonResponseFormatter(new JsonSerializer());
-        $responseFormatter = new DeferredResponseFormatter($formatter);
+        $responseFormatter = new WebResponseFormatter($formatter);
         $route = Route::get('/test', function () use ($webResponse) {
             return $webResponse;
         }, $container)->addMiddleware([$responseFormatter, 'process']);

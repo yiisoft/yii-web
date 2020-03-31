@@ -4,7 +4,7 @@ namespace Yiisoft\Yii\Web\Middleware;
 
 use Yiisoft\Yii\Web\Formatter\HtmlResponseFormatter;
 
-final class DeferredHtmlResponseFormatter extends DeferredResponseFormatter
+final class HtmlWebResponseFormatter extends WebResponseFormatter
 {
     public function __construct(HtmlResponseFormatter $responseFormatter)
     {
