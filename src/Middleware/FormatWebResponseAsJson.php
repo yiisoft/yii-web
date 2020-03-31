@@ -4,7 +4,7 @@ namespace Yiisoft\Yii\Web\Middleware;
 
 use Yiisoft\Yii\Web\Formatter\JsonResponseFormatter;
 
-final class JsonWebResponseFormatter extends WebResponseFormatter
+final class FormatWebResponseAsJson extends FormatWebResponse
 {
     public function __construct(JsonResponseFormatter $responseFormatter)
     {

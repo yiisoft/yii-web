@@ -13,10 +13,10 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Http\Status;
 use Yiisoft\Router\Route;
 use Yiisoft\Yii\Web\Formatter\JsonResponseFormatter;
-use Yiisoft\Yii\Web\Middleware\WebResponseFormatter;
+use Yiisoft\Yii\Web\Middleware\FormatWebResponse;
 use Yiisoft\Yii\Web\WebResponse;
 
-class WebResponseFormatterTest extends TestCase
+class FormatWebResponseTest extends TestCase
 {
     public function testFormatter(): void
     {
@@ -24,7 +24,7 @@ class WebResponseFormatterTest extends TestCase
         $request = new ServerRequest('GET', '/test');
         $factory = new Psr17Factory();
         $webResponse = new WebResponse(['test' => 'test'], 200, $factory);
-        $responseFormatter = new WebResponseFormatter(new JsonResponseFormatter());
+        $responseFormatter = new FormatWebResponse(new JsonResponseFormatter());
         $route = Route::get('/test', static function () use ($webResponse) {
             return $webResponse;
         }, $container)->addMiddleware([$responseFormatter, 'process']);

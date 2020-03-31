@@ -9,7 +9,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Yii\Web\Formatter\ResponseFormatterInterface;
 use Yiisoft\Yii\Web\WebResponse;
 
-class WebResponseFormatter implements MiddlewareInterface
+class FormatWebResponse implements MiddlewareInterface
 {
     private ResponseFormatterInterface $responseFormatter;
 
