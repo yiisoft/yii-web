@@ -10,6 +10,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Yiisoft\Http\Status;
 use Yiisoft\Router\Route;
 use Yiisoft\Yii\Web\Formatter\JsonResponseFormatter;
 use Yiisoft\Yii\Web\Middleware\WebResponseFormatter;
@@ -24,7 +25,7 @@ class WebResponseFormatterTest extends TestCase
         $factory = new Psr17Factory();
         $webResponse = new WebResponse(['test' => 'test'], 200, $factory);
         $responseFormatter = new WebResponseFormatter(new JsonResponseFormatter());
-        $route = Route::get('/test', function () use ($webResponse) {
+        $route = Route::get('/test', static function () use ($webResponse) {
             return $webResponse;
         }, $container)->addMiddleware([$responseFormatter, 'process']);
         $result = $route->process($request, $this->getRequestHandler());
@@ -39,7 +40,7 @@ class WebResponseFormatterTest extends TestCase
         return new class() implements RequestHandlerInterface {
             public function handle(ServerRequestInterface $request): ResponseInterface
             {
-                return new Response(404);
+                return new Response(Status::NOT_FOUND);
             }
         };
     }
