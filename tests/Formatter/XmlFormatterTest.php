@@ -12,7 +12,7 @@ class XmlFormatterTest extends TestCase
     public function testFormatter(): void
     {
         $factory = new Psr17Factory();
-        $webResponse = new WebResponse('test', 200,  $factory, $factory);
+        $webResponse = new WebResponse('test', 200, $factory, $factory);
         $formatter = new XmlResponseFormatter();
         $result = $formatter->format($webResponse);
         $result->getBody()->rewind();
