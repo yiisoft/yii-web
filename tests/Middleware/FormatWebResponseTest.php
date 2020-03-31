@@ -13,7 +13,6 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Http\Status;
 use Yiisoft\Router\Route;
 use Yiisoft\Yii\Web\Formatter\JsonResponseFormatter;
-use Yiisoft\Yii\Web\Formatter\ResponseFormatterInterface;
 use Yiisoft\Yii\Web\Middleware\FormatWebResponse;
 use Yiisoft\Yii\Web\WebResponse;
 
