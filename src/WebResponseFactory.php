@@ -20,6 +20,6 @@ class WebResponseFactory implements WebResponseFactoryInterface
 
     public function createResponse(int $code = 200, string $reasonPhrase = '', $data = null): ResponseInterface
     {
-        return new WebResponse($data, $this->responseFactory->createResponse($code, $reasonPhrase), $this->streamFactory);
+        return new WebResponse($data, $this->responseFactory, $this->streamFactory);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Yiisoft\Yii\Web;
 
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\StreamInterface;
@@ -19,9 +20,9 @@ class WebResponse implements ResponseInterface
 
     private ?ResponseFormatterInterface $responseFormatter = null;
 
-    public function __construct($data, ResponseInterface $response, StreamFactoryInterface $streamFactory)
+    public function __construct($data, ResponseFactoryInterface $responseFactory, StreamFactoryInterface $streamFactory)
     {
-        $this->response = $response;
+        $this->response = $responseFactory->createResponse();
         $this->streamFactory = $streamFactory;
         $this->data = $data;
     }
