@@ -12,18 +12,15 @@ class WebResponse implements ResponseInterface
 {
     private ResponseInterface $response;
 
-    private StreamFactoryInterface $streamFactory;
-
     private $data;
 
     private ?StreamInterface $dataStream = null;
 
     private ?ResponseFormatterInterface $responseFormatter = null;
 
-    public function __construct($data, int $code, ResponseFactoryInterface $responseFactory, StreamFactoryInterface $streamFactory)
+    public function __construct($data, int $code, ResponseFactoryInterface $responseFactory)
     {
         $this->response = $responseFactory->createResponse($code);
-        $this->streamFactory = $streamFactory;
         $this->data = $data;
     }
 
@@ -34,7 +31,7 @@ class WebResponse implements ResponseInterface
         }
 
         if ($this->data === null) {
-            return $this->dataStream = $this->streamFactory->createStream();
+            return $this->dataStream = $this->response->getBody();
         }
 
         if ($this->responseFormatter !== null) {
@@ -44,7 +41,8 @@ class WebResponse implements ResponseInterface
 
         $data = $this->getData();
         if (is_string($data)) {
-            return $this->dataStream = $this->streamFactory->createStream($data);
+            $this->response->getBody()->write($data);
+            return $this->dataStream = $this->response->getBody();
         }
 
         throw new \RuntimeException('Data must be a string value.');

@@ -8,18 +8,15 @@ use Psr\Http\Message\StreamFactoryInterface;
 
 class WebResponseFactory implements WebResponseFactoryInterface
 {
-    protected StreamFactoryInterface $streamFactory;
-
     protected ResponseFactoryInterface $responseFactory;
 
-    public function __construct(ResponseFactoryInterface $responseFactory, StreamFactoryInterface $streamFactory)
+    public function __construct(ResponseFactoryInterface $responseFactory)
     {
-        $this->streamFactory = $streamFactory;
         $this->responseFactory = $responseFactory;
     }
 
     public function createResponse($data = null, int $code = 200, string $reasonPhrase = ''): ResponseInterface
     {
-        return new WebResponse($data, $code, $this->responseFactory, $this->streamFactory);
+        return new WebResponse($data, $code, $this->responseFactory);
     }
 }
