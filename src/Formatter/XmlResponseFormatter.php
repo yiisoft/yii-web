@@ -93,6 +93,11 @@ final class XmlResponseFormatter implements ResponseFormatterInterface
         $this->useObjectTags = $useObjectTags;
     }
 
+    public function setContentType(string $contentType):void
+    {
+        $this->contentType = $contentType;
+    }
+
     /**
      * @param DOMElement $element
      * @param mixed $data

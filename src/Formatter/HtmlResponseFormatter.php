@@ -32,4 +32,9 @@ final class HtmlResponseFormatter implements ResponseFormatterInterface
     {
         $this->encoding = $encoding;
     }
+
+    public function setContentType(string $contentType):void
+    {
+        $this->contentType = $contentType;
+    }
 }

@@ -31,4 +31,9 @@ final class JsonResponseFormatter implements ResponseFormatterInterface
     {
         $this->options = $options;
     }
+
+    public function setContentType(string $contentType):void
+    {
+        $this->contentType = $contentType;
+    }
 }
