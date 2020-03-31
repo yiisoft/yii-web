@@ -1,19 +1,19 @@
 <?php
 
-namespace Yiisoft\Yii\Web\Middleware;
+namespace Yiisoft\Yii\Web\Data\Middleware;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Yiisoft\Yii\Web\Formatter\ResponseFormatterInterface;
-use Yiisoft\Yii\Web\DataResponse;
+use Yiisoft\Yii\Web\Data\DataResponseFormatterInterface;
+use Yiisoft\Yii\Web\Data\DataResponse;
 
 class FormatDataResponse implements MiddlewareInterface
 {
-    private ResponseFormatterInterface $responseFormatter;
+    private DataResponseFormatterInterface $responseFormatter;
 
-    public function __construct(ResponseFormatterInterface $responseFormatter)
+    public function __construct(DataResponseFormatterInterface $responseFormatter)
     {
         $this->responseFormatter = $responseFormatter;
     }

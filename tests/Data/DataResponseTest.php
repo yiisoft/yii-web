@@ -1,13 +1,13 @@
 <?php
 
-namespace Yiisoft\Yii\Web\Tests;
+namespace Yiisoft\Yii\Web\Tests\Data;
 
 use Nyholm\Psr7\Factory\Psr17Factory;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Yiisoft\Http\Status;
-use Yiisoft\Yii\Web\Formatter\JsonResponseFormatter;
-use Yiisoft\Yii\Web\DataResponse;
+use Yiisoft\Yii\Web\Data\Formatter\JsonDataResponseFormatter;
+use Yiisoft\Yii\Web\Data\DataResponse;
 
 class DataResponseTest extends TestCase
 {
@@ -19,7 +19,6 @@ class DataResponseTest extends TestCase
         $dataResponse->getBody()->rewind();
 
         $this->assertInstanceOf(ResponseInterface::class, $dataResponse);
-        $this->assertInstanceOf(ResponseInterface::class, $dataResponse->getResponse());
         $this->assertSame(['application/json'], $dataResponse->getResponse()->getHeader('Content-Type'));
         $this->assertSame(['application/json'], $dataResponse->getHeader('Content-Type'));
         $this->assertSame($dataResponse->getResponse()->getBody(), $dataResponse->getBody());
@@ -42,7 +41,7 @@ class DataResponseTest extends TestCase
     {
         $factory = new Psr17Factory();
         $dataResponse = new DataResponse('test', Status::OK, '', $factory);
-        $dataResponse = $dataResponse->withResponseFormatter(new JsonResponseFormatter());
+        $dataResponse = $dataResponse->withResponseFormatter(new JsonDataResponseFormatter());
 
         $this->assertTrue($dataResponse->hasResponseFormatter());
     }

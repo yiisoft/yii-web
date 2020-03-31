@@ -1,19 +1,19 @@
 <?php
 
-namespace Yiisoft\Yii\Web\Tests;
+namespace Yiisoft\Yii\Web\Tests\Data\Formatter;
 
 use Nyholm\Psr7\Factory\Psr17Factory;
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Yii\Web\Formatter\JsonResponseFormatter;
-use Yiisoft\Yii\Web\DataResponse;
+use Yiisoft\Yii\Web\Data\Formatter\JsonDataResponseFormatter;
+use Yiisoft\Yii\Web\Data\DataResponse;
 
-class JsonFormatterTest extends TestCase
+class JsonDataResponseFormatterTest extends TestCase
 {
     public function testFormatter(): void
     {
         $factory = new Psr17Factory();
         $dataResponse = new DataResponse(['test' => 'test'], 200, '', $factory);
-        $formatter = new JsonResponseFormatter();
+        $formatter = new JsonDataResponseFormatter();
         $result = $formatter->format($dataResponse);
         $result->getBody()->rewind();
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Yiisoft\Yii\Web\Tests;
+namespace Yiisoft\Yii\Web\Tests\Data\Middleware;
 
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
@@ -12,9 +12,9 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Http\Status;
 use Yiisoft\Router\Route;
-use Yiisoft\Yii\Web\Formatter\JsonResponseFormatter;
-use Yiisoft\Yii\Web\Middleware\FormatDataResponse;
-use Yiisoft\Yii\Web\DataResponse;
+use Yiisoft\Yii\Web\Data\Formatter\JsonDataResponseFormatter;
+use Yiisoft\Yii\Web\Data\Middleware\FormatDataResponse;
+use Yiisoft\Yii\Web\Data\DataResponse;
 
 class FormatDataResponseTest extends TestCase
 {
@@ -41,7 +41,7 @@ class FormatDataResponseTest extends TestCase
             public function __construct()
             {
                 $this->instances = [
-                    FormatDataResponse::class => new FormatDataResponse(new JsonResponseFormatter())
+                    FormatDataResponse::class => new FormatDataResponse(new JsonDataResponseFormatter())
                 ];
             }
 

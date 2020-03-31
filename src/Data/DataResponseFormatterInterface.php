@@ -1,11 +1,10 @@
 <?php
 
-namespace Yiisoft\Yii\Web\Formatter;
+namespace Yiisoft\Yii\Web\Data;
 
 use Psr\Http\Message\ResponseInterface;
-use Yiisoft\Yii\Web\DataResponse;
 
-interface ResponseFormatterInterface
+interface DataResponseFormatterInterface
 {
     public function format(DataResponse $response): ResponseInterface;
 }

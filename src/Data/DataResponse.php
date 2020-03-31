@@ -1,16 +1,15 @@
 <?php
 
-namespace Yiisoft\Yii\Web;
+namespace Yiisoft\Yii\Web\Data;
 
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
-use Yiisoft\Yii\Web\Formatter\ResponseFormatterInterface;
 
 /**
  * A wrapper around PSR-7 response that is assigned raw data to be formatted later using a formatter.
  *
- * For example, `['name' => 'Dmitry']` to be formatted to JSON using {@see \Yiisoft\Yii\Web\Formatter\JsonResponseFormatter}
+ * For example, `['name' => 'Dmitry']` to be formatted to JSON using {@see \Yiisoft\Yii\Web\Data\Formatter\JsonDataResponseFormatter}
  * when {@see DataResponse::getBody()} is called.
  */
 class DataResponse implements ResponseInterface
@@ -21,7 +20,7 @@ class DataResponse implements ResponseInterface
 
     private ?StreamInterface $dataStream = null;
 
-    private ?ResponseFormatterInterface $responseFormatter = null;
+    private ?DataResponseFormatterInterface $responseFormatter = null;
 
     public function __construct($data, int $code, string $reasonPhrase, ResponseFactoryInterface $responseFactory)
     {
@@ -131,7 +130,7 @@ class DataResponse implements ResponseInterface
         return $response;
     }
 
-    public function withResponseFormatter(ResponseFormatterInterface $responseFormatter): DataResponse
+    public function withResponseFormatter(DataResponseFormatterInterface $responseFormatter): DataResponse
     {
         $response = clone $this;
         $response->responseFormatter = $responseFormatter;

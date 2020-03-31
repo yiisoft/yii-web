@@ -1,19 +1,19 @@
 <?php
 
-namespace Yiisoft\Yii\Web\Tests;
+namespace Yiisoft\Yii\Web\Tests\Data\Formatter;
 
 use Nyholm\Psr7\Factory\Psr17Factory;
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Yii\Web\Formatter\XmlResponseFormatter;
-use Yiisoft\Yii\Web\DataResponse;
+use Yiisoft\Yii\Web\Data\Formatter\XmlDataResponseFormatter;
+use Yiisoft\Yii\Web\Data\DataResponse;
 
-class XmlFormatterTest extends TestCase
+class XmlDataResponseFormatterTest extends TestCase
 {
     public function testFormatter(): void
     {
         $factory = new Psr17Factory();
         $dataResponse = new DataResponse('test', 200, '', $factory);
-        $formatter = new XmlResponseFormatter();
+        $formatter = new XmlDataResponseFormatter();
         $result = $formatter->format($dataResponse);
         $result->getBody()->rewind();
 
@@ -28,7 +28,7 @@ class XmlFormatterTest extends TestCase
     {
         $factory = new Psr17Factory();
         $dataResponse = new DataResponse('test', 200, '', $factory);
-        $formatter = new XmlResponseFormatter();
+        $formatter = new XmlDataResponseFormatter();
         $formatter = $formatter->withEncoding('ISO-8859-1');
         $result = $formatter->format($dataResponse);
         $result->getBody()->rewind();

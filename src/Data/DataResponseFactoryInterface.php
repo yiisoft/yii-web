@@ -1,6 +1,6 @@
 <?php
 
-namespace Yiisoft\Yii\Web;
+namespace Yiisoft\Yii\Web\Data;
 
 use Yiisoft\Http\Status;
 

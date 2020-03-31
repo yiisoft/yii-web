@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\Web\Formatter;
+namespace Yiisoft\Yii\Web\Data\Formatter;
 
 use Psr\Http\Message\ResponseInterface;
-use Yiisoft\Yii\Web\DataResponse;
+use Yiisoft\Yii\Web\Data\DataResponse;
+use Yiisoft\Yii\Web\Data\DataResponseFormatterInterface;
 
-final class HtmlResponseFormatter implements ResponseFormatterInterface
+final class HtmlDataResponseFormatter implements DataResponseFormatterInterface
 {
     /**
      * @var string the Content-Type header for the response

@@ -1,6 +1,6 @@
 <?php
 
-namespace Yiisoft\Yii\Web\Formatter;
+namespace Yiisoft\Yii\Web\Data\Formatter;
 
 use DOMDocument;
 use DOMElement;
@@ -8,9 +8,10 @@ use DOMException;
 use DOMText;
 use Psr\Http\Message\ResponseInterface;
 use Yiisoft\Strings\StringHelper;
-use Yiisoft\Yii\Web\DataResponse;
+use Yiisoft\Yii\Web\Data\DataResponse;
+use Yiisoft\Yii\Web\Data\DataResponseFormatterInterface;
 
-final class XmlResponseFormatter implements ResponseFormatterInterface
+final class XmlDataResponseFormatter implements DataResponseFormatterInterface
 {
     /**
      * @var string the Content-Type header for the response

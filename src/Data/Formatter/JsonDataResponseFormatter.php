@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\Web\Formatter;
+namespace Yiisoft\Yii\Web\Data\Formatter;
 
 use Psr\Http\Message\ResponseInterface;
 use Yiisoft\Serializer\JsonSerializer;
-use Yiisoft\Yii\Web\DataResponse;
+use Yiisoft\Yii\Web\Data\DataResponse;
+use Yiisoft\Yii\Web\Data\DataResponseFormatterInterface;
 
-final class JsonResponseFormatter implements ResponseFormatterInterface
+final class JsonDataResponseFormatter implements DataResponseFormatterInterface
 {
     /**
      * @var string the Content-Type header for the response
