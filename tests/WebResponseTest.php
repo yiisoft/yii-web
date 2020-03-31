@@ -22,9 +22,6 @@ class WebResponseTest extends TestCase
         $this->assertSame(['application/json'], $webResponse->getResponse()->getHeader('Content-Type'));
         $this->assertSame(['application/json'], $webResponse->getHeader('Content-Type'));
         $this->assertSame($webResponse->getResponse()->getBody(), $webResponse->getBody());
-        $this->assertSame('test', $webResponse->getResponse()->getBody()->getContents());
-        $webResponse->getBody()->rewind();
-        $this->assertSame('test', $webResponse->getBody()->getContents());
     }
 
     public function testChangeResponseData(): void
