@@ -3,7 +3,6 @@
 namespace Yiisoft\Yii\Web;
 
 use Psr\Http\Message\ResponseFactoryInterface;
-use Psr\Http\Message\ResponseInterface;
 use Yiisoft\Http\Status;
 
 class WebResponseFactory implements WebResponseFactoryInterface
