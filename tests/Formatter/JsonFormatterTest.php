@@ -5,7 +5,6 @@ namespace Yiisoft\Yii\Web\Tests;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Serializer\JsonSerializer;
 use Yiisoft\Yii\Web\Formatter\JsonResponseFormatter;
 use Yiisoft\Yii\Web\WebResponse as WebResponse;
 
@@ -16,7 +15,7 @@ class JsonFormatterTest extends TestCase
         $streamFactory = new Psr17Factory();
         $response = new Response();
         $webResponse = new WebResponse(['test' => 'test'], $response, $streamFactory);
-        $formatter = new JsonResponseFormatter(new JsonSerializer());
+        $formatter = new JsonResponseFormatter();
         $result = $formatter->format($webResponse);
         $result->getBody()->rewind();
 

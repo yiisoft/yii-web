@@ -17,9 +17,9 @@ final class JsonResponseFormatter implements ResponseFormatterInterface
 
     private JsonSerializer $jsonSerializer;
 
-    public function __construct(JsonSerializer $jsonSerializer)
+    public function __construct()
     {
-        $this->jsonSerializer = $jsonSerializer;
+        $this->jsonSerializer = new JsonSerializer();
     }
 
     public function format(WebResponse $webResponse): ResponseInterface

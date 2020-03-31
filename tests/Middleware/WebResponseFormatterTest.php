@@ -11,7 +11,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Router\Route;
-use Yiisoft\Serializer\JsonSerializer;
 use Yiisoft\Yii\Web\Formatter\JsonResponseFormatter;
 use Yiisoft\Yii\Web\Middleware\WebResponseFormatter;
 use Yiisoft\Yii\Web\WebResponse as WebResponse;
@@ -25,7 +24,7 @@ class WebResponseFormatterTest extends TestCase
         $streamFactory = new Psr17Factory();
         $response = new Response();
         $webResponse = new WebResponse(['test' => 'test'], $response, $streamFactory);
-        $formatter = new JsonResponseFormatter(new JsonSerializer());
+        $formatter = new JsonResponseFormatter();
         $responseFormatter = new WebResponseFormatter($formatter);
         $route = Route::get('/test', function () use ($webResponse) {
             return $webResponse;
