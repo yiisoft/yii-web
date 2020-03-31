@@ -42,10 +42,10 @@ final class XmlResponseFormatter implements ResponseFormatterInterface
      */
     private bool $useObjectTags = true;
 
-    public function format(DataResponse $webResponse): ResponseInterface
+    public function format(DataResponse $dataResponse): ResponseInterface
     {
         $content = '';
-        $data = $webResponse->getData();
+        $data = $dataResponse->getData();
         if ($data !== null) {
             $dom = new DOMDocument($this->version, $this->encoding);
             if (!empty($this->rootTag)) {
@@ -57,7 +57,7 @@ final class XmlResponseFormatter implements ResponseFormatterInterface
             }
             $content = $dom->saveXML();
         }
-        $response = $webResponse->getResponse();
+        $response = $dataResponse->getResponse();
         $response->getBody()->write($content);
 
         return $response->withHeader('Content-Type', $this->contentType . '; ' . $this->encoding);

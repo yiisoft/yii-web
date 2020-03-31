@@ -14,36 +14,36 @@ class DataResponseTest extends TestCase
     public function testCreateResponse(): void
     {
         $factory = new Psr17Factory();
-        $webResponse = new DataResponse('test', Status::OK, '', $factory);
-        $webResponse = $webResponse->withHeader('Content-Type', 'application/json');
-        $webResponse->getBody()->rewind();
+        $dataResponse = new DataResponse('test', Status::OK, '', $factory);
+        $dataResponse = $dataResponse->withHeader('Content-Type', 'application/json');
+        $dataResponse->getBody()->rewind();
 
-        $this->assertInstanceOf(ResponseInterface::class, $webResponse);
-        $this->assertInstanceOf(ResponseInterface::class, $webResponse->getResponse());
-        $this->assertSame(['application/json'], $webResponse->getResponse()->getHeader('Content-Type'));
-        $this->assertSame(['application/json'], $webResponse->getHeader('Content-Type'));
-        $this->assertSame($webResponse->getResponse()->getBody(), $webResponse->getBody());
-        $this->assertSame('test', $webResponse->getBody()->getContents());
+        $this->assertInstanceOf(ResponseInterface::class, $dataResponse);
+        $this->assertInstanceOf(ResponseInterface::class, $dataResponse->getResponse());
+        $this->assertSame(['application/json'], $dataResponse->getResponse()->getHeader('Content-Type'));
+        $this->assertSame(['application/json'], $dataResponse->getHeader('Content-Type'));
+        $this->assertSame($dataResponse->getResponse()->getBody(), $dataResponse->getBody());
+        $this->assertSame('test', $dataResponse->getBody()->getContents());
     }
 
     public function testChangeResponseData(): void
     {
         $factory = new Psr17Factory();
-        $webResponse = new DataResponse('test', Status::OK, '', $factory);
-        $data = $webResponse->getData();
+        $dataResponse = new DataResponse('test', Status::OK, '', $factory);
+        $data = $dataResponse->getData();
         $data .= '-changed';
-        $webResponse = $webResponse->withData($data);
-        $webResponse->getBody()->rewind();
+        $dataResponse = $dataResponse->withData($data);
+        $dataResponse->getBody()->rewind();
 
-        $this->assertSame('test-changed', $webResponse->getBody()->getContents());
+        $this->assertSame('test-changed', $dataResponse->getBody()->getContents());
     }
 
     public function testSetResponseFormatter(): void
     {
         $factory = new Psr17Factory();
-        $webResponse = new DataResponse('test', Status::OK, '', $factory);
-        $webResponse = $webResponse->withResponseFormatter(new JsonResponseFormatter());
+        $dataResponse = new DataResponse('test', Status::OK, '', $factory);
+        $dataResponse = $dataResponse->withResponseFormatter(new JsonResponseFormatter());
 
-        $this->assertTrue($webResponse->hasResponseFormatter());
+        $this->assertTrue($dataResponse->hasResponseFormatter());
     }
 }

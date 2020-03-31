@@ -16,15 +16,15 @@ use Yiisoft\Yii\Web\Formatter\JsonResponseFormatter;
 use Yiisoft\Yii\Web\Middleware\FormatDataResponse;
 use Yiisoft\Yii\Web\DataResponse;
 
-class FormatWebResponseTest extends TestCase
+class FormatDataResponseTest extends TestCase
 {
     public function testFormatter(): void
     {
         $request = new ServerRequest('GET', '/test');
         $factory = new Psr17Factory();
-        $webResponse = new DataResponse(['test' => 'test'], 200, '', $factory);
-        $route = Route::get('/test', static function () use ($webResponse) {
-            return $webResponse;
+        $dataResponse = new DataResponse(['test' => 'test'], 200, '', $factory);
+        $route = Route::get('/test', static function () use ($dataResponse) {
+            return $dataResponse;
         }, $this->getContainer())->addMiddleware(FormatDataResponse::class);
         $result = $route->process($request, $this->getRequestHandler());
         $result->getBody()->rewind();

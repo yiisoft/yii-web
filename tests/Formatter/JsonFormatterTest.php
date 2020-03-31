@@ -12,9 +12,9 @@ class JsonFormatterTest extends TestCase
     public function testFormatter(): void
     {
         $factory = new Psr17Factory();
-        $webResponse = new DataResponse(['test' => 'test'], 200, '', $factory);
+        $dataResponse = new DataResponse(['test' => 'test'], 200, '', $factory);
         $formatter = new JsonResponseFormatter();
-        $result = $formatter->format($webResponse);
+        $result = $formatter->format($dataResponse);
         $result->getBody()->rewind();
 
         $this->assertSame('{"test":"test"}', $result->getBody()->getContents());

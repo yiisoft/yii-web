@@ -12,9 +12,9 @@ class XmlFormatterTest extends TestCase
     public function testFormatter(): void
     {
         $factory = new Psr17Factory();
-        $webResponse = new DataResponse('test', 200, '', $factory);
+        $dataResponse = new DataResponse('test', 200, '', $factory);
         $formatter = new XmlResponseFormatter();
-        $result = $formatter->format($webResponse);
+        $result = $formatter->format($dataResponse);
         $result->getBody()->rewind();
 
         $this->assertSame(
@@ -27,10 +27,10 @@ class XmlFormatterTest extends TestCase
     public function testFormatterEncoding(): void
     {
         $factory = new Psr17Factory();
-        $webResponse = new DataResponse('test', 200, '', $factory);
+        $dataResponse = new DataResponse('test', 200, '', $factory);
         $formatter = new XmlResponseFormatter();
         $formatter = $formatter->withEncoding('ISO-8859-1');
-        $result = $formatter->format($webResponse);
+        $result = $formatter->format($dataResponse);
         $result->getBody()->rewind();
 
         $this->assertSame(

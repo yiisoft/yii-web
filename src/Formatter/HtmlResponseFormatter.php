@@ -19,10 +19,10 @@ final class HtmlResponseFormatter implements ResponseFormatterInterface
      */
     private string $encoding = 'UTF-8';
 
-    public function format(DataResponse $webResponse): ResponseInterface
+    public function format(DataResponse $dataResponse): ResponseInterface
     {
-        $data = $webResponse->getData();
-        $response = $webResponse->getResponse();
+        $data = $dataResponse->getData();
+        $response = $dataResponse->getResponse();
         $response->getBody()->write((string)$data);
 
         return $response->withHeader('Content-Type', $this->contentType . '; charset=' . $this->encoding);

@@ -17,11 +17,11 @@ final class JsonResponseFormatter implements ResponseFormatterInterface
 
     private int $options = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
 
-    public function format(DataResponse $webResponse): ResponseInterface
+    public function format(DataResponse $dataResponse): ResponseInterface
     {
         $jsonSerializer = new JsonSerializer($this->options);
-        $content = $jsonSerializer->serialize($webResponse->getData());
-        $response = $webResponse->getResponse();
+        $content = $jsonSerializer->serialize($dataResponse->getData());
+        $response = $dataResponse->getResponse();
         $response->getBody()->write($content);
 
         return $response->withHeader('Content-Type', $this->contentType);
