@@ -11,9 +11,9 @@ use Yiisoft\Yii\Web\Formatter\ResponseFormatterInterface;
  * A wrapper around PSR-7 response that is assigned raw data to be formatted later using a formatter.
  *
  * For example, `['name' => 'Dmitry']` to be formatted to JSON using {@see \Yiisoft\Yii\Web\Formatter\JsonResponseFormatter}
- * when {@see WebResponse::getBody()} is called.
+ * when {@see DataResponse::getBody()} is called.
  */
-class WebResponse implements ResponseInterface
+class DataResponse implements ResponseInterface
 {
     private ResponseInterface $response;
 
@@ -88,14 +88,14 @@ class WebResponse implements ResponseInterface
         return $this->response->hasHeader($name);
     }
 
-    public function withAddedHeader($name, $value): WebResponse
+    public function withAddedHeader($name, $value): DataResponse
     {
         $response = clone $this;
         $response->response = $this->response->withAddedHeader($name, $value);
         return $response;
     }
 
-    public function withBody(StreamInterface $body): WebResponse
+    public function withBody(StreamInterface $body): DataResponse
     {
         $response = clone $this;
         $response->response = $this->response->withBody($body);
@@ -103,42 +103,42 @@ class WebResponse implements ResponseInterface
         return $response;
     }
 
-    public function withHeader($name, $value): WebResponse
+    public function withHeader($name, $value): DataResponse
     {
         $response = clone $this;
         $response->response = $this->response->withHeader($name, $value);
         return $response;
     }
 
-    public function withoutHeader($name): WebResponse
+    public function withoutHeader($name): DataResponse
     {
         $response = clone $this;
         $response->response = $this->response->withoutHeader($name);
         return $response;
     }
 
-    public function withProtocolVersion($version): WebResponse
+    public function withProtocolVersion($version): DataResponse
     {
         $response = clone $this;
         $response->response = $this->response->withProtocolVersion($version);
         return $response;
     }
 
-    public function withStatus($code, $reasonPhrase = ''): WebResponse
+    public function withStatus($code, $reasonPhrase = ''): DataResponse
     {
         $response = clone $this;
         $response->response = $this->response->withStatus($code, $reasonPhrase);
         return $response;
     }
 
-    public function withResponseFormatter(ResponseFormatterInterface $responseFormatter): WebResponse
+    public function withResponseFormatter(ResponseFormatterInterface $responseFormatter): DataResponse
     {
         $response = clone $this;
         $response->responseFormatter = $responseFormatter;
         return $response;
     }
 
-    public function withData($data): WebResponse
+    public function withData($data): DataResponse
     {
         $response = clone $this;
         $response->data = $data;

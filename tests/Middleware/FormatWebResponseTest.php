@@ -13,8 +13,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Http\Status;
 use Yiisoft\Router\Route;
 use Yiisoft\Yii\Web\Formatter\JsonResponseFormatter;
-use Yiisoft\Yii\Web\Middleware\FormatWebResponse;
-use Yiisoft\Yii\Web\WebResponse;
+use Yiisoft\Yii\Web\Middleware\FormatDataResponse;
+use Yiisoft\Yii\Web\DataResponse;
 
 class FormatWebResponseTest extends TestCase
 {
@@ -22,10 +22,10 @@ class FormatWebResponseTest extends TestCase
     {
         $request = new ServerRequest('GET', '/test');
         $factory = new Psr17Factory();
-        $webResponse = new WebResponse(['test' => 'test'], 200, '', $factory);
+        $webResponse = new DataResponse(['test' => 'test'], 200, '', $factory);
         $route = Route::get('/test', static function () use ($webResponse) {
             return $webResponse;
-        }, $this->getContainer())->addMiddleware(FormatWebResponse::class);
+        }, $this->getContainer())->addMiddleware(FormatDataResponse::class);
         $result = $route->process($request, $this->getRequestHandler());
         $result->getBody()->rewind();
 
@@ -41,7 +41,7 @@ class FormatWebResponseTest extends TestCase
             public function __construct()
             {
                 $this->instances = [
-                    FormatWebResponse::class => new FormatWebResponse(new JsonResponseFormatter())
+                    FormatDataResponse::class => new FormatDataResponse(new JsonResponseFormatter())
                 ];
             }
 

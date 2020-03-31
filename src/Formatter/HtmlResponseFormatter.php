@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Yii\Web\Formatter;
 
 use Psr\Http\Message\ResponseInterface;
-use Yiisoft\Yii\Web\WebResponse;
+use Yiisoft\Yii\Web\DataResponse;
 
 final class HtmlResponseFormatter implements ResponseFormatterInterface
 {
@@ -19,7 +19,7 @@ final class HtmlResponseFormatter implements ResponseFormatterInterface
      */
     private string $encoding = 'UTF-8';
 
-    public function format(WebResponse $webResponse): ResponseInterface
+    public function format(DataResponse $webResponse): ResponseInterface
     {
         $data = $webResponse->getData();
         $response = $webResponse->getResponse();

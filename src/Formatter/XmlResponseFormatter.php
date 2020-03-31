@@ -8,7 +8,7 @@ use DOMException;
 use DOMText;
 use Psr\Http\Message\ResponseInterface;
 use Yiisoft\Strings\StringHelper;
-use Yiisoft\Yii\Web\WebResponse;
+use Yiisoft\Yii\Web\DataResponse;
 
 final class XmlResponseFormatter implements ResponseFormatterInterface
 {
@@ -42,7 +42,7 @@ final class XmlResponseFormatter implements ResponseFormatterInterface
      */
     private bool $useObjectTags = true;
 
-    public function format(WebResponse $webResponse): ResponseInterface
+    public function format(DataResponse $webResponse): ResponseInterface
     {
         $content = '';
         $data = $webResponse->getData();

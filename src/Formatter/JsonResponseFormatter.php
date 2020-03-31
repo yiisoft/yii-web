@@ -6,7 +6,7 @@ namespace Yiisoft\Yii\Web\Formatter;
 
 use Psr\Http\Message\ResponseInterface;
 use Yiisoft\Serializer\JsonSerializer;
-use Yiisoft\Yii\Web\WebResponse;
+use Yiisoft\Yii\Web\DataResponse;
 
 final class JsonResponseFormatter implements ResponseFormatterInterface
 {
@@ -17,7 +17,7 @@ final class JsonResponseFormatter implements ResponseFormatterInterface
 
     private int $options = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
 
-    public function format(WebResponse $webResponse): ResponseInterface
+    public function format(DataResponse $webResponse): ResponseInterface
     {
         $jsonSerializer = new JsonSerializer($this->options);
         $content = $jsonSerializer->serialize($webResponse->getData());

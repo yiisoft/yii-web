@@ -5,7 +5,7 @@ namespace Yiisoft\Yii\Web;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Yiisoft\Http\Status;
 
-class WebResponseFactory implements WebResponseFactoryInterface
+class DataResponseFactory implements DataResponseFactoryInterface
 {
     protected ResponseFactoryInterface $responseFactory;
 
@@ -14,8 +14,8 @@ class WebResponseFactory implements WebResponseFactoryInterface
         $this->responseFactory = $responseFactory;
     }
 
-    public function createResponse($data = null, int $code = Status::OK, string $reasonPhrase = ''): WebResponse
+    public function createResponse($data = null, int $code = Status::OK, string $reasonPhrase = ''): DataResponse
     {
-        return new WebResponse($data, $code, $reasonPhrase, $this->responseFactory);
+        return new DataResponse($data, $code, $reasonPhrase, $this->responseFactory);
     }
 }

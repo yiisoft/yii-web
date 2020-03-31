@@ -7,14 +7,14 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Yiisoft\Http\Status;
 use Yiisoft\Yii\Web\Formatter\JsonResponseFormatter;
-use Yiisoft\Yii\Web\WebResponse;
+use Yiisoft\Yii\Web\DataResponse;
 
-class WebResponseTest extends TestCase
+class DataResponseTest extends TestCase
 {
     public function testCreateResponse(): void
     {
         $factory = new Psr17Factory();
-        $webResponse = new WebResponse('test', Status::OK, '', $factory);
+        $webResponse = new DataResponse('test', Status::OK, '', $factory);
         $webResponse = $webResponse->withHeader('Content-Type', 'application/json');
         $webResponse->getBody()->rewind();
 
@@ -29,7 +29,7 @@ class WebResponseTest extends TestCase
     public function testChangeResponseData(): void
     {
         $factory = new Psr17Factory();
-        $webResponse = new WebResponse('test', Status::OK, '', $factory);
+        $webResponse = new DataResponse('test', Status::OK, '', $factory);
         $data = $webResponse->getData();
         $data .= '-changed';
         $webResponse = $webResponse->withData($data);
@@ -41,7 +41,7 @@ class WebResponseTest extends TestCase
     public function testSetResponseFormatter(): void
     {
         $factory = new Psr17Factory();
-        $webResponse = new WebResponse('test', Status::OK, '', $factory);
+        $webResponse = new DataResponse('test', Status::OK, '', $factory);
         $webResponse = $webResponse->withResponseFormatter(new JsonResponseFormatter());
 
         $this->assertTrue($webResponse->hasResponseFormatter());
