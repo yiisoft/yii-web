@@ -13,23 +13,16 @@ class WebResponseFormatter implements MiddlewareInterface
 {
     private ResponseFormatterInterface $responseFormatter;
 
-    private bool $forceRender;
-
-    public function __construct(ResponseFormatterInterface $responseFormatter, bool $forceRender = false)
+    public function __construct(ResponseFormatterInterface $responseFormatter)
     {
         $this->responseFormatter = $responseFormatter;
-        $this->forceRender = $forceRender;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $response = $handler->handle($request);
         if ($response instanceof WebResponse && !$response->hasResponseFormatter()) {
-            if ($this->forceRender) {
-                $response = $this->responseFormatter->format($response);
-            } else {
-                $response = $response->withResponseFormatter($this->responseFormatter);
-            }
+            $response = $response->withResponseFormatter($this->responseFormatter);
         }
 
         return $response;
