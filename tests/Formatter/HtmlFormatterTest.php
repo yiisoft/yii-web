@@ -12,7 +12,7 @@ class HtmlFormatterTest extends TestCase
     public function testFormatter(): void
     {
         $factory = new Psr17Factory();
-        $webResponse = new WebResponse('test', 200, $factory, $factory);
+        $webResponse = new WebResponse('test', 200, $factory);
         $formatter = new HtmlResponseFormatter();
         $result = $formatter->format($webResponse);
         $result->getBody()->rewind();
@@ -24,7 +24,7 @@ class HtmlFormatterTest extends TestCase
     public function testFormatterEncoding(): void
     {
         $factory = new Psr17Factory();
-        $webResponse = new WebResponse('test', 200, $factory, $factory);
+        $webResponse = new WebResponse('test', 200, $factory);
         $formatter = new HtmlResponseFormatter();
         $formatter->setEncoding('ISO-8859-1');
         $result = $formatter->format($webResponse);

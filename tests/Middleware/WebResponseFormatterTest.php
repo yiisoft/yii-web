@@ -22,7 +22,7 @@ class WebResponseFormatterTest extends TestCase
         $container = $this->createMock(ContainerInterface::class);
         $request = new ServerRequest('GET', '/test');
         $factory = new Psr17Factory();
-        $webResponse = new WebResponse(['test' => 'test'], 200, $factory, $factory);
+        $webResponse = new WebResponse(['test' => 'test'], 200, $factory);
         $responseFormatter = new WebResponseFormatter(new JsonResponseFormatter());
         $route = Route::get('/test', function () use ($webResponse) {
             return $webResponse;

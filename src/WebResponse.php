@@ -4,7 +4,6 @@ namespace Yiisoft\Yii\Web;
 
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\StreamInterface;
 use Yiisoft\Yii\Web\Formatter\ResponseFormatterInterface;
 
