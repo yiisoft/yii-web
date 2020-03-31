@@ -6,5 +6,5 @@ use Psr\Http\Message\ResponseInterface;
 
 interface WebResponseFactoryInterface
 {
-    public function createResponse(int $code = 200, string $reasonPhrase = '', $data = null): ResponseInterface;
+    public function createResponse($data = null, int $code = 200, string $reasonPhrase = ''): ResponseInterface;
 }
