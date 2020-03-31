@@ -17,6 +17,6 @@ class WebResponseFactory implements WebResponseFactoryInterface
 
     public function createResponse($data = null, int $code = Status::OK, string $reasonPhrase = ''): ResponseInterface
     {
-        return new WebResponse($data, $code, $this->responseFactory);
+        return new WebResponse($data, $code, $reasonPhrase, $this->responseFactory);
     }
 }

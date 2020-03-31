@@ -17,9 +17,9 @@ class WebResponse implements ResponseInterface
 
     private ?ResponseFormatterInterface $responseFormatter = null;
 
-    public function __construct($data, int $code, ResponseFactoryInterface $responseFactory)
+    public function __construct($data, int $code, string $responsePhrase, ResponseFactoryInterface $responseFactory)
     {
-        $this->response = $responseFactory->createResponse($code);
+        $this->response = $responseFactory->createResponse($code, $responsePhrase);
         $this->data = $data;
     }
 
