@@ -12,7 +12,7 @@ class WebResponseTest extends TestCase
     public function testCreateResponse(): void
     {
         $factory = new Psr17Factory();
-        $webResponse = new WebResponse('test', $factory, $factory);
+        $webResponse = new WebResponse('test', 200,  $factory, $factory);
         $webResponse->getBody()->rewind();
 
         $this->assertInstanceOf(ResponseInterface::class, $webResponse);

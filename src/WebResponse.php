@@ -20,9 +20,9 @@ class WebResponse implements ResponseInterface
 
     private ?ResponseFormatterInterface $responseFormatter = null;
 
-    public function __construct($data, ResponseFactoryInterface $responseFactory, StreamFactoryInterface $streamFactory)
+    public function __construct($data, int $code, ResponseFactoryInterface $responseFactory, StreamFactoryInterface $streamFactory)
     {
-        $this->response = $responseFactory->createResponse();
+        $this->response = $responseFactory->createResponse($code);
         $this->streamFactory = $streamFactory;
         $this->data = $data;
     }
