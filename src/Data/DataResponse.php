@@ -87,14 +87,14 @@ class DataResponse implements ResponseInterface
         return $this->response->hasHeader($name);
     }
 
-    public function withAddedHeader($name, $value): DataResponse
+    public function withAddedHeader($name, $value): self
     {
         $response = clone $this;
         $response->response = $this->response->withAddedHeader($name, $value);
         return $response;
     }
 
-    public function withBody(StreamInterface $body): DataResponse
+    public function withBody(StreamInterface $body): self
     {
         $response = clone $this;
         $response->response = $this->response->withBody($body);
@@ -102,42 +102,42 @@ class DataResponse implements ResponseInterface
         return $response;
     }
 
-    public function withHeader($name, $value): DataResponse
+    public function withHeader($name, $value): self
     {
         $response = clone $this;
         $response->response = $this->response->withHeader($name, $value);
         return $response;
     }
 
-    public function withoutHeader($name): DataResponse
+    public function withoutHeader($name): self
     {
         $response = clone $this;
         $response->response = $this->response->withoutHeader($name);
         return $response;
     }
 
-    public function withProtocolVersion($version): DataResponse
+    public function withProtocolVersion($version): self
     {
         $response = clone $this;
         $response->response = $this->response->withProtocolVersion($version);
         return $response;
     }
 
-    public function withStatus($code, $reasonPhrase = ''): DataResponse
+    public function withStatus($code, $reasonPhrase = ''): self
     {
         $response = clone $this;
         $response->response = $this->response->withStatus($code, $reasonPhrase);
         return $response;
     }
 
-    public function withResponseFormatter(DataResponseFormatterInterface $responseFormatter): DataResponse
+    public function withResponseFormatter(DataResponseFormatterInterface $responseFormatter): self
     {
         $response = clone $this;
         $response->responseFormatter = $responseFormatter;
         return $response;
     }
 
-    public function withData($data): DataResponse
+    public function withData($data): self
     {
         $response = clone $this;
         $response->data = $data;
