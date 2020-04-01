@@ -22,7 +22,7 @@ class FormatDataResponseTest extends TestCase
     {
         $request = new ServerRequest('GET', '/test');
         $factory = new Psr17Factory();
-        $dataResponse = new DataResponse(['test' => 'test'], 200, '', $factory);
+        $dataResponse = new DataResponse(['test' => 'test'], $factory->createResponse(200, ''));
         $route = Route::get('/test', static function () use ($dataResponse) {
             return $dataResponse;
         }, $this->getContainer())->addMiddleware(FormatDataResponse::class);

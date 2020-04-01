@@ -12,7 +12,7 @@ class XmlDataResponseFormatterTest extends TestCase
     public function testFormatter(): void
     {
         $factory = new Psr17Factory();
-        $dataResponse = new DataResponse('test', 200, '', $factory);
+        $dataResponse = new DataResponse('test', $factory->createResponse(200, ''));
         $formatter = new XmlDataResponseFormatter();
         $result = $formatter->format($dataResponse);
         $result->getBody()->rewind();
@@ -27,7 +27,7 @@ class XmlDataResponseFormatterTest extends TestCase
     public function testFormatterEncoding(): void
     {
         $factory = new Psr17Factory();
-        $dataResponse = new DataResponse('test', 200, '', $factory);
+        $dataResponse = new DataResponse('test', $factory->createResponse(200, ''));
         $formatter = new XmlDataResponseFormatter();
         $formatter = $formatter->withEncoding('ISO-8859-1');
         $result = $formatter->format($dataResponse);
