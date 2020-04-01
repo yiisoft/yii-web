@@ -14,7 +14,7 @@ class DataResponseTest extends TestCase
     public function testCreateResponse(): void
     {
         $factory = new Psr17Factory();
-        $dataResponse = new DataResponse('test', $factory->createResponse(Status::OK, ''));
+        $dataResponse = new DataResponse('test', Status::OK, '', $factory);
         $dataResponse = $dataResponse->withHeader('Content-Type', 'application/json');
         $dataResponse->getBody()->rewind();
 
@@ -28,7 +28,7 @@ class DataResponseTest extends TestCase
     public function testChangeResponseData(): void
     {
         $factory = new Psr17Factory();
-        $dataResponse = new DataResponse('test', $factory->createResponse(Status::OK, ''));
+        $dataResponse = new DataResponse('test', Status::OK, '', $factory);
         $data = $dataResponse->getData();
         $data .= '-changed';
         $dataResponse = $dataResponse->withData($data);
@@ -40,7 +40,7 @@ class DataResponseTest extends TestCase
     public function testSetResponseFormatter(): void
     {
         $factory = new Psr17Factory();
-        $dataResponse = new DataResponse('test', $factory->createResponse(Status::OK, ''));
+        $dataResponse = new DataResponse('test', Status::OK, '', $factory);
         $dataResponse = $dataResponse->withResponseFormatter(new JsonDataResponseFormatter());
 
         $this->assertTrue($dataResponse->hasResponseFormatter());

@@ -2,6 +2,7 @@
 
 namespace Yiisoft\Yii\Web\Data;
 
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 
@@ -21,9 +22,9 @@ class DataResponse implements ResponseInterface
 
     private ?DataResponseFormatterInterface $responseFormatter = null;
 
-    public function __construct($data, ResponseInterface $response)
+    public function __construct($data, int $code, string $reasonPhrase, ResponseFactoryInterface $responseFactory)
     {
-        $this->response = $response;
+        $this->response = $responseFactory->createResponse($code, $reasonPhrase);
         $this->data = $data;
     }
 

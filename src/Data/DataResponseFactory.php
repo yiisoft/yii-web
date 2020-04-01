@@ -16,6 +16,6 @@ class DataResponseFactory implements DataResponseFactoryInterface
 
     public function createResponse($data = null, int $code = Status::OK, string $reasonPhrase = ''): DataResponse
     {
-        return new DataResponse($data, $this->responseFactory->createResponse($code, $reasonPhrase));
+        return new DataResponse($data, $code, $reasonPhrase, $this->responseFactory);
     }
 }
