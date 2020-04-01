@@ -28,11 +28,12 @@ class ForceSecureConnection implements MiddlewareInterface
 
     private ResponseFactoryInterface $responseFactory;
 
-    public function __construct(ResponseFactoryInterface $responseFactory) {
+    public function __construct(ResponseFactoryInterface $responseFactory)
+    {
         $this->responseFactory = $responseFactory;
     }
 
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler) : ResponseInterface
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if ($request->getUri()->getScheme() === 'http') {
             $url = (string)$request->getUri()->withScheme('https')->withPort($this->port);
