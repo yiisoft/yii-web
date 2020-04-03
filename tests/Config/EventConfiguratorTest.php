@@ -7,7 +7,7 @@ use Psr\Container\ContainerInterface;
 use Yiisoft\EventDispatcher\Provider\Provider;
 use Yiisoft\Yii\Web\Config\EventConfigurator;
 
-class DataResponseTest extends TestCase
+class EventConfiguratorTest extends TestCase
 {
     public function testAddEventListeners(): void
     {
