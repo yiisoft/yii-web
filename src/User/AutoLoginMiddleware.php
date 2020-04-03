@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Yii\Web\User;
 
 use Psr\Http\Server\RequestHandlerInterface;
@@ -14,7 +16,7 @@ use Yiisoft\Yii\Web\User\User;
 /**
  * AutoLoginMiddleware automatically logs user in based on "remember me" cookie
  */
-class AutoLoginMiddleware implements MiddlewareInterface
+final class AutoLoginMiddleware implements MiddlewareInterface
 {
     private User $user;
     private IdentityRepositoryInterface $identityRepository;
@@ -30,17 +32,19 @@ class AutoLoginMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $data = $this->getIdentityAndDurationFromCookie($request);
-        if ($this->user->login($data['identity'], $data['duration'])) {
-            try {
-                $response = $handler->handle($request);
-            } catch (\Throwable $e) {
-                throw $e;
-            }
+        if (!is_null($data)) {
+            if ($this->user->login($data['identity'], $data['duration'])) {
+                try {
+                    $response = $handler->handle($request);
+                } catch (\Throwable $e) {
+                    throw $e;
+                }
 
-            return $response;
-        } else {
-            throw new \Exception("Error authentication");
+                return $response;
+            }
         }
+
+        throw new \Exception("Error authentication");
     }
 
     /**
@@ -50,7 +54,7 @@ class AutoLoginMiddleware implements MiddlewareInterface
      * @param ServerRequestInterface $request Request to handle
      * @return array|null Returns an array of 'identity' and 'duration' if valid, otherwise null.
      */
-    protected function getIdentityAndDurationFromCookie(ServerRequestInterface $request)
+    private function getIdentityAndDurationFromCookie(ServerRequestInterface $request): ?array
     {
         $cookies = $request->getCookieParams();
         $value = $cookies['remember'] ?? null;
@@ -60,15 +64,11 @@ class AutoLoginMiddleware implements MiddlewareInterface
         }
 
         $data = json_decode($value, true);
-        if (is_array($data) && count($data) == 3) {
-            list($id, $authKey, $duration) = $data;
+        if (is_array($data) && count($data) === 3) {
+            [$id, $authKey, $duration] = $data;
             $identity = $this->identityRepository->findIdentity($id);
             if ($identity !== null) {
-                if (!$identity instanceof IdentityInterface) {
-                    throw new \Exception("findIdentity() must return an object implementing IdentityInterface.");
-                } else {
-                    return ['identity' => $identity, 'duration' => $duration];
-                }
+                return ['identity' => $identity, 'duration' => $duration];
             }
         }
 

@@ -59,7 +59,7 @@ class AutoLoginMiddlewareTest extends TestCase
             ->expects($this->any())
             ->method('getCookieParams')
             ->willReturn([
-                "remember" => json_encode([1, '123456', 60])
+                "remember" => json_encode(['1', '123456', 60])
             ]);
 
         $this->identityRepositoryInterfaceMock
