@@ -15,7 +15,7 @@ class EventConfigurator
     public function __construct(ListenerProviderInterface $listenerProvider, ContainerInterface $container)
     {
         if (!($listenerProvider instanceof Provider)) {
-            throw new \InvalidArgumentException('Listener provider must be instance of Yiisoft\EventDispatcher\Provider');
+            throw new \InvalidArgumentException('Listener provider must be an instance of \Yiisoft\EventDispatcher\Provider.');
         }
         $this->listenerProvider = $listenerProvider;
         $this->container = $container;

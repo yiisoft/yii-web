@@ -29,7 +29,7 @@ class EventConfiguratorTest extends TestCase
     private function getEventsConfig(): array
     {
         return [
-            function (Event $event) {
+            static function (Event $event) {
                 $event->register(1);
             },
             Event::class => [
