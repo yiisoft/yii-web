@@ -4,7 +4,6 @@ namespace Yiisoft\Yii\Web\Config;
 
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\ListenerProviderInterface;
-use Yiisoft\EventDispatcher\Provider\ConcreteProvider;
 use Yiisoft\EventDispatcher\Provider\Provider;
 
 class EventConfigurator
@@ -15,11 +14,9 @@ class EventConfigurator
 
     public function __construct(ListenerProviderInterface $listenerProvider, ContainerInterface $container)
     {
-        if (!($listenerProvider instanceof Provider || $listenerProvider instanceof ConcreteProvider)) {
+        if (!($listenerProvider instanceof Provider)) {
             throw new \InvalidArgumentException(
-                'Listener provider must be instance of Yiisoft\EventDispatcher\Provider or
-                Yiisoft\EventDispatcher\ConcreteProvider.'
-            );
+                'Listener provider must be instance of Yiisoft\EventDispatcher\Provider');
         }
         $this->listenerProvider = $listenerProvider;
         $this->container = $container;
