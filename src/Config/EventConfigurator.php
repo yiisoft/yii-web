@@ -7,7 +7,7 @@ use Psr\EventDispatcher\ListenerProviderInterface;
 use Yiisoft\EventDispatcher\Provider\ConcreteProvider;
 use Yiisoft\EventDispatcher\Provider\Provider;
 
-class EventManager
+class EventConfigurator
 {
     private ListenerProviderInterface $listenerProvider;
 
