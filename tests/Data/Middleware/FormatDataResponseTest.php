@@ -23,9 +23,13 @@ class FormatDataResponseTest extends TestCase
         $request = new ServerRequest('GET', '/test');
         $factory = new Psr17Factory();
         $dataResponse = new DataResponse(['test' => 'test'], 200, '', $factory);
-        $route = Route::get('/test', static function () use ($dataResponse) {
-            return $dataResponse;
-        }, $this->getContainer())->addMiddleware(FormatDataResponse::class);
+        $route = Route::get(
+            '/test',
+            static function () use ($dataResponse) {
+                return $dataResponse;
+            },
+            $this->getContainer([FormatDataResponse::class => new FormatDataResponse(new JsonDataResponseFormatter())])
+        )->addMiddleware(FormatDataResponse::class);
         $result = $route->process($request, $this->getRequestHandler());
         $result->getBody()->rewind();
 
@@ -33,16 +37,14 @@ class FormatDataResponseTest extends TestCase
         $this->assertSame(['application/json'], $result->getHeader('Content-Type'));
     }
 
-    private function getContainer(): ContainerInterface
+    private function getContainer(array $instances): ContainerInterface
     {
-        return new class() implements ContainerInterface {
+        return new class($instances) implements ContainerInterface {
             private array $instances;
 
-            public function __construct()
+            public function __construct(array $instances)
             {
-                $this->instances = [
-                    FormatDataResponse::class => new FormatDataResponse(new JsonDataResponseFormatter())
-                ];
+                $this->instances = $instances;
             }
 
             public function get($id)
