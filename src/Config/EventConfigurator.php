@@ -9,7 +9,7 @@ use Yiisoft\EventDispatcher\Provider\Provider;
 
 class EventConfigurator extends AbstractProviderConfigurator
 {
-    private ListenerProviderInterface $listenerProvider;
+    private Provider $listenerProvider;
 
     private ContainerInterface $container;
 
