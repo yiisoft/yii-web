@@ -45,31 +45,12 @@ class AutoLoginMiddlewareTest extends TestCase
      */
     private $userMock;
 
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->requestHandlerMock = $this->createMock(RequestHandlerInterface::class);
-        $this->userMock = $this->createMock(User::class);
-        $this->identityInterfaceMock = $this->createMock(IdentityInterface::class);
-        $this->identityRepositoryInterfaceMock = $this->createMock(IdentityRepositoryInterface::class);
-        $this->autoLoginMiddlewareMock = new AutoLoginMiddleware($this->userMock, $this->identityRepositoryInterfaceMock);
-        $this->requestMock = $this->createMock(ServerRequestInterface::class);
-
-        $this->requestMock
-            ->expects($this->any())
-            ->method('getCookieParams')
-            ->willReturn([
-                "remember" => json_encode(['1', '123456', 60])
-            ]);
-
-        $this->identityRepositoryInterfaceMock
-            ->expects($this->any())
-            ->method('findIdentity')
-            ->willReturn($this->identityInterfaceMock);
-    }
-
     public function testProcessOK(): void
     {
+        $this->mockDataRequest();
+        $this->mockDataCookie(["remember" => json_encode(['1', '123456', 60])]);
+        $this->mockFindIdentity();
+
         $this->userMock
             ->expects($this->once())
             ->method('login')
@@ -87,6 +68,10 @@ class AutoLoginMiddlewareTest extends TestCase
 
     public function testProcessErrorLogin(): void
     {
+        $this->mockDataRequest();
+        $this->mockDataCookie(["remember" => json_encode(['1', '123456', 60])]);
+        $this->mockFindIdentity();
+
         $this->userMock
             ->expects($this->once())
             ->method('login')
@@ -94,5 +79,51 @@ class AutoLoginMiddlewareTest extends TestCase
 
         $this->expectException(\Exception::class);
         $this->autoLoginMiddlewareMock->process($this->requestMock, $this->requestHandlerMock);
+    }
+
+    public function testProcessCookieEmpty(): void
+    {
+        $this->mockDataRequest();
+        $this->mockDataCookie([]);
+        $this->mockFindIdentity();
+
+        $this->expectException(\Exception::class);
+        $this->autoLoginMiddlewareMock->process($this->requestMock, $this->requestHandlerMock);
+    }
+
+    public function testProcessCookieWithInvalidParams(): void
+    {
+        $this->mockDataRequest();
+        $this->mockDataCookie(["remember" => json_encode(['1', '123456', 60, "paramInvalid"])]);
+        $this->mockFindIdentity();
+
+        $this->expectException(\Exception::class);
+        $this->autoLoginMiddlewareMock->process($this->requestMock, $this->requestHandlerMock);
+    }
+
+    private function mockDataRequest(): void
+    {
+        $this->requestHandlerMock = $this->createMock(RequestHandlerInterface::class);
+        $this->userMock = $this->createMock(User::class);
+        $this->identityInterfaceMock = $this->createMock(IdentityInterface::class);
+        $this->identityRepositoryInterfaceMock = $this->createMock(IdentityRepositoryInterface::class);
+        $this->autoLoginMiddlewareMock = new AutoLoginMiddleware($this->userMock, $this->identityRepositoryInterfaceMock);
+        $this->requestMock = $this->createMock(ServerRequestInterface::class);
+    }
+
+    private function mockDataCookie(array $cookie): void
+    {
+        $this->requestMock
+            ->expects($this->any())
+            ->method('getCookieParams')
+            ->willReturn($cookie);
+    }
+
+    private function mockFindIdentity(): void
+    {
+        $this->identityRepositoryInterfaceMock
+            ->expects($this->any())
+            ->method('findIdentity')
+            ->willReturn($this->identityInterfaceMock);
     }
 }

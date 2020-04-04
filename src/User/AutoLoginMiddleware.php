@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace Yiisoft\Yii\Web\User;
 
 use Psr\Http\Server\RequestHandlerInterface;
-use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
-use Yiisoft\Auth\IdentityInterface;
 use Yiisoft\Auth\IdentityRepositoryInterface;
 use Yiisoft\Yii\Web\User\User;
 
@@ -31,20 +29,13 @@ final class AutoLoginMiddleware implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $data = $this->getIdentityAndDurationFromCookie($request);
-        if (!is_null($data)) {
-            if ($this->user->login($data['identity'], $data['duration'])) {
-                try {
-                    $response = $handler->handle($request);
-                } catch (\Throwable $e) {
-                    throw $e;
-                }
-
-                return $response;
-            }
+        if (!$this->userIsAuth($request)) {
+            throw new \Exception('Error authentication');
         }
 
-        throw new \Exception("Error authentication");
+        $response = $handler->handle($request);
+
+        return $response;
     }
 
     /**
@@ -73,5 +64,25 @@ final class AutoLoginMiddleware implements MiddlewareInterface
         }
 
         return null;
+    }
+
+    /**
+     * Check if the user can be authenticated
+     * @param ServerRequestInterface $request Request to handle
+     * @return bool
+     */
+    private function userIsAuth(ServerRequestInterface $request): bool
+    {
+        $data = $this->getIdentityAndDurationFromCookie($request);
+
+        if ($data === null) {
+            return false;
+        }
+
+        if (!$this->user->login($data['identity'], $data['duration'])) {
+            return false;
+        }
+
+        return true;
     }
 }
