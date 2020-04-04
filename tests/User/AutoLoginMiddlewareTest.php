@@ -1,12 +1,9 @@
 <?php
 
-
 namespace Yiisoft\Yii\Web\Tests\User;
 
 use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Auth\IdentityInterface;
@@ -17,12 +14,12 @@ use Yiisoft\Yii\Web\User\AutoLoginMiddleware;
 class AutoLoginMiddlewareTest extends TestCase
 {
     /**
-     * @var RequestHandlerInterface|PHPUnit_Framework_MockObject_MockObject
+     * @var RequestHandlerInterface
      */
     private $requestHandlerMock;
 
     /**
-     * @var ServerRequestInterface|PHPUnit_Framework_MockObject_MockObject
+     * @var ServerRequestInterface
      */
     private $requestMock;
 

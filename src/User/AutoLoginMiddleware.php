@@ -33,37 +33,34 @@ final class AutoLoginMiddleware implements MiddlewareInterface
             throw new \Exception('Error authentication');
         }
 
-        $response = $handler->handle($request);
-
-        return $response;
+        return $handler->handle($request);
     }
 
     /**
-     * Determines if an identity cookie has a valid format and contains a valid auth key.
-     * This method is used when [[enableAutoLogin]] is true.
-     * This method attempts to authenticate a user using the information in the identity cookie.
+     * Parse and determines if an identity cookie has a valid format.
      * @param ServerRequestInterface $request Request to handle
-     * @return array|null Returns an array of 'identity' and 'duration' if valid, otherwise null.
+     * @return array Returns an array of 'identity' and 'duration' if valid, otherwise [].
      */
-    private function getIdentityAndDurationFromCookie(ServerRequestInterface $request): ?array
+    private function parseCredentials(ServerRequestInterface $request): array
     {
-        $cookies = $request->getCookieParams();
-        $value = $cookies['remember'] ?? null;
-
-        if ($value === null) {
-            return null;
+        try {
+            $cookies = $request->getCookieParams();
+            $data = json_decode($cookies['remember'], true, 512);
+        } catch (\Exception $e) {
+            return [];
         }
 
-        $data = json_decode($value, true);
-        if (is_array($data) && count($data) === 3) {
-            [$id, $authKey, $duration] = $data;
-            $identity = $this->identityRepository->findIdentity($id);
-            if ($identity !== null) {
-                return ['identity' => $identity, 'duration' => $duration];
-            }
+        if (!is_array($data) || count($data) !== 3) {
+            return [];
         }
 
-        return null;
+        [$id, , $duration] = $data;
+        $identity = $this->identityRepository->findIdentity($id);
+        if ($identity === null) {
+            return [];
+        }
+
+        return ['identity' => $identity, 'duration' => $duration];
     }
 
     /**
@@ -73,16 +70,12 @@ final class AutoLoginMiddleware implements MiddlewareInterface
      */
     private function userIsAuth(ServerRequestInterface $request): bool
     {
-        $data = $this->getIdentityAndDurationFromCookie($request);
+        $data = $this->parseCredentials($request);
 
-        if ($data === null) {
+        if ($data === []) {
             return false;
         }
 
-        if (!$this->user->login($data['identity'], $data['duration'])) {
-            return false;
-        }
-
-        return true;
+        return $this->user->login($data['identity'], $data['duration']);
     }
 }
