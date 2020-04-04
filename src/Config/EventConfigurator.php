@@ -13,11 +13,8 @@ class EventConfigurator extends AbstractProviderConfigurator
 
     private ContainerInterface $container;
 
-    public function __construct(ListenerProviderInterface $listenerProvider, ContainerInterface $container)
+    public function __construct(Provider $listenerProvider, ContainerInterface $container)
     {
-        if (!($listenerProvider instanceof Provider)) {
-            throw new \InvalidArgumentException('Listener provider must be an instance of \Yiisoft\EventDispatcher\Provider.');
-        }
         $this->listenerProvider = $listenerProvider;
         $this->container = $container;
     }
