@@ -4,9 +4,10 @@ namespace Yiisoft\Yii\Web\Config;
 
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\ListenerProviderInterface;
+use Yiisoft\EventDispatcher\Provider\AbstractProviderConfigurator;
 use Yiisoft\EventDispatcher\Provider\Provider;
 
-class EventConfigurator
+class EventConfigurator extends AbstractProviderConfigurator
 {
     private ListenerProviderInterface $listenerProvider;
 
