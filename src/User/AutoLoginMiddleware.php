@@ -29,7 +29,7 @@ final class AutoLoginMiddleware implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        if (!$this->userIsAuth($request)) {
+        if (!$this->authenticateUserFromRequest($request)) {
             throw new \Exception('Error authentication');
         }
 
@@ -45,7 +45,7 @@ final class AutoLoginMiddleware implements MiddlewareInterface
     {
         try {
             $cookies = $request->getCookieParams();
-            $data = json_decode($cookies['remember'], true, 512);
+            $data = json_decode($cookies['remember'], true, 512, JSON_THROW_ON_ERROR);
         } catch (\Exception $e) {
             return [];
         }
@@ -64,11 +64,11 @@ final class AutoLoginMiddleware implements MiddlewareInterface
     }
 
     /**
-     * Check if the user can be authenticated
+     * Check if the user can authenticate and if everything is ok, authenticate
      * @param ServerRequestInterface $request Request to handle
      * @return bool
      */
-    private function userIsAuth(ServerRequestInterface $request): bool
+    private function authenticateUserFromRequest(ServerRequestInterface $request): bool
     {
         $data = $this->parseCredentials($request);
 
