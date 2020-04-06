@@ -3,28 +3,26 @@
 namespace Yiisoft\Yii\Web\Config;
 
 use Psr\Container\ContainerInterface;
-use Psr\EventDispatcher\ListenerProviderInterface;
+use Yiisoft\EventDispatcher\Provider\AbstractProviderConfigurator;
 use Yiisoft\EventDispatcher\Provider\Provider;
+use Yiisoft\Injector\Injector;
 
-class EventConfigurator
+class EventConfigurator extends AbstractProviderConfigurator
 {
-    private ListenerProviderInterface $listenerProvider;
+    private Provider $listenerProvider;
 
     private ContainerInterface $container;
 
-    public function __construct(ListenerProviderInterface $listenerProvider, ContainerInterface $container)
+    public function __construct(Provider $listenerProvider, ContainerInterface $container)
     {
-        if (!($listenerProvider instanceof Provider)) {
-            throw new \InvalidArgumentException('Listener provider must be an instance of \Yiisoft\EventDispatcher\Provider.');
-        }
         $this->listenerProvider = $listenerProvider;
         $this->container = $container;
     }
 
     public function registerListeners(array $listeners): void
     {
-        foreach ($listeners as $event => $listener) {
-            if (is_string($event)) {
+        foreach ($listeners as $eventName => $listener) {
+            if (is_string($eventName)) {
                 foreach ($listener as $callable) {
                     if (!is_callable($callable)) {
                         throw new \RuntimeException('Listener must be a callable.');
@@ -32,13 +30,11 @@ class EventConfigurator
                     if (is_array($callable) && !is_object($callable[0])) {
                         $callable = [$this->container->get($callable[0]), $callable[1]];
                     }
-                    $this->listenerProvider->attach($callable, $event);
+                    $this->listenerProvider
+                        ->attach(fn ($event) => (new Injector($this->container))->invoke($callable, [$event]), $eventName);
                 }
             } else {
-                if (!is_callable($listener)) {
-                    throw new \RuntimeException('Listener must be a callable.');
-                }
-                $this->listenerProvider->attach($listener);
+                throw new \RuntimeException('Incorrect event listener format. Format with event name must be used.');
             }
         }
     }

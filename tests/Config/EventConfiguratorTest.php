@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Yiisoft\EventDispatcher\Provider\Provider;
 use Yiisoft\Yii\Web\Config\EventConfigurator;
+use Yiisoft\Yii\Web\Session\Session;
 
 class EventConfiguratorTest extends TestCase
 {
@@ -21,19 +22,47 @@ class EventConfiguratorTest extends TestCase
         $listeners = iterator_to_array($provider->getListenersForEvent($event));
 
         $this->assertCount(2, $listeners);
-        $this->assertSame($eventConfig[0], $listeners[0]);
-        $this->assertInstanceOf(Event::class, $listeners[1][0]);
-        $this->assertSame('register', $listeners[1][1]);
+        $this->assertInstanceOf(\Closure::class, $listeners[0]);
+        $this->assertInstanceOf(\Closure::class, $listeners[1]);
+    }
+
+    public function testAddEventListenerInjection(): void
+    {
+        $event = new Event();
+
+        $container = $this->getContainer([
+            Event::class => new Event(),
+            Session::class => new Session(),
+        ]);
+        $provider = new Provider();
+        $configurator = new EventConfigurator($provider, $container);
+        $eventConfig = $this->getEventsConfigWithDependency();
+        $configurator->registerListeners($eventConfig);
+        $listeners = iterator_to_array($provider->getListenersForEvent($event));
+        $listeners[0]($event);
+
+        $this->assertInstanceOf(Session::class, $event->registered()[0]);
     }
 
     private function getEventsConfig(): array
     {
         return [
-            static function (Event $event) {
-                $event->register(1);
-            },
             Event::class => [
-                [Event::class, 'register']
+                [Event::class, 'register'],
+                static function (Event $event) {
+                    $event->register(1);
+                },
+            ],
+        ];
+    }
+
+    private function getEventsConfigWithDependency(): array
+    {
+        return [
+            Event::class => [
+                static function (Event $event, Session $session) {
+                    $event->register($session);
+                },
             ],
         ];
     }
