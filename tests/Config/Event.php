@@ -9,9 +9,9 @@ class Event
      */
     private array $registered = [];
 
-    public function register(string $name): void
+    public function register($value): void
     {
-        $this->registered[] = $name;
+        $this->registered[] = $value;
     }
 
     /**
