@@ -8,6 +8,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
+use Psr\Log\LoggerInterface;
 use Yiisoft\Auth\IdentityRepositoryInterface;
 use Yiisoft\Yii\Web\User\User;
 
@@ -18,19 +19,22 @@ final class AutoLoginMiddleware implements MiddlewareInterface
 {
     private User $user;
     private IdentityRepositoryInterface $identityRepository;
+    private LoggerInterface $logger;
 
     public function __construct(
         User $user,
-        IdentityRepositoryInterface $identityRepository
+        IdentityRepositoryInterface $identityRepository,
+        LoggerInterface $logger
     ) {
         $this->user = $user;
         $this->identityRepository = $identityRepository;
+        $this->logger = $logger;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if (!$this->authenticateUserFromRequest($request)) {
-            throw new \Exception('Error authentication');
+            $this->logger->warning('Unable to authenticate used by cookie.');
         }
 
         return $handler->handle($request);
