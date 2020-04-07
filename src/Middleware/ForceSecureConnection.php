@@ -12,7 +12,10 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Http\Status;
 
 /**
- * Redirects from HTTP to HTTPS and adds CSP and HSTS headers
+ * Redirects from HTTP to HTTPS and adds CSP and HSTS headers.
+ *
+ * Note: Prefer forcing HTTPS via web server in case you are not creating installable product such as CMS
+ * and not hosting the project on a server where you do not have access to web server configuration.
  */
 final class ForceSecureConnection implements MiddlewareInterface
 {
