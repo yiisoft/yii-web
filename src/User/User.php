@@ -142,7 +142,8 @@ class User
      */
     protected function sendIdentityCookie(IdentityInterface $identity, int $duration): void
     {
-        $data = json_encode([
+        $data = json_encode(
+            [
                 $identity->getId(),
                 $this->getAuthKey(),
                 $duration,
