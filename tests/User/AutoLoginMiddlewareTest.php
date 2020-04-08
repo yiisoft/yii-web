@@ -53,8 +53,13 @@ class AutoLoginMiddlewareTest extends TestCase
     public function testProcessOK(): void
     {
         $this->mockDataRequest();
-        $this->mockDataCookie(["remember" => json_encode(['1', '123456', 60])]);
+        $this->mockDataCookie(["remember" => json_encode(['1', 'ABCD1234', 60])]);
         $this->mockFindIdentity();
+
+        $this->userMock
+            ->expects($this->once())
+            ->method('validateAuthKey')
+            ->willReturn(true);
 
         $this->userMock
             ->expects($this->once())
@@ -73,8 +78,13 @@ class AutoLoginMiddlewareTest extends TestCase
     public function testProcessErrorLogin(): void
     {
         $this->mockDataRequest();
-        $this->mockDataCookie(["remember" => json_encode(['1', '123456', 60])]);
+        $this->mockDataCookie(["remember" => json_encode(['1', 'ABCD1234', 60])]);
         $this->mockFindIdentity();
+
+        $this->userMock
+            ->expects($this->once())
+            ->method('validateAuthKey')
+            ->willReturn(true);
 
         $this->userMock
             ->expects($this->once())
@@ -88,6 +98,21 @@ class AutoLoginMiddlewareTest extends TestCase
 
         $messages = $this->getInaccessibleProperty($this->loggerMock, 'messages');
         $this->assertEquals($messages[0][1], 'Unable to authenticate used by cookie.');
+    }
+
+    public function testProcessInvalidAuthKey(): void
+    {
+        $this->mockDataRequest();
+        $this->mockDataCookie(["remember" => json_encode(['1', '123456', 60])]);
+        $this->mockFindIdentity();
+
+        $memory = memory_get_usage();
+        $this->loggerMock->setTraceLevel(3);
+
+        $this->autoLoginMiddlewareMock->process($this->requestMock, $this->requestHandlerMock);
+
+        $messages = $this->getInaccessibleProperty($this->loggerMock, 'messages');
+        $this->assertEquals($messages[0][1], 'Unable to authenticate used by cookie. Invalid auth key.');
     }
 
     public function testProcessCookieEmpty(): void

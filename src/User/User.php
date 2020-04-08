@@ -2,10 +2,12 @@
 
 namespace Yiisoft\Yii\Web\User;
 
+use Nyholm\Psr7\Response;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Yiisoft\Access\AccessCheckerInterface;
 use Yiisoft\Auth\IdentityInterface;
 use Yiisoft\Auth\IdentityRepositoryInterface;
+use Yiisoft\Yii\Web\Cookie;
 use Yiisoft\Yii\Web\Session\SessionInterface;
 use Yiisoft\Yii\Web\User\Event\AfterLogin;
 use Yiisoft\Yii\Web\User\Event\AfterLogout;
@@ -112,6 +114,48 @@ class User
     }
 
     /**
+     * Return the auth key value
+     *
+     * @return string Auth key value
+     */
+    public function getAuthKey(): string
+    {
+        return 'ABCD1234';
+    }
+
+    /**
+     * Validate auth key
+     *
+     * @param String $authKey Auth key to validate
+     * @return bool True if is valid
+     */
+    public function validateAuthKey($authKey): bool
+    {
+        return $authKey === 'ABCD1234';
+    }
+
+    /**
+     * Sends an identity cookie.
+     *
+     * @param IdentityInterface $identity
+     * @param int $duration number of seconds that the user can remain in logged-in status.
+     */
+    protected function sendIdentityCookie(IdentityInterface $identity, int $duration): void
+    {
+        $data = json_encode([
+                $identity->getId(),
+                $this->getAuthKey(),
+                $duration,
+            ],
+            JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+        );
+
+        $cookieIdentity = (new Cookie('remember', $data))->expireAt(time() + $duration);
+        $response = new Response();
+        $cookieIdentity->addToResponse($response);
+    }
+
+    /**
      * Logs in a user.
      *
      * After logging in a user:
@@ -135,6 +179,7 @@ class User
         if ($this->beforeLogin($identity, $duration)) {
             $this->switchIdentity($identity);
             $this->afterLogin($identity, $duration);
+            $this->sendIdentityCookie($identity, $duration);
         }
         return !$this->isGuest();
     }

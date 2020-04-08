@@ -58,9 +58,14 @@ final class AutoLoginMiddleware implements MiddlewareInterface
             return [];
         }
 
-        [$id, , $duration] = $data;
+        [$id, $authKey, $duration] = $data;
         $identity = $this->identityRepository->findIdentity($id);
         if ($identity === null) {
+            return [];
+        }
+
+        if (!$this->user->validateAuthKey($authKey)) {
+            $this->logger->warning('Unable to authenticate used by cookie. Invalid auth key.');
             return [];
         }
 
