@@ -9,12 +9,13 @@ use Yiisoft\Auth\IdentityInterface;
 use Yiisoft\Auth\IdentityRepositoryInterface;
 use Yiisoft\Yii\Web\Cookie;
 use Yiisoft\Yii\Web\Session\SessionInterface;
+use Yiisoft\Yii\Web\User\AuthenticationKeyInterface;
 use Yiisoft\Yii\Web\User\Event\AfterLogin;
 use Yiisoft\Yii\Web\User\Event\AfterLogout;
 use Yiisoft\Yii\Web\User\Event\BeforeLogin;
 use Yiisoft\Yii\Web\User\Event\BeforeLogout;
 
-class User
+class User implements AuthenticationKeyInterface
 {
     private const SESSION_AUTH_ID = '__auth_id';
     private const SESSION_AUTH_EXPIRE = '__auth_expire';
@@ -151,7 +152,9 @@ class User
             JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
         );
 
-        $cookieIdentity = (new Cookie('remember', $data))->expireAt(time() + $duration);
+        $expireDateTime = new \DateTime();
+        $expireDateTime->setTimestamp(time() + $duration);
+        $cookieIdentity = (new Cookie('remember', $data))->expireAt($expireDateTime);
         $response = new Response();
         $cookieIdentity->addToResponse($response);
     }
@@ -225,6 +228,12 @@ class User
             if ($destroySession && $this->session) {
                 $this->session->destroy();
             }
+
+            // Remove the cookie
+            $expireDateTime = new \DateTime();
+            $expireDateTime->modify("-1 day");
+            (new Cookie('remember', ""))->expireAt($expireDateTime);
+
             $this->afterLogout($identity);
         }
         return $this->isGuest();
