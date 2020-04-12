@@ -5,12 +5,11 @@ namespace PHPSTORM_META {
     expectedArguments(
         \Yiisoft\Yii\Web\Data\DataResponseFactoryInterface::createResponse(),
         1,
-        argumentsSet('\Yiisoft\Http\Status::statuses'),
+        argumentsSet('\Yiisoft\Http\Status::STATUSES'),
     );
 
-
     registerArgumentsSet(
-        '\Yiisoft\Http\Status::statuses',
+        '\Yiisoft\Http\Status::STATUSES',
         // 1xx
         \Yiisoft\Http\Status::CONTINUE,
         \Yiisoft\Http\Status::SWITCHING_PROTOCOLS,
