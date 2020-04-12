@@ -35,7 +35,7 @@ class EventConfigurator extends AbstractProviderConfigurator
                 }
                 $this->listenerProvider
                     ->attach(
-                        fn($event) => (new Injector($this->container))->invoke($callable, [$event]),
+                        fn ($event) => (new Injector($this->container))->invoke($callable, [$event]),
                         $eventName
                     );
             }
