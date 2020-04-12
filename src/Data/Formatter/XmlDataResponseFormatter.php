@@ -120,7 +120,7 @@ final class XmlDataResponseFormatter implements DataResponseFormatterInterface
     protected function buildXml($element, $data): void
     {
         if (is_array($data) ||
-            ($data instanceof \Traversable && $this->useTraversableAsArray)
+            ($this->useTraversableAsArray && $data instanceof \Traversable)
         ) {
             foreach ($data as $name => $value) {
                 if (is_int($name) && is_object($value)) {
@@ -201,9 +201,9 @@ final class XmlDataResponseFormatter implements DataResponseFormatterInterface
     {
         try {
             new DOMElement($name);
-            return true;
         } catch (DOMException $e) {
             return false;
         }
+        return true;
     }
 }
