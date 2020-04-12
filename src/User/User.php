@@ -152,7 +152,7 @@ class User implements AuthenticationKeyInterface
             JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
         );
 
-        $expireDateTime = new \DateTime();
+        $expireDateTime = new \DateTimeImmutable();
         $expireDateTime->setTimestamp(time() + $duration);
         $cookieIdentity = (new Cookie('remember', $data))->expireAt($expireDateTime);
         $response = new Response();
@@ -230,7 +230,7 @@ class User implements AuthenticationKeyInterface
             }
 
             // Remove the cookie
-            $expireDateTime = new \DateTime();
+            $expireDateTime = new \DateTimeImmutable();
             $expireDateTime->modify("-1 day");
             (new Cookie('remember', ""))->expireAt($expireDateTime);
 

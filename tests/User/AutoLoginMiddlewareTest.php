@@ -54,7 +54,6 @@ class AutoLoginMiddlewareTest extends TestCase
     {
         $this->mockDataRequest();
         $this->mockDataCookie(["remember" => json_encode(['1', 'ABCD1234', 60])]);
-        $this->mockFindIdentity();
 
         $this->userMock
             ->expects($this->once())
@@ -79,7 +78,6 @@ class AutoLoginMiddlewareTest extends TestCase
     {
         $this->mockDataRequest();
         $this->mockDataCookie(["remember" => json_encode(['1', 'ABCD1234', 60])]);
-        $this->mockFindIdentity();
 
         $this->userMock
             ->expects($this->once())
@@ -104,7 +102,6 @@ class AutoLoginMiddlewareTest extends TestCase
     {
         $this->mockDataRequest();
         $this->mockDataCookie(["remember" => json_encode(['1', '123456', 60])]);
-        $this->mockFindIdentity();
 
         $memory = memory_get_usage();
         $this->loggerMock->setTraceLevel(3);
@@ -119,7 +116,6 @@ class AutoLoginMiddlewareTest extends TestCase
     {
         $this->mockDataRequest();
         $this->mockDataCookie([]);
-        $this->mockFindIdentity();
 
         $memory = memory_get_usage();
         $this->loggerMock->setTraceLevel(3);
@@ -134,7 +130,6 @@ class AutoLoginMiddlewareTest extends TestCase
     {
         $this->mockDataRequest();
         $this->mockDataCookie(["remember" => json_encode(['1', '123456', 60, "paramInvalid"])]);
-        $this->mockFindIdentity();
 
         $memory = memory_get_usage();
         $this->loggerMock->setTraceLevel(3);
@@ -156,6 +151,12 @@ class AutoLoginMiddlewareTest extends TestCase
             ->getMock();
 
         $this->identityRepositoryInterfaceMock = $this->createMock(IdentityRepositoryInterface::class);
+
+        $this->identityRepositoryInterfaceMock
+            ->expects($this->any())
+            ->method('findIdentity')
+            ->willReturn($this->identityInterfaceMock);
+
         $this->autoLoginMiddlewareMock = new AutoLoginMiddleware($this->userMock, $this->identityRepositoryInterfaceMock, $this->loggerMock);
         $this->requestMock = $this->createMock(ServerRequestInterface::class);
     }
@@ -166,14 +167,6 @@ class AutoLoginMiddlewareTest extends TestCase
             ->expects($this->any())
             ->method('getCookieParams')
             ->willReturn($cookie);
-    }
-
-    private function mockFindIdentity(): void
-    {
-        $this->identityRepositoryInterfaceMock
-            ->expects($this->any())
-            ->method('findIdentity')
-            ->willReturn($this->identityInterfaceMock);
     }
 
     /**
