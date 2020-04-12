@@ -89,9 +89,6 @@ class AutoLoginMiddlewareTest extends TestCase
             ->method('login')
             ->willReturn(false);
 
-        $memory = memory_get_usage();
-        $this->loggerMock->setTraceLevel(3);
-
         $this->autoLoginMiddlewareMock->process($this->requestMock, $this->requestHandlerMock);
 
         $messages = $this->getInaccessibleProperty($this->loggerMock, 'messages');
@@ -102,9 +99,6 @@ class AutoLoginMiddlewareTest extends TestCase
     {
         $this->mockDataRequest();
         $this->mockDataCookie(["remember" => json_encode(['1', '123456', 60])]);
-
-        $memory = memory_get_usage();
-        $this->loggerMock->setTraceLevel(3);
 
         $this->autoLoginMiddlewareMock->process($this->requestMock, $this->requestHandlerMock);
 
@@ -117,9 +111,6 @@ class AutoLoginMiddlewareTest extends TestCase
         $this->mockDataRequest();
         $this->mockDataCookie([]);
 
-        $memory = memory_get_usage();
-        $this->loggerMock->setTraceLevel(3);
-
         $this->autoLoginMiddlewareMock->process($this->requestMock, $this->requestHandlerMock);
 
         $messages = $this->getInaccessibleProperty($this->loggerMock, 'messages');
@@ -130,9 +121,6 @@ class AutoLoginMiddlewareTest extends TestCase
     {
         $this->mockDataRequest();
         $this->mockDataCookie(["remember" => json_encode(['1', '123456', 60, "paramInvalid"])]);
-
-        $memory = memory_get_usage();
-        $this->loggerMock->setTraceLevel(3);
 
         $this->autoLoginMiddlewareMock->process($this->requestMock, $this->requestHandlerMock);
 
