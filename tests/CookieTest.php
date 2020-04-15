@@ -6,7 +6,9 @@ use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Yii\Web\Cookie;
 
-class CookieTest extends TestCase
+use function Sodium\add;
+
+final class CookieTest extends TestCase
 {
     private function getCookieHeader(Cookie $cookie): string
     {
@@ -45,11 +47,34 @@ class CookieTest extends TestCase
     {
         $expireDateTime = new \DateTime();
         $expireDateTime->setTimezone(new \DateTimeZone('GMT'));
-        $formattedDateTime = $expireDateTime->format('D, d M Y H:i:s T');
+        $formattedDateTime = $expireDateTime->format(\DateTimeInterface::RFC7231);
 
         $cookie = (new Cookie('test', 42))->expireAt($expireDateTime);
 
         $this->assertSame("test=42; Expires=$formattedDateTime; Path=/; Secure; HttpOnly; SameSite=Lax", $this->getCookieHeader($cookie));
+    }
+
+    public function testMaxAge(): void
+    {
+        $maxAge = new \DateInterval('PT3600S');
+        $formattedDateTime = (new \DateTimeImmutable())->add($maxAge)->format(\DateTimeInterface::RFC7231);
+
+        $cookie = (new Cookie('test', 42))->maxAge($maxAge);
+        $this->assertSame("test=42; Expires=$formattedDateTime; Max-Age=3600; Path=/; Secure; HttpOnly; SameSite=Lax", $this->getCookieHeader($cookie));
+    }
+
+    public function testIsExpired(): void
+    {
+        $cookie = (new Cookie('test', 42))->expireAt((new \DateTimeImmutable('-5 years')));
+        $this->assertTrue($cookie->isExpired());
+    }
+
+    public function testExpire(): void
+    {
+        $formattedDateTime = (new \DateTimeImmutable('-5 years'))->format(\DateTimeInterface::RFC7231);
+        $cookie = (new Cookie('test', 42))->expire();
+        $this->assertSame("test=42; Expires=$formattedDateTime; Path=/; Secure; HttpOnly; SameSite=Lax", $this->getCookieHeader($cookie));
+
     }
 
     public function testExpireWhenBrowserIsClosed(): void
@@ -93,7 +118,7 @@ class CookieTest extends TestCase
         (new Cookie('test', 42))->sameSite('invalid');
     }
 
-    public function testSameSite(): void
+    public function testSameSiteNone(): void
     {
         $cookie = (new Cookie('test', 42))->sameSite(Cookie::SAME_SITE_NONE);
 
@@ -102,8 +127,15 @@ class CookieTest extends TestCase
 
     public function testFromSetCookieString(): void
     {
-        $setCookieString = 'sessionId=e8bb43229de9; Domain=foo.example.com; Path=/; Secure; HttpOnly; SameSite=Strict';
+        $expireDate = new \DateTimeImmutable();
+        $maxAge = new \DateInterval('PT3600S');
+        $setCookieString = 'sessionId=e8bb43229de9; Domain=foo.example.com; ';
+        $setCookieString .= 'Expires=' . $expireDate->format(\DateTimeInterface::RFC7231) . '; ';
+        $setCookieString .= 'Max-Age=3600; Path=/; Secure; HttpOnly; SameSite=Strict';
+
         $cookie = (new Cookie('sessionId', 'e8bb43229de9', false))
+            ->expireAt($expireDate)
+            ->maxAge($maxAge)
             ->domain('foo.example.com')
             ->path('/')
             ->secure(true)

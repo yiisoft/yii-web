@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Yii\Web;
@@ -25,9 +26,18 @@ use function strtolower;
  */
 final class Cookie
 {
-    // @see https://tools.ietf.org/html/rfc6265#section-4
-    // @see https://tools.ietf.org/html/rfc2616#section-2.2
+    /**
+     * Regular Expression used to validate cookie name
+     * @see https://tools.ietf.org/html/rfc6265#section-4.1.1
+     * @see https://tools.ietf.org/html/rfc2616#section-2.2
+     */
     private const TOKEN = '/^[a-zA-Z0-9!#$%&\' * +\- .^_`|~]+$/';
+
+    /**
+     * Regular expression used to validate cooke value
+     * @see https://tools.ietf.org/html/rfc6265#section-4.1.1
+     * @see https://tools.ietf.org/html/rfc2616#section-2.2
+     */
     private const OCTET='/^[\x21\x23-\x2B\x2D-\x3A\x3C-\x5B\x5D-\x7E]*$/';
 
     /**
@@ -58,13 +68,18 @@ final class Cookie
     /**
      * @var string value of the cookie
      */
-    private string $value = '';
+    private string $value;
 
     /**
-     * @var string|null RFC-1123 date at which the cookie expires.
+     * @var DateTimeInterface|null RFC-1123 date at which the cookie expires.
      * @see https://tools.ietf.org/html/rfc6265#section-4.1.1
      */
-    private ?string $expire = null;
+    private ?DateTimeInterface $expire = null;
+
+    /**
+     * @var int|null maximum age of cookie in seconds
+     */
+    private ?int $maxAge = null;
 
     /**
      * @var string|null domain of the cookie.
@@ -121,17 +136,32 @@ final class Cookie
         return $this->value;
     }
 
+    public function isExpired(): bool
+    {
+        return isset($this->expire) && $this->expire->getTimestamp() < (new DateTimeImmutable())->getTimestamp();
+    }
+
     public function expireAt(DateTimeInterface $dateTime): self
     {
         $new = clone $this;
-        $new->expire = $dateTime->format('D, d M Y H:i:s T');
+        $new->expire = $dateTime;
         return $new;
     }
 
-    public function validFor(DateInterval $dateInterval): self
+    public function expire(): self
     {
-        $expireDateTime = (new DateTimeImmutable())->add($dateInterval);
-        return $this->expireAt($expireDateTime);
+        return $this->expireAt((new \DateTimeImmutable('-5 years')));
+    }
+
+    public function maxAge(DateInterval $dateInterval): self
+    {
+        $reference = new DateTimeImmutable();
+        $expireDateTime = $reference->add($dateInterval);
+
+        $new = clone $this;
+        $new->expire = $expireDateTime;
+        $new->maxAge = $expireDateTime->getTimestamp() - $reference->getTimestamp();
+        return $new;
     }
 
     public function expireWhenBrowserIsClosed(): self
@@ -180,12 +210,15 @@ final class Cookie
             throw new InvalidArgumentException('sameSite should be one of "Lax", "Strict" or "None"');
         }
 
+        $new = clone $this;
+
         if ($sameSite === self::SAME_SITE_NONE) {
             // the secure flag is required for cookies that are marked as 'SameSite=None'
-            $this->secure = true;
+            // so that cross-site cookies can only be accessed over HTTPS
+            // without it cookie will not be available for external access
+            $new->secure = true;
         }
 
-        $new = clone $this;
         $new->sameSite = $sameSite;
         return $new;
     }
@@ -212,7 +245,12 @@ final class Cookie
         ];
 
         if ($this->expire) {
-            $cookieParts[] = 'Expires=' . $this->expire;
+            $cookieParts[] = 'Expires=' . $this->expire->format(DateTimeInterface::RFC7231);
+        }
+
+        // max-age must be non-zero digit
+        if ($this->maxAge && $this->maxAge > 0) {
+            $cookieParts[] = 'Max-Age=' . $this->maxAge;
         }
 
         if ($this->domain) {
@@ -274,7 +312,7 @@ final class Cookie
                     $cookie = $cookie->expireAt(new DateTimeImmutable($attributeValue));
                     break;
                 case 'max-age':
-                    $cookie = $cookie->validFor(new DateInterval('PT' . $attributeValue . 'S'));
+                    $cookie = $cookie->maxAge(new DateInterval('PT' . $attributeValue . 'S'));
                     break;
                 case 'domain':
                     $cookie = $cookie->domain($attributeValue);
