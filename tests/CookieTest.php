@@ -74,7 +74,6 @@ final class CookieTest extends TestCase
         $formattedDateTime = (new \DateTimeImmutable('-5 years'))->format(\DateTimeInterface::RFC7231);
         $cookie = (new Cookie('test', 42))->expire();
         $this->assertSame("test=42; Expires=$formattedDateTime; Path=/; Secure; HttpOnly; SameSite=Lax", $this->getCookieHeader($cookie));
-
     }
 
     public function testExpireWhenBrowserIsClosed(): void
