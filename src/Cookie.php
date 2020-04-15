@@ -1,14 +1,35 @@
 <?php
+declare(strict_types=1);
 
 namespace Yiisoft\Yii\Web;
 
+use DateInterval;
+use DateTimeImmutable;
+use DateTimeInterface;
+use Exception;
+use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
+
+use function array_filter;
+use function array_map;
+use function array_shift;
+use function explode;
+use function implode;
+use function in_array;
+use function preg_match;
+use function preg_split;
+use function strtolower;
 
 /**
  * Cookie helps adding Set-Cookie header response in order to set cookie
  */
 final class Cookie
 {
+    // @see https://tools.ietf.org/html/rfc6265#section-4
+    // @see https://tools.ietf.org/html/rfc2616#section-2.2
+    private const TOKEN = '/^[a-zA-Z0-9!#$%&\' * +\- .^_`|~]+$/';
+    private const OCTET='/^[\x21\x23-\x2B\x2D-\x3A\x3C-\x5B\x5D-\x7E]*$/';
+
     /**
      * SameSite policy Lax will prevent the cookie from being sent by the browser in all cross-site browsing context
      * during CSRF-prone request methods (e.g. POST, PUT, PATCH etc).
@@ -27,7 +48,7 @@ final class Cookie
      */
     public const SAME_SITE_STRICT = 'Strict';
 
-    public const SAME_SITE_NONE = '';
+    public const SAME_SITE_NONE = 'None';
 
     /**
      * @var string name of the cookie
@@ -37,58 +58,87 @@ final class Cookie
     /**
      * @var string value of the cookie
      */
-    private string $value;
+    private string $value = '';
 
     /**
-     * @var string|null domain of the cookie
+     * @var string|null RFC-1123 date at which the cookie expires.
+     * @see https://tools.ietf.org/html/rfc6265#section-4.1.1
+     */
+    private ?string $expire = null;
+
+    /**
+     * @var string|null domain of the cookie.
      */
     private ?string $domain = null;
 
     /**
-     * @var int the timestamp at which the cookie expires. This is the server timestamp.
-     * Defaults to 0, meaning "until the browser is closed".
+     * @var string|null the path on the server in which the cookie will be available on.
      */
-    private int $expire = 0;
+    private ?string $path = null;
 
     /**
-     * @var string the path on the server in which the cookie will be available on. The default is '/'.
+     * @var bool|null whether cookie should be sent via secure connection
      */
-    private string $path = '/';
+    private ?bool $secure = null;
 
     /**
-     * @var bool whether cookie should be sent via secure connection
-     */
-    private bool $secure = true;
-
-    /**
-     * @var bool whether the cookie should be accessible only through the HTTP protocol.
+     * @var bool|null whether the cookie should be accessible only through the HTTP protocol.
      * By setting this property to true, the cookie will not be accessible by scripting languages,
      * such as JavaScript, which can effectively help to reduce identity theft through XSS attacks.
      */
-    private bool $httpOnly = true;
+    private ?bool $httpOnly = null;
 
     /**
-     * @var string SameSite prevents the browser from sending this cookie along with cross-site requests.
-     * Please note that this feature is only supported since PHP 7.3.0
-     * For better security, an exception will be thrown if `sameSite` is set while using an unsupported version of PHP.
-     * To use this feature across different PHP versions check the version first. E.g.
-     * ```php
-     * $cookie->sameSite = PHP_VERSION_ID >= 70300 ? yii\web\Cookie::SAME_SITE_LAX : null,
-     * ```
-     * @see https://www.owasp.org/index.php/SameSite for more information about sameSite.
+     * @var string|null SameSite prevents the browser from sending this cookie along with cross-site requests.
+     * @see https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html#samesite-cookie-attribute for more information about sameSite.
      */
-    private string $sameSite = self::SAME_SITE_LAX;
+    private ?string $sameSite = null;
 
-    public function __construct(string $name, string $value)
+    public function __construct(string $name, string $value = '', bool $safeDefaults = true)
     {
-        // @see https://tools.ietf.org/html/rfc6265#section-4
-        // @see https://tools.ietf.org/html/rfc2616#section-2.2
-        if (!preg_match('~^[a-z0-9._\-]+$~i', $name)) {
-            throw new \InvalidArgumentException("The cookie name \"$name\" contains invalid characters.");
+        if (!preg_match(self::TOKEN, $name)) {
+            throw new InvalidArgumentException("The cookie name \"$name\" contains invalid characters.");
         }
 
         $this->name = $name;
-        $this->value = $value;
+        $this->setValue($value);
+
+        if ($safeDefaults) {
+            $this->path = '/';
+            $this->secure = true;
+            $this->httpOnly = true;
+            $this->sameSite = self::SAME_SITE_LAX;
+        }
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getValue(): string
+    {
+        return $this->value;
+    }
+
+    public function expireAt(DateTimeInterface $dateTime): self
+    {
+        $new = clone $this;
+        $new->expire = $dateTime->format('D, d M Y H:i:s T');
+        return $new;
+    }
+
+    public function validFor(DateInterval $dateInterval): self
+    {
+        $expireDateTime = (new DateTimeImmutable())->add($dateInterval);
+        return $this->expireAt($expireDateTime);
+    }
+
+    public function expireWhenBrowserIsClosed(): self
+    {
+        $new = clone $this;
+        $new->expire = null;
+        return $new;
     }
 
     public function domain(string $domain): self
@@ -98,30 +148,13 @@ final class Cookie
         return $new;
     }
 
-    public function validFor(\DateInterval $dateInterval): self
-    {
-        $expireDateTime = (new \DateTimeImmutable())->add($dateInterval);
-        $new = clone $this;
-        $new->expire = (int)$expireDateTime->format('U');
-        return $new;
-    }
-
-    public function expireAt(\DateTimeInterface $dateTime): self
-    {
-        $new = clone $this;
-        $new->expire = (int)$dateTime->format('U');
-        return $new;
-    }
-
-    public function expireWhenBrowserIsClosed(): self
-    {
-        $new = clone $this;
-        $new->expire = 0;
-        return $new;
-    }
-
     public function path(string $path): self
     {
+        // path value is defined as any character except CTLs or ";"
+        if (preg_match('/[\x00-\x1F\x7F\x3B]/', $path)) {
+            throw new InvalidArgumentException("The cookie path \"$path\" contains invalid characters.");
+        }
+
         $new = clone $this;
         $new->path = $path;
         return $new;
@@ -144,7 +177,12 @@ final class Cookie
     public function sameSite(string $sameSite): self
     {
         if (!in_array($sameSite, [self::SAME_SITE_LAX, self::SAME_SITE_STRICT, self::SAME_SITE_NONE], true)) {
-            throw new \InvalidArgumentException('sameSite should be either Lax or Strict');
+            throw new InvalidArgumentException('sameSite should be one of "Lax", "Strict" or "None"');
+        }
+
+        if ($sameSite === self::SAME_SITE_NONE) {
+            // the secure flag is required for cookies that are marked as 'SameSite=None'
+            $this->secure = true;
         }
 
         $new = clone $this;
@@ -152,29 +190,118 @@ final class Cookie
         return $new;
     }
 
+    private function setValue(string $value): void
+    {
+        // @see https://tools.ietf.org/html/rfc6265#section-4.1.1
+        if (!preg_match(self::OCTET, $value)) {
+            throw new InvalidArgumentException("The cookie value \"$value\" contains invalid characters.");
+        }
+
+        $this->value = $value;
+    }
+
     public function addToResponse(ResponseInterface $response): ResponseInterface
     {
-        $headerValue = $this->name . '=' . urlencode($this->value);
+        return $response->withAddedHeader('Set-Cookie', (string) $this);
+    }
 
-        if ($this->expire !== 0) {
-            $headerValue .= '; Expires=' . gmdate('D, d-M-Y H:i:s T', $this->expire);
+    public function __toString(): string
+    {
+        $cookieParts = [
+            $this->name . '=' . $this->value
+        ];
+
+        if ($this->expire) {
+            $cookieParts[] = 'Expires=' . $this->expire;
         }
-        if (empty($this->path) === false) {
-            $headerValue .= '; Path=' . $this->path;
+
+        if ($this->domain) {
+            $cookieParts[] = 'Domain=' . $this->domain;
         }
-        if (empty($this->domain) === false) {
-            $headerValue .= '; Domain=' . $this->domain;
+
+        if ($this->path) {
+            $cookieParts[] = 'Path=' . $this->path;
         }
+
         if ($this->secure) {
-            $headerValue .= '; Secure';
-        }
-        if ($this->httpOnly) {
-            $headerValue .= '; HttpOnly';
-        }
-        if ($this->sameSite !== '') {
-            $headerValue .= '; SameSite=' . $this->sameSite;
+            $cookieParts[] = 'Secure';
         }
 
-        return $response->withAddedHeader('Set-Cookie', $headerValue);
+        if ($this->httpOnly) {
+            $cookieParts[] = 'HttpOnly';
+        }
+
+        if ($this->sameSite) {
+            $cookieParts[] = 'SameSite=' . $this->sameSite;
+        }
+
+        return implode('; ', $cookieParts);
+    }
+
+    /**
+     * Parse 'Set-Cookie' string and build Cookie object.
+     * Pass only Set-Cookie header value.
+     *
+     * @param string $string 'Set-Cookie' header value
+     * @return self
+     * @throws Exception
+     */
+    public static function fromSetCookieString(string $string): self
+    {
+        // array_filter with empty callback is used to filter out all falsy values
+        $rawAttributes = array_filter(preg_split('~\s*[;]\s*~', $string));
+
+        $rawAttribute = array_shift($rawAttributes);
+
+        if (!is_string($rawAttribute)) {
+            throw new InvalidArgumentException('Cookie string must have at least on attribute');
+        }
+
+        [$cookieName, $cookieValue] = self::splitCookieAttribute($rawAttribute);
+
+        $cookie = new self($cookieName, $cookieValue ?? '', false);
+
+        while ($rawAttribute = array_shift($rawAttributes)) {
+            [$attributeKey, $attributeValue] = self::splitCookieAttribute($rawAttribute);
+            $attributeKey = strtolower($attributeKey);
+
+            if ($attributeValue === null && ($attributeKey !== 'secure' || $attributeKey !== 'httponly')) {
+                continue;
+            }
+
+            switch (strtolower($attributeKey)) {
+                case 'expires':
+                    $cookie = $cookie->expireAt(new DateTimeImmutable($attributeValue));
+                    break;
+                case 'max-age':
+                    $cookie = $cookie->validFor(new DateInterval('PT' . $attributeValue . 'S'));
+                    break;
+                case 'domain':
+                    $cookie = $cookie->domain($attributeValue);
+                    break;
+                case 'path':
+                    $cookie = $cookie->path($attributeValue);
+                    break;
+                case 'secure':
+                    $cookie = $cookie->secure(true);
+                    break;
+                case 'httponly':
+                    $cookie = $cookie->httpOnly(true);
+                    break;
+                case 'samesite':
+                    $cookie = $cookie->sameSite($attributeValue);
+                    break;
+            }
+        }
+
+        return $cookie;
+    }
+
+    private static function splitCookieAttribute(string $attribute): array
+    {
+        $parts = explode('=', $attribute, 2);
+        $parts[1] = $parts[1] ?? null;
+
+        return array_map('urldecode', $parts);
     }
 }

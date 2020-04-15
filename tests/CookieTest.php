@@ -21,6 +21,12 @@ class CookieTest extends TestCase
         new Cookie('test[]', 42);
     }
 
+    public function testInvalidValue(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        new Cookie('test', ';');
+    }
+
     public function testDefaults(): void
     {
         $cookie = new Cookie('test', 42);
@@ -32,14 +38,14 @@ class CookieTest extends TestCase
     {
         $cookie = (new Cookie('test', 42))->domain('yiiframework.com');
 
-        $this->assertSame('test=42; Path=/; Domain=yiiframework.com; Secure; HttpOnly; SameSite=Lax', $this->getCookieHeader($cookie));
+        $this->assertSame('test=42; Domain=yiiframework.com; Path=/; Secure; HttpOnly; SameSite=Lax', $this->getCookieHeader($cookie));
     }
 
     public function testExpireAt(): void
     {
         $expireDateTime = new \DateTime();
         $expireDateTime->setTimezone(new \DateTimeZone('GMT'));
-        $formattedDateTime = $expireDateTime->format('D, d-M-Y H:i:s T');
+        $formattedDateTime = $expireDateTime->format('D, d M Y H:i:s T');
 
         $cookie = (new Cookie('test', 42))->expireAt($expireDateTime);
 
@@ -58,6 +64,12 @@ class CookieTest extends TestCase
         $cookie = (new Cookie('test', 42))->path('/test');
 
         $this->assertSame('test=42; Path=/test; Secure; HttpOnly; SameSite=Lax', $this->getCookieHeader($cookie));
+    }
+
+    public function testInvalidPath(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        (new Cookie('test', 42))->path(';invalid');
     }
 
     public function testSecure(): void
@@ -83,8 +95,22 @@ class CookieTest extends TestCase
 
     public function testSameSite(): void
     {
-        $cookie = (new Cookie('test', 42))->sameSite('');
+        $cookie = (new Cookie('test', 42))->sameSite(Cookie::SAME_SITE_NONE);
 
-        $this->assertSame('test=42; Path=/; Secure; HttpOnly', $this->getCookieHeader($cookie));
+        $this->assertSame('test=42; Path=/; Secure; HttpOnly; SameSite=None', $this->getCookieHeader($cookie));
+    }
+
+    public function testFromSetCookieString(): void
+    {
+        $setCookieString = 'sessionId=e8bb43229de9; Domain=foo.example.com; Path=/; Secure; HttpOnly; SameSite=Strict';
+        $cookie = (new Cookie('sessionId', 'e8bb43229de9', false))
+            ->domain('foo.example.com')
+            ->path('/')
+            ->secure(true)
+            ->httpOnly(true)
+            ->sameSite(Cookie::SAME_SITE_STRICT);
+        $cookie2 = Cookie::fromSetCookieString($setCookieString);
+
+        $this->assertSame((string)$cookie, (string)$cookie2);
     }
 }
