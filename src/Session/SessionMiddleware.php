@@ -66,7 +66,7 @@ class SessionMiddleware implements MiddlewareInterface
                 ->sameSite($cookieParameters['samesite'] ?? Cookie::SAME_SITE_LAX);
 
             if ($cookieParameters['lifetime'] > 0) {
-                $sessionCookie = $sessionCookie->validFor(new \DateInterval('PT' . $cookieParameters['lifetime'] . 'S'));
+                $sessionCookie = $sessionCookie->maxAge(new \DateInterval('PT' . $cookieParameters['lifetime'] . 'S'));
             }
 
             return $sessionCookie->addToResponse($response);
