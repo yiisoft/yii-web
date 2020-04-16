@@ -10,7 +10,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Log\LoggerInterface;
 use Yiisoft\Auth\IdentityRepositoryInterface;
-use Yiisoft\Yii\Web\User\User;
 
 /**
  * AutoLoginMiddleware automatically logs user in based on "remember me" cookie
@@ -34,7 +33,7 @@ final class AutoLoginMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if (!$this->authenticateUserFromRequest($request)) {
-            $this->logger->warning('Unable to authenticate used by cookie.');
+            $this->logger->warning('Unable to authenticate user by cookie.');
         }
 
         return $handler->handle($request);
@@ -65,7 +64,7 @@ final class AutoLoginMiddleware implements MiddlewareInterface
         }
 
         if (!$this->user->validateAuthKey($authKey)) {
-            $this->logger->warning('Unable to authenticate used by cookie. Invalid auth key.');
+            $this->logger->warning('Unable to authenticate user by cookie. Invalid auth key.');
             return [];
         }
 
