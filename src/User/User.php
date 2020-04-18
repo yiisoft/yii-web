@@ -231,9 +231,7 @@ class User implements IdentityInterface
             }
 
             // Remove the cookie
-            $expireDateTime = new \DateTimeImmutable();
-            $expireDateTime->modify("-1 day");
-            (new Cookie($this->identityCookie, ""))->expireAt($expireDateTime);
+            (new Cookie($this->identityCookie, ""))->expire(1);
 
             $this->afterLogout($identity);
         }
