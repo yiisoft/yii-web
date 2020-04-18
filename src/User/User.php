@@ -266,7 +266,7 @@ class User implements IdentityInterface
      * @param string $name New name of the cookie
      * @return this
      */
-    public function setIdentityCookie(string $name): this
+    public function setIdentityCookie(string $name): self
     {
         $new = clone $this;
         $new->identityCookie = $name;
