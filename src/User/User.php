@@ -2,20 +2,19 @@
 
 namespace Yiisoft\Yii\Web\User;
 
-use Nyholm\Psr7\Response;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\Http\Message\ResponseInterface;
 use Yiisoft\Access\AccessCheckerInterface;
 use Yiisoft\Auth\IdentityInterface;
 use Yiisoft\Auth\IdentityRepositoryInterface;
 use Yiisoft\Yii\Web\Cookie;
 use Yiisoft\Yii\Web\Session\SessionInterface;
-use Yiisoft\Yii\Web\User\AuthenticationKeyInterface;
 use Yiisoft\Yii\Web\User\Event\AfterLogin;
 use Yiisoft\Yii\Web\User\Event\AfterLogout;
 use Yiisoft\Yii\Web\User\Event\BeforeLogin;
 use Yiisoft\Yii\Web\User\Event\BeforeLogout;
 
-class User implements AuthenticationKeyInterface
+class User implements IdentityInterface
 {
     private const SESSION_AUTH_ID = '__auth_id';
     private const SESSION_AUTH_EXPIRE = '__auth_expire';
@@ -24,6 +23,7 @@ class User implements AuthenticationKeyInterface
     private IdentityRepositoryInterface $identityRepository;
     private EventDispatcherInterface $eventDispatcher;
 
+    private string $identityCookie = 'remember';
     private ?AccessCheckerInterface $accessChecker = null;
     private ?IdentityInterface $identity = null;
     private ?SessionInterface $session = null;
@@ -140,8 +140,9 @@ class User implements AuthenticationKeyInterface
      *
      * @param IdentityInterface $identity
      * @param int $duration number of seconds that the user can remain in logged-in status.
+     * @param ResponseInterface $response Response to handle
      */
-    protected function sendIdentityCookie(IdentityInterface $identity, int $duration): void
+    protected function sendIdentityCookie(IdentityInterface $identity, int $duration, ResponseInterface $response): void
     {
         $data = json_encode(
             [
@@ -154,8 +155,7 @@ class User implements AuthenticationKeyInterface
 
         $expireDateTime = new \DateTimeImmutable();
         $expireDateTime->setTimestamp(time() + $duration);
-        $cookieIdentity = (new Cookie('remember', $data))->expireAt($expireDateTime);
-        $response = new Response();
+        $cookieIdentity = (new Cookie($this->identityCookie, $data))->expireAt($expireDateTime);
         $cookieIdentity->addToResponse($response);
     }
 
@@ -176,14 +176,15 @@ class User implements AuthenticationKeyInterface
      *
      * @param IdentityInterface $identity the user identity (which should already be authenticated)
      * @param int $duration number of seconds that the user can remain in logged-in status, defaults to `0`
+     * @param ResponseInterface $response Response to handle
      * @return bool whether the user is logged in
      */
-    public function login(IdentityInterface $identity, int $duration = 0): bool
+    public function login(IdentityInterface $identity, int $duration = 0, ResponseInterface $response): bool
     {
         if ($this->beforeLogin($identity, $duration)) {
             $this->switchIdentity($identity);
             $this->afterLogin($identity, $duration);
-            $this->sendIdentityCookie($identity, $duration);
+            $this->sendIdentityCookie($identity, $duration, $response);
         }
         return !$this->isGuest();
     }
@@ -232,7 +233,7 @@ class User implements AuthenticationKeyInterface
             // Remove the cookie
             $expireDateTime = new \DateTimeImmutable();
             $expireDateTime->modify("-1 day");
-            (new Cookie('remember', ""))->expireAt($expireDateTime);
+            (new Cookie($this->identityCookie, ""))->expireAt($expireDateTime);
 
             $this->afterLogout($identity);
         }
@@ -258,6 +259,18 @@ class User implements AuthenticationKeyInterface
     public function getId(): ?string
     {
         return $this->getIdentity()->getId();
+    }
+
+    /**
+     * Set the name of the cookie identity
+     * @param string $name New name of the cookie
+     * @return this
+     */
+    public function setIdentityCookie(string $name): this
+    {
+        $new = clone $this;
+        $new->identityCookie = $name;
+        return $new;
     }
 
     /**

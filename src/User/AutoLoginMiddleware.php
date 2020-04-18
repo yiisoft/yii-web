@@ -32,11 +32,12 @@ final class AutoLoginMiddleware implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        if (!$this->authenticateUserFromRequest($request)) {
+        $response = $handler->handle($request);
+        if (!$this->authenticateUserFromRequest($request, $response)) {
             $this->logger->warning('Unable to authenticate user by cookie.');
         }
 
-        return $handler->handle($request);
+        return $response;
     }
 
     /**
@@ -74,9 +75,10 @@ final class AutoLoginMiddleware implements MiddlewareInterface
     /**
      * Check if the user can authenticate and if everything is ok, authenticate
      * @param ServerRequestInterface $request Request to handle
+     * @param ResponseInterface $response Response to handle
      * @return bool
      */
-    private function authenticateUserFromRequest(ServerRequestInterface $request): bool
+    private function authenticateUserFromRequest(ServerRequestInterface $request, ResponseInterface $response): bool
     {
         $data = $this->parseCredentials($request);
 
@@ -84,6 +86,6 @@ final class AutoLoginMiddleware implements MiddlewareInterface
             return false;
         }
 
-        return $this->user->login($data['identity'], $data['duration']);
+        return $this->user->login($data['identity'], $data['duration'], $response);
     }
 }

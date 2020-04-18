@@ -92,7 +92,7 @@ class AutoLoginMiddlewareTest extends TestCase
         $this->autoLoginMiddlewareMock->process($this->requestMock, $this->requestHandlerMock);
 
         $messages = $this->getInaccessibleProperty($this->loggerMock, 'messages');
-        $this->assertEquals($messages[0][1], 'Unable to authenticate used by cookie.');
+        $this->assertEquals($messages[0][1], 'Unable to authenticate user by cookie.');
     }
 
     public function testProcessInvalidAuthKey(): void
@@ -103,7 +103,7 @@ class AutoLoginMiddlewareTest extends TestCase
         $this->autoLoginMiddlewareMock->process($this->requestMock, $this->requestHandlerMock);
 
         $messages = $this->getInaccessibleProperty($this->loggerMock, 'messages');
-        $this->assertEquals($messages[0][1], 'Unable to authenticate used by cookie. Invalid auth key.');
+        $this->assertEquals($messages[0][1], 'Unable to authenticate user by cookie. Invalid auth key.');
     }
 
     public function testProcessCookieEmpty(): void
@@ -114,7 +114,7 @@ class AutoLoginMiddlewareTest extends TestCase
         $this->autoLoginMiddlewareMock->process($this->requestMock, $this->requestHandlerMock);
 
         $messages = $this->getInaccessibleProperty($this->loggerMock, 'messages');
-        $this->assertEquals($messages[0][1], 'Unable to authenticate used by cookie.');
+        $this->assertEquals($messages[0][1], 'Unable to authenticate user by cookie.');
     }
 
     public function testProcessCookieWithInvalidParams(): void
@@ -125,7 +125,7 @@ class AutoLoginMiddlewareTest extends TestCase
         $this->autoLoginMiddlewareMock->process($this->requestMock, $this->requestHandlerMock);
 
         $messages = $this->getInaccessibleProperty($this->loggerMock, 'messages');
-        $this->assertEquals($messages[0][1], 'Unable to authenticate used by cookie.');
+        $this->assertEquals($messages[0][1], 'Unable to authenticate user by cookie.');
     }
 
     private function mockDataRequest(): void
