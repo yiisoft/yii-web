@@ -173,6 +173,28 @@ final class CookieCollectionTest extends TestCase
         CookieCollection::fromArray($cookieArray);
     }
 
+    public function testAddToResponse(): void
+    {
+        $response = (new Response())->withHeader('Set-Cookie', 'oldCookie=oldValue;Secure');
+        $this->collection->add(new Cookie('one', 'oneValue'));
+        $this->collection->add(new Cookie('two', 'twoValue', new \DateTimeImmutable()));
+
+        $response = $this->collection->addToResponse($response);
+        $this->assertCount(3, $response->getHeader('Set-Cookie'));
+        $this->assertEquals('oldCookie=oldValue;Secure', $response->getHeader('Set-Cookie')[0]);
+    }
+
+    public function testSetToResponse(): void
+    {
+        $response = (new Response())->withHeader('Set-Cookie', 'oldCookie=oldValue;Secure');
+        $this->collection->add(new Cookie('one', 'oneValue'));
+        $this->collection->add(new Cookie('two', 'twoValue', new \DateTimeImmutable()));
+
+        $response = $this->collection->setToResponse($response);
+        $this->assertCount(2, $response->getHeader('Set-Cookie'));
+        $this->assertEquals('one=oneValue; Path=/; Secure; HttpOnly; SameSite=Lax', $response->getHeader('Set-Cookie')[0]);
+    }
+
     public function testFromResponse(): void
     {
         $response = new Response();
