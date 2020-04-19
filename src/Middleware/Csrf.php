@@ -19,10 +19,10 @@ final class Csrf implements MiddlewareInterface
     public const HEADER_NAME = 'X-CSRF-Token';
     public const REQUEST_NAME = 'csrf_token';
 
-    private $name = self::NAME;
-    private $requestName = self::REQUEST_NAME;
-    private $responseFactory;
-    private $session;
+    private string $name = self::NAME;
+    private string $requestName = self::REQUEST_NAME;
+    private ResponseFactoryInterface $responseFactory;
+    private SessionInterface $session;
 
     public function __construct(ResponseFactoryInterface $responseFactory, SessionInterface $session)
     {

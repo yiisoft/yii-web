@@ -10,7 +10,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Di\Container;
-use Yiisoft\Yii\Web\SapiEmitter;
 use Yiisoft\Yii\Web\MiddlewareDispatcher;
 
 class MiddlewareDispatcherTest extends TestCase
@@ -33,7 +32,7 @@ class MiddlewareDispatcherTest extends TestCase
     public function testAddThrowsInvalidArgumentExceptionWhenMiddlewareIsNotOfCorrectType(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $incorrectInput = new SapiEmitter();
+        $incorrectInput = new \stdClass();
 
         $this->middlewareDispatcher->addMiddleware($incorrectInput);
     }
