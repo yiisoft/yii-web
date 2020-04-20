@@ -8,7 +8,6 @@ use ArrayAccess;
 use ArrayIterator;
 use Closure;
 use Countable;
-use DateTimeImmutable;
 use Exception;
 use InvalidArgumentException;
 use IteratorAggregate;
@@ -20,8 +19,7 @@ use function count;
 use function in_array;
 
 /**
- * A CookieCollection is a collection implementation to wrap an array of Cookie class instances.
- * It also helps to work with many cookies at once and, to read and modify cookies from response.
+ * A CookieCollection helps to work with many cookies at once and to read / modify response cookies.
  *
  * @see Cookie
  */
@@ -202,20 +200,6 @@ final class CookieCollection implements IteratorAggregate, ArrayAccess, Countabl
         unset($this->cookies[$name]);
 
         return $removed;
-    }
-
-    /**
-     * Set cookie expire date to outdated to further remove it from browser.
-     *
-     * @param string $name the name of the cookie to expire.
-     */
-    public function expire(string $name): void
-    {
-        if (!isset($this->cookies[$name])) {
-            return;
-        }
-
-        $this->cookies[$name] = $this->cookies[$name]->withExpires(new DateTimeImmutable('-1 year'));
     }
 
     /**

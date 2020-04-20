@@ -23,7 +23,7 @@ use function strtolower;
 use function time;
 
 /**
- * Represent a cookie and also helps adding Set-Cookie header response in order to set cookie
+ * Represents a cookie and also helps adding Set-Cookie header to response in order to set a cookie.
  */
 final class Cookie
 {
@@ -262,8 +262,19 @@ final class Cookie
     }
 
     /**
+     * Returns modified cookie that will expire immediately.
+     * @return static
+     */
+    public function expire(): self
+    {
+        $new = clone $this;
+        $new->expires = new DateTimeImmutable('-1 year');
+        return $new;
+    }
+
+    /**
      * Will remove the expiration from the cookie which will convert the cookie
-     * to session cookie, which will expire as soon as the browser is close.
+     * to session cookie, which will expire as soon as the browser is closed.
      *
      * @return static
      */
