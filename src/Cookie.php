@@ -12,7 +12,6 @@ use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 
 use function array_filter;
-use function array_map;
 use function array_shift;
 use function explode;
 use function implode;
@@ -149,7 +148,8 @@ final class Cookie
         ?string $path = '/',
         ?bool $secure = true,
         ?bool $httpOnly = true,
-        ?string $sameSite = self::SAME_SITE_LAX)
+        ?string $sameSite = self::SAME_SITE_LAX
+    )
     {
         if (!preg_match(self::PATTERN_TOKEN, $name)) {
             throw new InvalidArgumentException("The cookie name \"$name\" contains invalid characters or is empty.");
@@ -231,8 +231,13 @@ final class Cookie
      */
     public function getExpires(): ?DateTimeImmutable
     {
+        if ($this->expires === null) {
+            return null;
+        }
+
         // Can be replaced with DateTimeImmutable::createFromInterface in PHP 8
-        return $this->expires !== null ? (new DateTimeImmutable())->setTimestamp($this->expires->getTimestamp()) : null;
+        // returns null on `setTimestamp()` failure
+        return (new DateTimeImmutable())->setTimestamp($this->expires->getTimestamp()) ?: null;
     }
 
     /**
@@ -504,20 +509,14 @@ final class Cookie
 
         $params = [
             'name' => $cookieName,
-            'value' => $cookieValue ?? '',
-            'expires' => null,
-            'domain' => null,
-            'path' => null,
-            'secure' => null,
-            'httpOnly' => null,
-            'sameSite' => null,
+            'value' => $cookieValue !== null ? urldecode($cookieValue) : '',
         ];
 
         while ($rawAttribute = array_shift($rawAttributes)) {
             [$attributeKey, $attributeValue] = self::splitCookieAttribute($rawAttribute);
             $attributeKey = strtolower($attributeKey);
 
-            if ($attributeValue === null && ($attributeKey !== 'secure' || $attributeKey !== 'httponly')) {
+            if ($attributeValue === null && !in_array($attributeKey, ['secure', 'httponly'])) {
                 continue;
             }
 
@@ -546,7 +545,16 @@ final class Cookie
             }
         }
 
-        return new self(...array_values($params));
+        return new self(
+            $params['name'],
+            $params['value'],
+            $params['expires'] ?? null,
+            $params['domain'] ?? null,
+            $params['path'] ?? null,
+            $params['secure'] ?? false,
+            $params['httpOnly'] ?? false,
+            $params['sameSite'] ?? null
+        );
     }
 
     private static function splitCookieAttribute(string $attribute): array
@@ -554,6 +562,6 @@ final class Cookie
         $parts = explode('=', $attribute, 2);
         $parts[1] = $parts[1] ?? null;
 
-        return array_map('urldecode', $parts);
+        return $parts;
     }
 }

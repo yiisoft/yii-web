@@ -15,6 +15,7 @@ use Psr\Http\Message\ResponseInterface;
 
 use function array_keys;
 use function array_values;
+use function array_walk;
 use function count;
 use function in_array;
 
@@ -231,7 +232,7 @@ final class CookieCollection implements IteratorAggregate, ArrayAccess, Countabl
     public function exists(Closure $p): bool
     {
         foreach ($this->cookies as $name => $cookie) {
-            if ($p($name, $cookie)) {
+            if ($p($cookie, $name)) {
                 return true;
             }
         }
@@ -240,11 +241,23 @@ final class CookieCollection implements IteratorAggregate, ArrayAccess, Countabl
     }
 
     /**
-     * Gets all names/indices of the collection.
+     * Apply user supplied function to every cookie in the collection.
+     * If you want to modify the cookie in the collection, specify the first
+     * parameter of Closure as reference.
      *
-     * @return array The names/indices of the collection.
+     * @param Closure $p
      */
-    public function getNames(): array
+    public function walk(Closure $p): void
+    {
+        array_walk($this->cookies, $p);
+    }
+
+    /**
+     * Gets all keys/indices of the collection.
+     *
+     * @return string[] The keys/indices of the collection.
+     */
+    public function getKeys(): array
     {
         return array_keys($this->cookies);
     }
@@ -252,9 +265,9 @@ final class CookieCollection implements IteratorAggregate, ArrayAccess, Countabl
     /**
      * Gets all cookies of the collection as an indexed array.
      *
-     * @return array The cookie in the collection, in the order they appear in the collection.
+     * @return Cookie[] The cookies in the collection, in the order they appear in the collection.
      */
-    public function getCookies(): array
+    public function getValues(): array
     {
         return array_values($this->cookies);
     }
@@ -277,17 +290,16 @@ final class CookieCollection implements IteratorAggregate, ArrayAccess, Countabl
      */
     public static function fromArray(array $array): self
     {
+        if (empty($array)) {
+            return new self();
+        }
+
         // check if associative array with 'name' => 'value' pairs is passed
-        if (count(array_filter(array_keys($array), 'is_string')) === 0) {
+        if (count(array_filter(array_keys($array), 'is_string')) !== count($array)) {
             throw new InvalidArgumentException('Array in wrong format is passed.');
         }
 
-        $elements = [];
-        foreach ($array as $name => $value) {
-            $elements[$name] = new Cookie($name, $value);
-        }
-
-        return new self($elements);
+        return new self(array_map(static fn ($name, $value) => new Cookie($name, $value), array_keys($array), $array));
     }
 
     /**

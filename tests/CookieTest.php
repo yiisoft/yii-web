@@ -66,6 +66,12 @@ final class CookieTest extends TestCase
         $this->assertSame("test=42; Expires=$formattedExpire; Max-Age=3600; Path=/; Secure; HttpOnly; SameSite=Lax", $this->getCookieHeader($cookie));
     }
 
+    public function testExpire(): void
+    {
+        $cookie = (new Cookie('test', 42))->expire();
+        $this->assertTrue($cookie->isExpired());
+    }
+
     public function testNegativeInterval(): void
     {
         $formattedExpire = (new \DateTimeImmutable())->setTimestamp(time() - 3600)->format(\DateTimeInterface::RFC7231);
@@ -133,10 +139,10 @@ final class CookieTest extends TestCase
 
     public function testFromCookieString(): void
     {
-        $expireDate = (new \DateTimeImmutable())->setTimestamp(time() + 3600);
+        $expireDate = new \DateTimeImmutable('+60 minutes');
         $setCookieString = 'sessionId=e8bb43229de9; Domain=foo.example.com; ';
         $setCookieString .= 'Expires=' . $expireDate->format(\DateTimeInterface::RFC7231) . '; ';
-        $setCookieString .= 'Max-Age=3600; Path=/; Secure; HttpOnly; SameSite=Strict';
+        $setCookieString .= 'Max-Age=3600; Path=/; Secure; HttpOnly; SameSite=Strict; ExtraKey';
 
         $cookie = new Cookie(
             'sessionId',
@@ -151,6 +157,12 @@ final class CookieTest extends TestCase
         $cookie2 = Cookie::fromCookieString($setCookieString);
 
         $this->assertSame((string)$cookie, (string)$cookie2);
+    }
+
+    public function testFromCookieStringWithInvalidString(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        Cookie::fromCookieString('');
     }
 
     public function testGetters(): void

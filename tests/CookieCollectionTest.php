@@ -18,6 +18,12 @@ final class CookieCollectionTest extends TestCase
         $this->collection = new CookieCollection([]);
     }
 
+    public function testConstructorWithInvalidArray(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $collection = new CookieCollection([new Cookie('test'), 'string']);
+    }
+
     public function testIssetAndUnset(): void
     {
         $this->assertFalse(isset($this->collection['test']));
@@ -37,14 +43,27 @@ final class CookieCollectionTest extends TestCase
     {
         $this->collection->add(new Cookie('one', 'oneValue'));
         $this->collection->add(new Cookie('two', 'twoValue'));
-        $exists = $this->collection->exists(static function (string $name, Cookie $cookie) {
+        $exists = $this->collection->exists(static function (Cookie $cookie, string $name) {
             return $name === 'one' && $cookie->getValue() === 'oneValue';
         });
         $this->assertTrue($exists);
-        $exists = $this->collection->exists(static function (string $name, Cookie $cookie) {
+        $exists = $this->collection->exists(static function (Cookie $cookie, string $name) {
             return $name === 'two' && $cookie->getValue() === 'wrongValue';
         });
         $this->assertFalse($exists);
+    }
+
+    public function testWalk(): void
+    {
+        $this->collection->add(new Cookie('one', 'oneValue'));
+        $this->collection->add(new Cookie('two', 'twoValue'));
+        $this->collection->walk(static function (Cookie &$cookie, string $name) {
+            if ($name === 'two') {
+                $cookie = $cookie->withValue('modifiedTwoValue');
+            }
+        });
+
+        $this->assertEquals('modifiedTwoValue', $this->collection->get('two')->getValue());
     }
 
     public function testArrayAccess(): void
@@ -81,19 +100,19 @@ final class CookieCollectionTest extends TestCase
         $this->assertEquals('testVal', $this->collection->getValue('test'));
     }
 
-    public function testGetNames(): void
+    public function testGetKeys(): void
     {
         $this->collection->add(new Cookie('one'));
         $this->collection->add(new Cookie('two'));
-        $this->assertEquals(['one', 'two'], $this->collection->getNames());
+        $this->assertEquals(['one', 'two'], $this->collection->getKeys());
     }
 
-    public function testGetCookies(): void
+    public function testGetValues(): void
     {
         $cookieOne = new Cookie('one');
         $cookieTwo = new Cookie('two');
         $collection = new CookieCollection([$cookieOne, $cookieTwo]);
-        $this->assertEquals([$cookieOne, $cookieTwo], $collection->getCookies());
+        $this->assertEquals([$cookieOne, $cookieTwo], $collection->getValues());
     }
 
     public function testCount(): void
@@ -124,8 +143,9 @@ final class CookieCollectionTest extends TestCase
         $collection = new CookieCollection([$cookieOne, $cookieTwo]);
 
         $cookie = $collection->remove('one');
+        $this->assertNotNull($cookie);
         $this->assertEquals($cookieOne, $cookie);
-        $this->assertFalse($collection->contains($cookie));
+        $this->assertFalse($collection->has($cookie->getName()));
         $this->assertNull($collection->remove('one'));
     }
 
@@ -164,6 +184,29 @@ final class CookieCollectionTest extends TestCase
 
         $this->assertCount(2, $collection);
         $this->assertInstanceOf(Cookie::class, $collection['one']);
+    }
+
+    public function testFromArrayWithInvalidArray(): void
+    {
+        $cookieArray = ['one', 'two'];
+
+        $this->expectException(\InvalidArgumentException::class);
+        $collection = CookieCollection::fromArray($cookieArray);
+    }
+
+    public function testFromArrayWithMalformedArray(): void
+    {
+        $cookieArray = ['one' => 'oneValue', 'two'];
+
+        $this->expectException(\InvalidArgumentException::class);
+        $collection = CookieCollection::fromArray($cookieArray);
+    }
+
+    public function testFromArrayWithEmptyArray(): void
+    {
+        $collection = CookieCollection::fromArray([]);
+
+        $this->assertCount(0, $collection);
     }
 
     public function testFromArrayWithInvalidArgument(): void
