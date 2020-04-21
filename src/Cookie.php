@@ -149,8 +149,7 @@ final class Cookie
         ?bool $secure = true,
         ?bool $httpOnly = true,
         ?string $sameSite = self::SAME_SITE_LAX
-    )
-    {
+    ) {
         if (!preg_match(self::PATTERN_TOKEN, $name)) {
             throw new InvalidArgumentException("The cookie name \"$name\" contains invalid characters or is empty.");
         }
