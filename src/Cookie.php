@@ -550,8 +550,8 @@ final class Cookie
             $params['expires'] ?? null,
             $params['domain'] ?? null,
             $params['path'] ?? null,
-            $params['secure'] ?? false,
-            $params['httpOnly'] ?? false,
+            $params['secure'] ?? null,
+            $params['httpOnly'] ?? null,
             $params['sameSite'] ?? null
         );
     }

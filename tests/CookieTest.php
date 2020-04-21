@@ -142,7 +142,7 @@ final class CookieTest extends TestCase
         $expireDate = new \DateTimeImmutable('+60 minutes');
         $setCookieString = 'sessionId=e8bb43229de9; Domain=foo.example.com; ';
         $setCookieString .= 'Expires=' . $expireDate->format(\DateTimeInterface::RFC7231) . '; ';
-        $setCookieString .= 'Max-Age=3600; Path=/; Secure; HttpOnly; SameSite=Strict; ExtraKey';
+        $setCookieString .= 'Max-Age=3600; Path=/; Secure; SameSite=Strict; ExtraKey';
 
         $cookie = new Cookie(
             'sessionId',
@@ -151,7 +151,7 @@ final class CookieTest extends TestCase
             'foo.example.com',
             '/',
             true,
-            true,
+            false,
             Cookie::SAME_SITE_STRICT
         );
         $cookie2 = Cookie::fromCookieString($setCookieString);

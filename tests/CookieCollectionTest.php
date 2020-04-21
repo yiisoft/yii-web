@@ -21,7 +21,7 @@ final class CookieCollectionTest extends TestCase
     public function testConstructorWithInvalidArray(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $collection = new CookieCollection([new Cookie('test'), 'string']);
+        new CookieCollection([new Cookie('test'), 'string']);
     }
 
     public function testIssetAndUnset(): void
@@ -191,7 +191,7 @@ final class CookieCollectionTest extends TestCase
         $cookieArray = ['one', 'two'];
 
         $this->expectException(\InvalidArgumentException::class);
-        $collection = CookieCollection::fromArray($cookieArray);
+        CookieCollection::fromArray($cookieArray);
     }
 
     public function testFromArrayWithMalformedArray(): void
@@ -199,7 +199,7 @@ final class CookieCollectionTest extends TestCase
         $cookieArray = ['one' => 'oneValue', 'two'];
 
         $this->expectException(\InvalidArgumentException::class);
-        $collection = CookieCollection::fromArray($cookieArray);
+        CookieCollection::fromArray($cookieArray);
     }
 
     public function testFromArrayWithEmptyArray(): void
