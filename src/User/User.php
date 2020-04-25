@@ -14,7 +14,7 @@ use Yiisoft\Yii\Web\User\Event\AfterLogout;
 use Yiisoft\Yii\Web\User\Event\BeforeLogin;
 use Yiisoft\Yii\Web\User\Event\BeforeLogout;
 
-class User implements IdentityInterface
+class User
 {
     private const SESSION_AUTH_ID = '__auth_id';
     private const SESSION_AUTH_EXPIRE = '__auth_expire';
