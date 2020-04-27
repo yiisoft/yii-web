@@ -44,7 +44,7 @@ final class Application
         $this->eventDispatcher->dispatch(new ApplicationShutdown());
     }
 
-    public function afterEmit(ResponseInterface $response): void
+    public function afterEmit(?ResponseInterface $response): void
     {
         $this->eventDispatcher->dispatch(new AfterEmit($response));
     }
