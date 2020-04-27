@@ -6,14 +6,14 @@ use Psr\Http\Message\ResponseInterface;
 
 final class AfterEmit
 {
-    private ResponseInterface $response;
+    private ?ResponseInterface $response;
 
-    public function __construct(ResponseInterface $response)
+    public function __construct(?ResponseInterface $response)
     {
         $this->response = $response;
     }
 
-    public function getResponse(): ResponseInterface
+    public function getResponse(): ?ResponseInterface
     {
         return $this->response;
     }
