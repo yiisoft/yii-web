@@ -172,7 +172,7 @@ final class CookieCollectionTest extends TestCase
     public function testExpire(): void
     {
         $this->collection->add(new Cookie('test'));
-        $this->collection->get('test')->expire();
+        $this->collection->expire('test');
 
         $this->assertTrue($this->collection->get('test')->isExpired());
     }

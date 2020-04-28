@@ -144,9 +144,9 @@ final class CookieCollection implements IteratorAggregate, ArrayAccess, Countabl
      * @return Cookie the cookie with the specified name. Null if the named cookie does not exist.
      * @see getValue()
      */
-    public function get(string $name): Cookie
+    public function get(string $name): ?Cookie
     {
-        return $this->cookies[$name];
+        return $this->cookies[$name] ?? null;
     }
 
     /**
@@ -238,6 +238,20 @@ final class CookieCollection implements IteratorAggregate, ArrayAccess, Countabl
         }
 
         return false;
+    }
+
+    /**
+     * Expire the cookie with the specified name
+     *
+     * @param string $name the cookie name
+     */
+    public function expire(string $name): void
+    {
+        if (!isset($this->cookies[$name])) {
+            return;
+        }
+
+        $this->cookies[$name] = $this->cookies[$name]->expire();
     }
 
     /**
