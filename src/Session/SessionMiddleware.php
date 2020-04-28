@@ -59,14 +59,14 @@ class SessionMiddleware implements MiddlewareInterface
             }
 
             $sessionCookie = (new Cookie($this->session->getName(), $currentSid))
-                ->path($cookieParameters['path'])
-                ->domain($cookieDomain)
-                ->httpOnly($cookieParameters['httponly'])
-                ->secure($useSecureCookie)
-                ->sameSite($cookieParameters['samesite'] ?? Cookie::SAME_SITE_LAX);
+                ->withPath($cookieParameters['path'])
+                ->withDomain($cookieDomain)
+                ->withHttpOnly($cookieParameters['httponly'])
+                ->withSecure($useSecureCookie)
+                ->withSameSite($cookieParameters['samesite'] ?? Cookie::SAME_SITE_LAX);
 
             if ($cookieParameters['lifetime'] > 0) {
-                $sessionCookie = $sessionCookie->validFor(new \DateInterval('PT' . $cookieParameters['lifetime'] . 'S'));
+                $sessionCookie = $sessionCookie->withMaxAge(new \DateInterval('PT' . $cookieParameters['lifetime'] . 'S'));
             }
 
             return $sessionCookie->addToResponse($response);

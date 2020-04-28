@@ -3,7 +3,7 @@
 namespace PHPSTORM_META {
 
     expectedArguments(
-        \Yiisoft\Yii\Web\Cookie::sameSite(),
+        \Yiisoft\Yii\Web\Cookie::withSameSite(),
         0,
         argumentsSet('\Yiisoft\Yii\Web\Cookie::SAME_SITE'),
     );
