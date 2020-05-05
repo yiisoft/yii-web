@@ -15,7 +15,7 @@ use Yiisoft\Yii\Web\Cookie;
  */
 class AutoLogin
 {
-    private string $cookieName = 'remember';
+    private string $cookieName = 'autoLogin';
 
     public function cookieName(string $name): self
     {
