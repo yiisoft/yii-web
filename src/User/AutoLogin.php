@@ -44,8 +44,8 @@ class AutoLogin
 
         $expireDateTime = new \DateTimeImmutable();
         $expireDateTime->setTimestamp(time() + $duration);
-        $cookieIdentity = (new Cookie($this->cookieName, $data))->withExpires($expireDateTime);
-        $cookieIdentity->addToResponse($response);
+        $cookie = (new Cookie($this->cookieName, $data))->withExpires($expireDateTime);
+        $cookie->addToResponse($response);
     }
 
     /**
