@@ -2,10 +2,9 @@
 
 namespace Yiisoft\Yii\Web\User;
 
-/**
- * TODO: seriously need better name for it :(
- */
-interface AuthenticationKeyInterface
+use Yiisoft\Auth\IdentityInterface;
+
+interface AutoLoginIdentityInterface extends IdentityInterface
 {
     /**
      * Returns a key that can be used to check the validity of a given identity ID.
