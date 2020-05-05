@@ -25,7 +25,9 @@ class AutoLogin
     }
 
     /**
-     * Sends an identity cookie.
+     * Add auto-login cookie to response so the user is logged in automatically based on cookie even if session
+     * is expired.
+     *
      * TODO: do it on event?
      * TODO: make duration a property of the service?
      *
@@ -33,32 +35,26 @@ class AutoLogin
      * @param int $duration number of seconds that the user can remain in logged-in status.
      * @param ResponseInterface $response Response to handle
      */
-    public function sendCookie(AutoLoginIdentityInterface $identity, int $duration, ResponseInterface $response): void
+    public function addCookie(AutoLoginIdentityInterface $identity, int $duration, ResponseInterface $response): void
     {
-        $data = json_encode(
-            [
-                $identity->getId(),
-                $identity->getAuthKey(),
-                // $duration, TODO: should we set/check duration separately from cookie expiration?
-            ],
-            JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
-        );
+        $data = json_encode([
+            $identity->getId(),
+            $identity->getAuthKey()
+        ], JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
         $expireDateTime = new \DateTimeImmutable();
         $expireDateTime->setTimestamp(time() + $duration);
-        $cookieIdentity = (new Cookie($this->cookieName, $data))->expireAt($expireDateTime);
+        $cookieIdentity = (new Cookie($this->cookieName, $data))->withExpires($expireDateTime);
         $cookieIdentity->addToResponse($response);
     }
 
     /**
-     * Remove auto-login cookie so user is not logged in automatically anymore.
+     * Expire auto-login cookie so user is not logged in automatically anymore.
      * TODO: trigger on logout?
      */
-    public function removeCookie(): void
+    public function expireCookie(ResponseInterface $response): void
     {
-        // Remove the cookie
-        // TODO: use new cookie methods
-        (new Cookie($this->cookieName, ""))->expire(1);
+        (new Cookie($this->cookieName))->expire()->addToResponse($response);
     }
 
     public function getCookieName(): string
