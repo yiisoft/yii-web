@@ -9,83 +9,93 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Log\LoggerInterface;
+use Yiisoft\Auth\IdentityInterface;
 use Yiisoft\Auth\IdentityRepositoryInterface;
 
 /**
- * AutoLoginMiddleware automatically logs user in based on "remember me" cookie
+ * AutoLoginMiddleware automatically logs user in based on cookie.
  */
 final class AutoLoginMiddleware implements MiddlewareInterface
 {
     private User $user;
     private IdentityRepositoryInterface $identityRepository;
     private LoggerInterface $logger;
+    private AutoLogin $autoLogin;
 
     public function __construct(
         User $user,
         IdentityRepositoryInterface $identityRepository,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        AutoLogin $autoLogin
     ) {
         $this->user = $user;
         $this->identityRepository = $identityRepository;
         $this->logger = $logger;
+        $this->autoLogin = $autoLogin;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $response = $handler->handle($request);
-        if (!$this->authenticateUserFromRequest($request, $response)) {
+        if (!$this->authenticateUserFromRequest($request)) {
             $this->logger->warning('Unable to authenticate user by cookie.');
         }
 
-        return $response;
+        return $handler->handle($request);
     }
 
     /**
-     * Parse and determines if an identity cookie has a valid format.
-     * @param ServerRequestInterface $request Request to handle
-     * @return array Returns an array of 'identity' and 'duration' if valid, otherwise [].
+     * Parse request and try to create identity out of data present.
+     *
+     * @param ServerRequestInterface $request Request to parse.
+     * @return IdentityInterface|null Identity created or null if request data isn't valid.
      */
-    private function parseCredentials(ServerRequestInterface $request): array
+    private function getIdentityFromRequest(ServerRequestInterface $request): ?IdentityInterface
     {
         try {
             $cookies = $request->getCookieParams();
-            $data = json_decode($cookies['remember'], true, 512, JSON_THROW_ON_ERROR);
+            $cookieName = $this->autoLogin->getCookieName();
+            $data = json_decode($cookies[$cookieName], true, 512, JSON_THROW_ON_ERROR);
         } catch (\Exception $e) {
-            return [];
+            return null;
         }
 
-        if (!is_array($data) || count($data) !== 3) {
-            return [];
+        if (!is_array($data) || count($data) !== 2) {
+            return null;
         }
 
-        [$id, $authKey, $duration] = $data;
+        [$id, $authKey] = $data;
         $identity = $this->identityRepository->findIdentity($id);
         if ($identity === null) {
-            return [];
+            return null;
         }
 
-        if (!$this->user->validateAuthKey($authKey)) {
+        if (!$identity instanceof AutoLoginIdentityInterface) {
+            // TODO: throw or write log?
+            return null;
+        }
+
+        if (!$identity->validateAuthKey($authKey)) {
             $this->logger->warning('Unable to authenticate user by cookie. Invalid auth key.');
-            return [];
+            return null;
         }
 
-        return ['identity' => $identity, 'duration' => $duration];
+        return $identity;
     }
 
     /**
-     * Check if the user can authenticate and if everything is ok, authenticate
+     * Authenticate user if there is data to do so in request.
+     *
      * @param ServerRequestInterface $request Request to handle
-     * @param ResponseInterface $response Response to handle
      * @return bool
      */
-    private function authenticateUserFromRequest(ServerRequestInterface $request, ResponseInterface $response): bool
+    private function authenticateUserFromRequest(ServerRequestInterface $request): bool
     {
-        $data = $this->parseCredentials($request);
+        $identity = $this->getIdentityFromRequest($request);
 
-        if ($data === []) {
+        if ($identity === null) {
             return false;
         }
 
-        return $this->user->login($data['identity'], $data['duration'], $response);
+        return $this->user->login($identity);
     }
 }
