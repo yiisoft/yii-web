@@ -70,8 +70,7 @@ final class AutoLoginMiddleware implements MiddlewareInterface
         }
 
         if (!$identity instanceof AutoLoginIdentityInterface) {
-            // TODO: throw or write log?
-            return null;
+            throw new \RuntimeException('Identity repository must return an instance of \Yiisoft\Yii\Web\User\AutoLoginIdentityInterface in order for auto-login to function.');
         }
 
         if (!$identity->validateAuthKey($authKey)) {
