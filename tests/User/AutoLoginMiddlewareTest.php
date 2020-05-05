@@ -2,159 +2,253 @@
 
 namespace Yiisoft\Yii\Web\Tests\User;
 
-use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Psr\Log\LogLevel;
-use Yiisoft\Log\Logger;
 use Yiisoft\Auth\IdentityInterface;
 use Yiisoft\Auth\IdentityRepositoryInterface;
+use Yiisoft\Log\Logger;
+use Yiisoft\Yii\Web\User\AutoLogin;
 use Yiisoft\Yii\Web\User\User;
 use Yiisoft\Yii\Web\User\AutoLoginMiddleware;
 
-class AutoLoginMiddlewareTest extends TestCase
+final class AutoLoginMiddlewareTest extends TestCase
 {
-    /**
-     * @var RequestHandlerInterface
-     */
-    private $requestHandlerMock;
+    private Logger $logger;
 
-    /**
-     * @var ServerRequestInterface
-     */
-    private $requestMock;
-
-    /**
-     * @var AutoLoginMiddleware
-     */
-    private $autoLoginMiddlewareMock;
-
-    /**
-     * @var IdentityRepositoryInterface
-     */
-    private $identityRepositoryInterfaceMock;
-
-    /**
-     * @var IdentityInterface
-     */
-    private $identityInterfaceMock;
-
-    /**
-     * @var Logger
-     */
-    private $loggerMock;
-
-    /**
-     * @var User
-     */
-    private $userMock;
-
-    public function testProcessOK(): void
+    protected function setUp(): void
     {
-        $this->mockDataRequest();
-        $this->mockDataCookie(["remember" => json_encode(['1', 'ABCD1234', 60])]);
-
-        $this->userMock
-            ->expects($this->once())
-            ->method('validateAuthKey')
-            ->willReturn(true);
-
-        $this->userMock
-            ->expects($this->once())
-            ->method('login')
-            ->willReturn(true);
-
-        $response = new Response();
-        $this->requestHandlerMock
-            ->expects($this->once())
-            ->method('handle')
-            ->willReturn($response);
-
-        $this->assertEquals($this->autoLoginMiddlewareMock->process($this->requestMock, $this->requestHandlerMock), $response);
-    }
-
-    public function testProcessErrorLogin(): void
-    {
-        $this->mockDataRequest();
-        $this->mockDataCookie(["remember" => json_encode(['1', 'ABCD1234', 60])]);
-
-        $this->userMock
-            ->expects($this->once())
-            ->method('validateAuthKey')
-            ->willReturn(true);
-
-        $this->userMock
-            ->expects($this->once())
-            ->method('login')
-            ->willReturn(false);
-
-        $this->autoLoginMiddlewareMock->process($this->requestMock, $this->requestHandlerMock);
-
-        $messages = $this->getInaccessibleProperty($this->loggerMock, 'messages');
-        $this->assertEquals($messages[0][1], 'Unable to authenticate user by cookie.');
-    }
-
-    public function testProcessInvalidAuthKey(): void
-    {
-        $this->mockDataRequest();
-        $this->mockDataCookie(["remember" => json_encode(['1', '123456', 60])]);
-
-        $this->autoLoginMiddlewareMock->process($this->requestMock, $this->requestHandlerMock);
-
-        $messages = $this->getInaccessibleProperty($this->loggerMock, 'messages');
-        $this->assertEquals($messages[0][1], 'Unable to authenticate user by cookie. Invalid auth key.');
-    }
-
-    public function testProcessCookieEmpty(): void
-    {
-        $this->mockDataRequest();
-        $this->mockDataCookie([]);
-
-        $this->autoLoginMiddlewareMock->process($this->requestMock, $this->requestHandlerMock);
-
-        $messages = $this->getInaccessibleProperty($this->loggerMock, 'messages');
-        $this->assertEquals($messages[0][1], 'Unable to authenticate user by cookie.');
-    }
-
-    public function testProcessCookieWithInvalidParams(): void
-    {
-        $this->mockDataRequest();
-        $this->mockDataCookie(["remember" => json_encode(['1', '123456', 60, "paramInvalid"])]);
-
-        $this->autoLoginMiddlewareMock->process($this->requestMock, $this->requestHandlerMock);
-
-        $messages = $this->getInaccessibleProperty($this->loggerMock, 'messages');
-        $this->assertEquals($messages[0][1], 'Unable to authenticate user by cookie.');
-    }
-
-    private function mockDataRequest(): void
-    {
-        $this->requestHandlerMock = $this->createMock(RequestHandlerInterface::class);
-        $this->userMock = $this->createMock(User::class);
-        $this->identityInterfaceMock = $this->createMock(IdentityInterface::class);
-
-        $this->loggerMock = $this->getMockBuilder(Logger::class)
+        $this->logger = $this->getMockBuilder(Logger::class)
             ->onlyMethods(['dispatch'])
             ->getMock();
-
-        $this->identityRepositoryInterfaceMock = $this->createMock(IdentityRepositoryInterface::class);
-
-        $this->identityRepositoryInterfaceMock
-            ->expects($this->any())
-            ->method('findIdentity')
-            ->willReturn($this->identityInterfaceMock);
-
-        $this->autoLoginMiddlewareMock = new AutoLoginMiddleware($this->userMock, $this->identityRepositoryInterfaceMock, $this->loggerMock);
-        $this->requestMock = $this->createMock(ServerRequestInterface::class);
     }
 
-    private function mockDataCookie(array $cookie): void
+    private function getLastLogMessage(): ?string
     {
-        $this->requestMock
+        $messages = $this->getInaccessibleProperty($this->logger, 'messages');
+        return $messages[0][1] ?? null;
+    }
+
+    public function testCorrectLogin(): void
+    {
+        $user = $this->getUserWithLoginExpected();
+
+        $autoLogin = $this->getAutoLogin();
+        $middleware = new AutoLoginMiddleware(
+            $user,
+            $this->getAutoLoginIdentityRepository(),
+            $this->logger,
+            $autoLogin
+        );
+        $request = $this->getRequestWithAutoLoginCookie(AutoLoginIdentity::ID, AutoLoginIdentity::AUTH_KEY_CORRECT);
+
+        $middleware->process($request, $this->getRequestHandler());
+
+        $this->assertNull($this->getLastLogMessage());
+    }
+
+    public function testInvalidAuthKey(): void
+    {
+        $user = $this->getUserWithoutLoginExpected();
+
+        $autoLogin = $this->getAutoLogin();
+        $middleware = new AutoLoginMiddleware(
+            $user,
+            $this->getAutoLoginIdentityRepository(),
+            $this->logger,
+            $autoLogin
+        );
+        $request = $this->getRequestWithAutoLoginCookie(AutoLoginIdentity::ID, AutoLoginIdentity::AUTH_KEY_INCORRECT);
+
+        $middleware->process($request, $this->getRequestHandler());
+
+        $this->assertSame('Unable to authenticate user by cookie. Invalid auth key.', $this->getLastLogMessage());
+    }
+
+    public function testNoCookie(): void
+    {
+        $user = $this->getUserWithoutLoginExpected();
+
+        $autoLogin = $this->getAutoLogin();
+        $middleware = new AutoLoginMiddleware(
+            $user,
+            $this->getAutoLoginIdentityRepository(),
+            $this->logger,
+            $autoLogin
+        );
+        $request = $this->getRequestWithCookies([]);
+
+        $middleware->process($request, $this->getRequestHandler());
+
+        $this->assertNull($this->getLastLogMessage());
+    }
+
+    public function testEmptyCookie(): void
+    {
+        $user = $this->getUserWithoutLoginExpected();
+
+        $autoLogin = $this->getAutoLogin();
+        $middleware = new AutoLoginMiddleware(
+            $user,
+            $this->getAutoLoginIdentityRepository(),
+            $this->logger,
+            $autoLogin
+        );
+        $request = $this->getRequestWithCookies(['autoLogin' => '']);
+
+        $middleware->process($request, $this->getRequestHandler());
+
+        $this->assertSame('Unable to authenticate user by cookie. Invalid cookie.', $this->getLastLogMessage());
+    }
+
+    public function testInvalidCookie(): void
+    {
+        $user = $this->getUserWithoutLoginExpected();
+
+        $autoLogin = $this->getAutoLogin();
+        $middleware = new AutoLoginMiddleware(
+            $user,
+            $this->getAutoLoginIdentityRepository(),
+            $this->logger,
+            $autoLogin
+        );
+        $request = $this->getRequestWithCookies(
+            [
+                'autoLogin' => json_encode([AutoLoginIdentity::ID, AutoLoginIdentity::AUTH_KEY_CORRECT, 'weird stuff'])
+            ]
+        );
+
+        $middleware->process($request, $this->getRequestHandler());
+
+        $this->assertSame('Unable to authenticate user by cookie. Invalid cookie.', $this->getLastLogMessage());
+    }
+
+    public function testIncorrectIdentity(): void
+    {
+        $user = $this->getUserWithoutLoginExpected();
+
+        $middleware = new AutoLoginMiddleware(
+            $user,
+            $this->getIncorrectIdentityRepository(),
+            $this->logger,
+            $this->getAutoLogin()
+        );
+
+        $request = $this->getRequestWithAutoLoginCookie(AutoLoginIdentity::ID, AutoLoginIdentity::AUTH_KEY_CORRECT);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Identity repository must return an instance of \Yiisoft\Yii\Web\User\AutoLoginIdentityInterface in order for auto-login to function.');
+
+        $middleware->process($request, $this->getRequestHandlerThatIsNotCalled());
+    }
+
+    public function testIdentityNotFound(): void
+    {
+        $user = $this->getUserWithoutLoginExpected();
+
+        $middleware = new AutoLoginMiddleware(
+            $user,
+            $this->getEmptyIdentityRepository(),
+            $this->logger,
+            $this->getAutoLogin()
+        );
+
+        $identityId = AutoLoginIdentity::ID;
+        $request = $this->getRequestWithAutoLoginCookie($identityId, AutoLoginIdentity::AUTH_KEY_CORRECT);
+
+        $middleware->process($request, $this->getRequestHandler());
+
+        $this->assertSame("Unable to authenticate user by cookie. Identity \"$identityId\" not found.", $this->getLastLogMessage());
+    }
+
+    private function getRequestHandler(): RequestHandlerInterface
+    {
+        $requestHandler = $this->createMock(RequestHandlerInterface::class);
+
+        $requestHandler
+            ->expects($this->once())
+            ->method('handle');
+
+        return $requestHandler;
+    }
+
+    private function getRequestHandlerThatIsNotCalled(): RequestHandlerInterface
+    {
+        $requestHandler = $this->createMock(RequestHandlerInterface::class);
+
+        $requestHandler
+            ->expects($this->never())
+            ->method('handle');
+
+        return $requestHandler;
+    }
+
+    private function getIncorrectIdentityRepository(): IdentityRepositoryInterface
+    {
+        return $this->getIdentityRepository($this->createMock(IdentityInterface::class));
+    }
+
+    private function getAutoLoginIdentityRepository(): IdentityRepositoryInterface
+    {
+        return $this->getIdentityRepository(new AutoLoginIdentity());
+    }
+
+    private function getEmptyIdentityRepository(): IdentityRepositoryInterface
+    {
+        return $this->createMock(IdentityRepositoryInterface::class);
+    }
+
+    private function getIdentityRepository(IdentityInterface $identity): IdentityRepositoryInterface
+    {
+
+        $identityRepository = $this->createMock(IdentityRepositoryInterface::class);
+
+        $identityRepository
+            ->expects($this->any())
+            ->method('findIdentity')
+            ->willReturn($identity);
+
+        return $identityRepository;
+    }
+
+    private function getRequestWithAutoLoginCookie(string $userId, string $authKey): ServerRequestInterface
+    {
+        return $this->getRequestWithCookies(['autoLogin' => json_encode([$userId, $authKey])]);
+    }
+
+    private function getRequestWithCookies(array $cookies): ServerRequestInterface
+    {
+        $request = $this->createMock(ServerRequestInterface::class);
+
+        $request
             ->expects($this->any())
             ->method('getCookieParams')
-            ->willReturn($cookie);
+            ->willReturn($cookies);
+
+        return $request;
+    }
+
+    private function getUserWithoutLoginExpected(): User
+    {
+        $user = $this->createMock(User::class);
+        $user->expects($this->never())->method('login');
+        return $user;
+    }
+
+    private function getUserWithLoginExpected(): User
+    {
+        $user = $this->createMock(User::class);
+        $user
+            ->expects($this->once())
+            ->method('login')
+            ->willReturn(true);
+
+        return $user;
+    }
+
+    private function getAutoLogin(): AutoLogin
+    {
+        return new AutoLogin();
     }
 
     /**
@@ -165,7 +259,7 @@ class AutoLoginMiddlewareTest extends TestCase
      * @return mixed
      * @throws \ReflectionException
      */
-    protected function getInaccessibleProperty($object, $propertyName, bool $revoke = true)
+    private function getInaccessibleProperty($object, $propertyName, bool $revoke = true)
     {
         $class = new \ReflectionClass($object);
         while (!$class->hasProperty($propertyName)) {

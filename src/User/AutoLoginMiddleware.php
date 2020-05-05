@@ -9,7 +9,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Log\LoggerInterface;
-use Yiisoft\Auth\IdentityInterface;
 use Yiisoft\Auth\IdentityRepositoryInterface;
 
 /**
@@ -36,37 +35,42 @@ final class AutoLoginMiddleware implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        if (!$this->authenticateUserFromRequest($request)) {
-            $this->logger->warning('Unable to authenticate user by cookie.');
-        }
-
+        $this->authenticateUserByCookieFromRequest($request);
         return $handler->handle($request);
     }
 
     /**
-     * Parse request and try to create identity out of data present.
+     * Authenticate user by auto login cookie from request.
      *
-     * @param ServerRequestInterface $request Request to parse.
-     * @return IdentityInterface|null Identity created or null if request data isn't valid.
+     * @param ServerRequestInterface $request Request instance containing auto login cookie.
      */
-    private function getIdentityFromRequest(ServerRequestInterface $request): ?IdentityInterface
+    private function authenticateUserByCookieFromRequest(ServerRequestInterface $request): void
     {
+        $cookieName = $this->autoLogin->getCookieName();
+        $cookies = $request->getCookieParams();
+
+        if (!array_key_exists($cookieName, $cookies)) {
+            return;
+        }
+
         try {
-            $cookies = $request->getCookieParams();
-            $cookieName = $this->autoLogin->getCookieName();
             $data = json_decode($cookies[$cookieName], true, 512, JSON_THROW_ON_ERROR);
         } catch (\Exception $e) {
-            return null;
+            $this->logger->warning('Unable to authenticate user by cookie. Invalid cookie.');
+            return;
         }
 
         if (!is_array($data) || count($data) !== 2) {
-            return null;
+            $this->logger->warning('Unable to authenticate user by cookie. Invalid cookie.');
+            return;
         }
 
         [$id, $authKey] = $data;
         $identity = $this->identityRepository->findIdentity($id);
+
         if ($identity === null) {
-            return null;
+            $this->logger->warning("Unable to authenticate user by cookie. Identity \"$id\" not found.");
+            return;
         }
 
         if (!$identity instanceof AutoLoginIdentityInterface) {
@@ -75,26 +79,11 @@ final class AutoLoginMiddleware implements MiddlewareInterface
 
         if (!$identity->validateAuthKey($authKey)) {
             $this->logger->warning('Unable to authenticate user by cookie. Invalid auth key.');
-            return null;
+            return;
         }
 
-        return $identity;
-    }
-
-    /**
-     * Authenticate user if there is data to do so in request.
-     *
-     * @param ServerRequestInterface $request Request to handle
-     * @return bool
-     */
-    private function authenticateUserFromRequest(ServerRequestInterface $request): bool
-    {
-        $identity = $this->getIdentityFromRequest($request);
-
-        if ($identity === null) {
-            return false;
+        if ($identity !== null) {
+            $this->user->login($identity);
         }
-
-        return $this->user->login($identity);
     }
 }
