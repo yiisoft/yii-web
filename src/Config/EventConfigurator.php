@@ -19,20 +19,25 @@ class EventConfigurator extends AbstractProviderConfigurator
         $this->container = $container;
     }
 
-    public function registerListeners(array $listeners): void
+    public function registerListeners(array $eventsListeners): void
     {
-        foreach ($listeners as $eventName => $listener) {
+        foreach ($eventsListeners as $eventName => $listeners) {
             if (!is_string($eventName)) {
                 throw new \RuntimeException('Incorrect event listener format. Format with event name must be used.');
             }
 
-            foreach ($listener as $callable) {
+            if (!is_array($listeners)) {
+                $type = is_callable($listeners) ? 'callable' : gettype($listeners);
+                throw new \RuntimeException("Event listeners for $eventName must be an array, $type detected.");
+            }
+            foreach ($listeners as $callable) {
                 if (!is_callable($callable)) {
                     throw new \RuntimeException('Listener must be a callable.');
                 }
                 if (is_array($callable) && !is_object($callable[0])) {
                     $callable = [$this->container->get($callable[0]), $callable[1]];
                 }
+
                 $this->listenerProvider
                     ->attach(
                         fn ($event) => (new Injector($this->container))->invoke($callable, [$event]),
