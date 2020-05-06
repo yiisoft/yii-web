@@ -34,10 +34,10 @@ final class CookieTest extends TestCase
         $this->assertSame('test=42; Path=/; Secure; HttpOnly; SameSite=Lax', $this->getCookieHeader($cookie));
     }
 
-    public function testInvalidValue(): void
+    public function testValueThatIsEncoded(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
-        (new Cookie('test'))->withValue(';');
+        $cookieString = (string)(new Cookie('test'))->withValue(';');
+        $this->assertSame('test=%3B; Path=/; Secure; HttpOnly; SameSite=Lax', $cookieString);
     }
 
     public function testWithExpires(): void
