@@ -12,7 +12,6 @@ use Yiisoft\Yii\Web\User\Event\AfterLogout;
 use Yiisoft\Yii\Web\User\Event\BeforeLogin;
 use Yiisoft\Yii\Web\User\Event\BeforeLogout;
 
-// TODO: declare it final?
 class User
 {
     private const SESSION_AUTH_ID = '__auth_id';

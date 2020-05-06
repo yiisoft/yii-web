@@ -33,18 +33,15 @@ class AutoLogin
     /**
      * Add auto-login cookie to response so the user is logged in automatically based on cookie even if session
      * is expired.
-     *
-     * @param AutoLoginIdentityInterface $identity
-     * @param ResponseInterface $response Response to handle
      */
-    public function addCookie(AutoLoginIdentityInterface $identity, ResponseInterface $response): void
+    public function addCookie(AutoLoginIdentityInterface $identity, ResponseInterface $response): ResponseInterface
     {
         $data = json_encode([
             $identity->getId(),
             $identity->getAutoLoginKey()
         ], JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
-        (new Cookie($this->cookieName, $data))
+        return (new Cookie($this->cookieName, urlencode($data)))
             ->withMaxAge($this->duration)
             ->addToResponse($response);
     }
@@ -52,9 +49,9 @@ class AutoLogin
     /**
      * Expire auto-login cookie so user is not logged in automatically anymore.
      */
-    public function expireCookie(ResponseInterface $response): void
+    public function expireCookie(ResponseInterface $response): ResponseInterface
     {
-        (new Cookie($this->cookieName))
+        return (new Cookie($this->cookieName))
             ->expire()
             ->addToResponse($response);
     }
