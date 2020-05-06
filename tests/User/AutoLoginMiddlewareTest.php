@@ -163,16 +163,6 @@ final class AutoLoginMiddlewareTest extends TestCase
         $this->assertSame("Unable to authenticate user by cookie. Identity \"$identityId\" not found.", $this->getLastLogMessage());
     }
 
-    public function testAddCookieAfterLogin(): void
-    {
-
-    }
-
-    public function testRemoveCookieAfterLogout(): void
-    {
-
-    }
-
     private function getRequestHandler(): RequestHandlerInterface
     {
         $requestHandler = $this->createMock(RequestHandlerInterface::class);
