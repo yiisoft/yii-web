@@ -36,7 +36,19 @@ final class AutoLoginMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $this->authenticateUserByCookieFromRequest($request);
-        return $handler->handle($request);
+        $guestBeforeHandle = $this->user->isGuest();
+        $response = $handler->handle($request);
+        $guestAfterHandle = $this->user->isGuest();
+
+        if ($guestBeforeHandle && !$guestAfterHandle) {
+            $this->autoLogin->addCookie($this->user->getIdentity(false), $response);
+        }
+
+        if (!$guestBeforeHandle && $guestAfterHandle) {
+            $this->autoLogin->expireCookie($response);
+        }
+
+        return $response;
     }
 
     /**
