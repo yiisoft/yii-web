@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Yii\Web\User;
@@ -13,7 +14,7 @@ use Yiisoft\Yii\Web\Cookie;
  * @see AutoLoginIdentityInterface
  * @see AutoLoginMiddleware
  */
-class AutoLogin
+final class AutoLogin
 {
     private string $cookieName = 'autoLogin';
     private DateInterval $duration;

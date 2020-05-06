@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Yii\Web\Tests\User;
@@ -160,6 +161,16 @@ final class AutoLoginMiddlewareTest extends TestCase
         $middleware->process($request, $this->getRequestHandler());
 
         $this->assertSame("Unable to authenticate user by cookie. Identity \"$identityId\" not found.", $this->getLastLogMessage());
+    }
+
+    public function testAddCookieAfterLogin(): void
+    {
+
+    }
+
+    public function testRemoveCookieAfterLogout(): void
+    {
+
     }
 
     private function getRequestHandler(): RequestHandlerInterface
