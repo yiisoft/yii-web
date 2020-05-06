@@ -34,13 +34,6 @@ final class Cookie
     private const PATTERN_TOKEN = '/^[a-zA-Z0-9!#$%&\' * +\- .^_`|~]+$/';
 
     /**
-     * Regular expression used to validate cooke value
-     * @link https://tools.ietf.org/html/rfc6265#section-4.1.1
-     * @link https://tools.ietf.org/html/rfc2616#section-2.2
-     */
-    private const PATTERN_OCTET='/^[\x21\x23-\x2B\x2D-\x3A\x3C-\x5B\x5D-\x7E]*$/';
-
-    /**
      * SameSite policy `Lax` will prevent the cookie from being sent by the browser in all cross-site browsing contexts
      * during CSRF-prone request methods (e.g. POST, PUT, PATCH etc).
      * E.g. a POST request from https://otherdomain.com to https://yourdomain.com will not include the cookie, however a GET request will.
@@ -75,11 +68,6 @@ final class Cookie
 
     /**
      * @var string value of the cookie.
-     * A cookie value can include any US-ASCII characters excluding control characters, whitespaces,
-     * double quotes, comma, semicolon, and backslash.
-     * If you wish to store arbitrary data in a value, you should encode that data.
-     * Value will be decoded when parsed from response.
-     * @see urlencode()
      */
     private string $value;
 
@@ -200,11 +188,6 @@ final class Cookie
 
     private function setValue(string $value): void
     {
-        // @link https://tools.ietf.org/html/rfc6265#section-4.1.1
-        if (!preg_match(self::PATTERN_OCTET, $value)) {
-            throw new InvalidArgumentException("The cookie value \"$value\" contains invalid characters.");
-        }
-
         $this->value = $value;
     }
 
@@ -451,7 +434,7 @@ final class Cookie
     public function __toString(): string
     {
         $cookieParts = [
-            $this->name . '=' . $this->value
+            $this->name . '=' . urlencode($this->value)
         ];
 
         if ($this->expires !== null) {
