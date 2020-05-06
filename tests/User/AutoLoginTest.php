@@ -3,7 +3,6 @@
 
 namespace Yiisoft\Yii\Web\Tests\User;
 
-
 use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Yii\Web\User\AutoLogin;
