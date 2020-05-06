@@ -82,8 +82,6 @@ final class AutoLoginMiddleware implements MiddlewareInterface
             return;
         }
 
-        if ($identity !== null) {
-            $this->user->login($identity);
-        }
+        $this->user->login($identity);
     }
 }

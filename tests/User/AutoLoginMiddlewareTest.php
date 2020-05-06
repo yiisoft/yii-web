@@ -200,7 +200,6 @@ final class AutoLoginMiddlewareTest extends TestCase
 
     private function getIdentityRepository(IdentityInterface $identity): IdentityRepositoryInterface
     {
-
         $identityRepository = $this->createMock(IdentityRepositoryInterface::class);
 
         $identityRepository

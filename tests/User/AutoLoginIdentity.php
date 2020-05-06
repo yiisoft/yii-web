@@ -3,7 +3,6 @@
 
 namespace Yiisoft\Yii\Web\Tests\User;
 
-
 use Yiisoft\Yii\Web\User\AutoLoginIdentityInterface;
 
 final class AutoLoginIdentity implements AutoLoginIdentityInterface

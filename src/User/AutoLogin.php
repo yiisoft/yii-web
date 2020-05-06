@@ -3,7 +3,6 @@
 
 namespace Yiisoft\Yii\Web\User;
 
-
 use Psr\Http\Message\ResponseInterface;
 use Yiisoft\Yii\Web\Cookie;
 
@@ -17,7 +16,7 @@ class AutoLogin
 {
     private string $cookieName = 'autoLogin';
 
-    public function cookieName(string $name): self
+    public function withCookieName(string $name): self
     {
         $new = clone $this;
         $new->cookieName = $name;
