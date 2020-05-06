@@ -65,7 +65,7 @@ final class AutoLoginMiddleware implements MiddlewareInterface
             return;
         }
 
-        [$id, $authKey] = $data;
+        [$id, $key] = $data;
         $identity = $this->identityRepository->findIdentity($id);
 
         if ($identity === null) {
@@ -77,8 +77,8 @@ final class AutoLoginMiddleware implements MiddlewareInterface
             throw new \RuntimeException('Identity repository must return an instance of \Yiisoft\Yii\Web\User\AutoLoginIdentityInterface in order for auto-login to function.');
         }
 
-        if (!$identity->validateAuthKey($authKey)) {
-            $this->logger->warning('Unable to authenticate user by cookie. Invalid auth key.');
+        if (!$identity->validateAutoLoginKey($key)) {
+            $this->logger->warning('Unable to authenticate user by cookie. Invalid key.');
             return;
         }
 

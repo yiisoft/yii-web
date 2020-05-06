@@ -23,20 +23,20 @@ interface AutoLoginIdentityInterface extends IdentityInterface
      * The returned key will be stored on the client side as part of a cookie and will be used to authenticate user even
      * if PHP session has been expired.
      *
-     * Make sure to invalidate earlier issued authKeys when you implement force user logout, password change and
+     * Make sure to invalidate earlier issued keys when you implement force user logout, password change and
      * other scenarios, that require forceful access revocation for old sessions.
      *
      * @return string a key that is used to check the validity of a given identity ID.
-     * @see validateAuthKey()
+     * @see validateAutoLoginKey()
      */
-    public function getAuthKey(): string;
+    public function getAutoLoginKey(): string;
 
     /**
-     * Validates the given auth key.
+     * Validates the given key.
      *
-     * @param string $authKey the given auth key
-     * @return bool whether the given auth key is valid.
-     * @see getAuthKey()
+     * @param string $key the given key
+     * @return bool whether the given key is valid.
+     * @see getAutoLoginKey()
      */
-    public function validateAuthKey(string $authKey): bool;
+    public function validateAutoLoginKey(string $key): bool;
 }

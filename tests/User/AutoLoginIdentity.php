@@ -9,17 +9,17 @@ use Yiisoft\Yii\Web\User\AutoLoginIdentityInterface;
 final class AutoLoginIdentity implements AutoLoginIdentityInterface
 {
     public const ID = '42';
-    public const AUTH_KEY_CORRECT = 'auth-key-correct';
-    public const AUTH_KEY_INCORRECT = 'auth-key-incorrect';
+    public const KEY_CORRECT = 'auto-login-key-correct';
+    public const KEY_INCORRECT = 'auto-login-key-incorrect';
 
-    public function getAuthKey(): string
+    public function getAutoLoginKey(): string
     {
-        return self::AUTH_KEY_CORRECT;
+        return self::KEY_CORRECT;
     }
 
-    public function validateAuthKey(string $authKey): bool
+    public function validateAutoLoginKey(string $key): bool
     {
-        return $authKey === $this->getAuthKey();
+        return $key === $this->getAutoLoginKey();
     }
 
     public function getId(): ?string

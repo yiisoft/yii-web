@@ -39,7 +39,7 @@ class AutoLogin
     {
         $data = json_encode([
             $identity->getId(),
-            $identity->getAuthKey()
+            $identity->getAutoLoginKey()
         ], JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
         $expireDateTime = new \DateTimeImmutable();

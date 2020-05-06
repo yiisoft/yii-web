@@ -40,14 +40,14 @@ final class AutoLoginMiddlewareTest extends TestCase
             $this->logger,
             $autoLogin
         );
-        $request = $this->getRequestWithAutoLoginCookie(AutoLoginIdentity::ID, AutoLoginIdentity::AUTH_KEY_CORRECT);
+        $request = $this->getRequestWithAutoLoginCookie(AutoLoginIdentity::ID, AutoLoginIdentity::KEY_CORRECT);
 
         $middleware->process($request, $this->getRequestHandler());
 
         $this->assertNull($this->getLastLogMessage());
     }
 
-    public function testInvalidAuthKey(): void
+    public function testInvalidKey(): void
     {
         $user = $this->getUserWithoutLoginExpected();
 
@@ -58,11 +58,11 @@ final class AutoLoginMiddlewareTest extends TestCase
             $this->logger,
             $autoLogin
         );
-        $request = $this->getRequestWithAutoLoginCookie(AutoLoginIdentity::ID, AutoLoginIdentity::AUTH_KEY_INCORRECT);
+        $request = $this->getRequestWithAutoLoginCookie(AutoLoginIdentity::ID, AutoLoginIdentity::KEY_INCORRECT);
 
         $middleware->process($request, $this->getRequestHandler());
 
-        $this->assertSame('Unable to authenticate user by cookie. Invalid auth key.', $this->getLastLogMessage());
+        $this->assertSame('Unable to authenticate user by cookie. Invalid key.', $this->getLastLogMessage());
     }
 
     public function testNoCookie(): void
@@ -114,7 +114,7 @@ final class AutoLoginMiddlewareTest extends TestCase
         );
         $request = $this->getRequestWithCookies(
             [
-                'autoLogin' => json_encode([AutoLoginIdentity::ID, AutoLoginIdentity::AUTH_KEY_CORRECT, 'weird stuff'])
+                'autoLogin' => json_encode([AutoLoginIdentity::ID, AutoLoginIdentity::KEY_CORRECT, 'weird stuff'])
             ]
         );
 
@@ -134,7 +134,7 @@ final class AutoLoginMiddlewareTest extends TestCase
             $this->getAutoLogin()
         );
 
-        $request = $this->getRequestWithAutoLoginCookie(AutoLoginIdentity::ID, AutoLoginIdentity::AUTH_KEY_CORRECT);
+        $request = $this->getRequestWithAutoLoginCookie(AutoLoginIdentity::ID, AutoLoginIdentity::KEY_CORRECT);
 
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Identity repository must return an instance of \Yiisoft\Yii\Web\User\AutoLoginIdentityInterface in order for auto-login to function.');
@@ -154,7 +154,7 @@ final class AutoLoginMiddlewareTest extends TestCase
         );
 
         $identityId = AutoLoginIdentity::ID;
-        $request = $this->getRequestWithAutoLoginCookie($identityId, AutoLoginIdentity::AUTH_KEY_CORRECT);
+        $request = $this->getRequestWithAutoLoginCookie($identityId, AutoLoginIdentity::KEY_CORRECT);
 
         $middleware->process($request, $this->getRequestHandler());
 
