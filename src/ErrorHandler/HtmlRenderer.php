@@ -33,22 +33,18 @@ final class HtmlRenderer extends ThrowableRenderer
         return $new;
     }
 
-    public function render(\Throwable $t, string $template = 'error', string $customPath = null): string
+    public function render(\Throwable $t): string
     {
-        return $this->renderTemplate($template, [
+        return $this->renderTemplate('error', [
             'throwable' => $t,
-        ],
-            $customPath
-        );
+        ]);
     }
 
-    public function renderVerbose(\Throwable $t, string $template = 'exception', string $customPath = null): string
+    public function renderVerbose(\Throwable $t): string
     {
-        return $this->renderTemplate($template, [
+        return $this->renderTemplate('exception', [
             'throwable' => $t,
-        ],
-            $customPath
-        );
+        ]);
     }
 
     private function htmlEncode(string $text): string
@@ -56,14 +52,9 @@ final class HtmlRenderer extends ThrowableRenderer
         return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
     }
 
-    private function renderTemplate(string $template, array $params, string $customPath = null): string
+    private function renderTemplate(string $template, array $params): string
     {
-        if ($customPath) {
-            $path = $customPath . $template . '.php';
-        } else {
-            $path = $this->getDefaultTemplatePath($template);
-        }
-
+        $path = __DIR__ . '/templates/' . $template . '.php';
         if (!file_exists($path)) {
             throw new \RuntimeException("$template not found at $path");
         }
@@ -87,11 +78,6 @@ final class HtmlRenderer extends ThrowableRenderer
             }
             throw $e;
         }
-    }
-
-    private function getDefaultTemplatePath(string $template): string
-    {
-        return __DIR__ . '/templates/' . $template . '.php';
     }
 
     /**

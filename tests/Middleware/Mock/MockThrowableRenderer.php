@@ -17,12 +17,12 @@ class MockThrowableRenderer extends ThrowableRenderer
         $this->response = $response;
     }
 
-    public function render(\Throwable $t, string $template = 'error', string $customPath = null): string
+    public function render(\Throwable $t): string
     {
         return $this->response;
     }
 
-    public function renderVerbose(\Throwable $t, string $template = 'exception', string $customPath = null): string
+    public function renderVerbose(\Throwable $t): string
     {
         return $this->response;
     }
