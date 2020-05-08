@@ -7,10 +7,26 @@ use Yiisoft\Yii\Web\Info;
 
 final class HtmlRenderer extends ThrowableRenderer
 {
+    private const DEFAULT_TEMPLATES = [
+        'callStackItem',
+        'error',
+        'exception',
+        'previousException'
+    ];
+
     private int $maxSourceLines = 19;
     private int $maxTraceLines = 13;
 
     private string $traceLine = '{html}';
+
+    private string $errorTemplate;
+    private string $exceptionTemplate;
+
+    public function __construct(array $templates = [])
+    {
+        $this->errorTemplate = isset($templates['error']) ? $templates['error'] : 'error';
+        $this->exceptionTemplate = isset($templates['exception']) ? $templates['exception'] : 'exception';
+    }
 
     public function withMaxSourceLines(int $maxSourceLines): self
     {
@@ -35,14 +51,14 @@ final class HtmlRenderer extends ThrowableRenderer
 
     public function render(\Throwable $t): string
     {
-        return $this->renderTemplate('error', [
+        return $this->renderTemplate($this->errorTemplate, [
             'throwable' => $t,
         ]);
     }
 
     public function renderVerbose(\Throwable $t): string
     {
-        return $this->renderTemplate('exception', [
+        return $this->renderTemplate($this->exceptionTemplate, [
             'throwable' => $t,
         ]);
     }
@@ -54,9 +70,14 @@ final class HtmlRenderer extends ThrowableRenderer
 
     private function renderTemplate(string $template, array $params): string
     {
-        $path = __DIR__ . '/templates/' . $template . '.php';
+        if (in_array($template, self::DEFAULT_TEMPLATES)) {
+            $path = __DIR__ . '/templates/' . $template . '.php';
+        } else {
+            $path = $template;
+        }
+
         if (!file_exists($path)) {
-            throw new \RuntimeException("$template not found at $path");
+            throw new \RuntimeException("$template not found");
         }
 
         $renderer = function (): void {
