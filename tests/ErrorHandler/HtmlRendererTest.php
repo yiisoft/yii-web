@@ -75,7 +75,7 @@ class HtmlRendererTest extends TestCase
 
     public function testRenderTemplateThrowsExceptionWhenTemplateFileNotExists(): void
     {
-        $exampleNonExistingFile = sprintf('%s.php', bin2hex(random_bytes(16)));
+        $exampleNonExistingFile = '_not_found_.php';
         $templates = [
             'error' => $exampleNonExistingFile
         ];
