@@ -83,9 +83,7 @@ class HtmlRendererTest extends TestCase
         ];
 
         $renderer = new HtmlRenderer($templates);
-        $exceptionMessage = 'exception-test-message';
-        $exception = new \Exception($exceptionMessage);
-
+        $exception = new \Exception();
         $this->expectException(RuntimeException::class);
         $renderer->render($exception);
     }
