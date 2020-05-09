@@ -77,7 +77,7 @@ final class HtmlRenderer extends ThrowableRenderer
         }
 
         if (!file_exists($path)) {
-            throw new \RuntimeException("$template not found");
+            throw new \RuntimeException("Template not found at $path");
         }
 
         $renderer = function (): void {
