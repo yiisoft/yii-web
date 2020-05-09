@@ -103,7 +103,7 @@ class HtmlRendererTest extends TestCase
     private function createTestTemplate(string $path, string $templateContents): void
     {
         if (!file_put_contents($path, $templateContents)) {
-            throw new WriteErrorException();
+            throw new WriteErrorException(sprintf('Unable to create file at path %s', $path));
         }
     }
 
