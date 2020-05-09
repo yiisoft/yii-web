@@ -3,7 +3,9 @@
 namespace Yiisoft\Yii\Web\Tests\ErrorHandler;
 
 use Nyholm\Psr7\ServerRequest;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
 use Spiral\Files\Exception\WriteErrorException;
 use Yiisoft\Yii\Web\ErrorHandler\HtmlRenderer;
@@ -18,7 +20,7 @@ class HtmlRendererTest extends TestCase
     public function testNonVerboseOutput(): void
     {
         $renderer = new HtmlRenderer();
-        $request = new ServerRequest('GET', '/', ['Accept' => ['text/html']]);
+        $request = $this->getServerRequestMock();
         $renderer->setRequest($request);
         $exceptionMessage = 'exception-test-message';
         $exception = new \RuntimeException($exceptionMessage);
@@ -31,7 +33,7 @@ class HtmlRendererTest extends TestCase
     public function testVerboseOutput(): void
     {
         $renderer = new HtmlRenderer();
-        $request = new ServerRequest('GET', '/', ['Accept' => ['text/html']]);
+        $request = $this->getServerRequestMock();
         $renderer->setRequest($request);
         $exceptionMessage = 'exception-test-message';
         $exception = new \RuntimeException($exceptionMessage);
@@ -47,7 +49,7 @@ class HtmlRendererTest extends TestCase
         $this->createTestTemplate(self::CUSTOM_TEMPLATES['error'], $templateFileContents);
 
         $renderer = new HtmlRenderer(self::CUSTOM_TEMPLATES);
-        $request = new ServerRequest('GET', '/', ['Accept' => ['text/html']]);
+        $request = $this->getServerRequestMock();
         $renderer->setRequest($request);
 
         $exceptionMessage = 'exception-test-message';
@@ -63,7 +65,7 @@ class HtmlRendererTest extends TestCase
         $this->createTestTemplate(self::CUSTOM_TEMPLATES['exception'], $templateFileContents);
 
         $renderer = new HtmlRenderer(self::CUSTOM_TEMPLATES);
-        $request = new ServerRequest('GET', '/', ['Accept' => ['text/html']]);
+        $request = $this->getServerRequestMock();
         $renderer->setRequest($request);
 
         $exceptionMessage = 'exception-test-message';
@@ -81,6 +83,8 @@ class HtmlRendererTest extends TestCase
         ];
 
         $renderer = new HtmlRenderer($templates);
+        $request = $this->getServerRequestMock();
+        $renderer->setRequest($request);
         $exception = new \Exception();
         $this->expectException(RuntimeException::class);
         $renderer->render($exception);
@@ -94,6 +98,32 @@ class HtmlRendererTest extends TestCase
                 $this->removeTestTemplate($template);
             }
         }
+    }
+
+    private function getServerRequestMock(): ServerRequestInterface
+    {
+        $acceptHeader = [
+            'text/html'
+        ];
+        $serverRequestMock = $this->createMock(ServerRequestInterface::class);
+        $serverRequestMock
+            ->method('getHeader')
+            ->with('Accept')
+            ->willReturn($acceptHeader);
+
+        $serverRequestMock
+            ->method('getHeaders')
+            ->willReturn(
+                [
+                    'Accept' => $acceptHeader
+                ]
+            );
+
+        $serverRequestMock
+            ->method('getMethod')
+            ->willReturn('GET');
+
+        return $serverRequestMock;
     }
 
     private function createTestTemplate(string $path, string $templateContents): void
