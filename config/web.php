@@ -18,7 +18,7 @@ return [
     HtmlRenderer::class => [
         '__class' => HtmlRenderer::class,
         '__construct()' => [
-            $params['HtmlRenderer']['templates'] ?? [],
+            $params['htmlRenderer']['templates'] ?? [],
         ],
     ]
 ];
