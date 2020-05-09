@@ -75,6 +75,21 @@ class HtmlRendererTest extends TestCase
         $this->assertStringContainsString('<html>', $renderedOutput);
     }
 
+    public function testRenderTemplateThrowsExceptionWhenTemplateFileNotExists(): void
+    {
+        $exampleNonExistingFile = sprintf('%s.php', bin2hex(random_bytes(16)));
+        $templates = [
+            'error' => $exampleNonExistingFile
+        ];
+
+        $renderer = new HtmlRenderer($templates);
+        $exceptionMessage = 'exception-test-message';
+        $exception = new \Exception($exceptionMessage);
+
+        $this->expectException(RuntimeException::class);
+        $renderer->render($exception);
+    }
+
     public function tearDown(): void
     {
         parent::tearDown();
