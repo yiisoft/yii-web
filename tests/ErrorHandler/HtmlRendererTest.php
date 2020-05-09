@@ -54,8 +54,7 @@ class HtmlRendererTest extends TestCase
         $exception = new \RuntimeException($exceptionMessage);
 
         $renderedOutput = $renderer->render($exception);
-        $this->assertStringContainsString($exceptionMessage, $renderedOutput);
-        $this->assertStringContainsString('<html>', $renderedOutput);
+        $this->assertStringContainsString("<html>$exceptionMessage</html>", $renderedOutput);
     }
 
     public function testVerboseOutputWithCustomTemplate(): void
@@ -71,8 +70,7 @@ class HtmlRendererTest extends TestCase
         $exception = new \RuntimeException($exceptionMessage);
 
         $renderedOutput = $renderer->renderVerbose($exception);
-        $this->assertStringContainsString($exceptionMessage, $renderedOutput);
-        $this->assertStringContainsString('<html>', $renderedOutput);
+        $this->assertStringContainsString("<html>$exceptionMessage</html>", $renderedOutput);
     }
 
     public function testRenderTemplateThrowsExceptionWhenTemplateFileNotExists(): void
