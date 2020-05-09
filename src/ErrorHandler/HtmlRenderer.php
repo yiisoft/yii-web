@@ -24,8 +24,8 @@ final class HtmlRenderer extends ThrowableRenderer
 
     public function __construct(array $templates = [])
     {
-        $this->errorTemplate = isset($templates['error']) ? $templates['error'] : 'error';
-        $this->exceptionTemplate = isset($templates['exception']) ? $templates['exception'] : 'exception';
+        $this->errorTemplate = $templates['error'] ?? 'error';
+        $this->exceptionTemplate = $templates['exception'] ?? 'exception';
     }
 
     public function withMaxSourceLines(int $maxSourceLines): self
