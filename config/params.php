@@ -10,5 +10,15 @@ return [
         '@bower' => '@vendor/bower-asset',
         '@npm' => '@vendor/npm-asset',
         '@web' => '/',
+    ],
+    'htmlRenderer' => [
+        'templates' => [
+            'default' => [
+                'callStackItem',
+                'error',
+                'exception',
+                'previousException'
+            ]
+        ]
     ]
 ];

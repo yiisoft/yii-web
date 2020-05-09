@@ -7,13 +7,6 @@ use Yiisoft\Yii\Web\Info;
 
 final class HtmlRenderer extends ThrowableRenderer
 {
-    private const DEFAULT_TEMPLATES = [
-        'callStackItem',
-        'error',
-        'exception',
-        'previousException'
-    ];
-
     private int $maxSourceLines = 19;
     private int $maxTraceLines = 13;
 
@@ -22,8 +15,11 @@ final class HtmlRenderer extends ThrowableRenderer
     private string $errorTemplate;
     private string $exceptionTemplate;
 
+    private array $defaultTemplates;
+
     public function __construct(array $templates = [])
     {
+        $this->defaultTemplates = $templates['default'];
         $this->errorTemplate = $templates['error'] ?? 'error';
         $this->exceptionTemplate = $templates['exception'] ?? 'exception';
     }
@@ -70,7 +66,7 @@ final class HtmlRenderer extends ThrowableRenderer
 
     private function renderTemplate(string $template, array $params): string
     {
-        if (in_array($template, self::DEFAULT_TEMPLATES)) {
+        if (in_array($template, $this->defaultTemplates)) {
             $path = __DIR__ . '/templates/' . $template . '.php';
         } else {
             $path = $template;
