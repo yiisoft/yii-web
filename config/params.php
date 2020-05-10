@@ -10,5 +10,16 @@ return [
         '@bower' => '@vendor/bower-asset',
         '@npm' => '@vendor/npm-asset',
         '@web' => '/',
+    ],
+    'htmlRenderer' => [
+        'templates' => [
+            'default' => [
+                'callStackItem',
+                'error',
+                'exception',
+                'previousException'
+            ],
+            'path' => __DIR__ . '/../src/ErrorHandler/templates',
+        ]
     ]
 ];

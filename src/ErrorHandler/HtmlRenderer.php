@@ -12,6 +12,21 @@ final class HtmlRenderer extends ThrowableRenderer
 
     private string $traceLine = '{html}';
 
+    private string $defaultTemplatePath;
+
+    private string $errorTemplate;
+    private string $exceptionTemplate;
+
+    private array $defaultTemplates;
+
+    public function __construct(array $templates = [])
+    {
+        $this->defaultTemplatePath = $templates['path'];
+        $this->defaultTemplates = $templates['default'];
+        $this->errorTemplate = $templates['error'] ?? $this->defaultTemplatePath . '/error.php';
+        $this->exceptionTemplate = $templates['exception'] ?? $this->defaultTemplatePath . '/exception.php';
+    }
+
     public function withMaxSourceLines(int $maxSourceLines): self
     {
         $new = clone $this;
@@ -35,14 +50,14 @@ final class HtmlRenderer extends ThrowableRenderer
 
     public function render(\Throwable $t): string
     {
-        return $this->renderTemplate('error', [
+        return $this->renderTemplate($this->errorTemplate, [
             'throwable' => $t,
         ]);
     }
 
     public function renderVerbose(\Throwable $t): string
     {
-        return $this->renderTemplate('exception', [
+        return $this->renderTemplate($this->exceptionTemplate, [
             'throwable' => $t,
         ]);
     }
@@ -52,11 +67,10 @@ final class HtmlRenderer extends ThrowableRenderer
         return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
     }
 
-    private function renderTemplate(string $template, array $params): string
+    private function renderTemplate(string $path, array $params): string
     {
-        $path = __DIR__ . '/templates/' . $template . '.php';
         if (!file_exists($path)) {
-            throw new \RuntimeException("$template not found at $path");
+            throw new \RuntimeException("Template not found at $path");
         }
 
         $renderer = function (): void {
@@ -90,7 +104,8 @@ final class HtmlRenderer extends ThrowableRenderer
     private function renderPreviousExceptions(\Throwable $t): string
     {
         if (($previous = $t->getPrevious()) !== null) {
-            return $this->renderTemplate('previousException', ['throwable' => $previous]);
+            $templatePath = $this->defaultTemplatePath . '/previousException.php';
+            return $this->renderTemplate($templatePath, ['throwable' => $previous]);
         }
         return '';
     }
@@ -120,7 +135,8 @@ final class HtmlRenderer extends ThrowableRenderer
             $begin = $line - $half > 0 ? $line - $half : 0;
             $end = $line + $half < $lineCount ? $line + $half : $lineCount - 1;
         }
-        return $this->renderTemplate('callStackItem', [
+        $templatePath = $this->defaultTemplatePath . '/callStackItem.php';
+        return $this->renderTemplate($templatePath, [
             'file' => $file,
             'line' => $line,
             'class' => $class,

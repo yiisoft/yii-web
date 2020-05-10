@@ -15,4 +15,10 @@ return [
     ],
 
     ThrowableRendererInterface::class => HtmlRenderer::class,
+    HtmlRenderer::class => [
+        '__class' => HtmlRenderer::class,
+        '__construct()' => [
+            $params['htmlRenderer']['templates'] ?? [],
+        ],
+    ]
 ];
