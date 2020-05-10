@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\Web\Tests\User;
 
+use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -163,6 +164,36 @@ final class AutoLoginMiddlewareTest extends TestCase
         $this->assertSame("Unable to authenticate user by cookie. Identity \"$identityId\" not found.", $this->getLastLogMessage());
     }
 
+    public function testAddCookieAfterLogin()
+    {
+        $user = $this->getUserForSuccessfulAutologin();
+        $autoLogin = $this->getAutoLogin();
+        $middleware = new AutoLoginMiddleware(
+            $user,
+            $this->getAutoLoginIdentityRepository(),
+            $this->logger,
+            $autoLogin
+        );
+        $request = $this->getRequestWithAutoLoginCookie(AutoLoginIdentity::ID, AutoLoginIdentity::KEY_CORRECT);
+        $response = $middleware->process($request, $this->getRequestHandlerThatReturnsResponse());
+        $this->assertMatchesRegularExpression('#autoLogin=%5B%2242%22%2C%22auto-login-key-correct%22%5D; Expires=.*?; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=Lax#', $response->getHeaderLine('Set-Cookie'));
+    }
+
+    public function testRemoveCookieAfterLogout()
+    {
+        $user = $this->getUserForLogout();
+        $autoLogin = $this->getAutoLogin();
+        $middleware = new AutoLoginMiddleware(
+            $user,
+            $this->getAutoLoginIdentityRepository(),
+            $this->logger,
+            $autoLogin
+        );
+        $request = $this->getRequestWithAutoLoginCookie(AutoLoginIdentity::ID, AutoLoginIdentity::KEY_CORRECT);
+        $response = $middleware->process($request, $this->getRequestHandlerThatReturnsResponse());
+        $this->assertMatchesRegularExpression('#autoLogin=; Expires=.*?; Max-Age=-31622400; Path=/; Secure; HttpOnly; SameSite=Lax#', $response->getHeaderLine('Set-Cookie'));
+    }
+
     private function getRequestHandler(): RequestHandlerInterface
     {
         $requestHandler = $this->createMock(RequestHandlerInterface::class);
@@ -181,6 +212,19 @@ final class AutoLoginMiddlewareTest extends TestCase
         $requestHandler
             ->expects($this->never())
             ->method('handle');
+
+        return $requestHandler;
+    }
+
+    private function getRequestHandlerThatReturnsResponse(): RequestHandlerInterface
+    {
+        $requestHandler = $this->createMock(RequestHandlerInterface::class);
+        $response = new Response();
+
+        $requestHandler
+            ->expects($this->once())
+            ->method('handle')
+            ->willReturn($response);
 
         return $requestHandler;
     }
@@ -242,6 +286,48 @@ final class AutoLoginMiddlewareTest extends TestCase
         $user
             ->expects($this->once())
             ->method('login')
+            ->willReturn(true);
+
+        return $user;
+    }
+
+    private function getUserForSuccessfulAutologin(): User
+    {
+        $user = $this->createMock(User::class);
+        $user
+            ->expects($this->once())
+            ->method('login')
+            ->willReturn(true);
+
+        $user
+            ->expects($this->at(1))
+            ->method('isGuest')
+            ->willReturn(true);
+
+        $user
+            ->expects($this->at(2))
+            ->method('isGuest')
+            ->willReturn(false);
+
+        $user
+            ->method('getIdentity')
+            ->with(false)
+            ->willReturn(new AutoLoginIdentity());
+
+        return $user;
+    }
+
+    private function getUserForLogout(): User
+    {
+        $user = $this->createMock(User::class);
+        $user
+            ->expects($this->at(1))
+            ->method('isGuest')
+            ->willReturn(false);
+
+        $user
+            ->expects($this->at(2))
+            ->method('isGuest')
             ->willReturn(true);
 
         return $user;
