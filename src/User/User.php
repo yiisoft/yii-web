@@ -25,14 +25,23 @@ class User
 
     private ?AccessCheckerInterface $accessChecker = null;
     private ?IdentityInterface $identity = null;
-    private ?SessionInterface $session = null;
+    private ?SessionInterface $session;
 
+    /**
+     * @param IdentityRepositoryInterface $identityRepository
+     * @param EventDispatcherInterface $eventDispatcher
+     * @param SessionInterface|null $session session to persist authentication status across multiple requests.
+     * If not set, authentication has to be performed on each request, which is often the case for stateless
+     * application such as RESTful API.
+     */
     public function __construct(
         IdentityRepositoryInterface $identityRepository,
-        EventDispatcherInterface $eventDispatcher
+        EventDispatcherInterface $eventDispatcher,
+        SessionInterface $session = null
     ) {
         $this->identityRepository = $identityRepository;
         $this->eventDispatcher = $eventDispatcher;
+        $this->session = $session;
     }
 
     /**
@@ -47,18 +56,6 @@ class User
      * regardless of activity.
      */
     public ?int $absoluteAuthTimeout = null;
-
-    /**
-     * Set session to persist authentication status across multiple requests.
-     * If not set, authentication has to be performed on each request, which is often the case
-     * for stateless application such as RESTful API.
-     *
-     * @param SessionInterface $session
-     */
-    public function setSession(SessionInterface $session): void
-    {
-        $this->session = $session;
-    }
 
     public function setAccessChecker(AccessCheckerInterface $accessChecker): void
     {
