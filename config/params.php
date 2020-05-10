@@ -18,7 +18,8 @@ return [
                 'error',
                 'exception',
                 'previousException'
-            ]
+            ],
+            'path' => __DIR__ . '/../src/ErrorHandler/templates',
         ]
     ]
 ];

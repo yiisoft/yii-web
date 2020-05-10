@@ -23,7 +23,8 @@ class HtmlRendererTest extends TestCase
             'error',
             'exception',
             'previousException'
-        ]
+        ],
+        'path' => __DIR__ . '/../../src/ErrorHandler/templates',
     ];
 
     public function testNonVerboseOutput(): void
