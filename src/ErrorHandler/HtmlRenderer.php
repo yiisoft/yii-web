@@ -24,7 +24,7 @@ final class HtmlRenderer extends ThrowableRenderer
         $this->defaultTemplatePath = $templates['path'];
         $this->defaultTemplates = $templates['default'];
         $this->errorTemplate = $templates['error'] ?? $this->defaultTemplatePath . '/error.php';
-        $this->exceptionTemplate = $templates['exception'] ?? $this->defaultTemplatePath . '/exception.php';;
+        $this->exceptionTemplate = $templates['exception'] ?? $this->defaultTemplatePath . '/exception.php';
     }
 
     public function withMaxSourceLines(int $maxSourceLines): self
