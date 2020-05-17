@@ -11,19 +11,13 @@ use Yiisoft\Yii\Web\ErrorHandler\ThrowableRendererInterface;
 
 class ErrorHandlerTest extends TestCase
 {
-    /**
-     * @var ErrorHandler
-     */
+    /** @var ErrorHandler  */
     private $errorHandler;
 
-    /**
-     * @var LoggerInterface
-     */
+    /** @var LoggerInterface  */
     private $loggerMock;
 
-    /**
-     * @var ThrowableRendererInterface
-     */
+    /** @var ThrowableRendererInterface  */
     private $throwableRendererMock;
 
     public function setUp(): void
