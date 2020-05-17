@@ -54,6 +54,6 @@ class EventConfigurator extends AbstractProviderConfigurator
             return true;
         }
 
-        return count($definition) === 2 && in_array($definition[1], get_class_methods($definition[0]) ?? [], true);
+        return is_array($definition) && count($definition) === 2 && in_array($definition[1], get_class_methods($definition[0]) ?? [], true);
     }
 }
