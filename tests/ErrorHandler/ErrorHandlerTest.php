@@ -7,7 +7,6 @@ namespace Yiisoft\Yii\Web\Tests\ErrorHandler;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Yiisoft\Yii\Web\ErrorHandler\ErrorHandler;
-use Yiisoft\Yii\Web\ErrorHandler\HtmlRenderer;
 use Yiisoft\Yii\Web\ErrorHandler\ThrowableRendererInterface;
 
 class ErrorHandlerTest extends TestCase
