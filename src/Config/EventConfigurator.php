@@ -28,7 +28,7 @@ class EventConfigurator extends AbstractProviderConfigurator
 
             if (!is_array($listeners)) {
                 $type = is_callable($listeners) ? 'callable' : gettype($listeners);
-                throw new \RuntimeException("Event listeners for $eventName must be an array, $type detected.");
+                throw new \RuntimeException("Event listeners for $eventName must be an array, $type given.");
             }
             foreach ($listeners as $callable) {
                 if (!is_callable($callable)) {
