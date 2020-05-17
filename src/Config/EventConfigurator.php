@@ -32,7 +32,8 @@ class EventConfigurator extends AbstractProviderConfigurator
             }
             foreach ($listeners as $callable) {
                 if (!is_callable($callable)) {
-                    throw new \RuntimeException('Listener must be a callable.');
+                    $type = gettype($listeners);
+                    throw new \RuntimeException("Listener must be a callable. $type given.");
                 }
                 if (is_array($callable) && !is_object($callable[0])) {
                     $callable = [$this->container->get($callable[0]), $callable[1]];
