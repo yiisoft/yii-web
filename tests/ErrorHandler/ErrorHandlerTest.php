@@ -3,7 +3,6 @@
 
 namespace Yiisoft\Yii\Web\Tests\ErrorHandler;
 
-
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Yiisoft\Yii\Web\ErrorHandler\ErrorHandler;
