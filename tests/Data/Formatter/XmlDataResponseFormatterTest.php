@@ -92,4 +92,58 @@ class XmlDataResponseFormatterTest extends TestCase
         );
         $this->assertSame(['application/xml; UTF-8'], $result->getHeader('Content-Type'));
     }
+
+    public function testFormatterWithObjectTags(): void
+    {
+        $data = new \stdClass();
+        $data->attribute = 'test';
+
+        $factory = new Psr17Factory();
+        $dataResponse = new DataResponse($data, 200, '', $factory);
+        $formatter = new XmlDataResponseFormatter();
+        $formatter = $formatter->withUseObjectTags(true);
+        $result = $formatter->format($dataResponse);
+        $result->getBody()->rewind();
+
+        $this->assertSame(
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<response><stdClass><attribute>test</attribute></stdClass></response>\n",
+            $result->getBody()->getContents()
+        );
+        $this->assertSame(['application/xml; UTF-8'], $result->getHeader('Content-Type'));
+    }
+
+    public function testFormatterWithoutObjectTags(): void
+    {
+        $data = new \stdClass();
+        $data->attribute = 'test';
+
+        $factory = new Psr17Factory();
+        $dataResponse = new DataResponse($data, 200, '', $factory);
+        $formatter = new XmlDataResponseFormatter();
+        $formatter = $formatter->withUseObjectTags(false);
+        $result = $formatter->format($dataResponse);
+        $result->getBody()->rewind();
+
+        $this->assertSame(
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<response><attribute>test</attribute></response>\n",
+            $result->getBody()->getContents()
+        );
+        $this->assertSame(['application/xml; UTF-8'], $result->getHeader('Content-Type'));
+    }
+    
+    public function testFormatterWithContentType(): void
+    {
+        $factory = new Psr17Factory();
+        $dataResponse = new DataResponse('test', 200, '', $factory);
+        $formatter = new XmlDataResponseFormatter();
+        $formatter = $formatter->withContentType('text/xml');
+        $result = $formatter->format($dataResponse);
+        $result->getBody()->rewind();
+
+        $this->assertSame(
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<response>test</response>\n",
+            $result->getBody()->getContents()
+        );
+        $this->assertSame(['text/xml; UTF-8'], $result->getHeader('Content-Type'));
+    }
 }
