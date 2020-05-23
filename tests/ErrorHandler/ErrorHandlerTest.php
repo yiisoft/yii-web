@@ -10,14 +10,9 @@ use Yiisoft\Yii\Web\ErrorHandler\ThrowableRendererInterface;
 
 class ErrorHandlerTest extends TestCase
 {
-    /** @var ErrorHandler  */
-    private $errorHandler;
-
-    /** @var LoggerInterface  */
-    private $loggerMock;
-
-    /** @var ThrowableRendererInterface  */
-    private $throwableRendererMock;
+    private ErrorHandler $errorHandler;
+    private LoggerInterface $loggerMock;
+    private ThrowableRendererInterface $throwableRendererMock;
 
     public function setUp(): void
     {
