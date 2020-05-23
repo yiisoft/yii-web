@@ -13,8 +13,8 @@ class XmlDataResponseFormatterTest extends TestCase
     {
         $factory = new Psr17Factory();
         $dataResponse = new DataResponse('test', 200, '', $factory);
-        $formatter = new XmlDataResponseFormatter();
-        $result = $formatter->format($dataResponse);
+        $result = (new XmlDataResponseFormatter())
+            ->format($dataResponse);
         $result->getBody()->rewind();
 
         $this->assertSame(
@@ -28,9 +28,9 @@ class XmlDataResponseFormatterTest extends TestCase
     {
         $factory = new Psr17Factory();
         $dataResponse = new DataResponse('test', 200, '', $factory);
-        $formatter = new XmlDataResponseFormatter();
-        $formatter = $formatter->withEncoding('ISO-8859-1');
-        $result = $formatter->format($dataResponse);
+        $result = (new XmlDataResponseFormatter())
+            ->withEncoding('ISO-8859-1')
+            ->format($dataResponse);
         $result->getBody()->rewind();
 
         $this->assertSame(
@@ -44,9 +44,9 @@ class XmlDataResponseFormatterTest extends TestCase
     {
         $factory = new Psr17Factory();
         $dataResponse = new DataResponse('test', 200, '', $factory);
-        $formatter = new XmlDataResponseFormatter();
-        $formatter = $formatter->withVersion('1.1');
-        $result = $formatter->format($dataResponse);
+        $result = (new XmlDataResponseFormatter())
+            ->withVersion('1.1')
+            ->format($dataResponse);
         $result->getBody()->rewind();
 
         $this->assertSame(
@@ -60,9 +60,9 @@ class XmlDataResponseFormatterTest extends TestCase
     {
         $factory = new Psr17Factory();
         $dataResponse = new DataResponse('test', 200, '', $factory);
-        $formatter = new XmlDataResponseFormatter();
-        $formatter = $formatter->withRootTag('exampleRootTag');
-        $result = $formatter->format($dataResponse);
+        $result = (new XmlDataResponseFormatter())
+            ->withRootTag('exampleRootTag')
+            ->format($dataResponse);
         $result->getBody()->rewind();
 
         $this->assertSame(
@@ -81,9 +81,9 @@ class XmlDataResponseFormatterTest extends TestCase
             '1_invalidName' => 'test'
         ];
         $dataResponse = new DataResponse($data, 200, '', $factory);
-        $formatter = new XmlDataResponseFormatter();
-        $formatter = $formatter->withItemTag('customItemTag');
-        $result = $formatter->format($dataResponse);
+        $result = (new XmlDataResponseFormatter())
+            ->withItemTag('customItemTag')
+            ->format($dataResponse);
         $result->getBody()->rewind();
 
         $this->assertSame(
@@ -100,9 +100,9 @@ class XmlDataResponseFormatterTest extends TestCase
 
         $factory = new Psr17Factory();
         $dataResponse = new DataResponse($data, 200, '', $factory);
-        $formatter = new XmlDataResponseFormatter();
-        $formatter = $formatter->withUseObjectTags(true);
-        $result = $formatter->format($dataResponse);
+        $result = (new XmlDataResponseFormatter())
+            ->withUseObjectTags(true)
+            ->format($dataResponse);
         $result->getBody()->rewind();
 
         $this->assertSame(
@@ -119,9 +119,9 @@ class XmlDataResponseFormatterTest extends TestCase
 
         $factory = new Psr17Factory();
         $dataResponse = new DataResponse($data, 200, '', $factory);
-        $formatter = new XmlDataResponseFormatter();
-        $formatter = $formatter->withUseObjectTags(false);
-        $result = $formatter->format($dataResponse);
+        $result = (new XmlDataResponseFormatter())
+            ->withUseObjectTags(false)
+            ->format($dataResponse);
         $result->getBody()->rewind();
 
         $this->assertSame(
@@ -130,14 +130,14 @@ class XmlDataResponseFormatterTest extends TestCase
         );
         $this->assertSame(['application/xml; UTF-8'], $result->getHeader('Content-Type'));
     }
-    
+
     public function testFormatterWithContentType(): void
     {
         $factory = new Psr17Factory();
         $dataResponse = new DataResponse('test', 200, '', $factory);
-        $formatter = new XmlDataResponseFormatter();
-        $formatter = $formatter->withContentType('text/xml');
-        $result = $formatter->format($dataResponse);
+        $result = (new XmlDataResponseFormatter())
+            ->withContentType('text/xml')
+            ->format($dataResponse);
         $result->getBody()->rewind();
 
         $this->assertSame(
