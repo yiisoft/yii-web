@@ -13,6 +13,7 @@ use Psr\Http\Message\StreamInterface;
 use Yiisoft\Yii\Web\Exception\HeadersHaveBeenSentException;
 use Yiisoft\Yii\Web\SapiEmitter;
 use Yiisoft\Yii\Web\Tests\Emitter\Support\HTTPFunctions;
+use Yiisoft\Yii\Web\Tests\Emitter\Support\NotReadableStream;
 
 /**
  * @preserveGlobalState disabled
@@ -61,6 +62,18 @@ final class SapiEmitterTest extends TestCase
         $this->assertTrue(HTTPFunctions::hasHeader('X-Test'));
         $this->assertFalse(HTTPFunctions::hasHeader('Content-Length'));
         $this->expectOutputString('');
+    }
+
+    public function testEmitterWithNotReadableStream(): void
+    {
+        $body = new NotReadableStream();
+        $response = $this->createResponse(200, ['X-Test' => 42], $body);
+
+        $this->createEmitter()->emit($response);
+
+        $this->assertEquals(200, $this->getResponseCode());
+        $this->assertCount(1, $this->getHeaders());
+        $this->assertContains('X-Test: 42', $this->getHeaders());
     }
 
     public function testNoBodyAndContentLengthIfEmitToldSo(): void

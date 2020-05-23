@@ -99,6 +99,9 @@ final class SapiEmitter
         }
         // check if body is empty
         $body = $response->getBody();
+        if (!$body->isReadable()) {
+            return false;
+        }
         $size = $body->getSize();
         if ($size !== null) {
             return $size > 0;
