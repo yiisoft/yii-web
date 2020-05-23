@@ -1,6 +1,8 @@
 <?php
 
-namespace Yiisoft\Yii\Web\Tests\Emitter;
+declare(strict_types=1);
+
+namespace Yiisoft\Yii\Web\Tests\Emitter\Support;
 
 include 'httpFunctionMocks.php';
 

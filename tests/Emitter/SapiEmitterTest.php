@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Yii\Web\Tests\Emitter;
 
-include 'httpFunctionMocks.php';
+include 'Support/httpFunctionMocks.php';
 
 use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
@@ -10,9 +12,9 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use Yiisoft\Yii\Web\Exception\HeadersHaveBeenSentException;
 use Yiisoft\Yii\Web\SapiEmitter;
+use Yiisoft\Yii\Web\Tests\Emitter\Support\HTTPFunctions;
 
 /**
- * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
 final class SapiEmitterTest extends TestCase
