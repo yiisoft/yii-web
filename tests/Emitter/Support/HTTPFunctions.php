@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\Web\Tests\Emitter;
+namespace Yiisoft\Yii\Web\Tests\Emitter\Support;
 
 class HTTPFunctions
 {
