@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Yii\Web;
 
-use Yiisoft\Yii\Web\Tests\Emitter\HTTPFunctions;
+use Yiisoft\Yii\Web\Tests\Emitter\Support\HTTPFunctions;
 
 if (!function_exists(__NAMESPACE__ . '\\headers_sent')) {
     /**
