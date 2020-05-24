@@ -8,10 +8,6 @@ include 'httpFunctionMocks.php';
 
 use PHPUnit\Framework\TestCase;
 
-/**
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
- */
 class HTTPFunctionsTest extends TestCase
 {
     public function setUp(): void

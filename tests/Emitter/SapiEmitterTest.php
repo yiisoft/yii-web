@@ -15,9 +15,6 @@ use Yiisoft\Yii\Web\SapiEmitter;
 use Yiisoft\Yii\Web\Tests\Emitter\Support\HTTPFunctions;
 use Yiisoft\Yii\Web\Tests\Emitter\Support\NotReadableStream;
 
-/**
- * @preserveGlobalState disabled
- */
 final class SapiEmitterTest extends TestCase
 {
     public function setUp(): void
