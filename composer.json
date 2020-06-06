@@ -31,7 +31,7 @@
         "psr/http-server-handler": "^1.0",
         "psr/http-server-middleware": "^1.0",
         "yiisoft/access": "^3.0@dev",
-        "yiisoft/aliases": "^3.0@dev",
+        "yiisoft/aliases": "^1.0",
         "yiisoft/auth": "^3.0@dev",
         "yiisoft/friendly-exception": "^1.0",
         "yiisoft/http": "1.0.x-dev",
