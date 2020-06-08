@@ -39,7 +39,3 @@ phpunit.result.cache
 # NPM packages
 /node_modules
 .env
-
-#codeception
-/tests/_output
-c3.php
