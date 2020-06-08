@@ -12,11 +12,12 @@ This [Yii Framework] extension allows easy creation of web applications.
 
 [Yii Framework]: https://github.com/yiisoft/core
 
-[![Latest Stable Version](https://img.shields.io/packagist/v/yiisoft/yii-web.svg)](https://packagist.org/packages/yiisoft/yii-web)
-[![Total Downloads](https://img.shields.io/packagist/dt/yiisoft/yii-web.svg)](https://packagist.org/packages/yiisoft/yii-web)
+[![Latest Stable Version](https://poser.pugx.org/yiisoft/yii-web/v/stable.png)](https://packagist.org/packages/yiisoft/yii-web)
+[![Total Downloads](https://poser.pugx.org/yiisoft/yii-web/downloads.png)](https://packagist.org/packages/yiisoft/yii-web)
 [![Build Status](https://github.com/yiisoft/yii-web/workflows/build/badge.svg)](https://github.com/yiisoft/yii-web/actions)
-[![Code Coverage](https://scrutinizer-ci.com/g/yiisoft/yii-web/badges/coverage.png?s=31d80f1036099e9d6a3e4d7738f6b000b3c3d10e)](https://scrutinizer-ci.com/g/yiisoft/yii-web/)
 [![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/yiisoft/yii-web/badges/quality-score.png?s=b1074a1ff6d0b214d54fa5ab7abbb90fc092471d)](https://scrutinizer-ci.com/g/yiisoft/yii-web/)
+[![Code Coverage](https://scrutinizer-ci.com/g/yiisoft/yii-web/badges/coverage.png?s=31d80f1036099e9d6a3e4d7738f6b000b3c3d10e)](https://scrutinizer-ci.com/g/yiisoft/yii-web/)
+[![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fyiisoft%2Fyii-web%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/yiisoft/yii-web/master)
 
 Installation
 ------------

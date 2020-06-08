@@ -4,11 +4,13 @@ build:
       tests:
         override:
           - php-scrutinizer-run
-
+filter:
+  paths:
+    - "src/*"
 checks:
-    php: true
+  php: true
 tools:
-    php_code_coverage:
-        enabled: true
-    external_code_coverage:
-        timeout: 600
+  php_code_coverage:
+    enabled: true
+  external_code_coverage:
+    timeout: 600
