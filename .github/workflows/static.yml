@@ -2,7 +2,7 @@ on:
   - pull_request
   - push
 
-name: static analysis by phan
+name: static analysis with phan
 
 jobs:
   mutation:
@@ -28,5 +28,5 @@ jobs:
           php-version: "${{ matrix.php-version }}"
           tools: cs2pr, phan
 
-      - name: Static analysis by phan
+      - name: Static analysis with phan
         run: phan --no-progress-bar --output-mode checkstyle | cs2pr --graceful-warnings --colorize
