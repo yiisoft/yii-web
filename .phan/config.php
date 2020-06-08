@@ -311,7 +311,8 @@ return [
     //       to `exclude_analysis_directory_list`.
     'exclude_analysis_directory_list' => [
         'vendor/',
-        'config/'
+        'config/',
+        'src/ErrorHandler/templates/'
     ],
 
     // Enable this to enable checks of require/include statements referring to valid paths.
