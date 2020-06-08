@@ -30,7 +30,6 @@ jobs:
           coverage: "pcov"
           php-version: "${{ matrix.php-version }}"
           ini-values: memory_limit=-1
-          tools: infection
 
       - name: Determine composer cache directory
         run: echo "::set-env name=COMPOSER_CACHE_DIR::$(composer config cache-dir)"
@@ -48,6 +47,6 @@ jobs:
 
       - name: Run test mutation infection with coverage
         continue-on-error: true
-        run: infection --threads=4 --only-covered
+        run: vendor/bin/infection
         env:
           STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
