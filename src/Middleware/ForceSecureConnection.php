@@ -9,6 +9,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Yiisoft\Http\Header;
 use Yiisoft\Http\Status;
 
 /**
@@ -19,6 +20,9 @@ use Yiisoft\Http\Status;
  */
 final class ForceSecureConnection implements MiddlewareInterface
 {
+    private const DEFAULT_CSP_DIRECTIVES = 'upgrade-insecure-requests; default-src https:';
+    private const DEFAULT_HSTS_MAX_AGE = 31_536_000; // 12 months
+
     private bool $redirect = true;
     private int $statusCode = Status::MOVED_PERMANENTLY;
     private ?int $port = null;
@@ -31,8 +35,6 @@ final class ForceSecureConnection implements MiddlewareInterface
     private bool $hstsSubDomains = false;
 
     private ResponseFactoryInterface $responseFactory;
-    private const DEFAULT_CSP_DIRECTIVES = 'upgrade-insecure-requests; default-src https:';
-    private const DEFAULT_HSTS_MAX_AGE = 31_536_000; // 12 months
 
     public function __construct(ResponseFactoryInterface $responseFactory)
     {
@@ -46,7 +48,7 @@ final class ForceSecureConnection implements MiddlewareInterface
             return $this->addCSP(
                 $this->responseFactory
                     ->createResponse($this->statusCode)
-                    ->withHeader('Location', $url)
+                    ->withHeader(Header::LOCATION, $url)
             );
         }
         return $this->addHSTS($this->addCSP($handler->handle($request)));
@@ -110,26 +112,18 @@ final class ForceSecureConnection implements MiddlewareInterface
         return $clone;
     }
 
-    /**
-     * @param ResponseInterface $response
-     * @return ResponseInterface
-     */
     private function addCSP(ResponseInterface $response): ResponseInterface
     {
         return $this->addCSP
-            ? $response->withHeader('Content-Security-Policy', $this->cspDirectives)
+            ? $response->withHeader(Header::CONTENT_SECURITY_POLICY, $this->cspDirectives)
             : $response;
     }
 
-    /**
-     * @param ResponseInterface $response
-     * @return ResponseInterface
-     */
     private function addHSTS(ResponseInterface $response): ResponseInterface
     {
         $subDomains = $this->hstsSubDomains ? 'includeSubDomains' : '';
         return $this->addSTS
-            ? $response->withHeader('Strict-Transport-Security', "max-age={$this->hstsMaxAge}; {$subDomains}")
+            ? $response->withHeader(Header::STRICT_TRANSPORT_SECURITY, "max-age={$this->hstsMaxAge}; {$subDomains}")
             : $response;
     }
 }
