@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Yii\Web\User;
 
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -23,46 +25,37 @@ class User
 
     private ?AccessCheckerInterface $accessChecker = null;
     private ?IdentityInterface $identity = null;
-    private ?SessionInterface $session = null;
+    private ?SessionInterface $session;
 
+    /**
+     * @param IdentityRepositoryInterface $identityRepository
+     * @param EventDispatcherInterface $eventDispatcher
+     * @param SessionInterface|null $session session to persist authentication status across multiple requests.
+     * If not set, authentication has to be performed on each request, which is often the case for stateless
+     * application such as RESTful API.
+     */
     public function __construct(
         IdentityRepositoryInterface $identityRepository,
-        EventDispatcherInterface $eventDispatcher
+        EventDispatcherInterface $eventDispatcher,
+        SessionInterface $session = null
     ) {
         $this->identityRepository = $identityRepository;
         $this->eventDispatcher = $eventDispatcher;
+        $this->session = $session;
     }
 
     /**
      * @var int|null the number of seconds in which the user will be logged out automatically if he
      * remains inactive. If this property is not set, the user will be logged out after
-     * the current session expires (c.f. [[Session::timeout]]).
+     * the current session expires.
      */
     public ?int $authTimeout = null;
 
     /**
      * @var int|null the number of seconds in which the user will be logged out automatically
      * regardless of activity.
-     * Note that this will not work if [[enableAutoLogin]] is `true`.
      */
     public ?int $absoluteAuthTimeout = null;
-
-    /**
-     * @var array MIME types for which this component should redirect to the [[loginUrl]].
-     */
-    public array $acceptableRedirectTypes = ['text/html', 'application/xhtml+xml'];
-
-    /**
-     * Set session to persist authentication status across multiple requests.
-     * If not set, authentication has to be performed on each request, which is often the case
-     * for stateless application such as RESTful API.
-     *
-     * @param SessionInterface $session
-     */
-    public function setSession(SessionInterface $session): void
-    {
-        $this->session = $session;
-    }
 
     public function setAccessChecker(AccessCheckerInterface $accessChecker): void
     {
@@ -71,10 +64,9 @@ class User
 
     /**
      * Returns the identity object associated with the currently logged-in user.
-     * When [[enableSession]] is true, this method may attempt to read the user's authentication data
+     * This method read the user's authentication data
      * stored in session and reconstruct the corresponding identity object, if it has not done so before.
      * @param bool $autoRenew whether to automatically renew authentication status if it has not been done so before.
-     * This is only useful when [[enableSession]] is true.
      * @return IdentityInterface the identity object associated with the currently logged-in user.
      * @throws \Throwable
      * @see logout()
@@ -100,7 +92,7 @@ class User
     /**
      * Sets the user identity object.
      *
-     * Note that this method does not deal with session or cookie. You should usually use [[switchIdentity()]]
+     * Note that this method does not deal with session. You should usually use {@see switchIdentity()}
      * to change the identity of the current user.
      *
      * @param IdentityInterface|null $identity the identity object associated with the currently logged user.
@@ -115,40 +107,32 @@ class User
      * Logs in a user.
      *
      * After logging in a user:
-     * - the user's identity information is obtainable from the [[identity]] property
-     *
-     * If [[enableSession]] is `true`:
-     * - the identity information will be stored in session and be available in the next requests
-     * - in case of `$duration == 0`: as long as the session remains active or till the user closes the browser
-     * - in case of `$duration > 0`: as long as the session remains active or as long as the cookie
-     *   remains valid by it's `$duration` in seconds when [[enableAutoLogin]] is set `true`.
-     *
-     * If [[enableSession]] is `false`:
-     * - the `$duration` parameter will be ignored
+     * - the user's identity information is obtainable from the {@see getIdentity()}
+     * - the identity information will be stored in session and be available in the next requests as long as the session
+     *   remains active or till the user closes the browser. Some browsers, such as Chrome, are keeping session when
+     *   browser is re-opened.
      *
      * @param IdentityInterface $identity the user identity (which should already be authenticated)
-     * @param int $duration number of seconds that the user can remain in logged-in status, defaults to `0`
      * @return bool whether the user is logged in
      */
-    public function login(IdentityInterface $identity, int $duration = 0): bool
+    public function login(IdentityInterface $identity): bool
     {
-        if ($this->beforeLogin($identity, $duration)) {
+        if ($this->beforeLogin($identity)) {
             $this->switchIdentity($identity);
-            $this->afterLogin($identity, $duration);
+            $this->afterLogin($identity);
         }
         return !$this->isGuest();
     }
 
     /**
      * Logs in a user by the given access token.
-     * This method will first authenticate the user by calling [[IdentityInterface::findIdentityByAccessToken()]]
-     * with the provided access token. If successful, it will call [[login()]] to log in the authenticated user.
-     * If authentication fails or [[login()]] is unsuccessful, it will return null.
+     * This method will first authenticate the user by calling {@see IdentityInterface::findIdentityByToken()}
+     * with the provided access token. If successful, it will call {@see login()} to log in the authenticated user.
+     * If authentication fails or {@see login()} is unsuccessful, it will return null.
      * @param string $token the access token
      * @param string $type the type of the token. The value of this parameter depends on the implementation.
-     * For example, [[\yii\filters\auth\HttpBearerAuth]] will set this parameter to be `yii\filters\auth\HttpBearerAuth`.
      * @return IdentityInterface|null the identity associated with the given access token. Null is returned if
-     * the access token is invalid or [[login()]] is unsuccessful.
+     * the access token is invalid or {@see login()} is unsuccessful.
      */
     public function loginByAccessToken(string $token, string $type = null): ?IdentityInterface
     {
@@ -164,7 +148,6 @@ class User
      * This will remove authentication-related session data.
      * If `$destroySession` is true, all session data will be removed.
      * @param bool $destroySession whether to destroy the whole session. Defaults to true.
-     * This parameter is ignored if [[enableSession]] is false.
      * @return bool whether the user is logged out
      * @throws \Throwable
      */
@@ -179,6 +162,7 @@ class User
             if ($destroySession && $this->session) {
                 $this->session->destroy();
             }
+
             $this->afterLogout($identity);
         }
         return $this->isGuest();
@@ -207,44 +191,34 @@ class User
 
     /**
      * This method is called before logging in a user.
-     * The default implementation will trigger the [[EVENT_BEFORE_LOGIN]] event.
+     * The default implementation will trigger the {@see BeforeLogin} event.
      * If you override this method, make sure you call the parent implementation
      * so that the event is triggered.
      * @param IdentityInterface $identity the user identity information
-     * @param int $duration number of seconds that the user can remain in logged-in status.
-     * If 0, it means login till the user closes the browser or the session is manually destroyed.
      * @return bool whether the user should continue to be logged in
      */
-    protected function beforeLogin(IdentityInterface $identity, int $duration): bool
+    private function beforeLogin(IdentityInterface $identity): bool
     {
-        $event = new BeforeLogin($identity, $duration);
+        $event = new BeforeLogin($identity);
         $this->eventDispatcher->dispatch($event);
         return $event->isValid();
     }
 
     /**
      * This method is called after the user is successfully logged in.
-     * The default implementation will trigger the [[EVENT_AFTER_LOGIN]] event.
-     * If you override this method, make sure you call the parent implementation
-     * so that the event is triggered.
      * @param IdentityInterface $identity the user identity information
-     * @param int $duration number of seconds that the user can remain in logged-in status.
-     * If 0, it means login till the user closes the browser or the session is manually destroyed.
      */
-    protected function afterLogin(IdentityInterface $identity, int $duration): void
+    private function afterLogin(IdentityInterface $identity): void
     {
-        $this->eventDispatcher->dispatch(new AfterLogin($identity, $duration));
+        $this->eventDispatcher->dispatch(new AfterLogin($identity));
     }
 
     /**
-     * This method is invoked when calling [[logout()]] to log out a user.
-     * The default implementation will trigger the [[EVENT_BEFORE_LOGOUT]] event.
-     * If you override this method, make sure you call the parent implementation
-     * so that the event is triggered.
+     * This method is invoked when calling {@see logout()} to log out a user.
      * @param IdentityInterface $identity the user identity information
      * @return bool whether the user should continue to be logged out
      */
-    protected function beforeLogout(IdentityInterface $identity): bool
+    private function beforeLogout(IdentityInterface $identity): bool
     {
         $event = new BeforeLogout($identity);
         $this->eventDispatcher->dispatch($event);
@@ -252,13 +226,10 @@ class User
     }
 
     /**
-     * This method is invoked right after a user is logged out via [[logout()]].
-     * The default implementation will trigger the [[EVENT_AFTER_LOGOUT]] event.
-     * If you override this method, make sure you call the parent implementation
-     * so that the event is triggered.
+     * This method is invoked right after a user is logged out via {@see logout()}.
      * @param IdentityInterface $identity the user identity information
      */
-    protected function afterLogout(IdentityInterface $identity): void
+    private function afterLogout(IdentityInterface $identity): void
     {
         $this->eventDispatcher->dispatch(new AfterLogout($identity));
     }
@@ -266,10 +237,10 @@ class User
     /**
      * Switches to a new identity for the current user.
      *
-     * When [[enableSession]] is true, this method may use session and/or cookie to store the user identity information,
-     * according to the value of `$duration`. Please refer to [[login()]] for more details.
+     * This method use session to store the user identity information.
+     * Please refer to {@see login()} for more details.
      *
-     * This method is mainly called by [[login()]], [[logout()]] and [[loginByCookie()]]
+     * This method is mainly called by {@see login()} and {@see logout()}
      * when the current user needs to be associated with the corresponding identity information.
      *
      * @param IdentityInterface $identity the identity information to be associated with the current user.
@@ -300,17 +271,15 @@ class User
     }
 
     /**
-     * Updates the authentication status using the information from session and cookie.
+     * Updates the authentication status using the information from session.
      *
      * This method will try to determine the user identity using a session variable.
      *
-     * If [[authTimeout]] is set, this method will refresh the timer.
+     * If {@see authTimeout} is set, this method will refresh the timer.
      *
-     * If the user identity cannot be determined by session, this method will try to [[loginByCookie()|login by cookie]]
-     * if [[enableAutoLogin]] is true.
      * @throws \Throwable
      */
-    protected function renewAuthStatus(): void
+    private function renewAuthStatus(): void
     {
         $id = $this->session->get(self::SESSION_AUTH_ID);
 

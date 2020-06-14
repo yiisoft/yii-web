@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Yii\Web\User\Event;
 
 use Yiisoft\Auth\IdentityInterface;
@@ -7,21 +9,14 @@ use Yiisoft\Auth\IdentityInterface;
 class AfterLogin
 {
     private IdentityInterface $identity;
-    private int $duration;
 
-    public function __construct(IdentityInterface $identity, int $duration)
+    public function __construct(IdentityInterface $identity)
     {
         $this->identity = $identity;
-        $this->duration = $duration;
     }
 
     public function getIdentity(): IdentityInterface
     {
         return $this->identity;
-    }
-
-    public function getDuration(): int
-    {
-        return $this->duration;
     }
 }

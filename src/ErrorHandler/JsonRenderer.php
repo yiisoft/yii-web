@@ -11,7 +11,7 @@ final class JsonRenderer extends ThrowableRenderer
     {
         return json_encode([
             'message' => 'An internal server error occurred',
-        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        ], JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
     public function renderVerbose(\Throwable $t): string
@@ -23,6 +23,6 @@ final class JsonRenderer extends ThrowableRenderer
             'file' => $t->getFile(),
             'line' => $t->getLine(),
             'trace' => $t->getTrace(),
-        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        ], JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 }
