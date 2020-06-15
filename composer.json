@@ -44,7 +44,6 @@
         "yiisoft/event-dispatcher": "^3.0@dev"
     },
     "require-dev": {
-        "infection/infection": "^0.16.3",
         "nyholm/psr7": "^1.0",
         "phan/phan": "^3.0.2",
         "phpunit/phpunit": "^9.2",

@@ -7,8 +7,10 @@ name: static analysis
 jobs:
   mutation:
     name: PHP ${{ matrix.php-version }}-${{ matrix.os }}
+
     env:
       extensions: ast
+      update: true
 
     runs-on: ${{ matrix.os }}
 
