@@ -15,11 +15,11 @@ class ResultPrinter extends DefaultResultPrinter
 
     public function __construct(
         $out = null,
-        $verbose = false,
-        $colors = \PHPUnit\TextUI\ResultPrinter::COLOR_DEFAULT,
-        $debug = false,
+        bool $verbose = false,
+        string $colors = \PHPUnit\TextUI\ResultPrinter::COLOR_DEFAULT,
+        bool $debug = false,
         $numberOfColumns = 80,
-        $reverse = false
+        bool $reverse = false
     ) {
         if ($out === null) {
             $out = STDOUT;

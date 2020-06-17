@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Yiisoft\Yii\Web\Tests;
 
 use RuntimeException;

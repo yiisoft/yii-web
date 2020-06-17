@@ -21,6 +21,7 @@
         "ext-json": "*",
         "ext-dom": "*",
         "alexkart/curl-builder": "^1.0",
+        "nyholm/psr7": "^1.0",
         "psr/container": "1.0.0",
         "psr/container-implementation": "1.0.0",
         "psr/event-dispatcher": "^1.0",
@@ -33,6 +34,7 @@
         "yiisoft/access": "^3.0@dev",
         "yiisoft/aliases": "^1.0",
         "yiisoft/auth": "^3.0@dev",
+        "yiisoft/di": "^3.0@dev",
         "yiisoft/friendly-exception": "^1.0",
         "yiisoft/http": "1.0.x-dev",
         "yiisoft/injector": "^1.0",
@@ -44,12 +46,10 @@
         "yiisoft/event-dispatcher": "^3.0@dev"
     },
     "require-dev": {
-        "nyholm/psr7": "^1.0",
         "phan/phan": "^3.0.2",
         "phpunit/phpunit": "^9.2",
         "yiisoft/cache": "^3.0@dev",
         "yiisoft/composer-config-plugin": "^1.0@dev",
-        "yiisoft/di": "^3.0@dev",
         "yiisoft/log": "^3.0@dev",
         "yiisoft/router-fastroute": "^3.0@dev"
     },
@@ -63,6 +63,7 @@
         "config-plugin": {
             "params": "config/params.php",
             "web": "config/web.php",
+            "providers-web": "config/providers-web.php",
             "tests": "$web"
         }
     },

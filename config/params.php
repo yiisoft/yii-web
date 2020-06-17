@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
     'aliases' => [
         // @root needs to be redefined in the application config
@@ -11,15 +13,22 @@ return [
         '@npm' => '@vendor/npm-asset',
         '@web' => '/',
     ],
-    'htmlRenderer' => [
-        'templates' => [
-            'default' => [
-                'callStackItem',
-                'error',
-                'exception',
-                'previousException'
-            ],
-            'path' => __DIR__ . '/../src/ErrorHandler/templates',
-        ]
+
+    'yiisoft/yii-web' => [
+        'htmlRenderer' => [
+            'templates' => [
+                'default' => [
+                    'callStackItem',
+                    'error',
+                    'exception',
+                    'previousException'
+                ],
+                'path' => __DIR__ . '/../src/ErrorHandler/templates',
+            ]
+        ],
+        'session' => [
+            'options' => ['cookie_secure' => 0],
+            'handler' => null
+        ],
     ]
 ];
