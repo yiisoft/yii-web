@@ -27,6 +27,7 @@
         </include>
 
         <exclude>
+            <directory>./src/ErrorHandler/templates</directory>
             <directory>./tests</directory>
             <directory>./vendor</directory>
         </exclude>
