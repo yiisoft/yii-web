@@ -25,7 +25,7 @@ This [Yii Framework] extension allows easy creation of web applications.
 The package could be installed via composer:
 
 ```php
-composer require yiisoft/yii-wev
+composer require yiisoft/yii-web
 ```
 
 ### Config components
