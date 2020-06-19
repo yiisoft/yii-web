@@ -273,8 +273,7 @@ final class HtmlRenderer extends ThrowableRenderer
                 } else {
                     $args[$key] = "<span class=\"string\">'$fullValue'</span>";
                 }
-            } elseif (is_array($value))
-            {
+            } elseif (is_array($value)) {
                 unset($args[$key]);
                 $args[$key] = '[' . $this->argumentsToString($value) . ']';
             } elseif ($value === null) {
