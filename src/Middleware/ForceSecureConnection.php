@@ -13,10 +13,10 @@ use Yiisoft\Http\Header;
 use Yiisoft\Http\Status;
 
 /**
- * Redirects insecure requests from HTTP to HTTPS, and also adds some headers that enhance security policy.
+ * Redirects insecure requests from HTTP to HTTPS, and adds headers necessary to enhance security policy.
  *
- * HTTP Strict-Transport-Security (HSTS) header is added to each response and tells the browser that your site always
- * only works on HTTPS.
+ * HTTP Strict-Transport-Security (HSTS) header is added to each response and tells the browser that your site works on
+ * HTTPS only.
  *
  * The Content-Security-Policy (CSP) header can force the browser to load page resources only through a secure
  * connection, even if links in the page layout are specified with an unprotected protocol.
