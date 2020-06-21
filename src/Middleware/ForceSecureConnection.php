@@ -13,10 +13,16 @@ use Yiisoft\Http\Header;
 use Yiisoft\Http\Status;
 
 /**
- * Redirects from HTTP to HTTPS and adds CSP and HSTS headers.
+ * Redirects insecure requests from HTTP to HTTPS, and also adds some headers that enhance security policy.
  *
- * Note: Prefer forcing HTTPS via web server in case you are not creating installable product such as CMS
- * and not hosting the project on a server where you do not have access to web server configuration.
+ * HTTP Strict-Transport-Security (HSTS) header is added to each response and tells the browser that your site always
+ * only works on HTTPS.
+ *
+ * The Content-Security-Policy (CSP) header can force the browser to load page resources only through a secure
+ * connection, even if links in the page layout are specified with an unprotected protocol.
+ *
+ * Note: Prefer forcing HTTPS via web server in case you are not creating installable product such as CMS and not
+ * hosting the project on a server where you do not have access to web server configuration.
  */
 final class ForceSecureConnection implements MiddlewareInterface
 {
@@ -30,7 +36,7 @@ final class ForceSecureConnection implements MiddlewareInterface
     private bool $addCSP = true;
     private string $cspDirectives = self::DEFAULT_CSP_DIRECTIVES;
 
-    private bool $addSTS = true;
+    private bool $addHSTS = true;
     private int $hstsMaxAge = self::DEFAULT_HSTS_MAX_AGE;
     private bool $hstsSubDomains = false;
 
@@ -40,12 +46,11 @@ final class ForceSecureConnection implements MiddlewareInterface
     {
         $this->responseFactory = $responseFactory;
     }
-
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if ($this->redirect && strcasecmp($request->getUri()->getScheme(), 'http') === 0) {
             $url = (string)$request->getUri()->withScheme('https')->withPort($this->port);
-            return $this->addCSP(
+            return $this->addHSTS(
                 $this->responseFactory
                     ->createResponse($this->statusCode)
                     ->withHeader(Header::LOCATION, $url)
@@ -54,6 +59,12 @@ final class ForceSecureConnection implements MiddlewareInterface
         return $this->addHSTS($this->addCSP($handler->handle($request)));
     }
 
+    /**
+     * Redirects from HTTP to HTTPS
+     * @param int $statusCode
+     * @param null|int $port
+     * @return self
+     */
     public function withRedirection($statusCode = Status::MOVED_PERMANENTLY, int $port = null): self
     {
         $clone = clone $this;
@@ -71,10 +82,9 @@ final class ForceSecureConnection implements MiddlewareInterface
 
     /**
      * Add Content-Security-Policy header to Response
-     * @link https://developer.mozilla.org/docs/Web/HTTP/CSP
-     * @link https://developer.mozilla.org/docs/Web/HTTP/Headers/Content-Security-Policy
+     * @see Header::CONTENT_SECURITY_POLICY
      * @param string $directives
-     * @return ForceSecureConnection
+     * @return self
      */
     public function withCSP(string $directives = self::DEFAULT_CSP_DIRECTIVES): self
     {
@@ -91,16 +101,16 @@ final class ForceSecureConnection implements MiddlewareInterface
     }
 
     /**
-     * Add Strict-Transport-Security header to Response
-     * @link https://developer.mozilla.org/docs/Web/HTTP/Headers/Strict-Transport-Security
+     * Add Strict-Transport-Security header to each Response
+     * @see Header::STRICT_TRANSPORT_SECURITY
      * @param int $maxAge
      * @param bool $subDomains
-     * @return ForceSecureConnection
+     * @return self
      */
     public function withHSTS(int $maxAge = self::DEFAULT_HSTS_MAX_AGE, bool $subDomains = false): self
     {
         $clone = clone $this;
-        $clone->addSTS = true;
+        $clone->addHSTS = true;
         $clone->hstsMaxAge = $maxAge;
         $clone->hstsSubDomains = $subDomains;
         return $clone;
@@ -108,7 +118,7 @@ final class ForceSecureConnection implements MiddlewareInterface
     public function withoutHSTS(): self
     {
         $clone = clone $this;
-        $clone->addSTS = false;
+        $clone->addHSTS = false;
         return $clone;
     }
 
@@ -118,12 +128,11 @@ final class ForceSecureConnection implements MiddlewareInterface
             ? $response->withHeader(Header::CONTENT_SECURITY_POLICY, $this->cspDirectives)
             : $response;
     }
-
     private function addHSTS(ResponseInterface $response): ResponseInterface
     {
-        $subDomains = $this->hstsSubDomains ? 'includeSubDomains' : '';
-        return $this->addSTS
-            ? $response->withHeader(Header::STRICT_TRANSPORT_SECURITY, "max-age={$this->hstsMaxAge}; {$subDomains}")
+        $subDomains = $this->hstsSubDomains ? '; includeSubDomains' : '';
+        return $this->addHSTS
+            ? $response->withHeader(Header::STRICT_TRANSPORT_SECURITY, "max-age={$this->hstsMaxAge}{$subDomains}")
             : $response;
     }
 }

@@ -94,6 +94,21 @@ final class ForceSecureConnectionTest extends TestCase
         $this->assertTrue($response->hasHeader(Header::STRICT_TRANSPORT_SECURITY));
         $this->assertSame('max-age=42; includeSubDomains', $response->getHeaderLine(Header::STRICT_TRANSPORT_SECURITY));
     }
+    public function testWithHSTSNoSubdomains(): void
+    {
+        $middleware = (new ForceSecureConnection(new Psr17Factory()))
+            ->withoutRedirection()
+            ->withoutCSP()
+            ->withHSTS(1440, false);
+        $request = $this->createServerRequest();
+        $handler = $this->createHandler();
+
+        $response = $middleware->process($request, $handler);
+
+        $this->assertTrue($handler->isCalled);
+        $this->assertTrue($response->hasHeader(Header::STRICT_TRANSPORT_SECURITY));
+        $this->assertSame('max-age=1440', $response->getHeaderLine(Header::STRICT_TRANSPORT_SECURITY));
+    }
     public function testWithCSP(): void
     {
         $middleware = (new ForceSecureConnection(new Psr17Factory()))
@@ -107,6 +122,41 @@ final class ForceSecureConnectionTest extends TestCase
 
         $this->assertTrue($handler->isCalled);
         $this->assertTrue($response->hasHeader(Header::CONTENT_SECURITY_POLICY));
+    }
+    public function testWithCSPCustomDirectives(): void
+    {
+        $middleware = (new ForceSecureConnection(new Psr17Factory()))
+            ->withoutRedirection()
+            ->withoutHSTS()
+            ->withCSP('default-src https:; report-uri /csp-violation-report-endpoint/');
+        $request = $this->createServerRequest();
+        $handler = $this->createHandler();
+
+        $response = $middleware->process($request, $handler);
+
+        $this->assertTrue($handler->isCalled);
+        $this->assertTrue($response->hasHeader(Header::CONTENT_SECURITY_POLICY));
+        $this->assertSame(
+            $response->getHeaderLine(Header::CONTENT_SECURITY_POLICY),
+            'default-src https:; report-uri /csp-violation-report-endpoint/'
+        );
+    }
+    public function testSecurityHeadersOnRedirection(): void
+    {
+        $middleware = (new ForceSecureConnection(new Psr17Factory()))
+            ->withRedirection()
+            ->withCSP()
+            ->withHSTS();
+        $request = $this->createServerRequest();
+        $request = $request->withUri($request->getUri()->withScheme('http'));
+        $handler = $this->createHandler();
+
+        $response = $middleware->process($request, $handler);
+
+        $this->assertFalse($handler->isCalled);
+        $this->assertTrue($response->hasHeader(Header::LOCATION));
+        $this->assertTrue($response->hasHeader(Header::STRICT_TRANSPORT_SECURITY));
+        $this->assertFalse($response->hasHeader(Header::CONTENT_SECURITY_POLICY));
     }
 
     public function testWithoutRedirection(): void
