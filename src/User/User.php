@@ -86,7 +86,7 @@ class User
             $this->identity = null;
             throw $e;
         }
-        return $this->identity;
+        return $this->identity ?? new GuestIdentity();
     }
 
     /**
