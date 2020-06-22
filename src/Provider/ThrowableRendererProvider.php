@@ -12,13 +12,6 @@ use Yiisoft\Yii\Web\ErrorHandler\ThrowableRendererInterface;
 
 final class ThrowableRendererProvider extends ServiceProvider
 {
-    private array $templates;
-
-    public function __construct(array $templates = [])
-    {
-        $this->templates = $templates;
-    }
-
     /**
      * @suppress PhanAccessMethodProtected
      */
