@@ -203,11 +203,8 @@ final class ForceSecureConnectionTest extends TestCase
             }
         };
     }
-    private function createServerRequest(string $method = Method::GET, $headers = []): ServerRequestInterface
+    private function createServerRequest(): ServerRequestInterface
     {
-        $request = new ServerRequest($method, '/', $headers);
-        return $request->withUri(
-            $request->getUri()->withScheme('https')->withHost('test.org')->withPath('/index.php')
-        );
+        return (new Psr17Factory())->createServerRequest(Method::GET, 'https://test.org/index.php');
     }
 }
