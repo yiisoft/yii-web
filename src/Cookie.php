@@ -498,11 +498,11 @@ final class Cookie
             [$attributeKey, $attributeValue] = self::splitCookieAttribute($rawAttribute);
             $attributeKey = strtolower($attributeKey);
 
-            if ($attributeValue === null && !in_array($attributeKey, ['secure', 'httponly'])) {
+            if ($attributeValue === null && !in_array($attributeKey, ['secure', 'httponly'], true)) {
                 continue;
             }
 
-            switch (strtolower($attributeKey)) {
+            switch ($attributeKey) {
                 case 'expires':
                     $params['expires'] = new DateTimeImmutable($attributeValue);
                     break;

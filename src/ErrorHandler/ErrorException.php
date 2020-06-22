@@ -55,6 +55,7 @@ class ErrorException extends \ErrorException implements FriendlyExceptionInterfa
     /**
      * Fatal errors normally do not provide any trace making it harder to debug. In case XDebug is installed, we
      * can get a trace using xdebug_get_function_stack().
+     * @suppress PhanUndeclaredFunction
      */
     private function addXDebugTraceToFatalIfAvailable(): void
     {

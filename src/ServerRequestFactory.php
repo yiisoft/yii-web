@@ -129,6 +129,9 @@ final class ServerRequestFactory
         return $uri;
     }
 
+    /**
+     * @suppress PhanUndeclaredFunction
+     */
     private function getHeadersFromGlobals(): array
     {
         if (\function_exists('getallheaders')) {

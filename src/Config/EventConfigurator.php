@@ -19,6 +19,9 @@ class EventConfigurator extends AbstractProviderConfigurator
         $this->container = $container;
     }
 
+    /**
+     * @suppress PhanAccessMethodProtected
+     */
     public function registerListeners(array $eventsListeners): void
     {
         foreach ($eventsListeners as $eventName => $listeners) {
