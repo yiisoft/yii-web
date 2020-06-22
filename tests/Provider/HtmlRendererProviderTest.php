@@ -11,6 +11,9 @@ final class HtmlRendererProviderTest extends TestCase
 {
     public function testProviderConfig(): void
     {
-        $this->assertNotEmpty($this->container->get(HtmlRenderer::class));
+        $this->assertInstanceOf(
+            HtmlRenderer::class,
+            $this->container->get(HtmlRenderer::class),
+        );
     }
 }

@@ -4,15 +4,11 @@ declare(strict_types=1);
 
 /* @var array $params */
 
-use Yiisoft\Yii\Web\Provider\DataResponseFactoryProvider;
-use Yiisoft\Yii\Web\Provider\DataResponseFormatterProvider;
 use Yiisoft\Yii\Web\Provider\HtmlRendererProvider;
 use Yiisoft\Yii\Web\Provider\SessionProvider;
 use Yiisoft\Yii\Web\Provider\ThrowableRendererProvider;
 
 return [
-    'yiisoft/yii-web/dataresponsefactory' => DataResponseFactoryProvider::class,
-    'yiisoft/yii-web/dataresponseformatter' => DataResponseFormatterProvider::class,
     'yiisoft/yii-web/htmlrenderer' => [
         '__class' => HtmlRendererProvider::class,
         '__construct()' => [
