@@ -7,12 +7,10 @@ declare(strict_types=1);
 use Yiisoft\Yii\Web\Provider\DataResponseFactoryProvider;
 use Yiisoft\Yii\Web\Provider\DataResponseFormatterProvider;
 use Yiisoft\Yii\Web\Provider\HtmlRendererProvider;
-use Yiisoft\Yii\Web\Provider\Psr17Provider;
 use Yiisoft\Yii\Web\Provider\SessionProvider;
 use Yiisoft\Yii\Web\Provider\ThrowableRendererProvider;
 
 return [
-    'yiisoft/yii-web/psr17' => Psr17Provider::class,
     'yiisoft/yii-web/dataresponsefactory' => DataResponseFactoryProvider::class,
     'yiisoft/yii-web/dataresponseformatter' => DataResponseFormatterProvider::class,
     'yiisoft/yii-web/htmlrenderer' => [
