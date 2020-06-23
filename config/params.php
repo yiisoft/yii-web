@@ -8,7 +8,7 @@ return [
         '@public' => '@root/public',
         '@runtime' => '@root/runtime',
         '@bower' => '@vendor/bower-asset',
-        '@npm' => '@vendor/npm-asset',
+        '@npm' => '@root/node_modules',
         '@web' => '/',
     ],
     'htmlRenderer' => [
