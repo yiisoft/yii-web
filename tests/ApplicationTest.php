@@ -35,14 +35,12 @@ final class ApplicationTest extends TestCase
         $this->assertEquals([ApplicationStartup::class], $eventDispatcher->getClassesEvents());
     }
 
-
     public function testShutdownMethodDispatchEvent(): void
     {
         $eventDispatcher = new MockEventDispatcher();
         $this->createApplication($eventDispatcher)->shutdown();
         $this->assertEquals([ApplicationShutdown::class], $eventDispatcher->getClassesEvents());
     }
-
 
     public function testAfterEmitMethodDispatchEvent(): void
     {
