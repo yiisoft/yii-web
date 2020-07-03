@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <phpunit bootstrap="tests/bootstrap.php"
-     colors="true"
-     verbose="true"
-     failOnRisky="true"
-     failOnWarning="true"
-     convertErrorsToExceptions="true"
-     convertNoticesToExceptions="true"
-     convertWarningsToExceptions="true"
-     stopOnFailure="false"
-     executionOrder="random"
-     resolveDependencies="true"
-     printerClass="Yiisoft\Yii\Web\Tests\ResultPrinter">
+         colors="true"
+         verbose="true"
+         failOnRisky="true"
+         failOnWarning="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         stopOnFailure="false"
+         executionOrder="random"
+         resolveDependencies="true"
+         printerClass="Yiisoft\Yii\Web\Tests\ResultPrinter">
 
     <testsuites>
         <testsuite name="Yii Web Test Suite">
