@@ -93,34 +93,6 @@ final class RedirectTest extends TestCase
         return new ServerRequest($method, $uri);
     }
 
-    private function createUrlGenerator(): UrlGeneratorInterface
-    {
-        return new class() implements UrlGeneratorInterface {
-            private $prefix = '';
-            public function generate(string $name, array $parameters = []): string
-            {
-                return $name . '?' . http_build_query($parameters);
-            }
-            public function getUriPrefix(): string
-            {
-                return $this->prefix;
-            }
-            public function setUriPrefix(string $prefix): void
-            {
-                $this->prefix = $prefix;
-            }
-
-            public function generateAbsolute(
-                string $name,
-                array $parameters = [],
-                string $scheme = null,
-                string $host = null
-            ): string {
-                return $name . '?' . http_build_query($parameters);
-            }
-        };
-    }
-
     private function createRedirectMiddleware(): Redirect
     {
         $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
