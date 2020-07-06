@@ -10,7 +10,7 @@ use Yiisoft\Auth\IdentityRepositoryInterface;
 class MockIdentityRepository implements IdentityRepositoryInterface
 {
     private ?IdentityInterface $identity;
-    private bool $throwException = false;
+    private bool $withException = false;
 
     public function __construct(?IdentityInterface $identity = null)
     {
@@ -19,7 +19,7 @@ class MockIdentityRepository implements IdentityRepositoryInterface
 
     public function findIdentity(string $id): ?IdentityInterface
     {
-        if ($this->throwException) {
+        if ($this->withException) {
             throw new \Exception();
         }
 
@@ -28,7 +28,7 @@ class MockIdentityRepository implements IdentityRepositoryInterface
 
     public function findIdentityByToken(string $token, string $type): ?IdentityInterface
     {
-        if ($this->throwException) {
+        if ($this->withException) {
             throw new \Exception();
         }
 
@@ -37,6 +37,6 @@ class MockIdentityRepository implements IdentityRepositoryInterface
 
     public function withException(): void
     {
-        $this->throwException = true;
+        $this->withException = true;
     }
 }
