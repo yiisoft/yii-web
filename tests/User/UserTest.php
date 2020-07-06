@@ -294,10 +294,11 @@ final class UserTest extends TestCase
 
     public function testSwitchIdentityReturnCorrectValue(): void
     {
+        $expire = strtotime('+1 day');
         $sessionStorage = $this->createSessionStorage(
             [
                 '__auth_id' => 'test-id',
-                '__auth_expire' => strtotime('+1 day')
+                '__auth_expire' => $expire
             ]
         );
 
@@ -315,6 +316,8 @@ final class UserTest extends TestCase
 
         $this->assertEquals('test-id-2', $user->getIdentity()->getId());
         $this->assertNotEquals('test-id', $sessionStorage->get('__auth_id'));
+        $this->assertNotEquals($expire, $sessionStorage->get('__auth_expire'));
+        $this->assertTrue($sessionStorage->has('__auth_expire'));
         $this->assertTrue($sessionStorage->has('__auth_absolute_expire'));
     }
 
