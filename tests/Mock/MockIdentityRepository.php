@@ -35,7 +35,7 @@ class MockIdentityRepository implements IdentityRepositoryInterface
         return $this->identity;
     }
 
-    public function throwException(): void
+    public function withException(): void
     {
         $this->throwException = true;
     }

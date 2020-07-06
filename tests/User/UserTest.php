@@ -344,7 +344,7 @@ final class UserTest extends TestCase
     private function createIdentityRepositoryWithException(): IdentityRepositoryInterface
     {
         $repository = new MockIdentityRepository();
-        $repository->throwException();
+        $repository->withException();
 
         return $repository;
     }
