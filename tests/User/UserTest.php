@@ -165,6 +165,16 @@ final class UserTest extends TestCase
         $this->assertEquals('test-id', $user->getId());
     }
 
+    public function testGetIdReturnNull(): void
+    {
+        $user = new User(
+            $this->createIdentityRepository(),
+            $this->createDispatcher()
+        );
+
+        $this->assertNull($user->getId());
+    }
+
     public function testLogoutReturnTrue(): void
     {
         $dispatcher = $this->createDispatcher();
@@ -298,12 +308,14 @@ final class UserTest extends TestCase
         );
 
         $user->authTimeout = 60;
+        $user->absoluteAuthTimeout = 3600;
 
         $user->setIdentity($this->createIdentity('test-id'));
         $user->switchIdentity($this->createIdentity('test-id-2'));
 
         $this->assertEquals('test-id-2', $user->getIdentity()->getId());
         $this->assertNotEquals('test-id', $sessionStorage->get('__auth_id'));
+        $this->assertTrue($sessionStorage->has('__auth_absolute_expire'));
     }
 
     public function testSwitchIdentityToGuest(): void
