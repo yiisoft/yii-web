@@ -22,7 +22,6 @@ use Yiisoft\Yii\Web\User\Event\BeforeLogout;
 use Yiisoft\Yii\Web\User\GuestIdentity;
 use Yiisoft\Yii\Web\User\User;
 
-
 final class UserTest extends TestCase
 {
     public function testGetIdentityMethodReturnGuestWithoutSession(): void
