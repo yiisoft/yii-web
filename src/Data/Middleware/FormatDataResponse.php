@@ -11,7 +11,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Yii\Web\Data\DataResponseFormatterInterface;
 use Yiisoft\Yii\Web\Data\DataResponse;
 
-final class FormatDataResponse implements MiddlewareInterface
+class FormatDataResponse implements MiddlewareInterface
 {
     private DataResponseFormatterInterface $responseFormatter;
 
