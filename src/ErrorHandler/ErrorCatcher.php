@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Yii\Web\ErrorHandler;
 
 use Psr\Container\ContainerInterface;
@@ -64,7 +66,7 @@ final class ErrorCatcher implements MiddlewareInterface
             return $new;
         }
         foreach ($mimeTypes as $mimeType) {
-            if ($mimeType === '') {
+            if (empty($mimeType)) {
                 throw new \InvalidArgumentException('The mime type cannot be an empty string!');
             }
             unset($new->renderers[strtolower($mimeType)]);

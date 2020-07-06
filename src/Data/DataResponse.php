@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Yii\Web\Data;
 
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -12,7 +14,7 @@ use Psr\Http\Message\StreamInterface;
  * For example, `['name' => 'Dmitriy']` to be formatted to JSON using {@see \Yiisoft\Yii\Web\Data\Formatter\JsonDataResponseFormatter}
  * when {@see DataResponse::getBody()} is called.
  */
-class DataResponse implements ResponseInterface
+final class DataResponse implements ResponseInterface
 {
     private ResponseInterface $response;
 

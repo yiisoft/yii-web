@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Yii\Web\Data\Middleware;
 
 use Psr\Http\Message\ResponseInterface;
@@ -9,7 +11,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Yii\Web\Data\DataResponseFormatterInterface;
 use Yiisoft\Yii\Web\Data\DataResponse;
 
-class FormatDataResponse implements MiddlewareInterface
+final class FormatDataResponse implements MiddlewareInterface
 {
     private DataResponseFormatterInterface $responseFormatter;
 

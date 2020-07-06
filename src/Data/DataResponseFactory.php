@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Yii\Web\Data;
 
 use Psr\Http\Message\ResponseFactoryInterface;
 use Yiisoft\Http\Status;
 
-class DataResponseFactory implements DataResponseFactoryInterface
+final class DataResponseFactory implements DataResponseFactoryInterface
 {
     protected ResponseFactoryInterface $responseFactory;
 

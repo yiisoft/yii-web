@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Yii\Web\Config;
 
 use Psr\Container\ContainerInterface;
@@ -7,7 +9,7 @@ use Yiisoft\EventDispatcher\Provider\AbstractProviderConfigurator;
 use Yiisoft\EventDispatcher\Provider\Provider;
 use Yiisoft\Injector\Injector;
 
-class EventConfigurator extends AbstractProviderConfigurator
+final class EventConfigurator extends AbstractProviderConfigurator
 {
     private Provider $listenerProvider;
 
