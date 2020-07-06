@@ -134,7 +134,7 @@ class User
      * @return IdentityInterface|null the identity associated with the given access token. Null is returned if
      * the access token is invalid or {@see login()} is unsuccessful.
      */
-    public function loginByAccessToken(string $token, string $type = null): ?IdentityInterface
+    public function loginByAccessToken(string $token, string $type): ?IdentityInterface
     {
         $identity = $this->identityRepository->findIdentityByToken($token, $type);
         if ($identity && $this->login($identity)) {
@@ -293,7 +293,7 @@ class User
         $this->setIdentity($identity);
 
         if (!($identity instanceof GuestIdentity) && ($this->authTimeout !== null || $this->absoluteAuthTimeout !== null)) {
-            $expire = $this->authTimeout !== null ? $this->session->get(self::SESSION_AUTH_ABSOLUTE_EXPIRE) : null;
+            $expire = $this->authTimeout !== null ? $this->session->get(self::SESSION_AUTH_EXPIRE) : null;
             $expireAbsolute = $this->absoluteAuthTimeout !== null ? $this->session->get(self::SESSION_AUTH_ABSOLUTE_EXPIRE) : null;
             if (($expire !== null && $expire < time()) || ($expireAbsolute !== null && $expireAbsolute < time())) {
                 $this->logout(false);
