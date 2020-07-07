@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Yii\Web\Middleware;
 
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -96,16 +98,12 @@ final class HttpCache implements MiddlewareInterface
         }
 
         $cacheIsValid = $this->validateCache($request, $lastModified, $etag);
+        $response = $handler->handle($request);
+
         if ($cacheIsValid) {
-            return $this->responseFactory
-                ->createResponse(Status::NOT_MODIFIED)
-                ->withHeader(
-                    'Last-Modified',
-                    gmdate('D, d M Y H:i:s', $lastModified) . ' GMT'
-                );
+            $response = $response->withStatus(Status::NOT_MODIFIED);
         }
 
-        $response = $handler->handle($request);
         if ($this->cacheControlHeader !== null) {
             $response = $response->withHeader('Cache-Control', $this->cacheControlHeader);
         }

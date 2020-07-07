@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Yii\Web\Middleware;
 
 use Psr\Http\Message\RequestInterface;
@@ -37,7 +39,7 @@ use Yiisoft\Validator\Rule\Ip;
  * ;
  * ```
  */
-class TrustedHostsNetworkResolver implements MiddlewareInterface
+final class TrustedHostsNetworkResolver implements MiddlewareInterface
 {
     public const IP_HEADER_TYPE_RFC7239 = 'rfc7239';
 
@@ -314,7 +316,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
             if (!$request->hasHeader($portHeader)) {
                 continue;
             }
-            if ($portHeader === $ipHeader && $ipListType === self::IP_HEADER_TYPE_RFC7239 && isset($hostData['port']) && $this->checkPort($hostData['port'])) {
+            if ($portHeader === $ipHeader && $ipListType === self::IP_HEADER_TYPE_RFC7239 && isset($hostData['port']) && $this->checkPort((string)$hostData['port'])) {
                 $uri = $uri->withPort($hostData['port']);
                 break;
             }
