@@ -12,9 +12,10 @@ use Yiisoft\Http\Header;
 
 final class JsonBodyParser implements MiddlewareInterface
 {
+    private const DEFAULT_FLAGS = JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE;
     private bool $assoc = true;
     private int $depth = 512;
-    private int $options = JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE;
+    private int $options = self::DEFAULT_FLAGS;
     private bool $throwException = true;
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
