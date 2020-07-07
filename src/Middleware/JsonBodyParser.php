@@ -48,7 +48,7 @@ final class JsonBodyParser implements MiddlewareInterface
     public function withOptions(int $value): self
     {
         $new = clone $this;
-        $new->options = $value;
+        $new->options = self::DEFAULT_FLAGS | $value;
         return $new;
     }
 
