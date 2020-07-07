@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Yii\Web\Data\Middleware;
 
 use Yiisoft\Yii\Web\Data\Formatter\HtmlDataResponseFormatter;

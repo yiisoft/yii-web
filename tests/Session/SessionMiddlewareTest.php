@@ -19,7 +19,7 @@ class SessionMiddlewareTest extends TestCase
     private const COOKIE_PARAMETERS = [
         'path' => 'examplePath',
         'domain' => 'exampleDomain',
-        'httponly' => 'httponly',
+        'httponly' => true,
         'samesite' => 'Strict',
         'lifetime' => 3600,
         'secure' => true,

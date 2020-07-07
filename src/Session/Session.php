@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Yii\Web\Session;
 
 /**
  * Session provides session data management and the related configurations.
  */
-class Session implements SessionInterface
+final class Session implements SessionInterface
 {
     private const DEFAULT_OPTIONS = [
         'use_cookies' => 1,

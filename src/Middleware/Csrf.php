@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Yii\Web\Middleware;
 
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -91,6 +93,6 @@ final class Csrf implements MiddlewareInterface
             $token = \reset($headers);
         }
 
-        return TokenMask::remove($token);
+        return is_string($token) ? TokenMask::remove($token) : null;
     }
 }

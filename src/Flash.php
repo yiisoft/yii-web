@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Yii\Web;
 
 use Yiisoft\Yii\Web\Session\SessionInterface;

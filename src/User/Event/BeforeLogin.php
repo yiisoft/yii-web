@@ -6,7 +6,7 @@ namespace Yiisoft\Yii\Web\User\Event;
 
 use Yiisoft\Auth\IdentityInterface;
 
-class BeforeLogin
+final class BeforeLogin
 {
     private IdentityInterface $identity;
     private bool $isValid = true;
