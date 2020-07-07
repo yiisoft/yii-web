@@ -14,127 +14,55 @@ final class JsonBodyParserTest extends TestCase
 {
     public function testProcess()
     {
-        $request = $this->createMock(ServerRequestInterface::class);
-        $body = $this->createMock(StreamInterface::class);
-
-        $body
-            ->expects($this->once())
-            ->method('getContents')
-            ->willReturn('{"test":"value"}');
-
-        $request
-            ->method('getHeaderLine')
-            ->willReturn('application/json');
-
-        $request
-            ->expects($this->once())
-            ->method('getBody')
-            ->willReturn($body);
-
-        $request
-            ->expects($this->once())
-            ->method('withParsedBody')
-            ->with(
-                $this->equalTo(['test' => 'value'])
-            )
-            ->willReturnSelf();
-
-        $parser = (new JsonBodyParser())->withAssoc();
-        $parser->process($request, $this->createMock(RequestHandlerInterface::class));
+        $parser = (new JsonBodyParser());
+        $parser->process(
+            $this->createMockRequest('{"test":"value"}', ['test' => 'value']),
+            $this->createMock(RequestHandlerInterface::class)
+        );
     }
 
     public function testWithoutAssoc()
     {
-        $request = $this->createMock(ServerRequestInterface::class);
-        $body = $this->createMock(StreamInterface::class);
-
         $object = new \stdClass();
         $object->test = 'value';
 
-        $body
-            ->expects($this->once())
-            ->method('getContents')
-            ->willReturn(json_encode($object));
-
-        $request
-            ->method('getHeaderLine')
-            ->willReturn('application/json');
-
-        $request
-            ->expects($this->once())
-            ->method('getBody')
-            ->willReturn($body);
-
-        $request
-            ->expects($this->once())
-            ->method('withParsedBody')
-            ->with(
-                $this->equalTo($object)
-            )
-            ->willReturnSelf();
-
         $parser = (new JsonBodyParser())->withoutAssoc();
-        $parser->process($request, $this->createMock(RequestHandlerInterface::class));
+        $parser->process(
+            $this->createMockRequest(json_encode($object), $object),
+            $this->createMock(RequestHandlerInterface::class)
+        );
     }
 
     public function testThrownException()
     {
-        $request = $this->createMock(ServerRequestInterface::class);
-        $body = $this->createMock(StreamInterface::class);
-
-        $body
-            ->expects($this->once())
-            ->method('getContents')
-            ->willReturn('{"test": invalid json}');
-
-        $request
-            ->expects($this->once())
-            ->method('getHeaderLine')
-            ->willReturn('application/json');
-
-        $request
-            ->expects($this->once())
-            ->method('getBody')
-            ->willReturn($body);
-
         $this->expectException(\JsonException::class);
 
         $parser = new JsonBodyParser();
-        $parser->process($request, $this->createMock(RequestHandlerInterface::class));
+        $parser->process(
+            $this->createMockRequest('{"test": invalid json}'),
+            $this->createMock(RequestHandlerInterface::class)
+        );
     }
 
     public function testIgnoreInvalidUTF8()
     {
-        $request = $this->createMock(ServerRequestInterface::class);
-        $body = $this->createMock(StreamInterface::class);
-
-        $body
-            ->expects($this->once())
-            ->method('getContents')
-            ->willReturn('{"test":"value","invalid":"' . chr(193) . '"}');
-
-        $request
-            ->method('getHeaderLine')
-            ->willReturn('application/json');
-
-        $request
-            ->expects($this->once())
-            ->method('getBody')
-            ->willReturn($body);
-
-        $request
-            ->expects($this->once())
-            ->method('withParsedBody')
-            ->with(
-                $this->equalTo(['test' => 'value', 'invalid' => ''])
-            )
-            ->willReturnSelf();
-
-        $parser = (new JsonBodyParser())->withAssoc();
-        $parser->process($request, $this->createMock(RequestHandlerInterface::class));
+        $parser = (new JsonBodyParser());
+        $parser->process(
+            $this->createMockRequest(
+                '{"test":"value","invalid":"' . chr(193) . '"}',
+                ['test' => 'value', 'invalid' => '']
+            ),
+            $this->createMock(RequestHandlerInterface::class)
+        );
     }
 
     public function testInvalidJson()
+    {
+        $parser = (new JsonBodyParser());
+        $parser->process($this->createMockRequest('true', null), $this->createMock(RequestHandlerInterface::class));
+    }
+
+    private function createMockRequest(string $rawBody, $expect = null): ServerRequestInterface
     {
         $request = $this->createMock(ServerRequestInterface::class);
         $body = $this->createMock(StreamInterface::class);
@@ -142,7 +70,7 @@ final class JsonBodyParserTest extends TestCase
         $body
             ->expects($this->once())
             ->method('getContents')
-            ->willReturn('true');
+            ->willReturn($rawBody);
 
         $request
             ->method('getHeaderLine')
@@ -153,15 +81,18 @@ final class JsonBodyParserTest extends TestCase
             ->method('getBody')
             ->willReturn($body);
 
-        $request
-            ->expects($this->once())
-            ->method('withParsedBody')
-            ->with(
-                $this->equalTo(null)
-            )
-            ->willReturnSelf();
+        $args = func_get_args();
 
-        $parser = (new JsonBodyParser())->withAssoc();
-        $parser->process($request, $this->createMock(RequestHandlerInterface::class));
+        if (count($args) === 2) {
+            $request
+                ->expects($this->once())
+                ->method('withParsedBody')
+                ->with(
+                    $this->equalTo($expect)
+                )
+                ->willReturnSelf();
+        }
+
+        return $request;
     }
 }

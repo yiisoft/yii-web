@@ -21,7 +21,7 @@ final class JsonBodyParser implements MiddlewareInterface
     {
         $contentType = $request->getHeaderLine(Header::CONTENT_TYPE);
 
-        if ($contentType && strpos(strtolower($contentType), 'application/json') !== false) {
+        if ($contentType && \strpos(\strtolower($contentType), 'application/json') !== false) {
             $request = $request->withParsedBody(
                 $this->parse($request->getBody()->getContents())
             );
@@ -59,12 +59,12 @@ final class JsonBodyParser implements MiddlewareInterface
     }
 
     /**
-     * @return mixed
+     * @return array|object|null
      */
     private function parse(string $body)
     {
-        $result = json_decode($body, $this->assoc, $this->depth, $this->options);
-        if (is_array($result) || is_object($result)) {
+        $result = \json_decode($body, $this->assoc, $this->depth, $this->options);
+        if (\is_array($result) || \is_object($result)) {
             return $result;
         }
         return null;
