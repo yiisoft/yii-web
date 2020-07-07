@@ -8,6 +8,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Yiisoft\Http\Header;
 
 final class JsonBodyParser implements MiddlewareInterface
 {
@@ -15,7 +16,7 @@ final class JsonBodyParser implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $contentType = $request->getHeaderLine('Content-Type');
+        $contentType = $request->getHeaderLine(Header::CONTENT_TYPE);
 
         if ($contentType && strpos(strtolower($contentType), 'application/json') !== false) {
             $request = $request->withParsedBody(
@@ -26,7 +27,7 @@ final class JsonBodyParser implements MiddlewareInterface
         return $handler->handle($request);
     }
 
-    public function throwException(bool $value): self
+    public function withThrowException(bool $value): self
     {
         $new = clone $this;
         $new->throwException = $value;
