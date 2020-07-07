@@ -39,7 +39,7 @@ final class JsonBodyParserTest extends TestCase
             )
             ->willReturnSelf();
 
-        $parser = (new JsonBodyParser())->withAssoc(true);
+        $parser = (new JsonBodyParser())->withAssoc();
         $parser->process($request, $this->createMock(RequestHandlerInterface::class));
     }
 
@@ -73,7 +73,7 @@ final class JsonBodyParserTest extends TestCase
             )
             ->willReturnSelf();
 
-        $parser = (new JsonBodyParser())->withAssoc(false);
+        $parser = (new JsonBodyParser())->withoutAssoc();
         $parser->process($request, $this->createMock(RequestHandlerInterface::class));
     }
 
@@ -97,7 +97,7 @@ final class JsonBodyParserTest extends TestCase
             ->method('getBody')
             ->willReturn($body);
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(\JsonException::class);
 
         $parser = new JsonBodyParser();
         $parser->process($request, $this->createMock(RequestHandlerInterface::class));
@@ -130,7 +130,7 @@ final class JsonBodyParserTest extends TestCase
             )
             ->willReturnSelf();
 
-        $parser = (new JsonBodyParser())->withAssoc(true);
+        $parser = (new JsonBodyParser())->withAssoc();
         $parser->process($request, $this->createMock(RequestHandlerInterface::class));
     }
 
@@ -161,7 +161,7 @@ final class JsonBodyParserTest extends TestCase
             )
             ->willReturnSelf();
 
-        $parser = (new JsonBodyParser())->withAssoc(true);
+        $parser = (new JsonBodyParser())->withAssoc();
         $parser->process($request, $this->createMock(RequestHandlerInterface::class));
     }
 }
