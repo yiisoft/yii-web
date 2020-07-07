@@ -9,6 +9,7 @@ use DOMElement;
 use DOMException;
 use DOMText;
 use Psr\Http\Message\ResponseInterface;
+use Yiisoft\Http\Header;
 use Yiisoft\Strings\StringHelper;
 use Yiisoft\Yii\Web\Data\DataResponse;
 use Yiisoft\Yii\Web\Data\DataResponseFormatterInterface;
@@ -63,7 +64,7 @@ final class XmlDataResponseFormatter implements DataResponseFormatterInterface
         $response = $dataResponse->getResponse();
         $response->getBody()->write($content);
 
-        return $response->withHeader('Content-Type', $this->contentType . '; ' . $this->encoding);
+        return $response->withHeader(Header::CONTENT_TYPE, $this->contentType . '; ' . $this->encoding);
     }
 
     public function withVersion(string $version): self

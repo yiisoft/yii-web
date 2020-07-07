@@ -70,14 +70,7 @@ final class TrustedHostsNetworkResolver implements MiddlewareInterface
 
     private ?string $attributeIps = null;
 
-    private ResponseFactoryInterface $responseFactory;
-
     private ?Ip $ipValidator = null;
-
-    public function __construct(ResponseFactoryInterface $responseFactory)
-    {
-        $this->responseFactory = $responseFactory;
-    }
 
     public function withIpValidator(Ip $ipValidator): self
     {

@@ -40,7 +40,7 @@ final class ServerRequestFactory
             $_GET,
             $_POST,
             $_FILES,
-            \fopen('php://input', 'r') ?: null
+            \fopen('php://input', 'rb') ?: null
         );
     }
 
@@ -107,7 +107,7 @@ final class ServerRequestFactory
         }
 
         if (isset($server['HTTP_HOST'])) {
-            if (1 === \preg_match('/^(.+)\:(\d+)$/', $server['HTTP_HOST'], $matches)) {
+            if (1 === \preg_match('/^(.+):(\d+)$/', $server['HTTP_HOST'], $matches)) {
                 $uri = $uri->withHost($matches[1])->withPort($matches[2]);
             } else {
                 $uri = $uri->withHost($server['HTTP_HOST']);
