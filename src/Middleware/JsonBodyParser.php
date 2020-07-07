@@ -49,7 +49,7 @@ final class JsonBodyParser implements MiddlewareInterface
     {
         try {
             $result = json_decode($body, $this->assoc, 512, JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
-            if (($this->assoc === true && is_array($result)) || ($this->assoc === false && is_object($result))) {
+            if (is_array($result) || is_object($result)) {
                 return $result;
             }
         } catch (\JsonException $e) {
