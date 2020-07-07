@@ -12,6 +12,7 @@ use Yiisoft\Http\Header;
 
 final class JsonBodyParser implements MiddlewareInterface
 {
+    private bool $assoc = true;
     private bool $throwException = true;
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -27,6 +28,13 @@ final class JsonBodyParser implements MiddlewareInterface
         return $handler->handle($request);
     }
 
+    public function withAssoc(bool $value): self
+    {
+        $new = clone $this;
+        $new->assoc = $value;
+        return $new;
+    }
+
     public function withThrowException(bool $value): self
     {
         $new = clone $this;
@@ -34,16 +42,21 @@ final class JsonBodyParser implements MiddlewareInterface
         return $new;
     }
 
-    private function parse(string $body): array
+    /**
+     * @return mixed
+     */
+    private function parse(string $body)
     {
         try {
-            $result = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
-            return is_array($result) ? $result : [];
+            $result = json_decode($body, $this->assoc, 512, JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
+            if (($this->assoc === true && is_array($result)) || ($this->assoc === false && is_object($result))) {
+                return $result;
+            }
         } catch (\JsonException $e) {
             if ($this->throwException) {
                 throw new \InvalidArgumentException('Invalid JSON data in request body: ' . $e->getMessage());
             }
-            return [];
         }
+        return null;
     }
 }
