@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\Web\Tests\Middleware;
 
-use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
@@ -27,6 +26,11 @@ final class JsonBodyParserTest extends TestCase
         );
 
         $this->assertSame(['test' => 'value'], $handler->getRequestParsedBody());
+    }
+
+    public function testScalarDataType()
+    {
+        $parser = (new JsonBodyParser());
 
         $handler = $this->createHandler();
         $parser->process($this->createMockRequest('true'), $handler);
@@ -101,13 +105,20 @@ final class JsonBodyParserTest extends TestCase
 
     private function createHandler(): RequestHandlerInterface
     {
-        return new class() implements RequestHandlerInterface {
+        $mockResponse = $this->createMock(ResponseInterface::class);
+        return new class($mockResponse) implements RequestHandlerInterface {
             private $requestParsedBody;
+            private ResponseInterface $mockResponse;
+
+            public function __construct(ResponseInterface $mockResponse)
+            {
+                $this->mockResponse = $mockResponse;
+            }
 
             public function handle(ServerRequestInterface $request): ResponseInterface
             {
                 $this->requestParsedBody = $request->getParsedBody();
-                return new Response();
+                return $this->mockResponse;
             }
 
             /**
