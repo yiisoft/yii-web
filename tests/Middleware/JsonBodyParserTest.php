@@ -28,7 +28,7 @@ final class JsonBodyParserTest extends TestCase
         $object = new \stdClass();
         $object->test = 'value';
 
-        $parser = (new JsonBodyParser())->withoutAssoc();
+        $parser = (new JsonBodyParser(false));
         $parser->process(
             $this->createMockRequest(json_encode($object), $object),
             $this->createMock(RequestHandlerInterface::class)
@@ -48,7 +48,7 @@ final class JsonBodyParserTest extends TestCase
 
     public function testWithoutThrownException()
     {
-        $parser = (new JsonBodyParser())->withoutThrowException();
+        $parser = (new JsonBodyParser(true, 512, JSON_INVALID_UTF8_IGNORE));
         $parser->process(
             $this->createMockRequest('{"test": invalid json}', null),
             $this->createMock(RequestHandlerInterface::class)

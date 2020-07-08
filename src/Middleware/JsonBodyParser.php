@@ -12,10 +12,19 @@ use Yiisoft\Http\Header;
 
 final class JsonBodyParser implements MiddlewareInterface
 {
-    private const DEFAULT_FLAGS = JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE;
-    private bool $assoc = true;
-    private int $depth = 512;
-    private int $options = self::DEFAULT_FLAGS;
+    private bool $assoc;
+    private int $depth;
+    private int $options;
+
+    public function __construct(
+        bool $assoc = true,
+        int $depth = 512,
+        int $options = JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE
+    ) {
+        $this->assoc = $assoc;
+        $this->depth = $depth;
+        $this->options = $options;
+    }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -28,48 +37,6 @@ final class JsonBodyParser implements MiddlewareInterface
         }
 
         return $handler->handle($request);
-    }
-
-    public function withAssoc(): self
-    {
-        $new = clone $this;
-        $new->assoc = true;
-        return $new;
-    }
-
-    public function withoutAssoc(): self
-    {
-        $new = clone $this;
-        $new->assoc = false;
-        return $new;
-    }
-
-    public function withDepth(int $value): self
-    {
-        $new = clone $this;
-        $new->depth = $value;
-        return $new;
-    }
-
-    public function withOptions(int $value): self
-    {
-        $new = clone $this;
-        $new->options = self::DEFAULT_FLAGS | $value;
-        return $new;
-    }
-
-    public function withThrowException(): self
-    {
-        $new = clone $this;
-        $new->options |= JSON_THROW_ON_ERROR;
-        return $new;
-    }
-
-    public function withoutThrowException(): self
-    {
-        $new = clone $this;
-        $new->options &= ~JSON_THROW_ON_ERROR;
-        return $new;
     }
 
     /**
