@@ -28,15 +28,20 @@ final class JsonBodyParser implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $contentType = $request->getHeaderLine(Header::CONTENT_TYPE);
-
-        if ($contentType && \strpos(\strtolower($contentType), 'application/json') !== false) {
+        if ($this->isJsonRequest($request)) {
             $request = $request->withParsedBody(
                 $this->parse($request->getBody()->getContents())
             );
         }
 
         return $handler->handle($request);
+    }
+
+    private function isJsonRequest(ServerRequestInterface $request): bool
+    {
+        $contentType = $request->getHeaderLine(Header::CONTENT_TYPE);
+
+        return $contentType && stripos($contentType, 'application/json') !== false;
     }
 
     /**
