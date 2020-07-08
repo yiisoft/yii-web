@@ -19,6 +19,8 @@ final class JsonBodyParserTest extends TestCase
             $this->createMockRequest('{"test":"value"}', ['test' => 'value']),
             $this->createMock(RequestHandlerInterface::class)
         );
+
+        $parser->process($this->createMockRequest('true', null), $this->createMock(RequestHandlerInterface::class));
     }
 
     public function testWithoutAssoc()
@@ -44,6 +46,15 @@ final class JsonBodyParserTest extends TestCase
         );
     }
 
+    public function testWithoutThrownException()
+    {
+        $parser = (new JsonBodyParser())->withoutThrowException();
+        $parser->process(
+            $this->createMockRequest('{"test": invalid json}', null),
+            $this->createMock(RequestHandlerInterface::class)
+        );
+    }
+
     public function testIgnoreInvalidUTF8()
     {
         $parser = (new JsonBodyParser());
@@ -54,12 +65,6 @@ final class JsonBodyParserTest extends TestCase
             ),
             $this->createMock(RequestHandlerInterface::class)
         );
-    }
-
-    public function testInvalidJson()
-    {
-        $parser = (new JsonBodyParser());
-        $parser->process($this->createMockRequest('true', null), $this->createMock(RequestHandlerInterface::class));
     }
 
     private function createMockRequest(string $rawBody, $expect = null): ServerRequestInterface

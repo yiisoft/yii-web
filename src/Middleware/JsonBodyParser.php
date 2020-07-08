@@ -16,6 +16,7 @@ final class JsonBodyParser implements MiddlewareInterface
     private bool $assoc = true;
     private int $depth = 512;
     private int $options = self::DEFAULT_FLAGS;
+    private bool $throwException = true;
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -58,14 +59,34 @@ final class JsonBodyParser implements MiddlewareInterface
         return $new;
     }
 
+    public function withThrowException(): self
+    {
+        $new = clone $this;
+        $new->throwException = true;
+        return $new;
+    }
+
+    public function withoutThrowException(): self
+    {
+        $new = clone $this;
+        $new->throwException = false;
+        return $new;
+    }
+
     /**
      * @return array|object|null
      */
     private function parse(string $body)
     {
-        $result = \json_decode($body, $this->assoc, $this->depth, $this->options);
-        if (\is_array($result) || \is_object($result)) {
-            return $result;
+        try {
+            $result = \json_decode($body, $this->assoc, $this->depth, $this->options);
+            if (\is_array($result) || \is_object($result)) {
+                return $result;
+            }
+        } catch (\JsonException $e) {
+            if ($this->throwException) {
+                throw $e;
+            }
         }
         return null;
     }
