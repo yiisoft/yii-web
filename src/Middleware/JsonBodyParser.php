@@ -76,17 +76,18 @@ final class JsonBodyParser implements MiddlewareInterface
     /**
      * @return array|object|null
      */
-    private function parse(string $body)
+    private function parse(string $rawBody)
     {
-        try {
-            $result = \json_decode($body, $this->assoc, $this->depth, $this->options);
-            if (\is_array($result) || \is_object($result)) {
-                return $result;
-            }
-        } catch (\JsonException $e) {
-            if ($this->throwException) {
-                throw $e;
-            }
+        $result = \json_decode(
+            $rawBody,
+            $this->assoc,
+            $this->depth,
+            $this->throwException
+                ? $this->options
+                : $this->options & ~JSON_THROW_ON_ERROR
+        );
+        if (\is_array($result) || \is_object($result)) {
+            return $result;
         }
         return null;
     }
