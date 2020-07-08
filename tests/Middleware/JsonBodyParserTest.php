@@ -16,7 +16,7 @@ use Yiisoft\Yii\Web\Middleware\JsonBodyParser;
 
 final class JsonBodyParserTest extends TestCase
 {
-    public function testProcess()
+    public function testProcess(): void
     {
         $parser = (new JsonBodyParser());
 
@@ -34,7 +34,7 @@ final class JsonBodyParserTest extends TestCase
         $this->assertNull($handler->getRequestParsedBody());
     }
 
-    public function testWithoutAssoc()
+    public function testWithoutAssoc(): void
     {
         $object = new \stdClass();
         $object->test = 'value';
@@ -50,7 +50,7 @@ final class JsonBodyParserTest extends TestCase
         $this->assertEquals($object, $handler->getRequestParsedBody());
     }
 
-    public function testThrownException()
+    public function testThrownException(): void
     {
         $this->expectException(\JsonException::class);
 
@@ -61,7 +61,7 @@ final class JsonBodyParserTest extends TestCase
         );
     }
 
-    public function testWithoutThrownException()
+    public function testWithoutThrownException(): void
     {
         $parser = (new JsonBodyParser(true, 512, JSON_INVALID_UTF8_IGNORE));
 
@@ -74,7 +74,7 @@ final class JsonBodyParserTest extends TestCase
         $this->assertNull($handler->getRequestParsedBody());
     }
 
-    public function testIgnoreInvalidUTF8()
+    public function testIgnoreInvalidUTF8(): void
     {
         $parser = (new JsonBodyParser());
 
