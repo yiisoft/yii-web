@@ -40,7 +40,7 @@ final class ServerRequestFactory
             $_GET,
             $_POST,
             $_FILES,
-            \fopen('php://input', 'r') ?: null
+            \fopen('php://input', 'rb') ?: null
         );
     }
 
@@ -136,8 +136,8 @@ final class ServerRequestFactory
      */
     private function getHeadersFromGlobals(): array
     {
-        if (\function_exists('getallheaders')) {
-            $headers = getallheaders();
+        if (\function_exists('\getallheaders')) {
+            $headers = \getallheaders();
             if ($headers === false) {
                 $headers = [];
             }
