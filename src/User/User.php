@@ -21,8 +21,8 @@ class User
     private const SESSION_AUTH_ABSOLUTE_EXPIRE = '__auth_absolute_expire';
 
     /**
-     * @var int|null the number of seconds in which the user will be logged out automatically if he
-     * remains inactive. If this property is not set, the user will be logged out after
+     * @var int|null the number of seconds in which the user will be logged out automatically in case of
+     * remaining inactive. If this property is not set, the user will be logged out after
      * the current session expires.
      */
     public ?int $authTimeout = null;

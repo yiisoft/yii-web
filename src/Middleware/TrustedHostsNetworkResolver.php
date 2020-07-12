@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Yii\Web\Middleware;
 
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
