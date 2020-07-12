@@ -24,7 +24,7 @@ use Yiisoft\Yii\Web\User\User;
 
 final class UserTest extends TestCase
 {
-    public function testGetIdentityMethodReturnGuestWithoutSession(): void
+    public function testGetIdentityMethodReturnsGuestWithoutSession(): void
     {
         $user = new User(
             $this->createIdentityRepository(),
@@ -34,7 +34,7 @@ final class UserTest extends TestCase
         $this->assertInstanceOf(GuestIdentity::class, $user->getIdentity());
     }
 
-    public function testGetIdentityMethodReturnGuestWithSession(): void
+    public function testGetIdentityMethodReturnsGuestWithSession(): void
     {
         $user = new User(
             $this->createIdentityRepository(),
@@ -45,7 +45,7 @@ final class UserTest extends TestCase
         $this->assertInstanceOf(GuestIdentity::class, $user->getIdentity());
     }
 
-    public function testGetIdentityMethodReturnCorrectIdentity(): void
+    public function testGetIdentityMethodReturnsIdentitySet(): void
     {
         $user = new User(
             $this->createIdentityRepository(),
@@ -56,7 +56,7 @@ final class UserTest extends TestCase
         $this->assertEquals('test-id', $user->getIdentity()->getId());
     }
 
-    public function testGetIdentityReturnGuestBecauseSessionIsExpireAuthTimeout(): void
+    public function testGetIdentityReturnsGuestIfSessionHasExpiredAuthTimeout(): void
     {
         $repository = $this->createIdentityRepository(
             $this->createIdentity('test-id')
@@ -80,7 +80,7 @@ final class UserTest extends TestCase
         $this->assertInstanceOf(GuestIdentity::class, $user->getIdentity());
     }
 
-    public function testGetIdentityReturnGuestBecauseSessionIsExpireAbsoluteAuthTimeout(): void
+    public function testGetIdentityReturnsGuestIfSessionHasExpiredAbsoluteAuthTimeout(): void
     {
         $repository = $this->createIdentityRepository(
             $this->createIdentity('test-id')
@@ -117,7 +117,7 @@ final class UserTest extends TestCase
         $user->getIdentity();
     }
 
-    public function testMethodGetIdentityReturnCorrectValueAndSetAuthExpire(): void
+    public function testGetIdentityReturnsCorrectValueAndSetAuthExpire(): void
     {
         $repository = $this->createIdentityRepository(
             $this->createIdentity('test-id')
@@ -153,7 +153,7 @@ final class UserTest extends TestCase
         $this->assertEquals('test-id', $user->getIdentity()->getId());
     }
 
-    public function testGetIdReturnCorrectValue(): void
+    public function testGetIdReturnsCorrectValue(): void
     {
         $user = new User(
             $this->createIdentityRepository(),
@@ -164,7 +164,7 @@ final class UserTest extends TestCase
         $this->assertEquals('test-id', $user->getId());
     }
 
-    public function testGetIdReturnNull(): void
+    public function testGetIdReturnsNullIfGuest(): void
     {
         $user = new User(
             $this->createIdentityRepository(),
@@ -174,7 +174,7 @@ final class UserTest extends TestCase
         $this->assertNull($user->getId());
     }
 
-    public function testLogoutReturnTrue(): void
+    public function testSuccessfulLogout(): void
     {
         $dispatcher = $this->createDispatcher();
         $user = new User(
@@ -195,7 +195,7 @@ final class UserTest extends TestCase
         $this->assertTrue($user->isGuest());
     }
 
-    public function testLogoutReturnFalseBecauseUserIsGuest(): void
+    public function testGuestLogout(): void
     {
         $dispatcher = $this->createDispatcher();
         $repository = $this->createIdentityRepository(
@@ -249,7 +249,7 @@ final class UserTest extends TestCase
         );
     }
 
-    public function testLoginByAccessTokenReturnNullBecauseIdentityNotFound(): void
+    public function testLoginByAccessTokenReturnsNullIfIdentityNotFound(): void
     {
         $dispatcher = $this->createDispatcher();
 
@@ -267,7 +267,7 @@ final class UserTest extends TestCase
         );
     }
 
-    public function testCanMethodReturnFalseBecauseCheckerNotSet(): void
+    public function testCanReturnsFalseIfCheckerNotSet(): void
     {
         $user = new User(
             $this->createIdentityRepository(),
@@ -278,7 +278,7 @@ final class UserTest extends TestCase
         $this->assertFalse($user->can('permission'));
     }
 
-    public function testCanMethodReturnTrue(): void
+    public function testCanWithAccessChecker(): void
     {
         $user = new User(
             $this->createIdentityRepository(),
@@ -291,7 +291,7 @@ final class UserTest extends TestCase
         $this->assertTrue($user->can('permission'));
     }
 
-    public function testSwitchIdentityReturnCorrectValue(): void
+    public function testSwitchIdentity(): void
     {
         $expire = strtotime('+1 day');
         $sessionStorage = $this->createSessionStorage(
