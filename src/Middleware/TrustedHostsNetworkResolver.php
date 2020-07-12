@@ -38,7 +38,7 @@ use Yiisoft\Validator\Rule\Ip;
  * ;
  * ```
  */
-final class TrustedHostsNetworkResolver implements MiddlewareInterface
+class TrustedHostsNetworkResolver implements MiddlewareInterface
 {
     public const IP_HEADER_TYPE_RFC7239 = 'rfc7239';
 

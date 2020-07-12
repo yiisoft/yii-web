@@ -120,7 +120,7 @@ final class XmlDataResponseFormatter implements DataResponseFormatterInterface
      * @param DOMElement $element
      * @param mixed $data
      */
-    protected function buildXml($element, $data): void
+    private function buildXml($element, $data): void
     {
         if (is_array($data) ||
             ($this->useTraversableAsArray && $data instanceof \Traversable)
@@ -161,7 +161,7 @@ final class XmlDataResponseFormatter implements DataResponseFormatterInterface
      * @param int|string|bool|float $value a scalar value.
      * @return string string representation of the value.
      */
-    protected function formatScalarValue($value): string
+    private function formatScalarValue($value): string
     {
         if ($value === true) {
             return 'true';
@@ -184,7 +184,7 @@ final class XmlDataResponseFormatter implements DataResponseFormatterInterface
      * @param mixed $name
      * @return string
      */
-    protected function getValidXmlElementName($name): string
+    private function getValidXmlElementName($name): string
     {
         if (empty($name) || is_int($name) || !$this->isValidXmlName($name)) {
             return $this->itemTag;
@@ -200,7 +200,7 @@ final class XmlDataResponseFormatter implements DataResponseFormatterInterface
      * @return bool
      * @see http://stackoverflow.com/questions/2519845/how-to-check-if-string-is-a-valid-xml-element-name/2519943#2519943
      */
-    protected function isValidXmlName($name): bool
+    private function isValidXmlName($name): bool
     {
         try {
             new DOMElement($name);
