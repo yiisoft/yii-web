@@ -46,6 +46,7 @@ final class ForceSecureConnection implements MiddlewareInterface
     {
         $this->responseFactory = $responseFactory;
     }
+
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if ($this->redirect && strcasecmp($request->getUri()->getScheme(), 'http') === 0) {

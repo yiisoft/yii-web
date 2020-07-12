@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Yii\Web\Data\Formatter;
 
 use Psr\Http\Message\ResponseInterface;
+use Yiisoft\Http\Header;
 use Yiisoft\Serializer\JsonSerializer;
 use Yiisoft\Yii\Web\Data\DataResponse;
 use Yiisoft\Yii\Web\Data\DataResponseFormatterInterface;
@@ -25,7 +26,7 @@ final class JsonDataResponseFormatter implements DataResponseFormatterInterface
         $response = $dataResponse->getResponse();
         $response->getBody()->write($content);
 
-        return $response->withHeader('Content-Type', $this->contentType);
+        return $response->withHeader(Header::CONTENT_TYPE, $this->contentType);
     }
 
     public function withOptions(int $options): self

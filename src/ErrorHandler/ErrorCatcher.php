@@ -10,12 +10,13 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Yiisoft\Http\Header;
 use Yiisoft\Http\HeaderHelper;
 use Yiisoft\Http\Status;
 
 /**
  * ErrorCatcher catches all throwables from the next middlewares and renders it
- * accoring to the content type passed by the client.
+ * according to the content type passed by the client.
  */
 final class ErrorCatcher implements MiddlewareInterface
 {
@@ -83,7 +84,7 @@ final class ErrorCatcher implements MiddlewareInterface
         }
         $content = $this->errorHandler->handleCaughtThrowable($e, $renderer);
         $response = $this->responseFactory->createResponse(Status::INTERNAL_SERVER_ERROR)
-            ->withHeader('Content-type', $contentType);
+            ->withHeader(Header::CONTENT_TYPE, $contentType);
         $response->getBody()->write($content);
         return $response;
     }

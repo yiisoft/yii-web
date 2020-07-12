@@ -29,7 +29,7 @@ interface SessionInterface
     public function close(): void;
 
     /**
-     * Start sesion if it is not started yet
+     * Start session if it is not started yet
      */
     public function open(): void;
 

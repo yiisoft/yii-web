@@ -13,7 +13,7 @@ if ($throwable instanceof UserException) {
 }
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8" />
     <title><?= $this->htmlEncode($name) ?></title>
