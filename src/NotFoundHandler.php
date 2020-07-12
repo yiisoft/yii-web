@@ -15,7 +15,7 @@ final class NotFoundHandler implements RequestHandlerInterface
     /**
      * @var ResponseFactoryInterface
      */
-    private $responseFactory;
+    private ResponseFactoryInterface $responseFactory;
 
     /**
      * NotFoundHandler constructor.

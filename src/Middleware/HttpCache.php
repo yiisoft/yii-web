@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\Web\Middleware;
 
-use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Yiisoft\Http\Header;
 use Yiisoft\Http\Method;
 use Yiisoft\Http\Status;
 
@@ -68,13 +68,6 @@ final class HttpCache implements MiddlewareInterface
      */
     private ?string $cacheControlHeader = self::DEFAULT_HEADER;
 
-    private ResponseFactoryInterface $responseFactory;
-
-    public function __construct(ResponseFactoryInterface $responseFactory)
-    {
-        $this->responseFactory = $responseFactory;
-    }
-
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if (
@@ -105,16 +98,16 @@ final class HttpCache implements MiddlewareInterface
         }
 
         if ($this->cacheControlHeader !== null) {
-            $response = $response->withHeader('Cache-Control', $this->cacheControlHeader);
+            $response = $response->withHeader(Header::CACHE_CONTROL, $this->cacheControlHeader);
         }
         if ($etag !== null) {
-            $response = $response->withHeader('Etag', $etag);
+            $response = $response->withHeader(Header::ETAG, $etag);
         }
 
         // https://tools.ietf.org/html/rfc7232#section-4.1
-        if ($lastModified !== null && (!$cacheIsValid || ($cacheIsValid && $etag === null))) {
+        if ($lastModified !== null && (!$cacheIsValid || $etag === null)) {
             $response = $response->withHeader(
-                'Last-Modified',
+                Header::LAST_MODIFIED,
                 gmdate('D, d M Y H:i:s', $lastModified) . ' GMT'
             );
         }
@@ -133,14 +126,14 @@ final class HttpCache implements MiddlewareInterface
      */
     private function validateCache(ServerRequestInterface $request, ?int $lastModified, ?string $etag): bool
     {
-        if ($request->hasHeader('If-None-Match')) {
+        if ($request->hasHeader(Header::IF_NONE_MATCH)) {
             // HTTP_IF_NONE_MATCH takes precedence over HTTP_IF_MODIFIED_SINCE
             // http://tools.ietf.org/html/rfc7232#section-3.3
             return $etag !== null && \in_array($etag, $this->getETags($request), true);
         }
 
-        if ($request->hasHeader('If-Modified-Since')) {
-            $header = $request->getHeaderLine('If-Modified-Since');
+        if ($request->hasHeader(Header::IF_MODIFIED_SINCE)) {
+            $header = $request->getHeaderLine(Header::IF_MODIFIED_SINCE);
             return $lastModified !== null && @strtotime($header) >= $lastModified;
         }
 
@@ -166,8 +159,8 @@ final class HttpCache implements MiddlewareInterface
      */
     private function getETags(ServerRequestInterface $request): array
     {
-        if ($request->hasHeader('If-None-Match')) {
-            $header = $request->getHeaderLine('If-None-Match');
+        if ($request->hasHeader(Header::IF_NONE_MATCH)) {
+            $header = $request->getHeaderLine(Header::IF_NONE_MATCH);
             $header = \str_replace('-gzip', '', $header);
             return \preg_split('/[\s,]+/', $header, -1, PREG_SPLIT_NO_EMPTY) ?: [];
         }

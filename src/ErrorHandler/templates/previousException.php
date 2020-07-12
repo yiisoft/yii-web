@@ -1,4 +1,5 @@
 <?php
+/* @var $throwable \Throwable */
 /* @var $this \Yiisoft\Yii\Web\ErrorHandler\HtmlRenderer */
 ?>
 <div class="previous">
