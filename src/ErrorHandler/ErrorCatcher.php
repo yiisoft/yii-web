@@ -45,12 +45,12 @@ final class ErrorCatcher implements MiddlewareInterface
 
     public function withRenderer(string $mimeType, string $rendererClass): self
     {
-        $mimeType = $this->validateMimeType($mimeType);
-        if ($rendererClass === '') {
+        $this->validateMimeType($mimeType);
+        if (trim($rendererClass) === '') {
             throw new \InvalidArgumentException('The renderer class cannot be an empty string.');
         }
         $new = clone $this;
-        $new->renderers[$mimeType] = $rendererClass;
+        $new->renderers[$this->normalizeMimeType($mimeType)] = $rendererClass;
         return $new;
     }
 
@@ -65,7 +65,8 @@ final class ErrorCatcher implements MiddlewareInterface
             return $new;
         }
         foreach ($mimeTypes as $mimeType) {
-            unset($new->renderers[$this->validateMimeType($mimeType)]);
+            $this->validateMimeType($mimeType);
+            unset($new->renderers[$this->normalizeMimeType($mimeType)]);
         }
         return $new;
     }
@@ -118,11 +119,15 @@ final class ErrorCatcher implements MiddlewareInterface
     /**
      * @throws \InvalidArgumentException
      */
-    private function validateMimeType(string $mimeType): string
+    private function validateMimeType(string $mimeType): void
     {
         if (strpos($mimeType, '/') === false) {
             throw new \InvalidArgumentException('Invalid mime type.');
         }
+    }
+
+    private function normalizeMimeType(string $mimeType): string
+    {
         return strtolower($mimeType);
     }
 }
