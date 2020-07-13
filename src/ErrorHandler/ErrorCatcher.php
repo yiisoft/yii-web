@@ -33,8 +33,11 @@ final class ErrorCatcher implements MiddlewareInterface
     private ErrorHandler $errorHandler;
     private ContainerInterface $container;
 
-    public function __construct(ResponseFactoryInterface $responseFactory, ErrorHandler $errorHandler, ContainerInterface $container)
-    {
+    public function __construct(
+        ResponseFactoryInterface $responseFactory,
+        ErrorHandler $errorHandler,
+        ContainerInterface $container
+    ) {
         $this->responseFactory = $responseFactory;
         $this->errorHandler = $errorHandler;
         $this->container = $container;
@@ -42,21 +45,19 @@ final class ErrorCatcher implements MiddlewareInterface
 
     public function withRenderer(string $mimeType, string $rendererClass): self
     {
-        if ($mimeType === '') {
-            throw new \InvalidArgumentException('The mime type cannot be an empty string.');
-        }
+        $mimeType = $this->validateMimeType($mimeType);
         if ($rendererClass === '') {
             throw new \InvalidArgumentException('The renderer class cannot be an empty string.');
         }
         $new = clone $this;
-        $new->renderers[strtolower($mimeType)] = $rendererClass;
+        $new->renderers[$mimeType] = $rendererClass;
         return $new;
     }
 
     /**
      * @param string[] $mimeTypes MIME types or, if not specified, all will be removed.
      */
-    public function withoutRenderers(string ... $mimeTypes): self
+    public function withoutRenderers(string ...$mimeTypes): self
     {
         $new = clone $this;
         if (count($mimeTypes) === 0) {
@@ -64,10 +65,7 @@ final class ErrorCatcher implements MiddlewareInterface
             return $new;
         }
         foreach ($mimeTypes as $mimeType) {
-            if (trim($mimeType) === '') {
-                throw new \InvalidArgumentException('The mime type cannot be an empty string.');
-            }
-            unset($new->renderers[strtolower($mimeType)]);
+            unset($new->renderers[$this->validateMimeType($mimeType)]);
         }
         return $new;
     }
@@ -115,5 +113,16 @@ final class ErrorCatcher implements MiddlewareInterface
         } catch (\Throwable $e) {
             return $this->handleException($e, $request);
         }
+    }
+
+    /**
+     * @throws \InvalidArgumentException
+     */
+    private function validateMimeType(string $mimeType): string
+    {
+        if (trim($mimeType) === '') {
+            throw new \InvalidArgumentException('The mime type cannot be an empty string.');
+        }
+        return strtolower($mimeType);
     }
 }
