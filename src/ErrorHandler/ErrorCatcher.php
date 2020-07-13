@@ -16,7 +16,7 @@ use Yiisoft\Http\Status;
 
 /**
  * ErrorCatcher catches all throwables from the next middlewares and renders it
- * accoring to the content type passed by the client.
+ * according to the content type passed by the client.
  */
 final class ErrorCatcher implements MiddlewareInterface
 {
