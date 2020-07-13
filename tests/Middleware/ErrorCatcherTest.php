@@ -23,7 +23,7 @@ class ErrorCatcherTest extends TestCase
         $containerId = 'testRenderer';
         $container = $this->getContainerWithThrowableRenderer($containerId, $expectedRendererOutput);
         $mimeType = 'test/test';
-        $catcher = $this->getErrorCatcher($container)->withAddedRenderer($mimeType, $containerId);
+        $catcher = $this->getErrorCatcher($container)->withRenderer($mimeType, $containerId);
         $requestHandler = (new MockRequestHandler())->setHandleExcaption(new \RuntimeException());
         $response = $catcher->process(new ServerRequest('GET', '/', ['Accept' => [$mimeType]]), $requestHandler);
         $response->getBody()->rewind();
@@ -60,7 +60,7 @@ class ErrorCatcherTest extends TestCase
         $expectedRendererOutput = 'expectedRendererOutput';
         $container = $this->getContainerWithThrowableRenderer($containerId, $expectedRendererOutput);
         $mimeType = 'text/html;version=2';
-        $catcher = $this->getErrorCatcher($container)->withAddedRenderer($mimeType, $containerId);
+        $catcher = $this->getErrorCatcher($container)->withRenderer($mimeType, $containerId);
         $requestHandler = (new MockRequestHandler())->setHandleExcaption(new \RuntimeException());
         $response = $catcher->process(
             new ServerRequest('GET', '/', ['Accept' => ['text/html', $mimeType]]),
@@ -77,7 +77,7 @@ class ErrorCatcherTest extends TestCase
         $containerId = 'testRenderer';
         $container = $this->getContainerWithThrowableRenderer($containerId, $expectedRendererOutput);
         $catcher = $this->getErrorCatcher($container)
-            ->withAddedRenderer('*/*', $containerId);
+            ->withRenderer('*/*', $containerId);
         $requestHandler = (new MockRequestHandler())->setHandleExcaption(new \RuntimeException());
         $response = $catcher->process(
             new ServerRequest('GET', '/', ['Accept' => ['test/test']]),

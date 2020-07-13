@@ -16,7 +16,7 @@ use Yiisoft\Http\Status;
 
 /**
  * ErrorCatcher catches all throwables from the next middlewares and renders it
- * according to the content type passed by the client.
+ * accoring to the content type passed by the client.
  */
 final class ErrorCatcher implements MiddlewareInterface
 {
@@ -40,16 +40,13 @@ final class ErrorCatcher implements MiddlewareInterface
         $this->container = $container;
     }
 
-    public function withAddedRenderer(string $mimeType, string $rendererClass): self
+    public function withRenderer(string $mimeType, string $rendererClass): self
     {
         if ($mimeType === '') {
-            throw new \InvalidArgumentException('The mime type cannot be an empty string!');
+            throw new \InvalidArgumentException('The mime type cannot be an empty string.');
         }
         if ($rendererClass === '') {
-            throw new \InvalidArgumentException('The renderer class cannot be an empty string!');
-        }
-        if (strpos($mimeType, '/') === false) {
-            throw new \InvalidArgumentException('Invalid mime type!');
+            throw new \InvalidArgumentException('The renderer class cannot be an empty string.');
         }
         $new = clone $this;
         $new->renderers[strtolower($mimeType)] = $rendererClass;
@@ -68,7 +65,7 @@ final class ErrorCatcher implements MiddlewareInterface
         }
         foreach ($mimeTypes as $mimeType) {
             if (trim($mimeType) === '') {
-                throw new \InvalidArgumentException('The mime type cannot be an empty string!');
+                throw new \InvalidArgumentException('The mime type cannot be an empty string.');
             }
             unset($new->renderers[strtolower($mimeType)]);
         }
@@ -94,7 +91,6 @@ final class ErrorCatcher implements MiddlewareInterface
         if (isset($this->renderers[$contentType])) {
             return $this->container->get($this->renderers[$contentType]);
         }
-
         return null;
     }
 
