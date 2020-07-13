@@ -32,6 +32,14 @@ class ErrorCatcherTest extends TestCase
         $this->assertSame($expectedRendererOutput, $content);
     }
 
+    public function testAddedNotExistsRendererClass()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectErrorMessage('The renderer "InvalidRendererClass" cannot be found.');
+
+        $this->getErrorCatcher(new Container())->withRenderer('test/test', \InvalidRendererClass::class);
+    }
+
     public function testWithoutRenderers(): void
     {
         $container = new Container();
