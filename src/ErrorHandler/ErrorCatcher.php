@@ -123,6 +123,9 @@ final class ErrorCatcher implements MiddlewareInterface
         if (trim($mimeType) === '') {
             throw new \InvalidArgumentException('The mime type cannot be an empty string.');
         }
+        if (strpos($mimeType, '/') === false) {
+            throw new \InvalidArgumentException('Invalid mime type.');
+        }
         return strtolower($mimeType);
     }
 }
