@@ -14,7 +14,7 @@ class EventConfiguratorTest extends TestCase
     {
         $event = new Event();
 
-        $container = $this->getContainer([Event::class => new Event(), 'eventAlias' => Event::class]);
+        $container = $this->getContainer([Event::class => new Event(), 'eventAlias' => new Event()]);
         $provider = new Provider();
         $configurator = new EventConfigurator($provider, $container);
         $eventConfig = $this->getEventsConfig();
@@ -22,8 +22,9 @@ class EventConfiguratorTest extends TestCase
         $listeners = iterator_to_array($provider->getListenersForEvent($event));
 
         $this->assertCount(3, $listeners);
-        $this->assertInstanceOf(\Closure::class, $listeners[0]);
-        $this->assertInstanceOf(\Closure::class, $listeners[1]);
+        foreach ($listeners as $listener) {
+            $this->assertInstanceOf(\Closure::class, $listener);
+        }
     }
 
     public function testAddEventListenerInjection(): void
@@ -80,12 +81,7 @@ class EventConfiguratorTest extends TestCase
 
             public function get($id)
             {
-                $result = $this->instances[$id];
-                if (is_string($result)) {
-                    return $this->get($result);
-                }
-
-                return $result;
+                return $this->instances[$id];
             }
 
             public function has($id)
