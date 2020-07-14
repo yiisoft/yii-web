@@ -23,7 +23,7 @@ class InvalidEventConfigurationFormatException extends InvalidArgumentException 
     public function getSolution(): ?string
     {
         return <<<SOLUTION
-            EventConfigurator accepts an array in a such format:
+            EventConfigurator accepts an array in the following format:
                 [
                     'eventName1' => [\$listener1, \$listener2, ...],
                     'eventName2' => [\$listener3, \$listener4, ...],
