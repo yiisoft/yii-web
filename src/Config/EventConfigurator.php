@@ -38,16 +38,10 @@ final class EventConfigurator extends AbstractProviderConfigurator
             }
 
             if (!is_array($listeners)) {
-                $previous = null;
-
-                try {
-                    $type = $this->isCallable($listeners) ? 'callable' : gettype($listeners);
-                } catch (InvalidListenerConfigurationException $previous) {
-                    $type = gettype($listeners);
-                }
+                $type = $this->isCallable($listeners) ? 'callable' : gettype($listeners);
                 $message = "Event listeners for $eventName must be an array, $type given.";
 
-                throw new InvalidEventConfigurationFormatException($message, 0, $previous);
+                throw new InvalidEventConfigurationFormatException($message);
             }
 
             foreach ($listeners as $callable) {
