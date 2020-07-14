@@ -6,7 +6,6 @@ namespace Yiisoft\Yii\Web\Config;
 
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
-use Psr\Container\NotFoundExceptionInterface;
 use Yiisoft\EventDispatcher\Provider\AbstractProviderConfigurator;
 use Yiisoft\EventDispatcher\Provider\Provider;
 use Yiisoft\Injector\Injector;
@@ -54,7 +53,7 @@ final class EventConfigurator extends AbstractProviderConfigurator
                             "Listener must be a callable. $type given."
                         );
                     }
-                } catch (NotFoundExceptionInterface|ContainerExceptionInterface $exception) {
+                } catch (ContainerExceptionInterface $exception) {
                     $message = "Could not instantiate event listener or listener class has invalid configuration.";
 
                     throw new InvalidListenerConfigurationException($message, 0, $exception);
