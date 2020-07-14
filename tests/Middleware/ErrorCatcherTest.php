@@ -32,12 +32,23 @@ class ErrorCatcherTest extends TestCase
         $this->assertSame($expectedRendererOutput, $content);
     }
 
-    public function testAddedNotExistsRendererClass()
+    public function testThrownExceptionWithNotExistsRenderer()
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectErrorMessage('The renderer "InvalidRendererClass" cannot be found.');
 
         $this->getErrorCatcher(new Container())->withRenderer('test/test', \InvalidRendererClass::class);
+    }
+
+    public function testThrownExceptionWithInvalidMimeType()
+    {
+        $containerId = 'testRenderer';
+        $container = $this->getContainerWithThrowableRenderer($containerId, '');
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectErrorMessage('Invalid mime type.');
+
+        $this->getErrorCatcher($container)->withRenderer('test invalid mimeType', $containerId);
     }
 
     public function testWithoutRenderers(): void
