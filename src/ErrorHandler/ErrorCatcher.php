@@ -134,6 +134,6 @@ final class ErrorCatcher implements MiddlewareInterface
 
     private function normalizeMimeType(string $mimeType): string
     {
-        return strtolower($mimeType);
+        return strtolower(trim($mimeType));
     }
 }
