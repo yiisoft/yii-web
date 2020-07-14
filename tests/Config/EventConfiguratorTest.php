@@ -14,16 +14,17 @@ class EventConfiguratorTest extends TestCase
     {
         $event = new Event();
 
-        $container = $this->getContainer([Event::class => new Event()]);
+        $container = $this->getContainer([Event::class => new Event(), 'eventAlias' => new Event()]);
         $provider = new Provider();
         $configurator = new EventConfigurator($provider, $container);
         $eventConfig = $this->getEventsConfig();
         $configurator->registerListeners($eventConfig);
         $listeners = iterator_to_array($provider->getListenersForEvent($event));
 
-        $this->assertCount(2, $listeners);
-        $this->assertInstanceOf(\Closure::class, $listeners[0]);
-        $this->assertInstanceOf(\Closure::class, $listeners[1]);
+        $this->assertCount(3, $listeners);
+        foreach ($listeners as $listener) {
+            $this->assertInstanceOf(\Closure::class, $listener);
+        }
     }
 
     public function testAddEventListenerInjection(): void
@@ -52,6 +53,7 @@ class EventConfiguratorTest extends TestCase
                 static function (Event $event) {
                     $event->register(1);
                 },
+                ['eventAlias', 'register']
             ],
         ];
     }
