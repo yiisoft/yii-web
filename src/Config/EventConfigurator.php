@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\Web\Config;
 
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Yiisoft\EventDispatcher\Provider\AbstractProviderConfigurator;
 use Yiisoft\EventDispatcher\Provider\Provider;
 use Yiisoft\Injector\Injector;
@@ -23,23 +25,39 @@ final class EventConfigurator extends AbstractProviderConfigurator
 
     /**
      * @suppress PhanAccessMethodProtected
+     *
+     * @param array $eventListeners Event listener list in format ['eventName1' => [$listener1, $listener2, ...]]
      */
-    public function registerListeners(array $eventsListeners): void
+    public function registerListeners(array $eventListeners): void
     {
-        foreach ($eventsListeners as $eventName => $listeners) {
+        foreach ($eventListeners as $eventName => $listeners) {
             if (!is_string($eventName)) {
-                throw new \RuntimeException('Incorrect event listener format. Format with event name must be used.');
+                $message = 'Incorrect event listener format. Format with event name must be used.';
+
+                throw new InvalidEventConfigurationFormatException($message);
             }
 
             if (!is_array($listeners)) {
-                $type = $this->isCallable($listeners) ? 'callable' : gettype($listeners);
-                throw new \RuntimeException("Event listeners for $eventName must be an array, $type given.");
+                $previous = null;
+
+                try {
+                    $type = $this->isCallable($listeners) ? 'callable' : gettype($listeners);
+                } catch (InvalidListenerConfigurationException $previous) {
+                    $type = gettype($listeners);
+                }
+                $message = "Event listeners for $eventName must be an array, $type given.";
+
+                throw new InvalidEventConfigurationFormatException($message, 0, $previous);
             }
+
             foreach ($listeners as $callable) {
                 if (!$this->isCallable($callable)) {
                     $type = gettype($listeners);
-                    throw new \RuntimeException("Listener must be a callable. $type given.");
+                    $message = "Listener must be a callable. $type given.";
+
+                    throw new InvalidListenerConfigurationException($message);
                 }
+
                 if (is_array($callable) && !is_object($callable[0])) {
                     $callable = [$this->container->get($callable[0]), $callable[1]];
                 }
@@ -65,9 +83,15 @@ final class EventConfigurator extends AbstractProviderConfigurator
             && is_string($definition[0])
             && $this->container->has($definition[0])
         ) {
-            $object = $this->container->get($definition[0]);
+            try {
+                $object = $this->container->get($definition[0]);
 
-            return method_exists($object, $definition[1]);
+                return method_exists($object, $definition[1]);
+            } catch (NotFoundExceptionInterface|ContainerExceptionInterface $exception) {
+                $message = "Could not instantiate event listener or listener class has invalid configuration.";
+
+                throw new InvalidListenerConfigurationException($message, 0, $exception);
+            }
         }
 
         return false;
