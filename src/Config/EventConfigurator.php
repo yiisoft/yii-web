@@ -32,25 +32,34 @@ final class EventConfigurator extends AbstractProviderConfigurator
     {
         foreach ($eventListeners as $eventName => $listeners) {
             if (!is_string($eventName)) {
-                $message = 'Incorrect event listener format. Format with event name must be used.';
-
-                throw new InvalidEventConfigurationFormatException($message);
+                throw new InvalidEventConfigurationFormatException(
+                    'Incorrect event listener format. Format with event name must be used.'
+                );
             }
 
             if (!is_array($listeners)) {
                 $type = $this->isCallable($listeners) ? 'callable' : gettype($listeners);
-                $message = "Event listeners for $eventName must be an array, $type given.";
 
-                throw new InvalidEventConfigurationFormatException($message);
+                throw new InvalidEventConfigurationFormatException(
+                    "Event listeners for $eventName must be an array, $type given."
+                );
             }
 
             foreach ($listeners as $callable) {
-                if (!$this->isCallable($callable)) {
-                    $type = gettype($listeners);
-                    $message = "Listener must be a callable. $type given.";
+                try {
+                    if (!$this->isCallable($callable)) {
+                        $type = gettype($listeners);
 
-                    throw new InvalidListenerConfigurationException($message);
+                        throw new InvalidListenerConfigurationException(
+                            "Listener must be a callable. $type given."
+                        );
+                    }
+                } catch (NotFoundExceptionInterface|ContainerExceptionInterface $exception) {
+                    $message = "Could not instantiate event listener or listener class has invalid configuration.";
+
+                    throw new InvalidListenerConfigurationException($message, 0, $exception);
                 }
+
 
                 if (is_array($callable) && !is_object($callable[0])) {
                     $callable = [$this->container->get($callable[0]), $callable[1]];
@@ -77,15 +86,9 @@ final class EventConfigurator extends AbstractProviderConfigurator
             && is_string($definition[0])
             && $this->container->has($definition[0])
         ) {
-            try {
-                $object = $this->container->get($definition[0]);
+            $object = $this->container->get($definition[0]);
 
-                return method_exists($object, $definition[1]);
-            } catch (NotFoundExceptionInterface|ContainerExceptionInterface $exception) {
-                $message = "Could not instantiate event listener or listener class has invalid configuration.";
-
-                throw new InvalidListenerConfigurationException($message, 0, $exception);
-            }
+            return method_exists($object, $definition[1]);
         }
 
         return false;
