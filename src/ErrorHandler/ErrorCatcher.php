@@ -33,33 +33,37 @@ final class ErrorCatcher implements MiddlewareInterface
     private ErrorHandler $errorHandler;
     private ContainerInterface $container;
 
-    public function __construct(ResponseFactoryInterface $responseFactory, ErrorHandler $errorHandler, ContainerInterface $container)
-    {
+    public function __construct(
+        ResponseFactoryInterface $responseFactory,
+        ErrorHandler $errorHandler,
+        ContainerInterface $container
+    ) {
         $this->responseFactory = $responseFactory;
         $this->errorHandler = $errorHandler;
         $this->container = $container;
     }
 
-    public function withAddedRenderer(string $mimeType, string $rendererClass): self
+    public function withRenderer(string $mimeType, string $rendererClass): self
     {
-        if ($mimeType === '') {
-            throw new \InvalidArgumentException('The mime type cannot be an empty string!');
+        $this->validateMimeType($mimeType);
+
+        if (trim($rendererClass) === '') {
+            throw new \InvalidArgumentException('The renderer class cannot be an empty string.');
         }
-        if ($rendererClass === '') {
-            throw new \InvalidArgumentException('The renderer class cannot be an empty string!');
+
+        if ($this->container->has($rendererClass) === false) {
+            throw new \InvalidArgumentException("The renderer \"$rendererClass\" cannot be found.");
         }
-        if (strpos($mimeType, '/') === false) {
-            throw new \InvalidArgumentException('Invalid mime type!');
-        }
+
         $new = clone $this;
-        $new->renderers[strtolower($mimeType)] = $rendererClass;
+        $new->renderers[$this->normalizeMimeType($mimeType)] = $rendererClass;
         return $new;
     }
 
     /**
      * @param string[] $mimeTypes MIME types or, if not specified, all will be removed.
      */
-    public function withoutRenderers(string ... $mimeTypes): self
+    public function withoutRenderers(string ...$mimeTypes): self
     {
         $new = clone $this;
         if (count($mimeTypes) === 0) {
@@ -67,10 +71,8 @@ final class ErrorCatcher implements MiddlewareInterface
             return $new;
         }
         foreach ($mimeTypes as $mimeType) {
-            if (trim($mimeType) === '') {
-                throw new \InvalidArgumentException('The mime type cannot be an empty string!');
-            }
-            unset($new->renderers[strtolower($mimeType)]);
+            $this->validateMimeType($mimeType);
+            unset($new->renderers[$this->normalizeMimeType($mimeType)]);
         }
         return $new;
     }
@@ -94,7 +96,6 @@ final class ErrorCatcher implements MiddlewareInterface
         if (isset($this->renderers[$contentType])) {
             return $this->container->get($this->renderers[$contentType]);
         }
-
         return null;
     }
 
@@ -119,5 +120,20 @@ final class ErrorCatcher implements MiddlewareInterface
         } catch (\Throwable $e) {
             return $this->handleException($e, $request);
         }
+    }
+
+    /**
+     * @throws \InvalidArgumentException
+     */
+    private function validateMimeType(string $mimeType): void
+    {
+        if (strpos($mimeType, '/') === false) {
+            throw new \InvalidArgumentException('Invalid mime type.');
+        }
+    }
+
+    private function normalizeMimeType(string $mimeType): string
+    {
+        return strtolower(trim($mimeType));
     }
 }
