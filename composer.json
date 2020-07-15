@@ -41,7 +41,7 @@
         "yiisoft/security": "^3.0@dev",
         "yiisoft/validator": "^3.0@dev",
         "yiisoft/serializer": "^3.0@dev",
-        "yiisoft/event-dispatcher": "^3.0@dev"
+        "yiisoft/yii-event": "^3.0@dev"
     },
     "require-dev": {
         "nyholm/psr7": "^1.0",
