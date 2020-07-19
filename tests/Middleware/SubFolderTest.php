@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Yii\Web\Tests\Middleware;
 
 use Nyholm\Psr7\Response;
