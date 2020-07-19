@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Yii\Web\Middleware;
 
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -47,14 +49,18 @@ final class Csrf implements MiddlewareInterface
         return $handler->handle($request);
     }
 
-    public function setName(string $name): void
+    public function withName(string $name): self
     {
-        $this->name = $name;
+        $new = clone $this;
+        $new->name = $name;
+        return $new;
     }
 
-    public function setRequestName(string $name): void
+    public function withRequestName(string $name): self
     {
-        $this->requestName = $name;
+        $new = clone $this;
+        $new->requestName = $name;
+        return $new;
     }
 
     private function getToken(): ?string
@@ -91,6 +97,6 @@ final class Csrf implements MiddlewareInterface
             $token = \reset($headers);
         }
 
-        return TokenMask::remove($token);
+        return is_string($token) ? TokenMask::remove($token) : null;
     }
 }

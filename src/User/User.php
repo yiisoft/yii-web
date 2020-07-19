@@ -20,6 +20,19 @@ class User
     private const SESSION_AUTH_EXPIRE = '__auth_expire';
     private const SESSION_AUTH_ABSOLUTE_EXPIRE = '__auth_absolute_expire';
 
+    /**
+     * @var int|null the number of seconds in which the user will be logged out automatically in case of
+     * remaining inactive. If this property is not set, the user will be logged out after
+     * the current session expires.
+     */
+    public ?int $authTimeout = null;
+
+    /**
+     * @var int|null the number of seconds in which the user will be logged out automatically
+     * regardless of activity.
+     */
+    public ?int $absoluteAuthTimeout = null;
+
     private IdentityRepositoryInterface $identityRepository;
     private EventDispatcherInterface $eventDispatcher;
 
@@ -44,19 +57,6 @@ class User
         $this->session = $session;
     }
 
-    /**
-     * @var int|null the number of seconds in which the user will be logged out automatically if he
-     * remains inactive. If this property is not set, the user will be logged out after
-     * the current session expires.
-     */
-    public ?int $authTimeout = null;
-
-    /**
-     * @var int|null the number of seconds in which the user will be logged out automatically
-     * regardless of activity.
-     */
-    public ?int $absoluteAuthTimeout = null;
-
     public function setAccessChecker(AccessCheckerInterface $accessChecker): void
     {
         $this->accessChecker = $accessChecker;
@@ -72,7 +72,7 @@ class User
      * @see logout()
      * @see login()
      */
-    public function getIdentity($autoRenew = true): IdentityInterface
+    public function getIdentity(bool $autoRenew = true): IdentityInterface
     {
         if ($this->identity !== null) {
             return $this->identity;
@@ -134,7 +134,7 @@ class User
      * @return IdentityInterface|null the identity associated with the given access token. Null is returned if
      * the access token is invalid or {@see login()} is unsuccessful.
      */
-    public function loginByAccessToken(string $token, string $type = null): ?IdentityInterface
+    public function loginByAccessToken(string $token, string $type): ?IdentityInterface
     {
         $identity = $this->identityRepository->findIdentityByToken($token, $type);
         if ($identity && $this->login($identity)) {
@@ -151,7 +151,7 @@ class User
      * @return bool whether the user is logged out
      * @throws \Throwable
      */
-    public function logout($destroySession = true): bool
+    public function logout(bool $destroySession = true): bool
     {
         $identity = $this->getIdentity();
         if ($this->isGuest()) {
@@ -293,7 +293,7 @@ class User
         $this->setIdentity($identity);
 
         if (!($identity instanceof GuestIdentity) && ($this->authTimeout !== null || $this->absoluteAuthTimeout !== null)) {
-            $expire = $this->authTimeout !== null ? $this->session->get(self::SESSION_AUTH_ABSOLUTE_EXPIRE) : null;
+            $expire = $this->authTimeout !== null ? $this->session->get(self::SESSION_AUTH_EXPIRE) : null;
             $expireAbsolute = $this->absoluteAuthTimeout !== null ? $this->session->get(self::SESSION_AUTH_ABSOLUTE_EXPIRE) : null;
             if (($expire !== null && $expire < time()) || ($expireAbsolute !== null && $expireAbsolute < time())) {
                 $this->logout(false);

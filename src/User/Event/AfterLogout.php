@@ -6,7 +6,7 @@ namespace Yiisoft\Yii\Web\User\Event;
 
 use Yiisoft\Auth\IdentityInterface;
 
-class AfterLogout
+final class AfterLogout
 {
     private IdentityInterface $identity;
 

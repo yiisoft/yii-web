@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Yii\Web\Session;
 
 use Psr\Http\Message\ResponseInterface;
@@ -8,7 +10,7 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Yii\Web\Cookie;
 
-class SessionMiddleware implements MiddlewareInterface
+final class SessionMiddleware implements MiddlewareInterface
 {
     private SessionInterface $session;
 
@@ -44,7 +46,7 @@ class SessionMiddleware implements MiddlewareInterface
 
         $currentSid = $this->session->getID();
 
-        // SID changed, neeed to send new cookie
+        // SID changed, need to send new cookie
         if ($this->getSidFromRequest($request) !== $currentSid) {
             $cookieParameters = $this->session->getCookieParameters();
 

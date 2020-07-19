@@ -6,7 +6,7 @@ namespace Yiisoft\Yii\Web\User\Event;
 
 use Yiisoft\Auth\IdentityInterface;
 
-class BeforeLogout
+final class BeforeLogout
 {
     private IdentityInterface $identity;
     private bool $isValid = true;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Yii\Web;
 
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -13,7 +15,7 @@ final class NotFoundHandler implements RequestHandlerInterface
     /**
      * @var ResponseFactoryInterface
      */
-    private $responseFactory;
+    private ResponseFactoryInterface $responseFactory;
 
     /**
      * NotFoundHandler constructor.

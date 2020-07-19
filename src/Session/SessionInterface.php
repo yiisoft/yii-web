@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Yii\Web\Session;
 
 interface SessionInterface
@@ -27,7 +29,7 @@ interface SessionInterface
     public function close(): void;
 
     /**
-     * Start sesion if it is not started yet
+     * Start session if it is not started yet
      */
     public function open(): void;
 

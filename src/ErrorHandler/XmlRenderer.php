@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Yii\Web\ErrorHandler;
 
 /**
@@ -22,9 +24,9 @@ final class XmlRenderer extends ThrowableRenderer
         $out .= "<error>\n";
         $out .= $this->tag('type', get_class($t));
         $out .= $this->tag('message', $this->cdata($t->getMessage()));
-        $out .= $this->tag('code', $this->cdata($t->getCode()));
+        $out .= $this->tag('code', $this->cdata((string) $t->getCode()));
         $out .= $this->tag('file', $t->getFile());
-        $out .= $this->tag('line', $t->getLine());
+        $out .= $this->tag('line', (string) $t->getLine());
         $out .= $this->tag('trace', $t->getTraceAsString());
         $out .= '</error>';
         return $out;

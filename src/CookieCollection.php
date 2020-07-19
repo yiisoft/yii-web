@@ -13,6 +13,8 @@ use InvalidArgumentException;
 use IteratorAggregate;
 use Psr\Http\Message\ResponseInterface;
 
+use Yiisoft\Http\Header;
+
 use function array_keys;
 use function array_values;
 use function array_walk;
@@ -34,7 +36,7 @@ final class CookieCollection implements IteratorAggregate, ArrayAccess, Countabl
     /**
      * CookieCollection constructor.
      *
-     * @param array $cookies the cookies that this collection initially contains.
+     * @param Cookie[] $cookies the cookies that this collection initially contains.
      */
     public function __construct(array $cookies = [])
     {
@@ -339,7 +341,7 @@ final class CookieCollection implements IteratorAggregate, ArrayAccess, Countabl
      */
     public function setToResponse(ResponseInterface $response): ResponseInterface
     {
-        $response = $response->withoutHeader('Set-Cookie');
+        $response = $response->withoutHeader(Header::SET_COOKIE);
         return $this->addToResponse($response);
     }
 
@@ -353,7 +355,7 @@ final class CookieCollection implements IteratorAggregate, ArrayAccess, Countabl
     public static function fromResponse(ResponseInterface $response): self
     {
         $collection = new self();
-        foreach ($response->getHeader('Set-Cookie') as $setCookieString) {
+        foreach ($response->getHeader(Header::SET_COOKIE) as $setCookieString) {
             $cookie = Cookie::fromCookieString($setCookieString);
             $collection->add($cookie);
         }

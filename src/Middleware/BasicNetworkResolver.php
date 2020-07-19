@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Yiisoft\Yii\Web\Middleware;
 
@@ -15,7 +16,7 @@ use Psr\Http\Server\RequestHandlerInterface;
  * - not required IP resolve to access the user's IP
  * - user's IP is already resolved (eg `ngx_http_realip_module` or similar)
  */
-class BasicNetworkResolver implements MiddlewareInterface
+final class BasicNetworkResolver implements MiddlewareInterface
 {
     private const DEFAULT_PROTOCOL_AND_ACCEPTABLE_VALUES = [
         'http' => ['http'],

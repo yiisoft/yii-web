@@ -1,28 +1,63 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Yiisoft\Yii\Web\Tests;
 
-use RuntimeException;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use Yiisoft\Yii\Web\ServerRequestFactory;
 
-class ServerRequestFactoryTest extends TestCase
+final class ServerRequestFactoryTest extends TestCase
 {
+    public function testUploadedFiles(): void
+    {
+        $_SERVER = [
+            'HTTP_HOST' => 'test',
+            'REQUEST_METHOD' => 'GET',
+        ];
+        $_FILES = [
+            'file1' => [
+                'name' => $firstFileName = 'facepalm.jpg',
+                'type' => 'image/jpeg',
+                'tmp_name' => '/tmp/123',
+                'error' => '0',
+                'size' => '31059',
+            ],
+            'file2' => [
+                'name' => [$secondFileName = 'facepalm2.jpg', $thirdFileName = 'facepalm3.jpg'],
+                'type' => ['image/jpeg', 'image/jpeg'],
+                'tmp_name' => ['/tmp/phpJutmOS', '/tmp/php9bNI8F'],
+                'error' => ['0', '0'],
+                'size' => ['78085', '61429'],
+            ],
+        ];
+        $serverRequest = $this->getServerRequestFactory()->createFromGlobals();
+
+        $firstUploadedFile = $serverRequest->getUploadedFiles()['file1'];
+        self::assertEquals($firstFileName, $firstUploadedFile->getClientFilename());
+
+        $secondUploadedFile = $serverRequest->getUploadedFiles()['file2'][0];
+        self::assertEquals($secondFileName, $secondUploadedFile->getClientFilename());
+
+        $thirdUploadedFile = $serverRequest->getUploadedFiles()['file2'][1];
+        self::assertEquals($thirdFileName, $thirdUploadedFile->getClientFilename());
+    }
+
     /**
      * @dataProvider hostParsingDataProvider
      */
     public function testHostParsingFromParameters(array $serverParams, array $expectParams): void
     {
         $serverRequest = $this->getServerRequestFactory()->createFromParameters($serverParams);
-        $this->assertSame($expectParams['host'], $serverRequest->getUri()->getHost());
-        $this->assertSame($expectParams['port'], $serverRequest->getUri()->getPort());
-        $this->assertSame($expectParams['method'], $serverRequest->getMethod());
-        $this->assertSame($expectParams['protocol'], $serverRequest->getProtocolVersion());
-        $this->assertSame($expectParams['scheme'], $serverRequest->getUri()->getScheme());
-        $this->assertSame($expectParams['path'], $serverRequest->getUri()->getPath());
-        $this->assertSame($expectParams['query'], $serverRequest->getUri()->getQuery());
+        self::assertSame($expectParams['host'], $serverRequest->getUri()->getHost());
+        self::assertSame($expectParams['port'], $serverRequest->getUri()->getPort());
+        self::assertSame($expectParams['method'], $serverRequest->getMethod());
+        self::assertSame($expectParams['protocol'], $serverRequest->getProtocolVersion());
+        self::assertSame($expectParams['scheme'], $serverRequest->getUri()->getScheme());
+        self::assertSame($expectParams['path'], $serverRequest->getUri()->getPath());
+        self::assertSame($expectParams['query'], $serverRequest->getUri()->getQuery());
     }
 
     /**
@@ -33,13 +68,13 @@ class ServerRequestFactoryTest extends TestCase
     {
         $_SERVER = $serverParams;
         $serverRequest = $this->getServerRequestFactory()->createFromGlobals();
-        $this->assertSame($expectParams['host'], $serverRequest->getUri()->getHost());
-        $this->assertSame($expectParams['port'], $serverRequest->getUri()->getPort());
-        $this->assertSame($expectParams['method'], $serverRequest->getMethod());
-        $this->assertSame($expectParams['protocol'], $serverRequest->getProtocolVersion());
-        $this->assertSame($expectParams['scheme'], $serverRequest->getUri()->getScheme());
-        $this->assertSame($expectParams['path'], $serverRequest->getUri()->getPath());
-        $this->assertSame($expectParams['query'], $serverRequest->getUri()->getQuery());
+        self::assertSame($expectParams['host'], $serverRequest->getUri()->getHost());
+        self::assertSame($expectParams['port'], $serverRequest->getUri()->getPort());
+        self::assertSame($expectParams['method'], $serverRequest->getMethod());
+        self::assertSame($expectParams['protocol'], $serverRequest->getProtocolVersion());
+        self::assertSame($expectParams['scheme'], $serverRequest->getUri()->getScheme());
+        self::assertSame($expectParams['path'], $serverRequest->getUri()->getPath());
+        self::assertSame($expectParams['query'], $serverRequest->getUri()->getQuery());
     }
 
     public function testInvalidMethodException(): void

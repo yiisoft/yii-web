@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Yii\Web\ErrorHandler;
 
 use Alexkart\CurlBuilder\Command;
@@ -17,12 +19,9 @@ final class HtmlRenderer extends ThrowableRenderer
     private string $errorTemplate;
     private string $exceptionTemplate;
 
-    private array $defaultTemplates;
-
     public function __construct(array $templates = [])
     {
         $this->defaultTemplatePath = $templates['path'];
-        $this->defaultTemplates = $templates['default'];
         $this->errorTemplate = $templates['error'] ?? $this->defaultTemplatePath . '/error.php';
         $this->exceptionTemplate = $templates['exception'] ?? $this->defaultTemplatePath . '/exception.php';
     }
