@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Yii\Web\Tests\Session;
 
 use Yiisoft\Yii\Web\Session\Session;
