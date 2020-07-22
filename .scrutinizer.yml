@@ -1,16 +1,18 @@
 build:
-  nodes:
-    analysis:
-      tests:
-        override:
-          - php-scrutinizer-run
+    environment:
+        php: "7.4"
+    nodes:
+        analysis:
+            tests:
+                override:
+                    - php-scrutinizer-run
 filter:
-  paths:
-    - "src/*"
+    paths:
+        - "src/*"
 checks:
-  php: true
+    php: true
 tools:
-  php_code_coverage:
-    enabled: true
-  external_code_coverage:
-    timeout: 600
+    php_code_coverage:
+        enabled: true
+    external_code_coverage:
+        timeout: 600
