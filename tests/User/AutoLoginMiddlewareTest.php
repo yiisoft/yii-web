@@ -12,8 +12,8 @@ use Yiisoft\Auth\IdentityInterface;
 use Yiisoft\Auth\IdentityRepositoryInterface;
 use Yiisoft\Log\Logger;
 use Yiisoft\Yii\Web\User\AutoLogin;
-use Yiisoft\Yii\Web\User\User;
 use Yiisoft\Yii\Web\User\AutoLoginMiddleware;
+use Yiisoft\Yii\Web\User\User;
 
 final class AutoLoginMiddlewareTest extends TestCase
 {
@@ -299,15 +299,16 @@ final class AutoLoginMiddlewareTest extends TestCase
             ->method('login')
             ->willReturn(true);
 
-        $user
-            ->expects($this->at(1))
-            ->method('isGuest')
-            ->willReturn(true);
+        $isUserGuest = true;
 
         $user
-            ->expects($this->at(2))
             ->method('isGuest')
-            ->willReturn(false);
+            ->willReturnCallback(function () use (&$isUserGuest) {
+                $isUserGuest = !$isUserGuest;
+
+                return !$isUserGuest;
+            })
+        ;
 
         $user
             ->method('getIdentity')
@@ -320,15 +321,16 @@ final class AutoLoginMiddlewareTest extends TestCase
     private function getUserForLogout(): User
     {
         $user = $this->createMock(User::class);
-        $user
-            ->expects($this->at(1))
-            ->method('isGuest')
-            ->willReturn(false);
+        $isUserGuest = false;
 
         $user
-            ->expects($this->at(2))
             ->method('isGuest')
-            ->willReturn(true);
+            ->willReturnCallback(function () use (&$isUserGuest) {
+                $isUserGuest = !$isUserGuest;
+
+                return !$isUserGuest;
+            })
+        ;
 
         return $user;
     }
