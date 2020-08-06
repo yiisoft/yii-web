@@ -110,6 +110,17 @@ class ErrorCatcherTest extends TestCase
         $this->assertSame($expectedRendererOutput, $content);
     }
 
+    public function testMustReturnContentType(): void
+    {
+        $catcher = $this->getErrorCatcher(new Container())->mustReturnContentType('application/json');
+        $response = $catcher->process(
+            new ServerRequest('GET', '/', ['Accept' => ['text/xml']]),
+            (new MockRequestHandler())->setHandleExcaption(new \RuntimeException())
+        );
+        $response->getBody()->rewind();
+        $this->assertSame('application/json', $response->getHeaderLine('Content-Type'));
+    }
+
     private function getContainerWithThrowableRenderer(string $id, string $expectedOutput): Container
     {
         return new Container(
