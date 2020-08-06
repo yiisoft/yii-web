@@ -121,6 +121,13 @@ class ErrorCatcherTest extends TestCase
         $this->assertSame('application/json', $response->getHeaderLine('Content-Type'));
     }
 
+    public function testMustReturnInvalidContentType(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectErrorMessage('The renderer for image/gif cannot be set.');
+        $this->getErrorCatcher(new Container())->mustReturnContentType('image/gif');
+    }
+
     private function getContainerWithThrowableRenderer(string $id, string $expectedOutput): Container
     {
         return new Container(
