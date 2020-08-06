@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Yiisoft\Yii\Web\Tests\Middleware\Mock;
 
 use Yiisoft\Yii\Web\ErrorHandler\ThrowableRenderer;

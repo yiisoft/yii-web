@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Yii\Web\Tests;
 
 use Nyholm\Psr7\Factory\Psr17Factory;

@@ -102,7 +102,7 @@ final class ErrorCatcher implements MiddlewareInterface
     private function getContentType(ServerRequestInterface $request): string
     {
         try {
-            foreach (HeaderHelper::getSortedAcceptTypesFromRequest($request) as $header) {
+            foreach (HeaderHelper::getSortedAcceptTypes($request->getHeader('accept')) as $header) {
                 if (array_key_exists($header, $this->renderers)) {
                     return $header;
                 }
