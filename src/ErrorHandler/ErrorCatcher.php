@@ -32,7 +32,7 @@ final class ErrorCatcher implements MiddlewareInterface
     private ResponseFactoryInterface $responseFactory;
     private ErrorHandler $errorHandler;
     private ContainerInterface $container;
-    private ?string $mustReturnContentType = null;
+    private ?string $onlyContentType = null;
 
     public function __construct(
         ResponseFactoryInterface $responseFactory,
@@ -71,7 +71,7 @@ final class ErrorCatcher implements MiddlewareInterface
         return $new;
     }
 
-    public function mustReturnContentType(string $contentType): self
+    public function withOnlyContentType(string $contentType): self
     {
         $this->validateMimeType($contentType);
         if (!isset($this->renderers[$contentType])) {
@@ -79,7 +79,7 @@ final class ErrorCatcher implements MiddlewareInterface
         }
 
         $new = clone $this;
-        $new->mustReturnContentType = $contentType;
+        $new->onlyContentType = $contentType;
         return $new;
     }
 
@@ -107,8 +107,8 @@ final class ErrorCatcher implements MiddlewareInterface
 
     private function getContentType(ServerRequestInterface $request): string
     {
-        if ($this->mustReturnContentType !== null) {
-            return $this->mustReturnContentType;
+        if ($this->onlyContentType !== null) {
+            return $this->onlyContentType;
         }
 
         try {
