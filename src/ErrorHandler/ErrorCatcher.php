@@ -32,6 +32,7 @@ final class ErrorCatcher implements MiddlewareInterface
     private ResponseFactoryInterface $responseFactory;
     private ErrorHandler $errorHandler;
     private ContainerInterface $container;
+    private ?string $mustReturnContentType = null;
 
     public function __construct(
         ResponseFactoryInterface $responseFactory,
@@ -46,14 +47,7 @@ final class ErrorCatcher implements MiddlewareInterface
     public function withRenderer(string $mimeType, string $rendererClass): self
     {
         $this->validateMimeType($mimeType);
-
-        if (trim($rendererClass) === '') {
-            throw new \InvalidArgumentException('The renderer class cannot be an empty string.');
-        }
-
-        if ($this->container->has($rendererClass) === false) {
-            throw new \InvalidArgumentException("The renderer \"$rendererClass\" cannot be found.");
-        }
+        $this->validateRenderer($rendererClass);
 
         $new = clone $this;
         $new->renderers[$this->normalizeMimeType($mimeType)] = $rendererClass;
@@ -74,6 +68,18 @@ final class ErrorCatcher implements MiddlewareInterface
             $this->validateMimeType($mimeType);
             unset($new->renderers[$this->normalizeMimeType($mimeType)]);
         }
+        return $new;
+    }
+
+    public function mustReturnContentType(string $contentType): self
+    {
+        $this->validateMimeType($contentType);
+        if (!isset($this->renderers[$contentType])) {
+            throw new \InvalidArgumentException(sprintf('The renderer for %s cannot be set.', $contentType));
+        }
+
+        $new = clone $this;
+        $new->mustReturnContentType = $contentType;
         return $new;
     }
 
@@ -101,6 +107,10 @@ final class ErrorCatcher implements MiddlewareInterface
 
     private function getContentType(ServerRequestInterface $request): string
     {
+        if ($this->mustReturnContentType !== null) {
+            return $this->mustReturnContentType;
+        }
+
         try {
             foreach (HeaderHelper::getSortedAcceptTypes($request->getHeader('accept')) as $header) {
                 if (array_key_exists($header, $this->renderers)) {
@@ -135,5 +145,16 @@ final class ErrorCatcher implements MiddlewareInterface
     private function normalizeMimeType(string $mimeType): string
     {
         return strtolower(trim($mimeType));
+    }
+
+    private function validateRenderer(string $rendererClass): void
+    {
+        if (trim($rendererClass) === '') {
+            throw new \InvalidArgumentException('The renderer class cannot be an empty string.');
+        }
+
+        if ($this->container->has($rendererClass) === false) {
+            throw new \InvalidArgumentException("The renderer \"$rendererClass\" cannot be found.");
+        }
     }
 }
