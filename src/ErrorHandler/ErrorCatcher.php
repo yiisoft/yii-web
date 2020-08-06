@@ -46,16 +46,20 @@ final class ErrorCatcher implements MiddlewareInterface
     public function withRenderer(string $mimeType, string $rendererClass): self
     {
         $this->validateMimeType($mimeType);
-
-        if (trim($rendererClass) === '') {
-            throw new \InvalidArgumentException('The renderer class cannot be an empty string.');
-        }
-
-        if ($this->container->has($rendererClass) === false) {
-            throw new \InvalidArgumentException("The renderer \"$rendererClass\" cannot be found.");
-        }
+        $this->validateRenderer($rendererClass);
 
         $new = clone $this;
+        $new->renderers[$this->normalizeMimeType($mimeType)] = $rendererClass;
+        return $new;
+    }
+
+    public function withOnlyRenderer(string $mimeType, string $rendererClass): self
+    {
+        $this->validateMimeType($mimeType);
+        $this->validateRenderer($rendererClass);
+
+        $new = clone $this;
+        $new->renderers = [];
         $new->renderers[$this->normalizeMimeType($mimeType)] = $rendererClass;
         return $new;
     }
@@ -135,5 +139,16 @@ final class ErrorCatcher implements MiddlewareInterface
     private function normalizeMimeType(string $mimeType): string
     {
         return strtolower(trim($mimeType));
+    }
+
+    private function validateRenderer(string $rendererClass): void
+    {
+        if (trim($rendererClass) === '') {
+            throw new \InvalidArgumentException('The renderer class cannot be an empty string.');
+        }
+
+        if ($this->container->has($rendererClass) === false) {
+            throw new \InvalidArgumentException("The renderer \"$rendererClass\" cannot be found.");
+        }
     }
 }
