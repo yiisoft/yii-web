@@ -32,7 +32,7 @@ final class ErrorCatcher implements MiddlewareInterface
     private ResponseFactoryInterface $responseFactory;
     private ErrorHandler $errorHandler;
     private ContainerInterface $container;
-    private ?string $onlyContentType = null;
+    private ?string $contentType = null;
 
     public function __construct(
         ResponseFactoryInterface $responseFactory,
@@ -71,21 +71,26 @@ final class ErrorCatcher implements MiddlewareInterface
         return $new;
     }
 
-    public function withOnlyContentType(string $contentType): self
+    /**
+     * Force content type to respond with regardless of request
+     * @param string $contentType
+     * @return $this
+     */
+    public function forceContentType(string $contentType): self
     {
         $this->validateMimeType($contentType);
         if (!isset($this->renderers[$contentType])) {
-            throw new \InvalidArgumentException(sprintf('The renderer for %s cannot be set.', $contentType));
+            throw new \InvalidArgumentException(sprintf('The renderer for %s is not set.', $contentType));
         }
 
         $new = clone $this;
-        $new->onlyContentType = $contentType;
+        $new->contentType = $contentType;
         return $new;
     }
 
     private function handleException(\Throwable $e, ServerRequestInterface $request): ResponseInterface
     {
-        $contentType = $this->getContentType($request);
+        $contentType = $this->contentType ?? $this->getContentType($request);
         $renderer = $this->getRenderer(strtolower($contentType));
         if ($renderer !== null) {
             $renderer->setRequest($request);
@@ -107,8 +112,8 @@ final class ErrorCatcher implements MiddlewareInterface
 
     private function getContentType(ServerRequestInterface $request): string
     {
-        if ($this->onlyContentType !== null) {
-            return $this->onlyContentType;
+        if ($this->contentType !== null) {
+            return $this->contentType;
         }
 
         try {
