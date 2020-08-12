@@ -50,21 +50,21 @@ final class MiddlewareDispatcher
      */
     public function addMiddleware($middleware): self
     {
+        if ($middleware instanceof MiddlewareInterface) {
+            $this->middlewares[] = $middleware;
+            return $this;
+        }
+
         if (is_callable($middleware)) {
-            $middleware = $this->getCallbackMiddleware($middleware, $this->container);
+            $this->middlewares[] = $this->getCallbackMiddleware($middleware, $this->container);
+            return $this;
         }
 
-        if (!$middleware instanceof MiddlewareInterface) {
-            throw new \InvalidArgumentException(
-                'Middleware should be either callable or MiddlewareInterface instance. ' . get_class(
-                    $middleware
-                ) . ' given.'
-            );
-        }
-
-        $this->middlewares[] = $middleware;
-
-        return $this;
+        throw new \InvalidArgumentException(
+            'Middleware should be either callable or MiddlewareInterface instance. ' . get_class(
+                $middleware
+            ) . ' given.'
+        );
     }
 
     public function dispatch(ServerRequestInterface $request): ResponseInterface
