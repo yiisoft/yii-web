@@ -211,7 +211,7 @@ final class HtmlRenderer extends ThrowableRenderer
                 } else {
                     $shouldGenerateLink = false;
                 }
-            } catch (\Throwable $e){
+            } catch (\Throwable $e) {
                 $shouldGenerateLink = false;
             }
         }
