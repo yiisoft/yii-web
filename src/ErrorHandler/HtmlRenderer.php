@@ -203,11 +203,15 @@ final class HtmlRenderer extends ThrowableRenderer
         $url = null;
         $shouldGenerateLink = true;
         if ($method !== null && substr_compare($method, '{closure}', -9) !== 0) {
-            $reflection = new \ReflectionClass($class);
-            if ($reflection->hasMethod($method)) {
-                $reflectionMethod = $reflection->getMethod($method);
-                $shouldGenerateLink = $reflectionMethod->isPublic() || $reflectionMethod->isProtected();
-            } else {
+            try {
+                $reflection = new \ReflectionClass($class);
+                if ($reflection->hasMethod($method)) {
+                    $reflectionMethod = $reflection->getMethod($method);
+                    $shouldGenerateLink = $reflectionMethod->isPublic() || $reflectionMethod->isProtected();
+                } else {
+                    $shouldGenerateLink = false;
+                }
+            } catch (\Throwable $e){
                 $shouldGenerateLink = false;
             }
         }
