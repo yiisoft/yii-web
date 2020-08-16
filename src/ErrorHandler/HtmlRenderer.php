@@ -288,6 +288,8 @@ final class HtmlRenderer extends ThrowableRenderer
                 $args[$key] = "<span class=\"number\">$key</span> => $args[$key]";
             }
         }
+
+        ksort($args);
         return implode(', ', $args);
     }
 
