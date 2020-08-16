@@ -175,7 +175,7 @@ final class HtmlRenderer extends ThrowableRenderer
 
     /**
      * Determines whether given name of the file belongs to the framework.
-     * @param string $file name to be checked.
+     * @param string|null $file name to be checked.
      * @return bool whether given name of the file belongs to the framework.
      */
     private function isCoreFile(?string $file): bool
@@ -186,7 +186,7 @@ final class HtmlRenderer extends ThrowableRenderer
     /**
      * Adds informational links to the given PHP type/class.
      * @param string $code type/class name to be linkified.
-     * @param string $title custom title to use
+     * @param string|null $title custom title to use
      * @return string linkified with HTML type/class name.
      * @throws \ReflectionException
      */
@@ -222,7 +222,7 @@ final class HtmlRenderer extends ThrowableRenderer
 
     /**
      * Returns the informational link URL for a given PHP type/class.
-     * @param string $class the type or class name.
+     * @param string|null $class the type or class name.
      * @param string|null $method the method name.
      * @return string|null the informational link URL.
      * @see addTypeLinks()
@@ -340,21 +340,29 @@ final class HtmlRenderer extends ThrowableRenderer
      */
     private function createServerInformationLink(): string
     {
-        if (isset($_SERVER['SERVER_SOFTWARE'])) {
-            $serverUrls = [
-                'http://httpd.apache.org/' => ['apache'],
-                'http://nginx.org/' => ['nginx'],
-                'http://lighttpd.net/' => ['lighttpd'],
-                'http://gwan.com/' => ['g-wan', 'gwan'],
-                'http://iis.net/' => ['iis', 'services'],
-                'https://secure.php.net/manual/en/features.commandline.webserver.php' => ['development'],
-            ];
+        if ($this->request === null) {
+            return '';
+        }
 
-            foreach ($serverUrls as $url => $keywords) {
-                foreach ($keywords as $keyword) {
-                    if (stripos($_SERVER['SERVER_SOFTWARE'], $keyword) !== false) {
-                        return '<a href="' . $url . '" target="_blank">' . $this->htmlEncode($_SERVER['SERVER_SOFTWARE']) . '</a>';
-                    }
+
+        $serverSoftware = $this->request->getServerParams()['SERVER_SOFTWARE'] ?? null;
+        if ($serverSoftware === null) {
+            return '';
+        }
+
+        $serverUrls = [
+            'http://httpd.apache.org/' => ['apache'],
+            'http://nginx.org/' => ['nginx'],
+            'http://lighttpd.net/' => ['lighttpd'],
+            'http://gwan.com/' => ['g-wan', 'gwan'],
+            'http://iis.net/' => ['iis', 'services'],
+            'https://secure.php.net/manual/en/features.commandline.webserver.php' => ['development'],
+        ];
+
+        foreach ($serverUrls as $url => $keywords) {
+            foreach ($keywords as $keyword) {
+                if (stripos($serverSoftware, $keyword) !== false) {
+                    return '<a href="' . $url . '" target="_blank">' . $this->htmlEncode($serverSoftware) . '</a>';
                 }
             }
         }
@@ -368,6 +376,6 @@ final class HtmlRenderer extends ThrowableRenderer
      */
     public function createFrameworkVersionLink(): string
     {
-        return '<a href="http://github.com/yiisoft/yii-web/" target="_blank">' . $this->htmlEncode(Info::frameworkVersion()) . '</a>';
+        return '<a href="http://github.com/yiisoft/app/" target="_blank">' . $this->htmlEncode(Info::frameworkVersion()) . '</a>';
     }
 }
