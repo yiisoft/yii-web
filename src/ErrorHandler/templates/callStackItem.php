@@ -23,7 +23,7 @@ HTML;
         <div class="element">
             <span class="item-number"><?= (int) $index ?>.</span>
             <span class="text"><?= $file !== null ? 'in ' . $this->htmlEncode($file) : '' ?></span>
-            <?php if ($this->traceLine !== '{html}'): ?>
+            <?php if ($this->traceLine !== '{html}') : ?>
                 <span> &ndash; </span>
                 <?= strtr($this->traceLine, ['{file}' => $file, '{line}' => $line + 1, '{html}' => $html]) ?>
             <?php endif; ?>
@@ -31,7 +31,7 @@ HTML;
                 <?= $line !== null ? 'at line' : '' ?>
                 <span class="line"><?= $line !== null ? $line + 1 : '' ?></span>
             </span>
-            <?php if ($method !== null): ?>
+            <?php if ($method !== null) : ?>
                 <span class="call">
                     <?= $file !== null ? '&ndash;' : '' ?>
                     <?= ($class !== null ? $this->addTypeLinks("$class::$method") : $this->htmlEncode($method)) . '(' . $this->argumentsToString($args) . ')' ?>
@@ -39,12 +39,12 @@ HTML;
             <?php endif; ?>
         </div>
     </div>
-    <?php if (!empty($lines)): ?>
+    <?php if (!empty($lines)) : ?>
         <div class="code-wrap">
             <div class="error-line"></div>
-            <?php for ($i = $begin; $i <= $end; ++$i): ?><div class="hover-line"></div><?php endfor; ?>
+            <?php for ($i = $begin; $i <= $end; ++$i) : ?><div class="hover-line"></div><?php endfor; ?>
             <div class="code">
-                <?php for ($i = $begin; $i <= $end; ++$i): ?><span class="lines-item"><?= (int) ($i + 1) ?></span><?php endfor; ?>
+                <?php for ($i = $begin; $i <= $end; ++$i) : ?><span class="lines-item"><?= (int) ($i + 1) ?></span><?php endfor; ?>
                 <pre><?php
                     // fill empty lines with a whitespace to avoid rendering problems in opera
                     for ($i = $begin; $i <= $end; ++$i) {
