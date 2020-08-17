@@ -67,7 +67,7 @@ final class ErrorHandler
             $this->log($t);
             return $this->exposeDetails ? $renderer->renderVerbose($t) : $renderer->render($t);
         } catch (\Throwable $t) {
-            return nl2br((string)$t);
+            return (string)$t;
         }
     }
 
