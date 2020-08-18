@@ -31,6 +31,13 @@ final class IpFilter implements MiddlewareInterface
         $this->clientIpAttribute = $clientIpAttribute;
     }
 
+    public function withIpValidator(Ip $ipValidator): self
+    {
+        $new = clone $this;
+        $new->ipValidator = $ipValidator;
+        return $new;
+    }
+
     /**
      * Process an incoming server request.
      *
