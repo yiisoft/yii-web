@@ -7,11 +7,11 @@ namespace Yiisoft\Yii\Web\User;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Yiisoft\Auth\AuthInterface;
+use Yiisoft\Auth\AuthenticationMethodInterface;
 use Yiisoft\Auth\IdentityInterface;
 use Yiisoft\Http\Status;
 
-final class UserAuth implements AuthInterface
+final class UserAuth implements AuthenticationMethodInterface
 {
     private string $authUrl = '/login';
     private User $user;
@@ -37,8 +37,10 @@ final class UserAuth implements AuthInterface
         return $this->responseFactory->createResponse(Status::FOUND)->withHeader('Location', $this->authUrl);
     }
 
-    public function setAuthUrl(string $url): void
+    public function withAuthUrl(string $url): self
     {
-        $this->authUrl = $url;
+        $new = clone $this;
+        $new->authUrl = $url;
+        return $new;
     }
 }
