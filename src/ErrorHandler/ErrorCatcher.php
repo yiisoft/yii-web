@@ -11,7 +11,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Http\Header;
-use Yiisoft\Http\HeaderHelper;
+use Yiisoft\Yii\Web\Helper\HeaderHelper;
 use Yiisoft\Http\Status;
 
 /**
