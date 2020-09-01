@@ -34,7 +34,7 @@
         "yiisoft/aliases": "^1.0",
         "yiisoft/auth": "^1.0",
         "yiisoft/friendly-exception": "^1.0",
-        "yiisoft/http": "1.0.x-dev",
+        "yiisoft/http": "^1.0",
         "yiisoft/injector": "^1.0",
         "yiisoft/network-utilities": "^3.0@dev",
         "yiisoft/router": "^3.0@dev",
