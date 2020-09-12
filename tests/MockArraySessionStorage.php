@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\Web\Tests\Flash;
+namespace Yiisoft\Yii\Web\Tests;
 
-use Yiisoft\Yii\Web\Session\SessionInterface;
+use Yiisoft\Session\SessionInterface;
 
 class MockArraySessionStorage implements SessionInterface
 {

@@ -15,7 +15,7 @@ use Yiisoft\Http\Method;
 use Yiisoft\Security\Random;
 use Yiisoft\Security\TokenMask;
 use Yiisoft\Yii\Web\Middleware\Csrf;
-use Yiisoft\Yii\Web\Session\SessionInterface;
+use Yiisoft\Session\SessionInterface;
 
 final class CsrfTest extends TestCase
 {
