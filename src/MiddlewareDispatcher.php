@@ -91,7 +91,7 @@ final class MiddlewareDispatcher
             public function handle(ServerRequestInterface $request): ResponseInterface
             {
                 if ($this->stack === null) {
-                    throw \RuntimeException('Middleware handler was called already');
+                    throw new \RuntimeException('Middleware handler was called already');
                 }
 
                 if ($this->stack->isEmpty()) {
