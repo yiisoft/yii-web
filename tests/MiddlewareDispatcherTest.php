@@ -13,18 +13,22 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Di\Container;
 use Yiisoft\Yii\Web\MiddlewareDispatcher;
+use Yiisoft\Yii\Web\Event\AfterMiddleware;
+use Yiisoft\Yii\Web\Event\BeforeMiddleware;
 
 class MiddlewareDispatcherTest extends TestCase
 {
     private MiddlewareDispatcher $middlewareDispatcher;
     private RequestHandlerInterface $fallbackHandlerMock;
+    private EventDispatcherInterface $eventDispatcherMock;
 
     public function setUp(): void
     {
         parent::setUp();
+        $this->eventDispatcherMock = $this->createMock(EventDispatcherInterface::class);
         $container = new Container(
             [
-                EventDispatcherInterface::class => $this->createMock(EventDispatcherInterface::class),
+                EventDispatcherInterface::class => $this->eventDispatcherMock,
             ]
         );
         $this->fallbackHandlerMock = $this->createMock(RequestHandlerInterface::class);
@@ -66,6 +70,19 @@ class MiddlewareDispatcherTest extends TestCase
             ->expects($this->never())
             ->method('handle')
             ->with($request);
+        $this->eventDispatcherMock
+            ->expects($this->exactly(8)) // before and after each of two middlewares, each processed twice
+            ->method('dispatch')
+            ->withConsecutive(
+                [$this->isInstanceOf(BeforeMiddleware::class)],
+                [$this->isInstanceOf(BeforeMiddleware::class)],
+                [$this->isInstanceOf(AfterMiddleware::class)],
+                [$this->isInstanceOf(AfterMiddleware::class)],
+                [$this->isInstanceOf(BeforeMiddleware::class)],
+                [$this->isInstanceOf(BeforeMiddleware::class)],
+                [$this->isInstanceOf(AfterMiddleware::class)],
+                [$this->isInstanceOf(AfterMiddleware::class)],
+            );
 
         $middleware1 = static function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
             $request = $request->withAttribute('middleware', 'middleware1');

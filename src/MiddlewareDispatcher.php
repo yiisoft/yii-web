@@ -21,25 +21,18 @@ use Yiisoft\Yii\Web\Event\BeforeMiddleware;
 final class MiddlewareDispatcher
 {
     /**
-     * @var MiddlewareInterface[]
+     * @var \SplStack
      */
-    private array $middlewares = [];
+    private \SplStack $middlewares;
 
     private RequestHandlerInterface $nextHandler;
     private ContainerInterface $container;
-
-    /**
-     * Contains a chain of middleware wrapped in handlers.
-     * Each handler points to the handler of middleware that will be processed next.
-     *
-     * @var RequestHandlerInterface|null stack of middleware
-     */
-    private ?RequestHandlerInterface $stack = null;
 
     public function __construct(
         ContainerInterface $container,
         RequestHandlerInterface $nextHandler = null
     ) {
+        $this->middlewares = new \SplStack();
         $this->container = $container;
         $this->nextHandler = $nextHandler ?? new NotFoundHandler($container->get(ResponseFactoryInterface::class));
     }
@@ -51,12 +44,12 @@ final class MiddlewareDispatcher
     public function addMiddleware($middleware): self
     {
         if ($middleware instanceof MiddlewareInterface) {
-            $this->middlewares[] = $middleware;
+            $this->middlewares->push($middleware);
             return $this;
         }
 
         if (is_callable($middleware)) {
-            $this->middlewares[] = $this->getCallbackMiddleware($middleware, $this->container);
+            $this->middlewares->push($this->getCallbackMiddleware($middleware, $this->container));
             return $this;
         }
 
@@ -72,52 +65,52 @@ final class MiddlewareDispatcher
         return $this->process($request, $this->nextHandler);
     }
 
-    private function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    private function process(ServerRequestInterface $request, RequestHandlerInterface $nextHandler): ResponseInterface
     {
-        if ($this->stack === null) {
-            $dispatcher = $this->container->get(EventDispatcherInterface::class);
+        $dispatcher = $this->container->get(EventDispatcherInterface::class);
 
-            foreach ($this->middlewares as $middleware) {
-                $handler = $this->wrap($middleware, $handler, $dispatcher);
-            }
-            $this->stack = $handler;
-        }
-
-        return $this->stack->handle($request);
+        return $this->createMiddlewareStackHandler($nextHandler, $dispatcher)->handle($request);
     }
 
-    /**
-     * Wraps handler by middlewares
-     */
-    private function wrap(
-        MiddlewareInterface $middleware,
-        RequestHandlerInterface $handler,
+    private function createMiddlewareStackHandler(
+        RequestHandlerInterface $nextHandler,
         EventDispatcherInterface $dispatcher
     ): RequestHandlerInterface {
-        return new class($middleware, $handler, $dispatcher) implements RequestHandlerInterface {
-            private MiddlewareInterface $middleware;
-            private RequestHandlerInterface $handler;
-            private EventDispatcherInterface $dispatcher;
+        return new class($this->middlewares, $nextHandler, $dispatcher) implements RequestHandlerInterface {
+            private ?\SplStack $stack;
+            private RequestHandlerInterface $fallbackHandler;
+            private EventDispatcherInterface $eventDispatcher;
 
-            public function __construct(
-                MiddlewareInterface $middleware,
-                RequestHandlerInterface $handler,
-                EventDispatcherInterface $dispatcher
-            ) {
-                $this->middleware = $middleware;
-                $this->handler = $handler;
-                $this->dispatcher = $dispatcher;
+            public function __construct(\SplStack $stack, RequestHandlerInterface $fallbackHandler, EventDispatcherInterface $eventDispatcher)
+            {
+                $this->stack = clone $stack;
+                $this->fallbackHandler = $fallbackHandler;
+                $this->eventDispatcher = $eventDispatcher;
             }
 
             public function handle(ServerRequestInterface $request): ResponseInterface
             {
-                $this->dispatcher->dispatch(new BeforeMiddleware($this->middleware, $request));
+                if ($this->stack === null) {
+                    throw \RuntimeException('Middleware handler was called already');
+                }
+
+                if ($this->stack->isEmpty()) {
+                    $this->stack = null;
+                    return $this->fallbackHandler->handle($request);
+                }
+
+                /** @var MiddlewareInterface $middleware */
+                $middleware = $this->stack->pop();
+                $next = clone $this; // deep clone is not used intentionally
+                $this->stack = null; // mark queue as processed at this nesting level
+
+                $this->eventDispatcher->dispatch(new BeforeMiddleware($middleware, $request));
 
                 $response = null;
                 try {
-                    return $response = $this->middleware->process($request, $this->handler);
+                    return $response = $middleware->process($request, $next);
                 } finally {
-                    $this->dispatcher->dispatch(new AfterMiddleware($this->middleware, $response));
+                    $this->eventDispatcher->dispatch(new AfterMiddleware($middleware, $response));
                 }
             }
         };
