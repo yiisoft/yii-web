@@ -13,7 +13,7 @@ use Yiisoft\Http\Method;
 use Yiisoft\Http\Status;
 use Yiisoft\Security\Random;
 use Yiisoft\Security\TokenMask;
-use Yiisoft\Yii\Web\Session\SessionInterface;
+use Yiisoft\Session\SessionInterface;
 
 final class Csrf implements MiddlewareInterface
 {
