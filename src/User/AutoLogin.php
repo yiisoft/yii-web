@@ -6,7 +6,7 @@ namespace Yiisoft\Yii\Web\User;
 
 use DateInterval;
 use Psr\Http\Message\ResponseInterface;
-use Yiisoft\Yii\Web\Cookie;
+use Yiisoft\Cookies\Cookie;
 
 /**
  * The service is used to send or remove auto-login cookie.
