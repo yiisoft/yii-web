@@ -68,7 +68,7 @@ final class SubFolder implements MiddlewareInterface
                 $request = $request->withUri($uri->withPath($newPath));
                 $this->uriGenerator->setUriPrefix($prefix);
                 // rewrite alias
-                $this->aliases->set('@web', $prefix . '/');
+                $this->aliases->set('@baseUrl', $prefix . '/');
             }
         }
 

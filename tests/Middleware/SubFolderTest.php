@@ -25,7 +25,7 @@ class SubFolderTest extends TestCase
     {
         $this->urlGeneratorUriPrefix = '';
         $this->lastRequest = null;
-        $this->aliases = new Aliases(['@web' => '/default/web']);
+        $this->aliases = new Aliases(['@baseUrl' => '/default/web']);
     }
 
     public function testDefault(): void
@@ -35,7 +35,7 @@ class SubFolderTest extends TestCase
 
         $this->process($mw, $request);
 
-        $this->assertEquals('/default/web', $this->aliases->get('@web'));
+        $this->assertEquals('/default/web', $this->aliases->get('@baseUrl'));
         $this->assertEquals('', $this->urlGeneratorUriPrefix);
         $this->assertEquals($uri, $this->getRequestPath());
     }
@@ -48,7 +48,7 @@ class SubFolderTest extends TestCase
 
         $this->process($mw, $request);
 
-        $this->assertEquals('/custom_public', $this->aliases->get('@web'));
+        $this->assertEquals('/custom_public', $this->aliases->get('@baseUrl'));
         $this->assertEquals('/custom_public', $this->urlGeneratorUriPrefix);
         $this->assertEquals('/index.php', $this->getRequestPath());
     }
@@ -60,7 +60,7 @@ class SubFolderTest extends TestCase
 
         $this->process($mw, $request);
 
-        $this->assertEquals('/public', $this->aliases->get('@web'));
+        $this->assertEquals('/public', $this->aliases->get('@baseUrl'));
         $this->assertEquals('/public', $this->urlGeneratorUriPrefix);
         $this->assertEquals('/', $this->getRequestPath());
     }
@@ -75,7 +75,7 @@ class SubFolderTest extends TestCase
 
         $this->process($mw, $request);
 
-        $this->assertEquals($prefix, $this->aliases->get('@web'));
+        $this->assertEquals($prefix, $this->aliases->get('@baseUrl'));
         $this->assertEquals($prefix, $this->urlGeneratorUriPrefix);
         $this->assertEquals('/', $this->getRequestPath());
     }
@@ -87,7 +87,7 @@ class SubFolderTest extends TestCase
 
         $this->process($mw, $request);
 
-        $this->assertEquals('/public', $this->aliases->get('@web'));
+        $this->assertEquals('/public', $this->aliases->get('@baseUrl'));
         $this->assertEquals('/public', $this->urlGeneratorUriPrefix);
         $this->assertEquals('/', $this->getRequestPath());
     }
@@ -99,7 +99,7 @@ class SubFolderTest extends TestCase
 
         $this->process($mw, $request);
 
-        $this->assertEquals('/public', $this->aliases->get('@web'));
+        $this->assertEquals('/public', $this->aliases->get('@baseUrl'));
         $this->assertEquals('/public', $this->urlGeneratorUriPrefix);
         $this->assertEquals('/index.php', $this->getRequestPath());
     }
@@ -111,7 +111,7 @@ class SubFolderTest extends TestCase
 
         $this->process($mw, $request);
 
-        $this->assertEquals('/default/web', $this->aliases->get('@web'));
+        $this->assertEquals('/default/web', $this->aliases->get('@baseUrl'));
         $this->assertEquals('', $this->urlGeneratorUriPrefix);
         $this->assertEquals($uri, $this->getRequestPath());
     }
@@ -171,7 +171,7 @@ class SubFolderTest extends TestCase
 
         $this->process($mw, $request);
 
-        $this->assertEquals('/default/web', $this->aliases->get('@web'));
+        $this->assertEquals('/default/web', $this->aliases->get('@baseUrl'));
         $this->assertEquals('', $this->urlGeneratorUriPrefix);
         $this->assertEquals($uri, $this->getRequestPath());
     }

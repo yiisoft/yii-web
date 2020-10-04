@@ -11,7 +11,7 @@ return [
         '@runtime' => '@root/runtime',
         '@bower' => '@vendor/bower-asset',
         '@npm' => '@root/node_modules',
-        '@web' => '/',
+        '@baseUrl' => '/',
     ],
 
     'yiisoft/yii-web' => [
