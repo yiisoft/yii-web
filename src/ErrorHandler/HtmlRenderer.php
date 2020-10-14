@@ -100,7 +100,7 @@ final class HtmlRenderer extends ThrowableRenderer
      * Empty string if there are none.
      * @throws \Throwable
      */
-    private function renderPreviousExceptions(\Throwable $t): string
+    public function renderPreviousExceptions(\Throwable $t): string
     {
         if (($previous = $t->getPrevious()) !== null) {
             $templatePath = $this->defaultTemplatePath . '/previousException.php';
@@ -154,7 +154,7 @@ final class HtmlRenderer extends ThrowableRenderer
      * @return string HTML content of the rendered call stack.
      * @throws \Throwable
      */
-    private function renderCallStack(\Throwable $t): string
+    public function renderCallStack(\Throwable $t): string
     {
         $out = '<ul>';
         $out .= $this->renderCallStackItem($t->getFile(), $t->getLine(), null, null, [], 1);
@@ -178,7 +178,7 @@ final class HtmlRenderer extends ThrowableRenderer
      * @param string|null $file name to be checked.
      * @return bool whether given name of the file belongs to the framework.
      */
-    private function isCoreFile(?string $file): bool
+    public function isCoreFile(?string $file): bool
     {
         return $file === null || strpos(realpath($file), Info::frameworkPath() . DIRECTORY_SEPARATOR) === 0;
     }
@@ -188,7 +188,6 @@ final class HtmlRenderer extends ThrowableRenderer
      * @param string $code type/class name to be linkified.
      * @param string|null $title custom title to use
      * @return string linkified with HTML type/class name.
-     * @throws \ReflectionException
      */
     private function addTypeLinks(string $code, string $title = null): string
     {
@@ -250,7 +249,7 @@ final class HtmlRenderer extends ThrowableRenderer
      * @param array $args arguments array to be converted
      * @return string string representation of the arguments array
      */
-    private function argumentsToString(array $args): string
+    public function argumentsToString(array $args): string
     {
         $count = 0;
         $isAssoc = $args !== array_values($args);
@@ -301,7 +300,7 @@ final class HtmlRenderer extends ThrowableRenderer
      * Renders the information about request.
      * @return string the rendering result
      */
-    private function renderRequest(): string
+    public function renderRequest(): string
     {
         if ($this->request === null) {
             return '';
@@ -325,7 +324,7 @@ final class HtmlRenderer extends ThrowableRenderer
         return '<pre>' . $this->htmlEncode(rtrim($output, "\n")) . '</pre>';
     }
 
-    private function renderCurl(): string
+    public function renderCurl(): string
     {
         try {
             $output = (new Command())->setRequest($this->request)->build();
@@ -342,7 +341,7 @@ final class HtmlRenderer extends ThrowableRenderer
      * and its full name.
      * @return string server software information hyperlink.
      */
-    private function createServerInformationLink(): string
+    public function createServerInformationLink(): string
     {
         if ($this->request === null) {
             return '';
