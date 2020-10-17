@@ -95,6 +95,7 @@ final class ErrorHandler
     {
         $this->disableDisplayErrors();
         set_exception_handler([$this, 'handleThrowable']);
+        /** @psalm-suppress InvalidArgument */
         set_error_handler([$this, 'handleError']);
 
         if ($this->memoryReserveSize > 0) {

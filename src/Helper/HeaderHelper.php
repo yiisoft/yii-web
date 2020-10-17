@@ -68,6 +68,7 @@ final class HeaderHelper
         }
         $output = [];
         do {
+            /** @psalm-suppress InvalidArgument */
             $headerValue = preg_replace_callback(
                 '/^[ \t]*(?<parameter>' . self::PATTERN_ATTRIBUTE . ')[ \t]*=[ \t]*(?<value>' . self::PATTERN_VALUE . ')[ \t]*(?:;|$)/u',
                 static function ($matches) use (&$output, $lowerCaseParameter, $lowerCaseValue) {
