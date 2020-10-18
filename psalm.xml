@@ -12,4 +12,16 @@
             <directory name="vendor" />
         </ignoreFiles>
     </projectFiles>
+    <issueHandlers>
+        <InvalidScope>
+            <errorLevel type="suppress">
+                <directory name="src/ErrorHandler/templates"/>
+            </errorLevel>
+        </InvalidScope>
+        <UndefinedGlobalVariable>
+            <errorLevel type="suppress">
+                <directory name="src/ErrorHandler/templates"/>
+            </errorLevel>
+        </UndefinedGlobalVariable>
+    </issueHandlers>
 </psalm>
