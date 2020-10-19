@@ -57,7 +57,7 @@ final class HeaderHelper
      *
      * @link https://tools.ietf.org/html/rfc7230#section-3.2.6
      */
-    public static function getParameters(string $headerValue, bool $lowerCaseParameter = true, $lowerCaseValue = true): array
+    public static function getParameters(string $headerValue, bool $lowerCaseParameter = true, bool $lowerCaseValue = true): array
     {
         $headerValue = trim($headerValue);
         if ($headerValue === '') {
@@ -68,6 +68,7 @@ final class HeaderHelper
         }
         $output = [];
         do {
+            /** @psalm-suppress InvalidArgument */
             $headerValue = preg_replace_callback(
                 '/^[ \t]*(?<parameter>' . self::PATTERN_ATTRIBUTE . ')[ \t]*=[ \t]*(?<value>' . self::PATTERN_VALUE . ')[ \t]*(?:;|$)/u',
                 static function ($matches) use (&$output, $lowerCaseParameter, $lowerCaseValue) {
