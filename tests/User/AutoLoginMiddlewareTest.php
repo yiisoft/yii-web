@@ -13,6 +13,7 @@ use Yiisoft\Auth\IdentityRepositoryInterface;
 use Yiisoft\Log\Logger;
 use Yiisoft\Yii\Web\User\AutoLogin;
 use Yiisoft\Yii\Web\User\AutoLoginMiddleware;
+use Yiisoft\Yii\Web\User\GuestIdentity;
 use Yiisoft\Yii\Web\User\User;
 
 final class AutoLoginMiddlewareTest extends TestCase
@@ -179,6 +180,21 @@ final class AutoLoginMiddlewareTest extends TestCase
         $this->assertMatchesRegularExpression('#autoLogin=%5B%2242%22%2C%22auto-login-key-correct%22%5D; Expires=.*?; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=Lax#', $response->getHeaderLine('Set-Cookie'));
     }
 
+    public function testAddCookieAfterLoginToGuestIdentity()
+    {
+        $user = $this->getUserForSuccessfulAutologin();
+        $autoLogin = $this->getAutoLogin();
+        $middleware = new AutoLoginMiddleware(
+            $user,
+            $this->getGuestIdentityRepository(),
+            $this->logger,
+            $autoLogin
+        );
+        $request = $this->getRequestWithAutoLoginCookie(AutoLoginIdentity::ID, AutoLoginIdentity::KEY_CORRECT);
+        $response = $middleware->process($request, $this->getRequestHandlerThatReturnsResponse());
+        $this->assertMatchesRegularExpression('#autoLogin=%5B%2242%22%2C%22auto-login-key-correct%22%5D; Expires=.*?; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=Lax#', $response->getHeaderLine('Set-Cookie'));
+    }
+
     public function testRemoveCookieAfterLogout()
     {
         $user = $this->getUserForLogout();
@@ -237,6 +253,11 @@ final class AutoLoginMiddlewareTest extends TestCase
     private function getAutoLoginIdentityRepository(): IdentityRepositoryInterface
     {
         return $this->getIdentityRepository(new AutoLoginIdentity());
+    }
+
+    private function getGuestIdentityRepository(): IdentityRepositoryInterface
+    {
+        return $this->getIdentityRepository(new GuestIdentity());
     }
 
     private function getEmptyIdentityRepository(): IdentityRepositoryInterface
