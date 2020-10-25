@@ -21,10 +21,9 @@ return [
                     'callStackItem',
                     'error',
                     'exception',
-                    'previousException'
+                    'previousException',
                 ],
-                'path' => __DIR__ . '/../src/ErrorHandler/templates',
-            ]
-        ]
-    ]
+            ],
+        ],
+    ],
 ];
