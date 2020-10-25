@@ -12,7 +12,7 @@ use Yiisoft\Yii\Web\ErrorHandler\ThrowableRendererInterface;
 
 return [
     Aliases::class => [
-        '__class'   => Aliases::class,
+        '__class' => Aliases::class,
         '__construct()' => [$params['aliases']],
     ],
 
@@ -23,5 +23,5 @@ return [
         '__construct()' => [
             $params['yiisoft/yii-web']['htmlRenderer']['templates'],
         ],
-    ]
+    ],
 ];
