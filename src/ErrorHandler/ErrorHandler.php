@@ -165,4 +165,9 @@ final class ErrorHandler implements LoggerAwareInterface
         $new->exposeDetails = false;
         return $new;
     }
+
+    public function setRenderer(ThrowableRendererInterface $defaultRenderer): void
+    {
+        $this->defaultRenderer = $defaultRenderer;
+    }
 }
