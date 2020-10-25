@@ -25,6 +25,9 @@ return [
                 ],
                 'path' => __DIR__ . '/../src/ErrorHandler/templates',
             ]
+        ],
+        'user' => [
+            'loginUrl' => '/login'
         ]
     ]
 ];
