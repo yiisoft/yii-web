@@ -10,10 +10,8 @@ use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
-use Psr\Log\Test\TestLogger;
 use Yiisoft\Di\Container;
 use Yiisoft\Yii\Web\Application;
-use Yiisoft\Yii\Web\ErrorHandler\ErrorHandler;
 use Yiisoft\Yii\Web\Event\AfterEmit;
 use Yiisoft\Yii\Web\Event\AfterMiddleware;
 use Yiisoft\Yii\Web\Event\AfterRequest;
@@ -22,7 +20,6 @@ use Yiisoft\Yii\Web\Event\ApplicationStartup;
 use Yiisoft\Yii\Web\Event\BeforeMiddleware;
 use Yiisoft\Yii\Web\Event\BeforeRequest;
 use Yiisoft\Yii\Web\MiddlewareDispatcher;
-use Yiisoft\Yii\Web\Tests\Middleware\Mock\MockThrowableRenderer;
 use Yiisoft\Yii\Web\Tests\Mock\MockEventDispatcher;
 use Yiisoft\Yii\Web\Tests\Mock\MockMiddleware;
 
