@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\Web\ErrorHandler;
 
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 use Yiisoft\Http\Status;
 
-final class ErrorHandler
+final class ErrorHandler implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /**
      * @var int the size of the reserved memory. A portion of memory is pre-allocated so that
      * when an out-of-memory issue occurs, the error handler is able to handle the error with
@@ -19,7 +23,6 @@ final class ErrorHandler
     private string $memoryReserve = '';
     private bool $exposeDetails = true;
 
-    private LoggerInterface $logger;
     private ThrowableRendererInterface $defaultRenderer;
 
     public function __construct(LoggerInterface $logger, ThrowableRendererInterface $defaultRenderer)
