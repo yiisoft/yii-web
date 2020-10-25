@@ -81,7 +81,6 @@ final class ApplicationTest extends TestCase
             $this->createMiddlewareDispatcher(
                 $this->createContainer($eventDispatcher)
             ),
-            $this->createErrorHandler(),
             $eventDispatcher
         );
     }
@@ -101,14 +100,6 @@ final class ApplicationTest extends TestCase
                 ResponseFactoryInterface::class => new Psr17Factory(),
                 EventDispatcherInterface::class => $eventDispatcher
             ]
-        );
-    }
-
-    private function createErrorHandler(): ErrorHandler
-    {
-        return new ErrorHandler(
-            new TestLogger(),
-            new MockThrowableRenderer('')
         );
     }
 
