@@ -7,7 +7,6 @@ namespace Yiisoft\Yii\Web;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Yiisoft\Yii\Web\ErrorHandler\ErrorHandler;
 use Yiisoft\Yii\Web\Event\AfterEmit;
 use Yiisoft\Yii\Web\Event\AfterRequest;
 use Yiisoft\Yii\Web\Event\ApplicationShutdown;
@@ -23,21 +22,17 @@ final class Application
 {
     private MiddlewareDispatcher $dispatcher;
     private EventDispatcherInterface $eventDispatcher;
-    private ErrorHandler $errorHandler;
 
     public function __construct(
         MiddlewareDispatcher $dispatcher,
-        ErrorHandler $errorHandler,
         EventDispatcherInterface $eventDispatcher
     ) {
         $this->dispatcher = $dispatcher;
-        $this->errorHandler = $errorHandler;
         $this->eventDispatcher = $eventDispatcher;
     }
 
     public function start(): void
     {
-        $this->errorHandler->register();
         $this->eventDispatcher->dispatch(new ApplicationStartup());
     }
 
