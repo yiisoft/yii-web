@@ -14,16 +14,16 @@ final class HtmlRenderer extends ThrowableRenderer
 
     private string $traceLine = '{html}';
 
-    private string $defaultTemplatePath;
+    private string $templatePath;
 
     private string $errorTemplate;
     private string $exceptionTemplate;
 
     public function __construct(array $templates = [])
     {
-        $this->defaultTemplatePath = $templates['path'];
-        $this->errorTemplate = $templates['error'] ?? $this->defaultTemplatePath . '/error.php';
-        $this->exceptionTemplate = $templates['exception'] ?? $this->defaultTemplatePath . '/exception.php';
+        $this->templatePath = $templates['path'] ?? __DIR__ . '/templates';
+        $this->errorTemplate = $templates['error'] ?? $this->templatePath . '/error.php';
+        $this->exceptionTemplate = $templates['exception'] ?? $this->templatePath . '/exception.php';
     }
 
     public function withMaxSourceLines(int $maxSourceLines): self
@@ -103,7 +103,7 @@ final class HtmlRenderer extends ThrowableRenderer
     public function renderPreviousExceptions(\Throwable $t): string
     {
         if (($previous = $t->getPrevious()) !== null) {
-            $templatePath = $this->defaultTemplatePath . '/previousException.php';
+            $templatePath = $this->templatePath . '/previousException.php';
             return $this->renderTemplate($templatePath, ['throwable' => $previous]);
         }
         return '';
@@ -134,7 +134,7 @@ final class HtmlRenderer extends ThrowableRenderer
             $begin = $line - $half > 0 ? $line - $half : 0;
             $end = $line + $half < $lineCount ? $line + $half : $lineCount - 1;
         }
-        $templatePath = $this->defaultTemplatePath . '/callStackItem.php';
+        $templatePath = $this->templatePath . '/callStackItem.php';
         return $this->renderTemplate($templatePath, [
             'file' => $file,
             'line' => $line,

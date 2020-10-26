@@ -14,7 +14,7 @@ use Yiisoft\Yii\Web\User\UserAuth;
 
 return [
     Aliases::class => [
-        '__class'   => Aliases::class,
+        '__class' => Aliases::class,
         '__construct()' => [$params['aliases']],
     ],
 
@@ -24,7 +24,6 @@ return [
             $params['yiisoft/yii-web']['htmlRenderer']['templates'],
         ],
     ],
-
     ThrowableRendererInterface::class => HtmlRenderer::class,
 
     UserAuth::class => [
