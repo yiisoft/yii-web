@@ -23,7 +23,7 @@ return [
                     'exception',
                     'previousException',
                 ],
-            ]
+            ],
         ],
         'user' => [
             'loginUrl' => '/login'
