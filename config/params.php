@@ -25,8 +25,8 @@ return [
                 ],
             ],
         ],
-        'user' => [
-            'loginUrl' => '/login'
+        'userAuth' => [
+            'authUrl' => '/login'
         ],
     ],
 ];
