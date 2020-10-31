@@ -39,7 +39,7 @@
         "yiisoft/injector": "^1.0",
         "yiisoft/network-utilities": "^3.0@dev",
         "yiisoft/router": "^3.0@dev",
-        "yiisoft/security": "^3.0@dev",
+        "yiisoft/security": "^1.0",
         "yiisoft/serializer": "^3.0@dev",
         "yiisoft/session": "^3.0@dev",
         "yiisoft/validator": "^3.0@dev",
