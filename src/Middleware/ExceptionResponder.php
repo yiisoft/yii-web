@@ -42,6 +42,7 @@ class ExceptionResponder implements MiddlewareInterface
                     }
                 }
             }
+            throw $t;
         }
     }
 }
