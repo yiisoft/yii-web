@@ -12,6 +12,8 @@ return [
         '@bower' => '@vendor/bower-asset',
         '@npm' => '@root/node_modules',
         '@baseUrl' => '/',
+        '@assets' => '@public/assets',
+        '@assetsUrl' => '@baseUrl/assets'
     ],
 
     'yiisoft/yii-web' => [
