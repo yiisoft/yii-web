@@ -20,7 +20,6 @@
         "php": "^7.4|^8.0",
         "ext-dom": "*",
         "ext-json": "*",
-        "alexkart/curl-builder": "^1.0",
         "psr/container": "1.0.0",
         "psr/container-implementation": "1.0.0",
         "psr/event-dispatcher": "^1.0",
