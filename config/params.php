@@ -17,16 +17,6 @@ return [
     ],
 
     'yiisoft/yii-web' => [
-        'htmlRenderer' => [
-            'templates' => [
-                'default' => [
-                    'callStackItem',
-                    'error',
-                    'exception',
-                    'previousException',
-                ],
-            ],
-        ],
         'userAuth' => [
             'authUrl' => '/login'
         ]
