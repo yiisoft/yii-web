@@ -43,8 +43,7 @@
         "yiisoft/serializer": "^3.0@dev",
         "yiisoft/session": "^3.0@dev",
         "yiisoft/validator": "^3.0@dev",
-        "yiisoft/yii-event": "^3.0@dev",
-        "yiisoft/error-handler": "^3.0@dev"
+        "yiisoft/yii-event": "^3.0@dev"
     },
     "require-dev": {
         "nyholm/psr7": "^1.0",
