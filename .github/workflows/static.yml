@@ -8,9 +8,6 @@ jobs:
   mutation:
     name: PHP ${{ matrix.php }}-${{ matrix.os }}
 
-    env:
-      update: true
-
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -22,18 +19,18 @@ jobs:
           - "7.4"
 
     steps:
-      - name: "Checkout"
-        uses: "actions/checkout@v2.3.3"
+      - name: Checkout
+        uses: actions/checkout@v2.3.4
 
-      - name: "Install PHP"
-        uses: "shivammathur/setup-php@v2"
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
         with:
           extensions: ${{ env.extensions }}
           tools: composer:v2, cs2pr
           coverage: none
 
       - name: Determine composer cache directory
-        run: echo "::set-env name=COMPOSER_CACHE_DIR::$(composer config cache-dir)"
+        run: echo "COMPOSER_CACHE_DIR=$(composer config cache-dir)" >> $GITHUB_ENV
 
       - name: Cache dependencies installed with composer
         uses: actions/cache@v2

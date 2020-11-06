@@ -12,13 +12,13 @@ return [
             '@runtime' => '@root/runtime',
             '@bower' => '@vendor/bower-asset',
             '@npm' => '@root/node_modules',
-            '@baseUrl' => '/',
-        ],
+            '@baseUrl' => '/'
+        ]
     ],
 
     'yiisoft/yii-web' => [
         'userAuth' => [
             'authUrl' => '/login'
-        ],
-    ],
+        ]
+    ]
 ];
