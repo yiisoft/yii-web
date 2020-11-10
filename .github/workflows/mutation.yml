@@ -1,8 +1,10 @@
 on:
-  - pull_request
-  - push
+  pull_request:
+  push:
+    branches:
+      - "master"
 
-name: static analysis
+name: mutation test
 
 jobs:
   mutation:
@@ -26,8 +28,9 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: "${{ matrix.php }}"
-          tools: composer:v2, cs2pr
-          coverage: none
+          ini-values: memory_limit=-1
+          coverage: "pcov"
+          tools: composer:v2
 
       - name: Determine composer cache directory
         run: echo "COMPOSER_CACHE_DIR=$(composer config cache-dir)" >> $GITHUB_ENV
@@ -46,5 +49,9 @@ jobs:
       - name: Install dependencies with composer
         run: composer update --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
 
-      - name: Static analysis
-        run: vendor/bin/psalm --shepherd --stats --output-format=checkstyle | cs2pr --graceful-warnings --colorize
+      - name: Run infection
+        run: |
+          git fetch --depth=1 origin $GITHUB_BASE_REF
+          vendor/bin/roave-infection-static-analysis-plugin -j2 --git-diff-filter=A --git-diff-base=origin/$GITHUB_BASE_REF --logger-github --ignore-msi-with-no-mutations --only-covered
+        env:
+          STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
