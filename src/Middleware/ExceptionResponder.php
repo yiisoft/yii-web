@@ -16,7 +16,7 @@ class ExceptionResponder implements MiddlewareInterface
     private Injector $injector;
 
     /**
-     * @param array $exceptionMap
+     * @param int[]|callable[] $exceptionMap Closure must return ResponseInterface
      * @psalm-param array{string, int|callable}
      */
     public function __construct(array $exceptionMap, ResponseFactoryInterface $responseFactory, Injector $injector)
