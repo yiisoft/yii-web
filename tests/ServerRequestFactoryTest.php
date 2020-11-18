@@ -100,7 +100,7 @@ final class ServerRequestFactoryTest extends TestCase
                     'scheme' => 'http',
                     'path' => '',
                     'query' => '',
-                ]
+                ],
             ],
             'hostWithPort' => [
                 [
@@ -115,14 +115,13 @@ final class ServerRequestFactoryTest extends TestCase
                     'scheme' => 'http',
                     'path' => '',
                     'query' => '',
-
-                ]
+                ],
             ],
             'ipv4' => [
                 [
                     'HTTP_HOST' => '127.0.0.1',
                     'REQUEST_METHOD' => 'GET',
-                    'HTTPS' => true
+                    'HTTPS' => true,
                 ],
                 [
                     'method' => 'GET',
@@ -132,12 +131,12 @@ final class ServerRequestFactoryTest extends TestCase
                     'scheme' => 'https',
                     'path' => '',
                     'query' => '',
-                ]
+                ],
             ],
             'ipv4WithPort' => [
                 [
                     'HTTP_HOST' => '127.0.0.1:443',
-                    'REQUEST_METHOD' => 'GET'
+                    'REQUEST_METHOD' => 'GET',
                 ],
                 [
                     'method' => 'GET',
@@ -147,12 +146,12 @@ final class ServerRequestFactoryTest extends TestCase
                     'scheme' => 'http',
                     'path' => '',
                     'query' => '',
-                ]
+                ],
             ],
             'ipv6' => [
                 [
                     'HTTP_HOST' => '[::1]',
-                    'REQUEST_METHOD' => 'GET'
+                    'REQUEST_METHOD' => 'GET',
                 ],
                 [
                     'method' => 'GET',
@@ -162,12 +161,12 @@ final class ServerRequestFactoryTest extends TestCase
                     'scheme' => 'http',
                     'path' => '',
                     'query' => '',
-                ]
+                ],
             ],
             'ipv6WithPort' => [
                 [
                     'HTTP_HOST' => '[::1]:443',
-                    'REQUEST_METHOD' => 'GET'
+                    'REQUEST_METHOD' => 'GET',
                 ],
                 [
                     'method' => 'GET',
@@ -177,12 +176,12 @@ final class ServerRequestFactoryTest extends TestCase
                     'scheme' => 'http',
                     'path' => '',
                     'query' => '',
-                ]
+                ],
             ],
             'serverName' => [
                 [
                     'SERVER_NAME' => 'test',
-                    'REQUEST_METHOD' => 'GET'
+                    'REQUEST_METHOD' => 'GET',
                 ],
                 [
                     'method' => 'GET',
@@ -192,14 +191,14 @@ final class ServerRequestFactoryTest extends TestCase
                     'scheme' => 'http',
                     'path' => '',
                     'query' => '',
-                ]
+                ],
             ],
             'hostAndServerName' => [
                 [
                     'SERVER_NAME' => 'override',
                     'HTTP_HOST' => 'test',
                     'REQUEST_METHOD' => 'GET',
-                    'SERVER_PORT' => 81
+                    'SERVER_PORT' => 81,
                 ],
                 [
                     'method' => 'GET',
@@ -209,11 +208,11 @@ final class ServerRequestFactoryTest extends TestCase
                     'scheme' => 'http',
                     'path' => '',
                     'query' => '',
-                ]
+                ],
             ],
             'none' => [
                 [
-                    'REQUEST_METHOD' => 'GET'
+                    'REQUEST_METHOD' => 'GET',
                 ],
                 [
                     'method' => 'GET',
@@ -223,12 +222,12 @@ final class ServerRequestFactoryTest extends TestCase
                     'scheme' => 'http',
                     'path' => '',
                     'query' => '',
-                ]
+                ],
             ],
             'path' => [
                 [
                     'REQUEST_METHOD' => 'GET',
-                    'REQUEST_URI' => '/path/to/folder?param=1'
+                    'REQUEST_URI' => '/path/to/folder?param=1',
                 ],
                 [
                     'method' => 'GET',
@@ -238,12 +237,12 @@ final class ServerRequestFactoryTest extends TestCase
                     'scheme' => 'http',
                     'path' => '/path/to/folder',
                     'query' => '',
-                ]
+                ],
             ],
             'query' => [
                 [
                     'REQUEST_METHOD' => 'GET',
-                    'QUERY_STRING' => 'path/to/folder?param=1'
+                    'QUERY_STRING' => 'path/to/folder?param=1',
                 ],
                 [
                     'method' => 'GET',
@@ -253,12 +252,12 @@ final class ServerRequestFactoryTest extends TestCase
                     'scheme' => 'http',
                     'path' => '',
                     'query' => 'path/to/folder?param=1',
-                ]
+                ],
             ],
             'protocol' => [
                 [
                     'REQUEST_METHOD' => 'GET',
-                    'SERVER_PROTOCOL' => 'HTTP/1.0'
+                    'SERVER_PROTOCOL' => 'HTTP/1.0',
                 ],
                 [
                     'method' => 'GET',
@@ -268,7 +267,7 @@ final class ServerRequestFactoryTest extends TestCase
                     'scheme' => 'http',
                     'path' => '',
                     'query' => '',
-                ]
+                ],
             ],
             'post' => [
                 [
@@ -282,7 +281,7 @@ final class ServerRequestFactoryTest extends TestCase
                     'scheme' => 'http',
                     'path' => '',
                     'query' => '',
-                ]
+                ],
             ],
             'delete' => [
                 [
@@ -296,7 +295,7 @@ final class ServerRequestFactoryTest extends TestCase
                     'scheme' => 'http',
                     'path' => '',
                     'query' => '',
-                ]
+                ],
             ],
             'put' => [
                 [
@@ -310,12 +309,12 @@ final class ServerRequestFactoryTest extends TestCase
                     'scheme' => 'http',
                     'path' => '',
                     'query' => '',
-                ]
+                ],
             ],
             'https' => [
                 [
                     'REQUEST_METHOD' => 'PUT',
-                    'HTTPS' => 'on'
+                    'HTTPS' => 'on',
                 ],
                 [
                     'method' => 'PUT',
@@ -325,7 +324,7 @@ final class ServerRequestFactoryTest extends TestCase
                     'scheme' => 'https',
                     'path' => '',
                     'query' => '',
-                ]
+                ],
             ],
         ];
     }

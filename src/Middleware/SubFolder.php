@@ -13,7 +13,7 @@ use Yiisoft\Router\UrlGeneratorInterface;
 use Yiisoft\Yii\Web\Exception\BadUriPrefixException;
 
 /**
- * This middleware supports routing when webroot is not the same folder as public
+ * This middleware supports routing when webroot is not the same folder as public.
  */
 final class SubFolder implements MiddlewareInterface
 {

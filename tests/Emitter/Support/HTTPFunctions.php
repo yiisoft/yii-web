@@ -1,6 +1,6 @@
 <?php
 /**
- * This class used to override some header*() functions and http_response_code()
+ * This class used to override some header*() functions and http_response_code().
  *
  * We put these into the Yii namespace, so that Yiisoft\Yii\Web\Emitter will use these versions of header*() and
  * http_response_code() when we test its output.
@@ -21,7 +21,7 @@ class HTTPFunctions
     private static int $headersSentLine = 0;
 
     /**
-     * Reset state
+     * Reset state.
      */
     public static function reset(): void
     {
@@ -33,7 +33,7 @@ class HTTPFunctions
     }
 
     /**
-     * Set header_sent() state
+     * Set header_sent() state.
      */
     public static function set_headers_sent(bool $value = false, string $file = '', int $line = 0): void
     {
@@ -43,7 +43,7 @@ class HTTPFunctions
     }
 
     /**
-     * Check if headers have been sent
+     * Check if headers have been sent.
      */
     public static function headers_sent(&$file = null, &$line = null): bool
     {
@@ -53,7 +53,7 @@ class HTTPFunctions
     }
 
     /**
-     * Send a raw HTTP header
+     * Send a raw HTTP header.
      */
     public static function header(string $string, bool $replace = true, ?int $http_response_code = null): void
     {
@@ -70,7 +70,7 @@ class HTTPFunctions
     }
 
     /**
-     * Remove previously set headers
+     * Remove previously set headers.
      */
     public static function header_remove(?string $header = null): void
     {
@@ -82,7 +82,7 @@ class HTTPFunctions
     }
 
     /**
-     * Returns a list of response headers sent
+     * Returns a list of response headers sent.
      *
      * @return string[]
      */
@@ -98,7 +98,7 @@ class HTTPFunctions
     }
 
     /**
-     * Get or Set the HTTP response code
+     * Get or Set the HTTP response code.
      */
     public static function http_response_code(?int $response_code = null): int
     {
@@ -109,10 +109,10 @@ class HTTPFunctions
     }
 
     /**
-     * Check header is exists
+     * Check header is exists.
      */
     public static function hasHeader(string $header): bool
     {
-        return key_exists(strtolower($header), self::$headers);
+        return array_key_exists(strtolower($header), self::$headers);
     }
 }

@@ -12,6 +12,7 @@ class HeadersHaveBeenSentException extends \Exception implements FriendlyExcepti
     {
         return 'HTTP headers have been sent';
     }
+
     public function getSolution(): ?string
     {
         \headers_sent($filename, $line);

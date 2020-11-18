@@ -15,10 +15,10 @@ use Yiisoft\Auth\IdentityRepositoryInterface;
 use Yiisoft\Http\Method;
 use Yiisoft\Http\Status;
 use Yiisoft\Session\SessionInterface;
-use Yiisoft\Yii\Web\Tests\MockArraySessionStorage;
 use Yiisoft\Yii\Web\Tests\Mock\MockEventDispatcher;
 use Yiisoft\Yii\Web\Tests\Mock\MockIdentity;
 use Yiisoft\Yii\Web\Tests\Mock\MockIdentityRepository;
+use Yiisoft\Yii\Web\Tests\MockArraySessionStorage;
 use Yiisoft\Yii\Web\User\User;
 use Yiisoft\Yii\Web\User\UserAuth;
 

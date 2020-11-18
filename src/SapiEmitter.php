@@ -9,7 +9,7 @@ use Yiisoft\Http\Status;
 use Yiisoft\Yii\Web\Exception\HeadersHaveBeenSentException;
 
 /**
- * SapiEmitter sends a response using PHP Server API
+ * SapiEmitter sends a response using PHP Server API.
  */
 final class SapiEmitter
 {
@@ -19,7 +19,7 @@ final class SapiEmitter
         Status::PROCESSING,
         Status::NO_CONTENT,
         Status::RESET_CONTENT,
-        Status::NOT_MODIFIED
+        Status::NOT_MODIFIED,
     ];
 
     private const DEFAULT_BUFFER_SIZE = 8_388_608; // 8MB

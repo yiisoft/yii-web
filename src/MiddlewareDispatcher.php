@@ -16,7 +16,7 @@ use Yiisoft\Yii\Web\Event\AfterMiddleware;
 use Yiisoft\Yii\Web\Event\BeforeMiddleware;
 
 /**
- * MiddlewareDispatcher
+ * MiddlewareDispatcher.
  */
 final class MiddlewareDispatcher
 {
@@ -46,7 +46,6 @@ final class MiddlewareDispatcher
 
     /**
      * @param callable|MiddlewareInterface $middleware
-     * @return self
      */
     public function addMiddleware($middleware): self
     {
@@ -87,7 +86,7 @@ final class MiddlewareDispatcher
     }
 
     /**
-     * Wraps handler by middlewares
+     * Wraps handler by middlewares.
      */
     private function wrap(
         MiddlewareInterface $middleware,

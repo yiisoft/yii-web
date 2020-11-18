@@ -12,14 +12,10 @@ use Yiisoft\Http\Status;
 
 final class NotFoundHandler implements RequestHandlerInterface
 {
-    /**
-     * @var ResponseFactoryInterface
-     */
     private ResponseFactoryInterface $responseFactory;
 
     /**
      * NotFoundHandler constructor.
-     * @param ResponseFactoryInterface $responseFactory
      */
     public function __construct(ResponseFactoryInterface $responseFactory)
     {

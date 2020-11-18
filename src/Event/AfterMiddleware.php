@@ -8,7 +8,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
 
 /**
- * AfterMiddleware event is raised after a middleware was executed
+ * AfterMiddleware event is raised after a middleware was executed.
  */
 final class AfterMiddleware
 {

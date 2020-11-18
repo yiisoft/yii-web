@@ -45,14 +45,7 @@ final class ServerRequestFactory
     }
 
     /**
-     * @param array $server
-     * @param array $headers
-     * @param array $cookies
-     * @param array $get
-     * @param array $post
-     * @param array $files
-     * @param StreamInterface|resource|string|null $body
-     * @return ServerRequestInterface
+     * @param resource|StreamInterface|string|null $body
      */
     public function createFromParameters(array $server, array $headers = [], array $cookies = [], array $get = [], array $post = [], array $files = [], $body = null): ServerRequestInterface
     {
@@ -167,6 +160,7 @@ final class ServerRequestFactory
 
     /**
      * Populates uploaded files array from $_FILE data structure recursively.
+     *
      * @param array $files uploaded files array to be populated.
      * @param mixed $names file names provided by PHP
      * @param mixed $tempNames temporary file names provided by PHP

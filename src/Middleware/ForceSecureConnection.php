@@ -61,10 +61,9 @@ final class ForceSecureConnection implements MiddlewareInterface
     }
 
     /**
-     * Redirects from HTTP to HTTPS
+     * Redirects from HTTP to HTTPS.
+     *
      * @param int $statusCode
-     * @param null|int $port
-     * @return self
      */
     public function withRedirection($statusCode = Status::MOVED_PERMANENTLY, int $port = null): self
     {
@@ -74,6 +73,7 @@ final class ForceSecureConnection implements MiddlewareInterface
         $clone->statusCode = $statusCode;
         return $clone;
     }
+
     public function withoutRedirection(): self
     {
         $clone = clone $this;
@@ -82,10 +82,9 @@ final class ForceSecureConnection implements MiddlewareInterface
     }
 
     /**
-     * Add Content-Security-Policy header to Response
+     * Add Content-Security-Policy header to Response.
+     *
      * @see Header::CONTENT_SECURITY_POLICY
-     * @param string $directives
-     * @return self
      */
     public function withCSP(string $directives = self::DEFAULT_CSP_DIRECTIVES): self
     {
@@ -94,6 +93,7 @@ final class ForceSecureConnection implements MiddlewareInterface
         $clone->cspDirectives = $directives;
         return $clone;
     }
+
     public function withoutCSP(): self
     {
         $clone = clone $this;
@@ -102,11 +102,9 @@ final class ForceSecureConnection implements MiddlewareInterface
     }
 
     /**
-     * Add Strict-Transport-Security header to each Response
+     * Add Strict-Transport-Security header to each Response.
+     *
      * @see Header::STRICT_TRANSPORT_SECURITY
-     * @param int $maxAge
-     * @param bool $subDomains
-     * @return self
      */
     public function withHSTS(int $maxAge = self::DEFAULT_HSTS_MAX_AGE, bool $subDomains = false): self
     {
@@ -116,6 +114,7 @@ final class ForceSecureConnection implements MiddlewareInterface
         $clone->hstsSubDomains = $subDomains;
         return $clone;
     }
+
     public function withoutHSTS(): self
     {
         $clone = clone $this;
@@ -129,6 +128,7 @@ final class ForceSecureConnection implements MiddlewareInterface
             ? $response->withHeader(Header::CONTENT_SECURITY_POLICY, $this->cspDirectives)
             : $response;
     }
+
     private function addHSTS(ResponseInterface $response): ResponseInterface
     {
         $subDomains = $this->hstsSubDomains ? '; includeSubDomains' : '';

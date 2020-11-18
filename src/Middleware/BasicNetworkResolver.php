@@ -84,8 +84,9 @@ final class BasicNetworkResolver implements MiddlewareInterface
      *   'https' => ['https']
      * ]);
      * ```
-     * @param string $header
-     * @param callable|array|null $values
+     *
+     * @param array|callable|null $values
+     *
      * @see DEFAULT_PROTOCOL_AND_ACCEPTABLE_VALUES
      */
     public function withAddedProtocolHeader(string $header, $values = null): self

@@ -9,12 +9,12 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Yiisoft\Yii\Web\Helper\HeaderHelper;
 use Yiisoft\NetworkUtilities\IpHelper;
 use Yiisoft\Validator\Rule\Ip;
+use Yiisoft\Yii\Web\Helper\HeaderHelper;
 
 /**
- * Trusted hosts network resolver
+ * Trusted hosts network resolver.
  *
  * ```php
  * (new TrustedHostsNetworkResolver($responseFactory))
@@ -79,7 +79,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
     }
 
     /**
-     * With added trusted hosts and related headers
+     * With added trusted hosts and related headers.
      *
      * The header lists are evaluated in the order they were specified.
      * If you specify multiple headers by type (eg IP headers), you must ensure that the irrelevant header is removed
@@ -94,6 +94,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
      * @param string[] $portHeaders List of headers containing port number.
      * @param string[]|null $trustedHeaders List of trusted headers. Removed from the request, if in checking process
      * are classified as untrusted by hosts.
+     *
      * @return static
      */
     public function withAddedTrustedHosts(
@@ -184,6 +185,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
      * The list starts with the server and the last item is the client itself.
      *
      * @return static
+     *
      * @see getElementsByRfc7239
      */
     public function withAttributeIps(?string $attribute): self
@@ -323,7 +325,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
     }
 
     /**
-     * Validate host by range
+     * Validate host by range.
      *
      * This method can be extendable by overwriting eg. with reverse DNS verification.
      */
@@ -333,17 +335,13 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
     }
 
     /**
-     * Reverse obfuscating host data
+     * Reverse obfuscating host data.
      *
      * RFC 7239 allows to use obfuscated host data. In this case, either specifying the
      * IP address or dropping the proxy endpoint is required to determine validated route.
      *
      * By default it does not perform any transformation on the data. You can override this method.
      *
-     * @param array $hostData
-     * @param array $hostDataListValidated
-     * @param array $hostDataListRemaining
-     * @param RequestInterface $request
      * @return array|null reverse obfuscated host data or null.
      * In case of null data is discarded and the process continues with the next portion of host data.
      * If the return value is an array, it must contain at least the `ip` key.
@@ -434,7 +432,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
     }
 
     /**
-     * Forwarded elements by RFC7239
+     * Forwarded elements by RFC7239.
      *
      * The structure of the elements:
      * - `host`: IP or obfuscated hostname or "unknown"
@@ -445,6 +443,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
      * - `httpHost`: HTTP host received by proxy (only if presented)
      *
      * @link https://tools.ietf.org/html/rfc7239
+     *
      * @return array proxy data elements
      */
     private function getElementsByRfc7239(array $forwards): array

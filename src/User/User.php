@@ -41,8 +41,6 @@ class User
     private ?SessionInterface $session;
 
     /**
-     * @param IdentityRepositoryInterface $identityRepository
-     * @param EventDispatcherInterface $eventDispatcher
      * @param SessionInterface|null $session session to persist authentication status across multiple requests.
      * If not set, authentication has to be performed on each request, which is often the case for stateless
      * application such as RESTful API.
@@ -66,9 +64,13 @@ class User
      * Returns the identity object associated with the currently logged-in user.
      * This method read the user's authentication data
      * stored in session and reconstruct the corresponding identity object, if it has not done so before.
+     *
      * @param bool $autoRenew whether to automatically renew authentication status if it has not been done so before.
-     * @return IdentityInterface the identity object associated with the currently logged-in user.
+     *
      * @throws \Throwable
+     *
+     * @return IdentityInterface the identity object associated with the currently logged-in user.
+     *
      * @see logout()
      * @see login()
      */
@@ -113,6 +115,7 @@ class User
      *   browser is re-opened.
      *
      * @param IdentityInterface $identity the user identity (which should already be authenticated)
+     *
      * @return bool whether the user is logged in
      */
     public function login(IdentityInterface $identity): bool
@@ -129,8 +132,10 @@ class User
      * This method will first authenticate the user by calling {@see IdentityInterface::findIdentityByToken()}
      * with the provided access token. If successful, it will call {@see login()} to log in the authenticated user.
      * If authentication fails or {@see login()} is unsuccessful, it will return null.
+     *
      * @param string $token the access token
      * @param string $type the type of the token. The value of this parameter depends on the implementation.
+     *
      * @return IdentityInterface|null the identity associated with the given access token. Null is returned if
      * the access token is invalid or {@see login()} is unsuccessful.
      */
@@ -147,9 +152,12 @@ class User
      * Logs out the current user.
      * This will remove authentication-related session data.
      * If `$destroySession` is true, all session data will be removed.
+     *
      * @param bool $destroySession whether to destroy the whole session. Defaults to true.
-     * @return bool whether the user is logged out
+     *
      * @throws \Throwable
+     *
+     * @return bool whether the user is logged out
      */
     public function logout(bool $destroySession = true): bool
     {
@@ -170,7 +178,9 @@ class User
 
     /**
      * Returns a value indicating whether the user is a guest (not authenticated).
+     *
      * @return bool whether the current user is a guest.
+     *
      * @see getIdentity()
      */
     public function isGuest(): bool
@@ -180,8 +190,11 @@ class User
 
     /**
      * Returns a value that uniquely represents the user.
-     * @return string the unique identifier for the user. If `null`, it means the user is a guest.
+     *
      * @throws \Throwable
+     *
+     * @return string the unique identifier for the user. If `null`, it means the user is a guest.
+     *
      * @see getIdentity()
      */
     public function getId(): ?string
@@ -194,7 +207,9 @@ class User
      * The default implementation will trigger the {@see BeforeLogin} event.
      * If you override this method, make sure you call the parent implementation
      * so that the event is triggered.
+     *
      * @param IdentityInterface $identity the user identity information
+     *
      * @return bool whether the user should continue to be logged in
      */
     private function beforeLogin(IdentityInterface $identity): bool
@@ -206,6 +221,7 @@ class User
 
     /**
      * This method is called after the user is successfully logged in.
+     *
      * @param IdentityInterface $identity the user identity information
      */
     private function afterLogin(IdentityInterface $identity): void
@@ -215,7 +231,9 @@ class User
 
     /**
      * This method is invoked when calling {@see logout()} to log out a user.
+     *
      * @param IdentityInterface $identity the user identity information
+     *
      * @return bool whether the user should continue to be logged out
      */
     private function beforeLogout(IdentityInterface $identity): bool
@@ -227,6 +245,7 @@ class User
 
     /**
      * This method is invoked right after a user is logged out via {@see logout()}.
+     *
      * @param IdentityInterface $identity the user identity information
      */
     private function afterLogout(IdentityInterface $identity): void
@@ -312,8 +331,10 @@ class User
      * @param string $permissionName the name of the permission (e.g. "edit post") that needs access check.
      * @param array $params name-value pairs that would be passed to the rules associated
      * with the roles and permissions assigned to the user.
-     * @return bool whether the user can perform the operation as specified by the given permission.
+     *
      * @throws \Throwable
+     *
+     * @return bool whether the user can perform the operation as specified by the given permission.
      */
     public function can(string $permissionName, array $params = []): bool
     {

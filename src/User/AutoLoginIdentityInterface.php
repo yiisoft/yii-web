@@ -29,6 +29,7 @@ interface AutoLoginIdentityInterface extends IdentityInterface
      * other scenarios, that require forceful access revocation for old sessions.
      *
      * @return string a key that is used to check the validity of a given identity ID.
+     *
      * @see validateAutoLoginKey()
      */
     public function getAutoLoginKey(): string;
@@ -37,7 +38,9 @@ interface AutoLoginIdentityInterface extends IdentityInterface
      * Validates the given key.
      *
      * @param string $key the given key
+     *
      * @return bool whether the given key is valid.
+     *
      * @see getAutoLoginKey()
      */
     public function validateAutoLoginKey(string $key): bool;

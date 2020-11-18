@@ -10,11 +10,11 @@ use Yiisoft\Access\AccessCheckerInterface;
 use Yiisoft\Auth\IdentityInterface;
 use Yiisoft\Auth\IdentityRepositoryInterface;
 use Yiisoft\Session\SessionInterface;
-use Yiisoft\Yii\Web\Tests\MockArraySessionStorage;
 use Yiisoft\Yii\Web\Tests\Mock\MockAccessChecker;
 use Yiisoft\Yii\Web\Tests\Mock\MockEventDispatcher;
 use Yiisoft\Yii\Web\Tests\Mock\MockIdentity;
 use Yiisoft\Yii\Web\Tests\Mock\MockIdentityRepository;
+use Yiisoft\Yii\Web\Tests\MockArraySessionStorage;
 use Yiisoft\Yii\Web\User\Event\AfterLogin;
 use Yiisoft\Yii\Web\User\Event\AfterLogout;
 use Yiisoft\Yii\Web\User\Event\BeforeLogin;
@@ -65,7 +65,7 @@ final class UserTest extends TestCase
         $sessionStorage = $this->createSessionStorage(
             [
                 '__auth_id' => 'test-id',
-                '__auth_expire' => strtotime('-1 day')
+                '__auth_expire' => strtotime('-1 day'),
             ]
         );
 
@@ -89,7 +89,7 @@ final class UserTest extends TestCase
         $sessionStorage = $this->createSessionStorage(
             [
                 '__auth_id' => 'test-id',
-                '__auth_absolute_expire' => strtotime('-1 day')
+                '__auth_absolute_expire' => strtotime('-1 day'),
             ]
         );
 
@@ -145,7 +145,7 @@ final class UserTest extends TestCase
         $this->assertEquals(
             [
                 BeforeLogin::class,
-                AfterLogin::class
+                AfterLogin::class,
             ],
             $dispatcher->getClassesEvents()
         );
@@ -188,7 +188,7 @@ final class UserTest extends TestCase
         $this->assertEquals(
             [
                 BeforeLogout::class,
-                AfterLogout::class
+                AfterLogout::class,
             ],
             $dispatcher->getClassesEvents()
         );
@@ -243,7 +243,7 @@ final class UserTest extends TestCase
         $this->assertEquals(
             [
                 BeforeLogin::class,
-                AfterLogin::class
+                AfterLogin::class,
             ],
             $dispatcher->getClassesEvents()
         );
@@ -297,7 +297,7 @@ final class UserTest extends TestCase
         $sessionStorage = $this->createSessionStorage(
             [
                 '__auth_id' => 'test-id',
-                '__auth_expire' => $expire
+                '__auth_expire' => $expire,
             ]
         );
 
