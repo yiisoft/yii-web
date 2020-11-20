@@ -48,7 +48,7 @@
         "nyholm/psr7": "^1.3",
         "phpunit/phpunit": "^9.4",
         "roave/infection-static-analysis-plugin": "^1.4",
-        "vimeo/psalm": "^4.1",
+        "vimeo/psalm": "^4.2",
         "yiisoft/cache": "^3.0@dev",
         "yiisoft/composer-config-plugin": "^1.0@dev",
         "yiisoft/di": "^3.0@dev",
