@@ -39,7 +39,7 @@ final class AutoLogin
     {
         $data = json_encode([
             $identity->getId(),
-            $identity->getAutoLoginKey()
+            $identity->getAutoLoginKey(),
         ], JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
         return (new Cookie($this->cookieName, $data))

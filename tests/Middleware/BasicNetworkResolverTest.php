@@ -21,49 +21,49 @@ class BasicNetworkResolverTest extends TestCase
                 'http',
                 ['x-forwarded-proto' => ['https']],
                 ['test' => ['https' => 'https']],
-                'http'
+                'http',
             ],
             'httpNotMatchedProtocolHeaderValue' => [
                 'http',
                 ['x-forwarded-proto' => ['https']],
                 ['x-forwarded-proto' => ['https' => 'test']],
-                'http'
+                'http',
             ],
             'httpToHttps' => [
                 'http',
                 ['x-forwarded-proto' => ['https']],
                 ['x-forwarded-proto' => ['https' => 'https']],
-                'https'
+                'https',
             ],
             'httpToHttpsDefault' => [
                 'http',
                 ['x-forwarded-proto' => ['https']],
                 ['x-forwarded-proto' => null],
-                'https'
+                'https',
             ],
             'httpToHttpsUpperCase' => [
                 'http',
                 ['x-forwarded-proto' => ['https']],
                 ['x-forwarded-proto' => ['https' => 'HTTPS']],
-                'https'
+                'https',
             ],
             'httpToHttpsMultiValue' => [
                 'http',
                 ['x-forwarded-proto' => ['https']],
                 ['x-forwarded-proto' => ['https' => ['on', 's', 'https']]],
-                'https'
+                'https',
             ],
             'httpsToHttp' => [
                 'https',
                 ['x-forwarded-proto' => 'http'],
                 ['x-forwarded-proto' => ['http' => 'http']],
-                'http'
+                'http',
             ],
             'httpToHttpsWithCallback' => [
                 'http',
                 ['x-forwarded-proto' => 'test any-https **'],
                 [
-                    'x-forwarded-proto' => function (array $values, String $header, ServerRequestInterface $request) {
+                    'x-forwarded-proto' => function (array $values, string $header, ServerRequestInterface $request) {
                         return stripos($values[0], 'https') !== false ? 'https' : 'http';
                     },
                 ],
@@ -73,12 +73,12 @@ class BasicNetworkResolverTest extends TestCase
                 'http',
                 ['x-forwarded-proto' => 'test any-https **'],
                 [
-                    'x-forwarded-proto' => function (array $values, String $header, ServerRequestInterface $request) {
+                    'x-forwarded-proto' => function (array $values, string $header, ServerRequestInterface $request) {
                         return null;
                     },
                 ],
                 'http',
-            ]
+            ],
         ];
     }
 

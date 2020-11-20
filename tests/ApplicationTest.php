@@ -64,8 +64,7 @@ final class ApplicationTest extends TestCase
                 BeforeRequest::class,
                 BeforeMiddleware::class,
                 AfterMiddleware::class,
-                AfterRequest::class
-
+                AfterRequest::class,
             ],
             $eventDispatcher->getClassesEvents()
         );
@@ -95,7 +94,7 @@ final class ApplicationTest extends TestCase
         return new Container(
             [
                 ResponseFactoryInterface::class => new Psr17Factory(),
-                EventDispatcherInterface::class => $eventDispatcher
+                EventDispatcherInterface::class => $eventDispatcher,
             ]
         );
     }

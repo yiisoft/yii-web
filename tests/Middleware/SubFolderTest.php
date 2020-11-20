@@ -180,6 +180,7 @@ class SubFolderTest extends TestCase
     {
         $handler = new class() implements RequestHandlerInterface {
             public ?ServerRequestInterface $request = null;
+
             public function handle(ServerRequestInterface $request): ResponseInterface
             {
                 $this->request = $request;
