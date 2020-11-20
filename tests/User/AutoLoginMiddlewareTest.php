@@ -117,7 +117,7 @@ final class AutoLoginMiddlewareTest extends TestCase
         );
         $request = $this->getRequestWithCookies(
             [
-                'autoLogin' => json_encode([AutoLoginIdentity::ID, AutoLoginIdentity::KEY_CORRECT, 'weird stuff'])
+                'autoLogin' => json_encode([AutoLoginIdentity::ID, AutoLoginIdentity::KEY_CORRECT, 'weird stuff']),
             ]
         );
 
@@ -342,11 +342,14 @@ final class AutoLoginMiddlewareTest extends TestCase
 
     /**
      * Gets an inaccessible object property.
+     *
      * @param $object
      * @param $propertyName
      * @param bool $revoke whether to make property inaccessible after getting
-     * @return mixed
+     *
      * @throws \ReflectionException
+     *
+     * @return mixed
      */
     private function getInaccessibleProperty($object, $propertyName, bool $revoke = true)
     {

@@ -12,8 +12,8 @@ use Yiisoft\Yii\Web\User\UserAuth;
 return [
     UserAuth::class => [
         '__class' => UserAuth::class,
-        'withAuthUrl()' => [$params['yiisoft/yii-web']['userAuth']['authUrl']]
+        'withAuthUrl()' => [$params['yiisoft/yii-web']['userAuth']['authUrl']],
     ],
 
-    AuthenticationMethodInterface::class => UserAuth::class
+    AuthenticationMethodInterface::class => UserAuth::class,
 ];

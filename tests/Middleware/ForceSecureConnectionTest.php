@@ -25,6 +25,7 @@ final class ForceSecureConnectionTest extends TestCase
 
         $this->assertNotSame($middleware, $new);
     }
+
     public function testWithHSTSImmutability(): void
     {
         $middleware = new ForceSecureConnection(new Psr17Factory());
@@ -32,6 +33,7 @@ final class ForceSecureConnectionTest extends TestCase
 
         $this->assertNotSame($middleware, $new);
     }
+
     public function testWithRedirectionImmutability(): void
     {
         $middleware = new ForceSecureConnection(new Psr17Factory());
@@ -39,6 +41,7 @@ final class ForceSecureConnectionTest extends TestCase
 
         $this->assertNotSame($middleware, $new);
     }
+
     public function testWithoutCSPImmutability(): void
     {
         $middleware = new ForceSecureConnection(new Psr17Factory());
@@ -46,6 +49,7 @@ final class ForceSecureConnectionTest extends TestCase
 
         $this->assertNotSame($middleware, $new);
     }
+
     public function testWithoutHSTSImmutability(): void
     {
         $middleware = new ForceSecureConnection(new Psr17Factory());
@@ -53,6 +57,7 @@ final class ForceSecureConnectionTest extends TestCase
 
         $this->assertNotSame($middleware, $new);
     }
+
     public function testWithoutRedirectionImmutability(): void
     {
         $middleware = new ForceSecureConnection(new Psr17Factory());
@@ -78,6 +83,7 @@ final class ForceSecureConnectionTest extends TestCase
         $this->assertSame(Status::SEE_OTHER, $response->getStatusCode());
         $this->assertSame('https://test.org/index.php', $response->getHeaderLine(Header::LOCATION));
     }
+
     public function testWithHSTS(): void
     {
         $middleware = (new ForceSecureConnection(new Psr17Factory()))
@@ -93,6 +99,7 @@ final class ForceSecureConnectionTest extends TestCase
         $this->assertTrue($response->hasHeader(Header::STRICT_TRANSPORT_SECURITY));
         $this->assertSame('max-age=42; includeSubDomains', $response->getHeaderLine(Header::STRICT_TRANSPORT_SECURITY));
     }
+
     public function testWithHSTSNoSubdomains(): void
     {
         $middleware = (new ForceSecureConnection(new Psr17Factory()))
@@ -108,6 +115,7 @@ final class ForceSecureConnectionTest extends TestCase
         $this->assertTrue($response->hasHeader(Header::STRICT_TRANSPORT_SECURITY));
         $this->assertSame('max-age=1440', $response->getHeaderLine(Header::STRICT_TRANSPORT_SECURITY));
     }
+
     public function testWithCSP(): void
     {
         $middleware = (new ForceSecureConnection(new Psr17Factory()))
@@ -122,6 +130,7 @@ final class ForceSecureConnectionTest extends TestCase
         $this->assertTrue($handler->isCalled);
         $this->assertTrue($response->hasHeader(Header::CONTENT_SECURITY_POLICY));
     }
+
     public function testWithCSPCustomDirectives(): void
     {
         $middleware = (new ForceSecureConnection(new Psr17Factory()))
@@ -140,6 +149,7 @@ final class ForceSecureConnectionTest extends TestCase
             'default-src https:; report-uri /csp-violation-report-endpoint/'
         );
     }
+
     public function testSecurityHeadersOnRedirection(): void
     {
         $middleware = (new ForceSecureConnection(new Psr17Factory()))
@@ -169,6 +179,7 @@ final class ForceSecureConnectionTest extends TestCase
 
         $this->assertFalse($response->hasHeader(Header::LOCATION));
     }
+
     public function testWithoutCSP(): void
     {
         $middleware = (new ForceSecureConnection(new Psr17Factory()))->withoutCSP();
@@ -179,6 +190,7 @@ final class ForceSecureConnectionTest extends TestCase
 
         $this->assertFalse($response->hasHeader(Header::CONTENT_SECURITY_POLICY));
     }
+
     public function testWithoutHSTS(): void
     {
         $middleware = (new ForceSecureConnection(new Psr17Factory()))->withoutHSTS();
@@ -195,6 +207,7 @@ final class ForceSecureConnectionTest extends TestCase
     {
         return new class() implements RequestHandlerInterface {
             public bool $isCalled = false;
+
             public function handle(ServerRequestInterface $request): ResponseInterface
             {
                 $this->isCalled = true;
@@ -202,6 +215,7 @@ final class ForceSecureConnectionTest extends TestCase
             }
         };
     }
+
     private function createServerRequest(): ServerRequestInterface
     {
         return (new Psr17Factory())->createServerRequest(Method::GET, 'https://test.org/index.php');
