@@ -19,7 +19,7 @@ final class SapiEmitter
         Status::PROCESSING,
         Status::NO_CONTENT,
         Status::RESET_CONTENT,
-        Status::NOT_MODIFIED
+        Status::NOT_MODIFIED,
     ];
 
     private const DEFAULT_BUFFER_SIZE = 8_388_608; // 8MB
