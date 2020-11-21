@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\Web\Tests\Middleware;
 
+use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Yii\Web\Middleware\TagRequest;
-use PHPUnit\Framework\TestCase;
 
 class TagRequestTest extends TestCase
 {

@@ -58,7 +58,7 @@ final class HttpCache implements MiddlewareInterface
     private bool $weakEtag = false;
 
     /**
-     * @var mixed additional parameters that should be passed to the {@see $lastModified} and {@see etagSeed} callbacks.
+     * @var mixed additional parameters that should be passed to the {@see} and {@see etagSeed} callbacks.
      */
     private $params;
 
