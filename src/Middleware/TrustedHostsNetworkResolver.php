@@ -94,6 +94,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
      * @param string[] $portHeaders List of headers containing port number.
      * @param string[]|null $trustedHeaders List of trusted headers. Removed from the request, if in checking process
      * are classified as untrusted by hosts.
+     *
      * @return static
      */
     public function withAddedTrustedHosts(
@@ -184,6 +185,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
      * The list starts with the server and the last item is the client itself.
      *
      * @return static
+     *
      * @see getElementsByRfc7239
      */
     public function withAttributeIps(?string $attribute): self
@@ -344,6 +346,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
      * @param array $hostDataListValidated
      * @param array $hostDataListRemaining
      * @param RequestInterface $request
+     *
      * @return array|null reverse obfuscated host data or null.
      * In case of null data is discarded and the process continues with the next portion of host data.
      * If the return value is an array, it must contain at least the `ip` key.
@@ -445,6 +448,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
      * - `httpHost`: HTTP host received by proxy (only if presented)
      *
      * @link https://tools.ietf.org/html/rfc7239
+     *
      * @return array proxy data elements
      */
     private function getElementsByRfc7239(array $forwards): array

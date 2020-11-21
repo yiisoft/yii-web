@@ -46,6 +46,7 @@ final class MiddlewareDispatcher
 
     /**
      * @param callable|MiddlewareInterface $middleware
+     *
      * @return self
      */
     public function addMiddleware($middleware): self

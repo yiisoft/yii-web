@@ -113,6 +113,6 @@ class HTTPFunctions
      */
     public static function hasHeader(string $header): bool
     {
-        return key_exists(strtolower($header), self::$headers);
+        return array_key_exists(strtolower($header), self::$headers);
     }
 }

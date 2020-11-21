@@ -39,6 +39,7 @@ class ErrorException extends \ErrorException implements FriendlyExceptionInterfa
      * Returns if error is one of fatal type.
      *
      * @param array $error error got from error_get_last()
+     *
      * @return bool if error is one of fatal type
      */
     public static function isFatalError(array $error): bool
@@ -57,6 +58,7 @@ class ErrorException extends \ErrorException implements FriendlyExceptionInterfa
     /**
      * Fatal errors normally do not provide any trace making it harder to debug. In case XDebug is installed, we
      * can get a trace using xdebug_get_function_stack().
+     *
      * @suppress PhanUndeclaredFunction
      */
     private function addXDebugTraceToFatalIfAvailable(): void

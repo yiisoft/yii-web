@@ -132,7 +132,7 @@ class ErrorCatcherTest extends TestCase
     {
         return new Container(
             [
-                $id => new MockThrowableRenderer($expectedOutput)
+                $id => new MockThrowableRenderer($expectedOutput),
             ]
         );
     }

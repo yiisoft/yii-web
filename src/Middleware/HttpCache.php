@@ -64,6 +64,7 @@ final class HttpCache implements MiddlewareInterface
 
     /**
      * @var string the value of the `Cache-Control` HTTP header. If null, the header will not be sent.
+     *
      * @see http://tools.ietf.org/html/rfc2616#section-14.9
      */
     private ?string $cacheControlHeader = self::DEFAULT_HEADER;
@@ -118,10 +119,12 @@ final class HttpCache implements MiddlewareInterface
     /**
      * Validates if the HTTP cache contains valid content.
      * If both Last-Modified and ETag are null, returns false.
+     *
      * @param ServerRequestInterface $request
      * @param int|null $lastModified the calculated Last-Modified value in terms of a UNIX timestamp.
      * If null, the Last-Modified header will not be validated.
      * @param string|null $etag the calculated ETag value. If null, the ETag header will not be validated.
+     *
      * @return bool whether the HTTP cache is still valid.
      */
     private function validateCache(ServerRequestInterface $request, ?int $lastModified, ?string $etag): bool
@@ -142,7 +145,9 @@ final class HttpCache implements MiddlewareInterface
 
     /**
      * Generates an ETag from the given seed string.
+     *
      * @param string $seed Seed for the ETag
+     *
      * @return string the generated ETag
      */
     private function generateEtag(string $seed): string
@@ -155,6 +160,7 @@ final class HttpCache implements MiddlewareInterface
      * Gets the Etags.
      *
      * @param ServerRequestInterface $request
+     *
      * @return array The entity tags
      */
     private function getETags(ServerRequestInterface $request): array

@@ -95,10 +95,13 @@ final class HtmlRenderer extends ThrowableRenderer
 
     /**
      * Renders the previous exception stack for a given Exception.
+     *
      * @param \Throwable $t the exception whose precursors should be rendered.
+     *
+     * @throws \Throwable
+     *
      * @return string HTML content of the rendered previous exceptions.
      * Empty string if there are none.
-     * @throws \Throwable
      */
     public function renderPreviousExceptions(\Throwable $t): string
     {
@@ -111,14 +114,17 @@ final class HtmlRenderer extends ThrowableRenderer
 
     /**
      * Renders a single call stack element.
+     *
      * @param string|null $file name where call has happened.
      * @param int|null $line number on which call has happened.
      * @param string|null $class called class name.
      * @param string|null $method called function/method name.
      * @param array $args array of method arguments.
      * @param int $index number of the call stack element.
-     * @return string HTML content of the rendered call stack element.
+     *
      * @throws \Throwable
+     *
+     * @return string HTML content of the rendered call stack element.
      */
     private function renderCallStackItem(?string $file, ?int $line, ?string $class, ?string $method, array $args, int $index): string
     {
@@ -150,9 +156,12 @@ final class HtmlRenderer extends ThrowableRenderer
 
     /**
      * Renders call stack.
+     *
      * @param \Throwable $t exception to get call stack from
-     * @return string HTML content of the rendered call stack.
+     *
      * @throws \Throwable
+     *
+     * @return string HTML content of the rendered call stack.
      */
     public function renderCallStack(\Throwable $t): string
     {
@@ -175,7 +184,9 @@ final class HtmlRenderer extends ThrowableRenderer
 
     /**
      * Determines whether given name of the file belongs to the framework.
+     *
      * @param string|null $file name to be checked.
+     *
      * @return bool whether given name of the file belongs to the framework.
      */
     public function isCoreFile(?string $file): bool
@@ -185,8 +196,10 @@ final class HtmlRenderer extends ThrowableRenderer
 
     /**
      * Adds informational links to the given PHP type/class.
+     *
      * @param string $code type/class name to be linkified.
      * @param string|null $title custom title to use
+     *
      * @return string linkified with HTML type/class name.
      */
     private function addTypeLinks(string $code, string $title = null): string
@@ -225,9 +238,12 @@ final class HtmlRenderer extends ThrowableRenderer
 
     /**
      * Returns the informational link URL for a given PHP type/class.
+     *
      * @param string|null $class the type or class name.
      * @param string|null $method the method name.
+     *
      * @return string|null the informational link URL.
+     *
      * @see addTypeLinks()
      */
     private function getTypeUrl(?string $class, ?string $method): ?string
@@ -247,6 +263,7 @@ final class HtmlRenderer extends ThrowableRenderer
      * Converts arguments array to its string representation.
      *
      * @param array $args arguments array to be converted
+     *
      * @return string string representation of the arguments array
      */
     public function argumentsToString(array $args): string
@@ -298,6 +315,7 @@ final class HtmlRenderer extends ThrowableRenderer
 
     /**
      * Renders the information about request.
+     *
      * @return string the rendering result
      */
     public function renderRequest(): string
@@ -335,10 +353,10 @@ final class HtmlRenderer extends ThrowableRenderer
         return $this->htmlEncode($output);
     }
 
-
     /**
      * Creates string containing HTML link which refers to the home page of determined web-server software
      * and its full name.
+     *
      * @return string server software information hyperlink.
      */
     public function createServerInformationLink(): string
@@ -375,6 +393,7 @@ final class HtmlRenderer extends ThrowableRenderer
     /**
      * Creates string containing HTML link which refers to the page with the current version
      * of the framework and version number text.
+     *
      * @return string framework version information hyperlink.
      */
     public function createFrameworkVersionLink(): string

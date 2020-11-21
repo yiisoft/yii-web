@@ -73,7 +73,9 @@ final class ErrorCatcher implements MiddlewareInterface
 
     /**
      * Force content type to respond with regardless of request
+     *
      * @param string $contentType
+     *
      * @return $this
      */
     public function forceContentType(string $contentType): self

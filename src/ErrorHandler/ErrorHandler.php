@@ -58,6 +58,7 @@ final class ErrorHandler implements LoggerAwareInterface
      *
      * @param \Throwable $t
      * @param ThrowableRendererInterface|null $renderer
+     *
      * @return string
      */
     public function handleCaughtThrowable(\Throwable $t, ThrowableRendererInterface $renderer = null): string

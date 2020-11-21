@@ -15,6 +15,7 @@ interface ThrowableRendererInterface
      * Convert throwable into its string representation suitable for displaying in production environment
      *
      * @param \Throwable $t
+     *
      * @return string
      */
     public function render(\Throwable $t): string;
@@ -23,6 +24,7 @@ interface ThrowableRendererInterface
      * Convert throwable into its string representation suitable for displaying in development environment
      *
      * @param \Throwable $t
+     *
      * @return string
      */
     public function renderVerbose(\Throwable $t): string;
