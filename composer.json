@@ -29,20 +29,13 @@
         "psr/http-message-implementation": "1.0",
         "psr/http-server-handler": "^1.0",
         "psr/http-server-middleware": "^1.0",
-        "yiisoft/access": "^1.0",
         "yiisoft/aliases": "^1.1.1",
-        "yiisoft/auth": "^1.0",
-        "yiisoft/cookies": "^3.0@dev",
         "yiisoft/friendly-exception": "^1.0",
         "yiisoft/http": "^1.0",
         "yiisoft/injector": "^1.0",
         "yiisoft/network-utilities": "^3.0@dev",
         "yiisoft/router": "^3.0@dev",
-        "yiisoft/security": "^1.0",
-        "yiisoft/serializer": "^3.0@dev",
-        "yiisoft/session": "^3.0@dev",
-        "yiisoft/validator": "^3.0@dev",
-        "yiisoft/yii-event": "^3.0@dev"
+        "yiisoft/validator": "^3.0@dev"
     },
     "require-dev": {
         "nyholm/psr7": "^1.3",
