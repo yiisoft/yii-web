@@ -89,7 +89,7 @@ final class ApplicationTest extends TestCase
     {
         return (new MiddlewareDispatcher(new MiddlewareFactory($container), new MiddlewareStack()))
             ->withMiddlewares([
-                static fn() => new MockMiddleware(400),
+                static fn () => new MockMiddleware(400),
             ]);
     }
 
