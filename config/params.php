@@ -15,10 +15,4 @@ return [
             '@baseUrl' => '/',
         ],
     ],
-
-    'yiisoft/yii-web' => [
-        'userAuth' => [
-            'authUrl' => '/login',
-        ],
-    ],
 ];
