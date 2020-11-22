@@ -7,6 +7,7 @@ namespace Yiisoft\Yii\Web;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Yiisoft\Middleware\Dispatcher\MiddlewareDispatcher;
 use Yiisoft\Yii\Web\Event\AfterEmit;
 use Yiisoft\Yii\Web\Event\AfterRequest;
 use Yiisoft\Yii\Web\Event\ApplicationShutdown;
@@ -22,13 +23,16 @@ final class Application
 {
     private MiddlewareDispatcher $dispatcher;
     private EventDispatcherInterface $eventDispatcher;
+    private NotFoundHandler $notFoundHandler;
 
     public function __construct(
         MiddlewareDispatcher $dispatcher,
-        EventDispatcherInterface $eventDispatcher
+        EventDispatcherInterface $eventDispatcher,
+        NotFoundHandler $notFoundHandler
     ) {
         $this->dispatcher = $dispatcher;
         $this->eventDispatcher = $eventDispatcher;
+        $this->notFoundHandler = $notFoundHandler;
     }
 
     public function start(): void
@@ -49,7 +53,7 @@ final class Application
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $this->eventDispatcher->dispatch(new BeforeRequest($request));
-        $response = $this->dispatcher->dispatch($request);
+        $response = $this->dispatcher->dispatch($request, $this->notFoundHandler);
         $this->eventDispatcher->dispatch(new AfterRequest($response));
         return $response;
     }
