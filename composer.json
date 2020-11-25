@@ -35,7 +35,8 @@
         "yiisoft/injector": "^1.0",
         "yiisoft/network-utilities": "^3.0@dev",
         "yiisoft/router": "^3.0@dev",
-        "yiisoft/validator": "^3.0@dev"
+        "yiisoft/validator": "^3.0@dev",
+        "yiisoft/middleware-dispatcher": "^3.0@dev"
     },
     "require-dev": {
         "nyholm/psr7": "^1.3",
