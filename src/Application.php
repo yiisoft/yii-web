@@ -15,7 +15,6 @@ use Yiisoft\Yii\Web\Event\ApplicationShutdown;
 use Yiisoft\Yii\Web\Event\ApplicationStartup;
 use Yiisoft\Yii\Web\Event\BeforeRequest;
 
-
 /**
  * Application is the entry point for a web application.
  * For more details and usage information on Application, see the [guide article on
