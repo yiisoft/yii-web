@@ -16,11 +16,9 @@ use Yiisoft\Middleware\Dispatcher\MiddlewareFactory;
 use Yiisoft\Middleware\Dispatcher\MiddlewareStack;
 use Yiisoft\Yii\Web\Application;
 use Yiisoft\Yii\Web\Event\AfterEmit;
-use Yiisoft\Yii\Web\Event\AfterMiddleware;
 use Yiisoft\Yii\Web\Event\AfterRequest;
 use Yiisoft\Yii\Web\Event\ApplicationShutdown;
 use Yiisoft\Yii\Web\Event\ApplicationStartup;
-use Yiisoft\Yii\Web\Event\BeforeMiddleware;
 use Yiisoft\Yii\Web\Event\BeforeRequest;
 use Yiisoft\Yii\Web\NotFoundHandler;
 use Yiisoft\Yii\Web\Tests\Mock\MockEventDispatcher;
@@ -65,8 +63,6 @@ final class ApplicationTest extends TestCase
         $this->assertEquals(
             [
                 BeforeRequest::class,
-                BeforeMiddleware::class,
-                AfterMiddleware::class,
                 AfterRequest::class,
             ],
             $eventDispatcher->getClassesEvents()
@@ -87,7 +83,7 @@ final class ApplicationTest extends TestCase
 
     private function createMiddlewareDispatcher(Container $container): MiddlewareDispatcher
     {
-        return (new MiddlewareDispatcher(new MiddlewareFactory($container), new MiddlewareStack()))
+        return (new MiddlewareDispatcher(new MiddlewareFactory($container), new MiddlewareStack($container->get(EventDispatcherInterface::class))))
             ->withMiddlewares([
                 static fn () => new MockMiddleware(400),
             ]);
