@@ -18,7 +18,7 @@ class MockEventDispatcher implements EventDispatcherInterface
     public function getClassesEvents(): array
     {
         return array_map(
-            fn ($event) => get_class($event),
+            static fn ($event) => get_class($event),
             $this->events
         );
     }
