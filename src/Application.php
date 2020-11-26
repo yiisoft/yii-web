@@ -24,16 +24,16 @@ final class Application
 {
     private MiddlewareDispatcher $dispatcher;
     private EventDispatcherInterface $eventDispatcher;
-    private RequestHandlerInterface $notFoundHandler;
+    private RequestHandlerInterface $fallbackHandler;
 
     public function __construct(
         MiddlewareDispatcher $dispatcher,
         EventDispatcherInterface $eventDispatcher,
-        RequestHandlerInterface $notFoundHandler
+        RequestHandlerInterface $fallbackHandler
     ) {
         $this->dispatcher = $dispatcher;
         $this->eventDispatcher = $eventDispatcher;
-        $this->notFoundHandler = $notFoundHandler;
+        $this->fallbackHandler = $fallbackHandler;
     }
 
     public function start(): void
@@ -54,7 +54,7 @@ final class Application
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $this->eventDispatcher->dispatch(new BeforeRequest($request));
-        $response = $this->dispatcher->dispatch($request, $this->notFoundHandler);
+        $response = $this->dispatcher->dispatch($request, $this->fallbackHandler);
         $this->eventDispatcher->dispatch(new AfterRequest($response));
         return $response;
     }
