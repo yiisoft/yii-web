@@ -7,12 +7,14 @@ namespace Yiisoft\Yii\Web;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Middleware\Dispatcher\MiddlewareDispatcher;
 use Yiisoft\Yii\Web\Event\AfterEmit;
 use Yiisoft\Yii\Web\Event\AfterRequest;
 use Yiisoft\Yii\Web\Event\ApplicationShutdown;
 use Yiisoft\Yii\Web\Event\ApplicationStartup;
 use Yiisoft\Yii\Web\Event\BeforeRequest;
+
 
 /**
  * Application is the entry point for a web application.
@@ -23,12 +25,12 @@ final class Application
 {
     private MiddlewareDispatcher $dispatcher;
     private EventDispatcherInterface $eventDispatcher;
-    private NotFoundHandler $notFoundHandler;
+    private RequestHandlerInterface $notFoundHandler;
 
     public function __construct(
         MiddlewareDispatcher $dispatcher,
         EventDispatcherInterface $eventDispatcher,
-        NotFoundHandler $notFoundHandler
+        RequestHandlerInterface $notFoundHandler
     ) {
         $this->dispatcher = $dispatcher;
         $this->eventDispatcher = $eventDispatcher;
