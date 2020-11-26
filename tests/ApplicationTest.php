@@ -11,8 +11,6 @@ use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Yiisoft\Di\Container;
-use Yiisoft\Middleware\Dispatcher\Event\AfterMiddleware;
-use Yiisoft\Middleware\Dispatcher\Event\BeforeMiddleware;
 use Yiisoft\Middleware\Dispatcher\MiddlewareDispatcher;
 use Yiisoft\Middleware\Dispatcher\MiddlewareFactory;
 use Yiisoft\Middleware\Dispatcher\MiddlewareStack;
@@ -65,8 +63,6 @@ final class ApplicationTest extends TestCase
         $this->assertEquals(
             [
                 BeforeRequest::class,
-                BeforeMiddleware::class,
-                AfterMiddleware::class,
                 AfterRequest::class,
             ],
             $eventDispatcher->getClassesEvents()
