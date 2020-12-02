@@ -52,12 +52,12 @@ final class SapiEmitter
         }
 
         // we can't send headers if they are already sent
-        if (\headers_sent()) {
+        if (headers_sent()) {
             throw new HeadersHaveBeenSentException();
         }
-        \header_remove();
+        header_remove();
         // send HTTP Status-Line
-        \header(\sprintf(
+        header(\sprintf(
             'HTTP/%s %d %s',
             $response->getProtocolVersion(),
             $status,
@@ -67,7 +67,7 @@ final class SapiEmitter
         foreach ($response->getHeaders() as $header => $values) {
             $replaceFirst = \strtolower($header) !== 'set-cookie';
             foreach ($values as $value) {
-                \header("{$header}: {$value}", $replaceFirst);
+                header("{$header}: {$value}", $replaceFirst);
                 $replaceFirst = false;
             }
         }
@@ -76,7 +76,7 @@ final class SapiEmitter
             if (!$withoutContentLength && !$response->hasHeader('Content-Length')) {
                 $contentLength = $response->getBody()->getSize();
                 if ($contentLength !== null) {
-                    \header("Content-Length: {$contentLength}", true);
+                    header("Content-Length: {$contentLength}", true);
                 }
             }
 
