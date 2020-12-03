@@ -20,7 +20,6 @@
         "php": "^7.4|^8.0",
         "ext-dom": "*",
         "ext-json": "*",
-        "psr/container": "1.0.0",
         "psr/container-implementation": "1.0.0",
         "psr/event-dispatcher": "^1.0",
         "psr/http-factory": "^1.0",
@@ -32,7 +31,6 @@
         "yiisoft/aliases": "^1.1.1",
         "yiisoft/friendly-exception": "^1.0",
         "yiisoft/http": "^1.0",
-        "yiisoft/injector": "^1.0",
         "yiisoft/middleware-dispatcher": "^1.0@dev",
         "yiisoft/network-utilities": "^3.0@dev",
         "yiisoft/router": "^3.0@dev",
@@ -44,11 +42,8 @@
         "roave/infection-static-analysis-plugin": "^1.6",
         "spatie/phpunit-watcher": "^1.23",
         "vimeo/psalm": "^4.2",
-        "yiisoft/cache": "^3.0@dev",
         "yiisoft/composer-config-plugin": "^1.0@dev",
-        "yiisoft/di": "^3.0@dev",
-        "yiisoft/log": "^3.0@dev",
-        "yiisoft/router-fastroute": "^3.0@dev"
+        "yiisoft/di": "^3.0@dev"
     },
     "provide": {
         "psr/http-message-implementation": "1.0"
