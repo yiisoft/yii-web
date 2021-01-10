@@ -9,7 +9,11 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Throwable;
 use Yiisoft\Injector\Injector;
+
+use function is_int;
+use function is_callable;
 
 class ExceptionResponder implements MiddlewareInterface
 {
@@ -19,7 +23,8 @@ class ExceptionResponder implements MiddlewareInterface
 
     /**
      * @param int[]|callable[] $exceptionMap Closure must return ResponseInterface
-     * @psalm-param array{string, int|callable}
+     * @param ResponseFactoryInterface $responseFactory
+     * @param Injector $injector
      */
     public function __construct(array $exceptionMap, ResponseFactoryInterface $responseFactory, Injector $injector)
     {
@@ -32,7 +37,7 @@ class ExceptionResponder implements MiddlewareInterface
     {
         try {
             return $handler->handle($request);
-        } catch (\Throwable $t) {
+        } catch (Throwable $t) {
             foreach ($this->exceptionMap as $exceptionType => $responseHandler) {
                 if ($t instanceof $exceptionType) {
                     if (is_int($responseHandler)) {
