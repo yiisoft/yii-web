@@ -22,7 +22,7 @@ class ExceptionResponder implements MiddlewareInterface
     private Injector $injector;
 
     /**
-     * @param int[]|callable[] $exceptionMap Closure must return ResponseInterface
+     * @param callable[]|int[] $exceptionMap Closure must return ResponseInterface
      * @param ResponseFactoryInterface $responseFactory
      * @param Injector $injector
      */
