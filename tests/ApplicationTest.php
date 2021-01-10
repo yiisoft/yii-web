@@ -11,15 +11,18 @@ use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Yiisoft\Di\Container;
+use Yiisoft\Middleware\Dispatcher\Event\AfterMiddleware;
+use Yiisoft\Middleware\Dispatcher\Event\BeforeMiddleware;
+use Yiisoft\Middleware\Dispatcher\MiddlewareDispatcher;
+use Yiisoft\Middleware\Dispatcher\MiddlewareFactory;
+use Yiisoft\Middleware\Dispatcher\MiddlewareStack;
 use Yiisoft\Yii\Web\Application;
 use Yiisoft\Yii\Web\Event\AfterEmit;
-use Yiisoft\Yii\Web\Event\AfterMiddleware;
 use Yiisoft\Yii\Web\Event\AfterRequest;
 use Yiisoft\Yii\Web\Event\ApplicationShutdown;
 use Yiisoft\Yii\Web\Event\ApplicationStartup;
-use Yiisoft\Yii\Web\Event\BeforeMiddleware;
 use Yiisoft\Yii\Web\Event\BeforeRequest;
-use Yiisoft\Yii\Web\MiddlewareDispatcher;
+use Yiisoft\Yii\Web\NotFoundHandler;
 use Yiisoft\Yii\Web\Tests\Mock\MockEventDispatcher;
 use Yiisoft\Yii\Web\Tests\Mock\MockMiddleware;
 
@@ -64,8 +67,7 @@ final class ApplicationTest extends TestCase
                 BeforeRequest::class,
                 BeforeMiddleware::class,
                 AfterMiddleware::class,
-                AfterRequest::class
-
+                AfterRequest::class,
             ],
             $eventDispatcher->getClassesEvents()
         );
@@ -78,16 +80,17 @@ final class ApplicationTest extends TestCase
             $this->createMiddlewareDispatcher(
                 $this->createContainer($eventDispatcher)
             ),
-            $eventDispatcher
+            $eventDispatcher,
+            new NotFoundHandler(new Psr17Factory())
         );
     }
 
     private function createMiddlewareDispatcher(Container $container): MiddlewareDispatcher
     {
-        return (new MiddlewareDispatcher($container))
-            ->addMiddleware(
-                new MockMiddleware(400)
-            );
+        return (new MiddlewareDispatcher(new MiddlewareFactory($container), new MiddlewareStack($container->get(EventDispatcherInterface::class))))
+            ->withMiddlewares([
+                static fn () => new MockMiddleware(400),
+            ]);
     }
 
     private function createContainer(EventDispatcherInterface $eventDispatcher): Container
@@ -95,7 +98,7 @@ final class ApplicationTest extends TestCase
         return new Container(
             [
                 ResponseFactoryInterface::class => new Psr17Factory(),
-                EventDispatcherInterface::class => $eventDispatcher
+                EventDispatcherInterface::class => $eventDispatcher,
             ]
         );
     }

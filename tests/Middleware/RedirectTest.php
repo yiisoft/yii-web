@@ -75,7 +75,7 @@ final class RedirectTest extends TestCase
             ->toUrl('test/custom/route');
 
         $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
-        $header   = $response->getHeader('Location');
+        $header = $response->getHeader('Location');
 
         $this->assertSame($header[0], 'test/custom/route');
     }

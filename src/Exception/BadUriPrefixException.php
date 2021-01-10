@@ -12,6 +12,7 @@ class BadUriPrefixException extends \Exception implements FriendlyExceptionInter
     {
         return 'Bad URI prefix';
     }
+
     public function getSolution(): ?string
     {
         return "Most likely you have specified the wrong URI prefix.\n"

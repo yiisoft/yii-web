@@ -19,6 +19,7 @@ final class NotFoundHandler implements RequestHandlerInterface
 
     /**
      * NotFoundHandler constructor.
+     *
      * @param ResponseFactoryInterface $responseFactory
      */
     public function __construct(ResponseFactoryInterface $responseFactory)

@@ -22,12 +22,12 @@ class IpFilterTest extends TestCase
     private const ALLOWED_IP = '1.1.1.1';
 
     /**
-     * @var ResponseFactory|\PHPUnit\Framework\MockObject\MockObject
+     * @var \PHPUnit\Framework\MockObject\MockObject|ResponseFactory
      */
     private $responseFactoryMock;
 
     /**
-     * @var RequestHandlerInterface|\PHPUnit\Framework\MockObject\MockObject
+     * @var \PHPUnit\Framework\MockObject\MockObject|RequestHandlerInterface
      */
     private $requestHandlerMock;
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Yii\Web\Helper;
 
 final class HeaderHelper
@@ -35,7 +37,9 @@ final class HeaderHelper
      *
      * @link https://www.rfc-editor.org/rfc/rfc2616.html#section-3.6
      * transfer-extension      = token *( ";" parameter )
+     *
      * @param string $headerValue
+     *
      * @return array first element is the value, and key-value are the parameters
      */
     public static function getValueAndParameters(string $headerValue, bool $lowerCaseValue = true, bool $lowerCaseParameter = true, bool $lowerCaseParameterValue = true): array
@@ -97,7 +101,9 @@ final class HeaderHelper
 
     /**
      * Getting header value as q factor sorted list
+     *
      * @param string|string[] $values Header value as a comma-separated string or already exploded string array.
+     *
      * @see getValueAndParameters
      * @link https://developer.mozilla.org/en-US/docs/Glossary/Quality_values
      * @link https://www.ietf.org/rfc/rfc2045.html#section-2
@@ -140,8 +146,10 @@ final class HeaderHelper
 
     /**
      * @param $values string|string[] $values Header value as a comma-separated string or already exploded string array
+     *
      * @return string[] sorted accept types. Note: According to RFC 7231, special parameters (except the q factor) are
      *                  added to the type, which are always appended by a semicolon and sorted by string.
+     *
      * @link https://tools.ietf.org/html/rfc7231#section-5.3.2
      * @link https://www.ietf.org/rfc/rfc2045.html#section-2
      */
@@ -186,7 +194,7 @@ final class HeaderHelper
             }
             // Parameters are sorted for easier use of parameter variations.
             asort($value, SORT_STRING);
-            $output[$key] = $type . ';' . join(';', $value);
+            $output[$key] = $type . ';' . implode(';', $value);
         }
         return $output;
     }
