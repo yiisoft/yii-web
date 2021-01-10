@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\Web\Tests\Middleware\ExceptionResponder;
+namespace Yiisoft\Yii\Web\Tests\Middleware;
 
+use DomainException;
 use InvalidArgumentException;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use PHPUnit\Framework\TestCase;
@@ -22,7 +23,7 @@ final class ExceptionResponderTest extends TestCase
     public function testCode(): void
     {
         $middleware = $this->createMiddleware([
-            TestException::class => Status::BAD_REQUEST,
+            DomainException::class => Status::BAD_REQUEST,
         ]);
 
         $this->assertSame(Status::BAD_REQUEST, $this->process($middleware)->getStatusCode());
@@ -31,7 +32,7 @@ final class ExceptionResponderTest extends TestCase
     public function testCallable(): void
     {
         $middleware = $this->createMiddleware([
-            TestException::class => function (ResponseFactoryInterface $responseFactory) {
+            DomainException::class => function (ResponseFactoryInterface $responseFactory) {
                 return $responseFactory->createResponse(Status::CREATED);
             },
         ]);
@@ -45,7 +46,7 @@ final class ExceptionResponderTest extends TestCase
             InvalidArgumentException::class => Status::BAD_REQUEST,
         ]);
 
-        $this->expectException(TestException::class);
+        $this->expectException(DomainException::class);
         $this->process($middleware);
     }
 
@@ -56,7 +57,7 @@ final class ExceptionResponderTest extends TestCase
             new class() implements RequestHandlerInterface {
                 public function handle(ServerRequestInterface $request): ResponseInterface
                 {
-                    throw new TestException();
+                    throw new DomainException();
                 }
             }
         );
