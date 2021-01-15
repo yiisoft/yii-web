@@ -43,7 +43,8 @@
         "spatie/phpunit-watcher": "^1.23",
         "vimeo/psalm": "^4.2",
         "yiisoft/composer-config-plugin": "^1.0@dev",
-        "yiisoft/di": "^3.0@dev"
+        "yiisoft/di": "^3.0@dev",
+        "yiisoft/router-fastroute": "^3.0@dev"
     },
     "provide": {
         "psr/http-message-implementation": "1.0"
