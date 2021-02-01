@@ -14,7 +14,7 @@ use function sprintf;
 use function strtolower;
 
 /**
- * SapiEmitter sends a response using PHP Server API
+ * SapiEmitter sends a response using PHP Server API.
  */
 final class SapiEmitter
 {
@@ -34,7 +34,7 @@ final class SapiEmitter
     public function __construct(int $bufferSize = null)
     {
         if ($bufferSize !== null && $bufferSize <= 0) {
-            throw new InvalidArgumentException('Buffer size must be greater than zero');
+            throw new InvalidArgumentException('Buffer size must be greater than zero.');
         }
         $this->bufferSize = $bufferSize ?? self::DEFAULT_BUFFER_SIZE;
     }
@@ -46,10 +46,8 @@ final class SapiEmitter
      * @param bool $withoutBody If body should be ignored.
      *
      * @throws HeadersHaveBeenSentException
-     *
-     * @return bool
      */
-    public function emit(ResponseInterface $response, bool $withoutBody = false): bool
+    public function emit(ResponseInterface $response, bool $withoutBody = false): void
     {
         $status = $response->getStatusCode();
         $withoutBody = $withoutBody || !$this->shouldOutputBody($response);
@@ -58,19 +56,21 @@ final class SapiEmitter
             $response = $response->withoutHeader('Content-Length');
         }
 
-        // we can't send headers if they are already sent
+        // We can't send headers if they are already sent.
         if (headers_sent()) {
             throw new HeadersHaveBeenSentException();
         }
         header_remove();
-        // send HTTP Status-Line
+
+        // Send HTTP Status-Line.
         header(sprintf(
             'HTTP/%s %d %s',
             $response->getProtocolVersion(),
             $status,
             $response->getReasonPhrase()
         ), true, $status);
-        // send headers
+
+        // Send headers.
         foreach ($response->getHeaders() as $header => $values) {
             $replaceFirst = strtolower($header) !== 'set-cookie';
             foreach ($values as $value) {
@@ -89,8 +89,6 @@ final class SapiEmitter
 
             $this->emitBody($response);
         }
-
-        return true;
     }
 
     private function emitBody(ResponseInterface $response): void
@@ -110,7 +108,7 @@ final class SapiEmitter
         if (in_array($response->getStatusCode(), self::NO_BODY_RESPONSE_CODES, true)) {
             return false;
         }
-        // check if body is empty
+        // Check if body is empty.
         $body = $response->getBody();
         if (!$body->isReadable()) {
             return false;
