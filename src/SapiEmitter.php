@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\Web;
 
+use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Yiisoft\Http\Status;
 use Yiisoft\Yii\Web\Exception\HeadersHaveBeenSentException;
+use function flush;
+use function in_array;
+use function sprintf;
+use function strtolower;
 
 /**
  * SapiEmitter sends a response using PHP Server API
@@ -26,19 +31,32 @@ final class SapiEmitter
 
     private int $bufferSize;
 
-    public function __construct(?int $bufferSize = null)
+    public function __construct(int $bufferSize = null)
     {
         if ($bufferSize !== null && $bufferSize <= 0) {
-            throw new \InvalidArgumentException('Buffer size must be greater than zero');
+            throw new InvalidArgumentException('Buffer size must be greater than zero');
         }
         $this->bufferSize = $bufferSize ?? self::DEFAULT_BUFFER_SIZE;
     }
 
+    /**
+     * Respond to the client with headers and body.
+     *
+     * @param ResponseInterface $response Response object to send.
+     * @param bool $withoutBody If body should be ignored.
+     *
+     * @throws HeadersHaveBeenSentException
+     *
+     * @return bool
+     */
     public function emit(ResponseInterface $response, bool $withoutBody = false): bool
     {
         $status = $response->getStatusCode();
         $withoutBody = $withoutBody || !$this->shouldOutputBody($response);
         $withoutContentLength = $withoutBody || $response->hasHeader('Transfer-Encoding');
+        if ($withoutContentLength) {
+            $response = $response->withoutHeader('Content-Length');
+        }
 
         // we can't send headers if they are already sent
         if (headers_sent()) {
@@ -52,16 +70,11 @@ final class SapiEmitter
             $status,
             $response->getReasonPhrase()
         ), true, $status);
-        // filter headers
-        $headers = $withoutContentLength
-            ? $response->withoutHeader('Content-Length')
-                       ->getHeaders()
-            : $response->getHeaders();
         // send headers
-        foreach ($headers as $header => $values) {
+        foreach ($response->getHeaders() as $header => $values) {
             $replaceFirst = strtolower($header) !== 'set-cookie';
             foreach ($values as $value) {
-                header(sprintf('%s: %s', $header, $value), $replaceFirst);
+                header("{$header}: {$value}", $replaceFirst);
                 $replaceFirst = false;
             }
         }
@@ -70,7 +83,7 @@ final class SapiEmitter
             if (!$withoutContentLength && !$response->hasHeader('Content-Length')) {
                 $contentLength = $response->getBody()->getSize();
                 if ($contentLength !== null) {
-                    header('Content-Length: ' . $contentLength, true);
+                    header("Content-Length: {$contentLength}", true);
                 }
             }
 
@@ -88,13 +101,13 @@ final class SapiEmitter
         }
         while (!$body->eof()) {
             echo $body->read($this->bufferSize);
-            \flush();
+            flush();
         }
     }
 
     private function shouldOutputBody(ResponseInterface $response): bool
     {
-        if (\in_array($response->getStatusCode(), self::NO_BODY_RESPONSE_CODES, true)) {
+        if (in_array($response->getStatusCode(), self::NO_BODY_RESPONSE_CODES, true)) {
             return false;
         }
         // check if body is empty
