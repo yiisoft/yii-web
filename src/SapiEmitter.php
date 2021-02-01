@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\Web;
 
+use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Yiisoft\Http\Status;
 use Yiisoft\Yii\Web\Exception\HeadersHaveBeenSentException;
+use function flush;
+use function in_array;
+use function sprintf;
+use function strtolower;
 
 /**
  * SapiEmitter sends a response using PHP Server API
@@ -29,14 +34,16 @@ final class SapiEmitter
     public function __construct(int $bufferSize = null)
     {
         if ($bufferSize !== null && $bufferSize <= 0) {
-            throw new \InvalidArgumentException('Buffer size must be greater than zero');
+            throw new InvalidArgumentException('Buffer size must be greater than zero');
         }
         $this->bufferSize = $bufferSize ?? self::DEFAULT_BUFFER_SIZE;
     }
 
     /**
-     * @param ResponseInterface $response
-     * @param bool $withoutBody
+     * Respond to the client with headers and body.
+     *
+     * @param ResponseInterface $response Response object to send.
+     * @param bool $withoutBody If body should be ignored.
      *
      * @throws HeadersHaveBeenSentException
      *
@@ -57,7 +64,7 @@ final class SapiEmitter
         }
         header_remove();
         // send HTTP Status-Line
-        header(\sprintf(
+        header(sprintf(
             'HTTP/%s %d %s',
             $response->getProtocolVersion(),
             $status,
@@ -65,7 +72,7 @@ final class SapiEmitter
         ), true, $status);
         // send headers
         foreach ($response->getHeaders() as $header => $values) {
-            $replaceFirst = \strtolower($header) !== 'set-cookie';
+            $replaceFirst = strtolower($header) !== 'set-cookie';
             foreach ($values as $value) {
                 header("{$header}: {$value}", $replaceFirst);
                 $replaceFirst = false;
@@ -94,13 +101,13 @@ final class SapiEmitter
         }
         while (!$body->eof()) {
             echo $body->read($this->bufferSize);
-            \flush();
+            flush();
         }
     }
 
     private function shouldOutputBody(ResponseInterface $response): bool
     {
-        if (\in_array($response->getStatusCode(), self::NO_BODY_RESPONSE_CODES, true)) {
+        if (in_array($response->getStatusCode(), self::NO_BODY_RESPONSE_CODES, true)) {
             return false;
         }
         // check if body is empty
