@@ -109,7 +109,7 @@ final class ServerRequestFactory
 
         if (isset($server['HTTP_HOST'])) {
             if (1 === \preg_match('/^(.+):(\d+)$/', $server['HTTP_HOST'], $matches)) {
-                $uri = $uri->withHost($matches[1])->withPort($matches[2]);
+                $uri = $uri->withHost($matches[1])->withPort((int) $matches[2]);
             } else {
                 $uri = $uri->withHost($server['HTTP_HOST']);
             }
