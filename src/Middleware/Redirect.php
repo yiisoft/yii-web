@@ -29,33 +29,38 @@ final class Redirect implements MiddlewareInterface
 
     public function toUrl(string $url): self
     {
-        $this->uri = $url;
-        return $this;
+        $new = clone $this;
+        $new->uri = $url;
+        return $new;
     }
 
     public function toRoute(string $name, array $parameters = []): self
     {
-        $this->route = $name;
-        $this->parameters = $parameters;
-        return $this;
+        $new = clone $this;
+        $new->route = $name;
+        $new->parameters = $parameters;
+        return $new;
     }
 
     public function status(int $code): self
     {
-        $this->statusCode = $code;
-        return $this;
+        $new = clone $this;
+        $new->statusCode = $code;
+        return $new;
     }
 
     public function permanent(): self
     {
-        $this->statusCode = Status::MOVED_PERMANENTLY;
-        return $this;
+        $new = clone $this;
+        $new->statusCode = Status::MOVED_PERMANENTLY;
+        return $new;
     }
 
     public function temporary(): self
     {
-        $this->statusCode = Status::SEE_OTHER;
-        return $this;
+        $new = clone $this;
+        $new->statusCode = Status::SEE_OTHER;
+        return $new;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
