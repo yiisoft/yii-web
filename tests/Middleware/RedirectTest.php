@@ -25,7 +25,7 @@ final class RedirectTest extends TestCase
     public function testGenerateUri(): void
     {
         $middleware = $this->createRedirectMiddleware()
-            ->toRoute('test/route', [
+            ->withRoute('test/route', [
                 'param1' => 1,
                 'param2' => 2,
             ]);
@@ -39,7 +39,7 @@ final class RedirectTest extends TestCase
     public function testTemporaryReturnCode303(): void
     {
         $middleware = $this->createRedirectMiddleware()
-            ->toRoute('test/route')
+            ->withRoute('test/route')
             ->temporary();
 
         $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
@@ -50,7 +50,7 @@ final class RedirectTest extends TestCase
     public function testPermanentReturnCode301(): void
     {
         $middleware = $this->createRedirectMiddleware()
-            ->toRoute('test/route')
+            ->withRoute('test/route')
             ->permanent();
 
         $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
@@ -61,8 +61,8 @@ final class RedirectTest extends TestCase
     public function testStatusReturnCode400(): void
     {
         $middleware = $this->createRedirectMiddleware()
-            ->toRoute('test/route')
-            ->status(400);
+            ->withRoute('test/route')
+            ->withStatus(400);
 
         $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
 
@@ -72,7 +72,7 @@ final class RedirectTest extends TestCase
     public function testSetUri(): void
     {
         $middleware = $this->createRedirectMiddleware()
-            ->toUrl('test/custom/route');
+            ->withUrl('test/custom/route');
 
         $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
         $header = $response->getHeader('Location');

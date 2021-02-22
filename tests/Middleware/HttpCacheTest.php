@@ -75,13 +75,13 @@ class HttpCacheTest extends TestCase
     private function createMiddlewareWithLastModified(int $lastModified): HttpCache
     {
         $middleware = new HttpCache(new Psr17Factory());
-        return $middleware->setLastModified(fn () => $lastModified);
+        return $middleware->withLastModified(fn () => $lastModified);
     }
 
     private function createMiddlewareWithETag(string $etag): HttpCache
     {
         $middleware = new HttpCache(new Psr17Factory());
-        return $middleware->setEtagSeed(fn () => $etag);
+        return $middleware->withEtagSeed(fn () => $etag);
     }
 
     private function createRequestHandler(): RequestHandlerInterface
