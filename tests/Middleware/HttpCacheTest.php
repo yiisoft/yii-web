@@ -52,7 +52,7 @@ class HttpCacheTest extends TestCase
         $time = \time();
         $middleware = $this->createMiddlewareWithLastModified($time - 1);
         $headers = [
-            'If-Modified-Since' => gmdate('D, d M Y H:i:s', $time) . 'GMT',
+            'If-Modified-Since' => gmdate('D, d M Y H:i:s', $time) . ' GMT',
         ];
         $response = $middleware->process($this->createServerRequest(Method::GET, $headers), $this->createRequestHandler());
         $this->assertEquals(304, $response->getStatusCode());
@@ -75,19 +75,13 @@ class HttpCacheTest extends TestCase
     private function createMiddlewareWithLastModified(int $lastModified): HttpCache
     {
         $middleware = new HttpCache(new Psr17Factory());
-        $middleware->setLastModified(static function (ServerRequestInterface $request, $params) use ($lastModified) {
-            return $lastModified;
-        });
-        return $middleware;
+        return $middleware->withLastModified(fn () => $lastModified);
     }
 
     private function createMiddlewareWithETag(string $etag): HttpCache
     {
         $middleware = new HttpCache(new Psr17Factory());
-        $middleware->setEtagSeed(static function (ServerRequestInterface $request, $params) use ($etag) {
-            return $etag;
-        });
-        return $middleware;
+        return $middleware->withEtagSeed(fn () => $etag);
     }
 
     private function createRequestHandler(): RequestHandlerInterface
@@ -100,7 +94,7 @@ class HttpCacheTest extends TestCase
         return $requestHandler;
     }
 
-    private function createServerRequest(string $method = Method::GET, $headers = []): ServerRequestInterface
+    private function createServerRequest(string $method = Method::GET, array $headers = []): ServerRequestInterface
     {
         return new ServerRequest($method, '/', $headers);
     }

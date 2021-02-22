@@ -62,7 +62,7 @@ final class RedirectTest extends TestCase
     {
         $middleware = $this->createRedirectMiddleware()
             ->toRoute('test/route')
-            ->status(400);
+            ->withStatus(400);
 
         $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
 

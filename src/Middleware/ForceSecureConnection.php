@@ -70,18 +70,18 @@ final class ForceSecureConnection implements MiddlewareInterface
      */
     public function withRedirection($statusCode = Status::MOVED_PERMANENTLY, int $port = null): self
     {
-        $clone = clone $this;
-        $clone->redirect = true;
-        $clone->port = $port;
-        $clone->statusCode = $statusCode;
-        return $clone;
+        $new = clone $this;
+        $new->redirect = true;
+        $new->port = $port;
+        $new->statusCode = $statusCode;
+        return $new;
     }
 
     public function withoutRedirection(): self
     {
-        $clone = clone $this;
-        $clone->redirect = false;
-        return $clone;
+        $new = clone $this;
+        $new->redirect = false;
+        return $new;
     }
 
     /**
@@ -95,17 +95,17 @@ final class ForceSecureConnection implements MiddlewareInterface
      */
     public function withCSP(string $directives = self::DEFAULT_CSP_DIRECTIVES): self
     {
-        $clone = clone $this;
-        $clone->addCSP = true;
-        $clone->cspDirectives = $directives;
-        return $clone;
+        $new = clone $this;
+        $new->addCSP = true;
+        $new->cspDirectives = $directives;
+        return $new;
     }
 
     public function withoutCSP(): self
     {
-        $clone = clone $this;
-        $clone->addCSP = false;
-        return $clone;
+        $new = clone $this;
+        $new->addCSP = false;
+        return $new;
     }
 
     /**
@@ -120,18 +120,18 @@ final class ForceSecureConnection implements MiddlewareInterface
      */
     public function withHSTS(int $maxAge = self::DEFAULT_HSTS_MAX_AGE, bool $subDomains = false): self
     {
-        $clone = clone $this;
-        $clone->addHSTS = true;
-        $clone->hstsMaxAge = $maxAge;
-        $clone->hstsSubDomains = $subDomains;
-        return $clone;
+        $new = clone $this;
+        $new->addHSTS = true;
+        $new->hstsMaxAge = $maxAge;
+        $new->hstsSubDomains = $subDomains;
+        return $new;
     }
 
     public function withoutHSTS(): self
     {
-        $clone = clone $this;
-        $clone->addHSTS = false;
-        return $clone;
+        $new = clone $this;
+        $new->addHSTS = false;
+        return $new;
     }
 
     private function addCSP(ResponseInterface $response): ResponseInterface

@@ -174,28 +174,38 @@ final class HttpCache implements MiddlewareInterface
         return [];
     }
 
-    public function setLastModified(callable $lastModified): void
+    public function withLastModified(callable $lastModified): self
     {
-        $this->lastModified = $lastModified;
+        $new = clone $this;
+        $new->lastModified = $lastModified;
+        return $new;
     }
 
-    public function setEtagSeed(callable $etagSeed): void
+    public function withEtagSeed(callable $etagSeed): self
     {
-        $this->etagSeed = $etagSeed;
+        $new = clone $this;
+        $new->etagSeed = $etagSeed;
+        return $new;
     }
 
-    public function setWeakTag(bool $weakTag): void
+    public function withWeakTag(bool $weakTag): self
     {
-        $this->weakEtag = $weakTag;
+        $new = clone $this;
+        $new->weakEtag = $weakTag;
+        return $new;
     }
 
-    public function setParams($params): void
+    public function withParams($params): self
     {
-        $this->params = $params;
+        $new = clone $this;
+        $new->params = $params;
+        return $new;
     }
 
-    public function setCacheControlHeader(?string $header): void
+    public function withCacheControlHeader(?string $header): self
     {
-        $this->cacheControlHeader = $header;
+        $new = clone $this;
+        $new->cacheControlHeader = $header;
+        return $new;
     }
 }
