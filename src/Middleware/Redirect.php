@@ -27,14 +27,14 @@ final class Redirect implements MiddlewareInterface
         $this->urlGenerator = $urlGenerator;
     }
 
-    public function withUrl(string $url): self
+    public function toUrl(string $url): self
     {
         $new = clone $this;
         $new->uri = $url;
         return $new;
     }
 
-    public function withRoute(string $name, array $parameters = []): self
+    public function toRoute(string $name, array $parameters = []): self
     {
         $new = clone $this;
         $new->route = $name;
@@ -66,7 +66,7 @@ final class Redirect implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if ($this->route === null && $this->uri === null) {
-            throw new \InvalidArgumentException('Either withUrl() or withRoute() should be used.');
+            throw new \InvalidArgumentException('Either toUrl() or toRoute() should be used.');
         }
 
         $uri = $this->uri ?? $this->urlGenerator->generate($this->route, $this->parameters);
