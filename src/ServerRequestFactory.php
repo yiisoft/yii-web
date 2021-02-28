@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\Web;
 
+use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
@@ -11,6 +12,23 @@ use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileFactoryInterface;
 use Psr\Http\Message\UriFactoryInterface;
 use Psr\Http\Message\UriInterface;
+use RuntimeException;
+
+use function array_filter;
+use function array_key_exists;
+use function explode;
+use function fopen;
+use function function_exists;
+use function getallheaders;
+use function is_array;
+use function is_resource;
+use function is_string;
+use function preg_match;
+use function str_replace;
+use function strncmp;
+use function strtolower;
+use function substr;
+use function ucwords;
 
 final class ServerRequestFactory
 {
@@ -40,7 +58,7 @@ final class ServerRequestFactory
             $_GET,
             $_POST,
             $_FILES,
-            \fopen('php://input', 'rb') ?: null
+            fopen('php://input', 'rb') ?: null
         );
     }
 
@@ -59,14 +77,17 @@ final class ServerRequestFactory
     {
         $method = $server['REQUEST_METHOD'] ?? null;
         if ($method === null) {
-            throw new \RuntimeException('Unable to determine HTTP request method.');
+            throw new RuntimeException('Unable to determine HTTP request method.');
         }
 
         $uri = $this->getUri($server);
-
         $request = $this->serverRequestFactory->createServerRequest($method, $uri, $server);
 
         foreach ($headers as $name => $value) {
+            if ($name === 'Host' && $request->hasHeader('Host')) {
+                continue;
+            }
+
             $request = $request->withAddedHeader($name, $value);
         }
 
@@ -86,12 +107,12 @@ final class ServerRequestFactory
             return $request;
         }
 
-        if (\is_resource($body)) {
+        if (is_resource($body)) {
             $body = $this->streamFactory->createStreamFromResource($body);
-        } elseif (\is_string($body)) {
+        } elseif (is_string($body)) {
             $body = $this->streamFactory->createStream($body);
         } elseif (!$body instanceof StreamInterface) {
-            throw new \InvalidArgumentException('Body parameter for ServerRequestFactory::createFromParameters() must be instance of StreamInterface, resource or null.');
+            throw new InvalidArgumentException('Body parameter for ServerRequestFactory::createFromParameters() must be instance of StreamInterface, resource or null.');
         }
 
         return $request->withBody($body);
@@ -108,7 +129,7 @@ final class ServerRequestFactory
         }
 
         if (isset($server['HTTP_HOST'])) {
-            if (1 === \preg_match('/^(.+):(\d+)$/', $server['HTTP_HOST'], $matches)) {
+            if (1 === preg_match('/^(.+):(\d+)$/', $server['HTTP_HOST'], $matches)) {
                 $uri = $uri->withHost($matches[1])->withPort((int) $matches[2]);
             } else {
                 $uri = $uri->withHost($server['HTTP_HOST']);
@@ -122,7 +143,7 @@ final class ServerRequestFactory
         }
 
         if (isset($server['REQUEST_URI'])) {
-            $uri = $uri->withPath(\explode('?', $server['REQUEST_URI'])[0]);
+            $uri = $uri->withPath(explode('?', $server['REQUEST_URI'])[0]);
         }
 
         if (isset($server['QUERY_STRING'])) {
@@ -132,27 +153,45 @@ final class ServerRequestFactory
         return $uri;
     }
 
-    /**
-     * @suppress PhanUndeclaredFunction
-     */
     private function getHeadersFromGlobals(): array
     {
-        if (\function_exists('\getallheaders')) {
-            $headers = \getallheaders();
-            if ($headers === false) {
-                $headers = [];
+        if (function_exists('getallheaders')) {
+            $headers = getallheaders();
+            return $headers === false ? [] : array_filter($headers, static fn (string $value): bool => $value !== '');
+        }
+
+        $headers = [];
+
+        foreach ($_SERVER as $name => $value) {
+            if ($value === '') {
+                continue;
             }
-        } else {
-            $headers = [];
-            foreach ($_SERVER as $name => $value) {
-                if (strncmp($name, 'HTTP_', 5) === 0) {
-                    $name = str_replace(' ', '-', strtolower(str_replace('_', ' ', substr($name, 5))));
-                    $headers[$name] = $value;
+
+            if (strncmp($name, 'REDIRECT_', 9) === 0) {
+                $name = substr($name, 9);
+
+                if (array_key_exists($name, $_SERVER)) {
+                    continue;
                 }
+            }
+
+            if (strncmp($name, 'HTTP_', 5) === 0) {
+                $headers[$this->normalizeHeaderName(substr($name, 5))] = $value;
+                continue;
+            }
+
+            if (strncmp($name, 'CONTENT_', 8) === 0) {
+                $headers[$this->normalizeHeaderName($name)] = $value;
+                continue;
             }
         }
 
         return $headers;
+    }
+
+    private function normalizeHeaderName(string $name): string
+    {
+        return str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', $name))));
     }
 
     private function getUploadedFilesArray(array $filesArray): array
@@ -178,7 +217,7 @@ final class ServerRequestFactory
      */
     private function populateUploadedFileRecursive(array &$files, $names, $tempNames, $types, $sizes, $errors): void
     {
-        if (\is_array($names)) {
+        if (is_array($names)) {
             foreach ($names as $i => $name) {
                 $files[$i] = [];
                 $this->populateUploadedFileRecursive($files[$i], $name, $tempNames[$i], $types[$i], $sizes[$i], $errors[$i]);
@@ -186,7 +225,7 @@ final class ServerRequestFactory
         } else {
             try {
                 $stream = $this->streamFactory->createStreamFromFile($tempNames);
-            } catch (\RuntimeException $e) {
+            } catch (RuntimeException $e) {
                 $stream = $this->streamFactory->createStream();
             }
 
