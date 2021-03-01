@@ -45,6 +45,27 @@ final class ServerRequestFactoryTest extends TestCase
         self::assertEquals($thirdFileName, $thirdUploadedFile->getClientFilename());
     }
 
+    public function testHeadersParsing(): void
+    {
+        $_SERVER = [
+            'HTTP_HOST' => 'example.com',
+            'CONTENT_TYPE' => 'text/plain',
+            'REQUEST_METHOD' => 'GET',
+            'REDIRECT_STATUS' => '200',
+            'REDIRECT_HTTP_HOST' => 'example.org',
+            'REDIRECT_HTTP_CONNECTION' => 'keep-alive',
+        ];
+
+        $expected = [
+            'Host' => ['example.com'],
+            'Content-Type' => ['text/plain'],
+            'Connection' => ['keep-alive'],
+        ];
+
+        $serverRequest = $this->getServerRequestFactory()->createFromGlobals();
+        $this->assertSame($expected, $serverRequest->getHeaders());
+    }
+
     /**
      * @dataProvider hostParsingDataProvider
      */
