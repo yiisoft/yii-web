@@ -14,7 +14,6 @@ use Psr\Http\Message\UriFactoryInterface;
 use Psr\Http\Message\UriInterface;
 use RuntimeException;
 
-use function array_filter;
 use function array_key_exists;
 use function explode;
 use function fopen;
@@ -157,16 +156,12 @@ final class ServerRequestFactory
     {
         if (function_exists('getallheaders')) {
             $headers = getallheaders();
-            return $headers === false ? [] : array_filter($headers, static fn (string $value): bool => $value !== '');
+            return $headers === false ? [] : $headers;
         }
 
         $headers = [];
 
         foreach ($_SERVER as $name => $value) {
-            if ($value === '') {
-                continue;
-            }
-
             if (strncmp($name, 'REDIRECT_', 9) === 0) {
                 $name = substr($name, 9);
 
