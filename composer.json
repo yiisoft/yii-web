@@ -53,9 +53,12 @@
         "branch-alias": {
             "dev-master": "3.0.x-dev"
         },
+        "config-plugin-options": {
+            "source-directory": "config"
+        },
         "config-plugin": {
-            "params": "config/params.php",
-            "web": "config/web.php",
+            "params": "params.php",
+            "web": "web.php",
             "tests": "$web"
         }
     },
