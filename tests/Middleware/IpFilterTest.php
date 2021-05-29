@@ -38,7 +38,7 @@ class IpFilterTest extends TestCase
         parent::setUp();
         $this->responseFactoryMock = $this->createMock(ResponseFactoryInterface::class);
         $this->requestHandlerMock = $this->createMock(RequestHandlerInterface::class);
-        $this->ipFilter = new IpFilter((new Ip())->ranges([self::ALLOWED_IP]), $this->responseFactoryMock);
+        $this->ipFilter = new IpFilter(Ip::rule()->ranges([self::ALLOWED_IP]), $this->responseFactoryMock);
     }
 
     public function testProcessReturnsAccessDeniedResponseWhenIpIsNotAllowed(): void
