@@ -208,7 +208,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
 
         $trustedHostData = null;
         $trustedHeaders = [];
-        $ipValidator = ($this->ipValidator ?? new Ip())->disallowSubnet()->disallowNegation();
+        $ipValidator = ($this->ipValidator ?? Ip::rule())->disallowSubnet()->disallowNegation();
         foreach ($this->trustedHosts as $data) {
             // collect all trusted headers
             $trustedHeaders = array_merge($trustedHeaders, $data[self::DATA_KEY_TRUSTED_HEADERS]);
