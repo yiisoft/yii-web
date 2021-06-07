@@ -54,8 +54,11 @@ final class Application
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $this->eventDispatcher->dispatch(new BeforeRequest($request));
-        $response = $this->dispatcher->dispatch($request, $this->fallbackHandler);
-        $this->eventDispatcher->dispatch(new AfterRequest($response));
-        return $response;
+
+        try {
+            return $response = $this->dispatcher->dispatch($request, $this->fallbackHandler);
+        } finally {
+            $this->eventDispatcher->dispatch(new AfterRequest($response));
+        }
     }
 }
