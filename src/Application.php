@@ -55,11 +55,10 @@ final class Application
     {
         $this->eventDispatcher->dispatch(new BeforeRequest($request));
 
-        $response = null;
         try {
             return $response = $this->dispatcher->dispatch($request, $this->fallbackHandler);
         } finally {
-            $this->eventDispatcher->dispatch(new AfterRequest($response));
+            $this->eventDispatcher->dispatch(new AfterRequest($response ?? null));
         }
     }
 }
