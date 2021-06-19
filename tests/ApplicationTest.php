@@ -140,7 +140,7 @@ final class ApplicationTest extends TestCase
     {
         return (new MiddlewareDispatcher(new MiddlewareFactory($container), $container->get(EventDispatcherInterface::class)))
             ->withMiddlewares([
-                static fn() => new MockMiddleware(400),
+                static fn () => new MockMiddleware(400),
             ]);
     }
 
@@ -148,7 +148,7 @@ final class ApplicationTest extends TestCase
     {
         return (new MiddlewareDispatcher(new MiddlewareFactory($container), $container->get(EventDispatcherInterface::class)))
             ->withMiddlewares([
-                static fn() => new class implements MiddlewareInterface {
+                static fn () => new class implements MiddlewareInterface {
                     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
                     {
                         throw new Exception();
