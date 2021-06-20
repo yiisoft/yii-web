@@ -4,18 +4,22 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\Web\Tests;
 
+use Exception;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Di\Container;
 use Yiisoft\Middleware\Dispatcher\Event\AfterMiddleware;
 use Yiisoft\Middleware\Dispatcher\Event\BeforeMiddleware;
 use Yiisoft\Middleware\Dispatcher\MiddlewareDispatcher;
 use Yiisoft\Middleware\Dispatcher\MiddlewareFactory;
-use Yiisoft\Middleware\Dispatcher\MiddlewareStack;
 use Yiisoft\Yii\Web\Application;
 use Yiisoft\Yii\Web\Event\AfterEmit;
 use Yiisoft\Yii\Web\Event\AfterRequest;
@@ -74,12 +78,59 @@ final class ApplicationTest extends TestCase
         $this->assertEquals(400, $response->getStatusCode());
     }
 
-    private function createApplication(EventDispatcherInterface $eventDispatcher): Application
+    public function testHandleMethodWithExceptionDispatchEvents(): void
     {
-        return new Application(
-            $this->createMiddlewareDispatcher(
+        $eventDispatcher = new MockEventDispatcher();
+
+        try {
+            $this->createApplication($eventDispatcher, true)->handle($this->createRequest());
+        } catch (Exception $e) {
+        }
+
+        $this->assertEquals(
+            [
+                BeforeRequest::class,
+                BeforeMiddleware::class,
+                AfterMiddleware::class,
+                AfterRequest::class,
+            ],
+            $eventDispatcher->getClassesEvents()
+        );
+    }
+
+    public function testAfterRequestWithResponseDispatchEvent(): void
+    {
+        $eventDispatcher = new MockEventDispatcher();
+        $this->createApplication($eventDispatcher)->handle($this->createRequest());
+        $this->assertInstanceOf(Response::class, $eventDispatcher->getLastEvent()->getResponse());
+    }
+
+    public function testAfterRequestWithExceptionDispatchEvent(): void
+    {
+        $eventDispatcher = new MockEventDispatcher();
+
+        try {
+            $this->createApplication($eventDispatcher, true)->handle($this->createRequest());
+        } catch (Exception $exception) {
+        }
+
+        $this->assertNull($eventDispatcher->getLastEvent()->getResponse());
+    }
+
+    private function createApplication(EventDispatcherInterface $eventDispatcher, bool $throwException = false): Application
+    {
+        if ($throwException === false) {
+            $middlewareDispatcher = $this->createMiddlewareDispatcher(
                 $this->createContainer($eventDispatcher)
-            ),
+            );
+        } else {
+            $middlewareDispatcher = $this->createMiddlewareDispatcherWithException(
+                $this->createContainer($eventDispatcher)
+            );
+        }
+
+        return new Application(
+            $middlewareDispatcher,
             $eventDispatcher,
             new NotFoundHandler(new Psr17Factory())
         );
@@ -87,9 +138,22 @@ final class ApplicationTest extends TestCase
 
     private function createMiddlewareDispatcher(Container $container): MiddlewareDispatcher
     {
-        return (new MiddlewareDispatcher(new MiddlewareFactory($container), new MiddlewareStack($container->get(EventDispatcherInterface::class))))
+        return (new MiddlewareDispatcher(new MiddlewareFactory($container), $container->get(EventDispatcherInterface::class)))
             ->withMiddlewares([
                 static fn () => new MockMiddleware(400),
+            ]);
+    }
+
+    private function createMiddlewareDispatcherWithException(Container $container): MiddlewareDispatcher
+    {
+        return (new MiddlewareDispatcher(new MiddlewareFactory($container), $container->get(EventDispatcherInterface::class)))
+            ->withMiddlewares([
+                static fn () => new class() implements MiddlewareInterface {
+                    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+                    {
+                        throw new Exception();
+                    }
+                },
             ]);
     }
 

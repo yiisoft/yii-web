@@ -32,4 +32,9 @@ class MockEventDispatcher implements EventDispatcherInterface
     {
         return array_shift($this->events);
     }
+
+    public function getLastEvent(): ?object
+    {
+        return array_pop($this->events);
+    }
 }
