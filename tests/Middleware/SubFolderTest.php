@@ -178,7 +178,7 @@ class SubFolderTest extends TestCase
 
     private function process(SubFolder $middleware, ServerRequestInterface $request): ResponseInterface
     {
-        $handler = new class() implements RequestHandlerInterface {
+        $handler = new class () implements RequestHandlerInterface {
             public ?ServerRequestInterface $request = null;
 
             public function handle(ServerRequestInterface $request): ResponseInterface
