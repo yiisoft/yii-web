@@ -12,19 +12,25 @@ use Yiisoft\Aliases\Aliases;
 use Yiisoft\Router\UrlGeneratorInterface;
 use Yiisoft\Yii\Web\Exception\BadUriPrefixException;
 
+use function strlen;
+
 /**
  * This middleware supports routing when webroot is not the same folder as public
  */
 final class SubFolder implements MiddlewareInterface
 {
-    public ?string $prefix = null;
     private UrlGeneratorInterface $uriGenerator;
     private Aliases $aliases;
+    private ?string $prefix;
 
-    public function __construct(UrlGeneratorInterface $uriGenerator, Aliases $aliases)
-    {
+    public function __construct(
+        UrlGeneratorInterface $uriGenerator,
+        Aliases $aliases,
+        ?string $prefix
+    ) {
         $this->uriGenerator = $uriGenerator;
         $this->aliases = $aliases;
+        $this->prefix = $prefix;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
