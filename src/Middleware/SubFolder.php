@@ -22,22 +22,18 @@ final class SubFolder implements MiddlewareInterface
     private UrlGeneratorInterface $uriGenerator;
     private Aliases $aliases;
     private ?string $prefix;
-
-    /**
-     * @var string[]
-     */
-    private array $setAliases;
+    private ?string $setAlias;
 
     public function __construct(
         UrlGeneratorInterface $uriGenerator,
         Aliases $aliases,
-        ?string $prefix,
-        array $setAliases
+        ?string $prefix = null,
+        ?string $setAlias = null
     ) {
         $this->uriGenerator = $uriGenerator;
         $this->aliases = $aliases;
         $this->prefix = $prefix;
-        $this->setAliases = $setAliases;
+        $this->setAlias = $setAlias;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -81,8 +77,8 @@ final class SubFolder implements MiddlewareInterface
                 $request = $request->withUri($uri->withPath($newPath));
                 $this->uriGenerator->setUriPrefix($prefix);
 
-                foreach ($this->setAliases as $alias) {
-                    $this->aliases->set($alias, $prefix . '/');
+                if ($this->setAlias !== null) {
+                    $this->aliases->set($this->setAlias, $prefix . '/');
                 }
             }
         }
