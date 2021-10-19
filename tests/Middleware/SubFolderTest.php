@@ -31,7 +31,7 @@ class SubFolderTest extends TestCase
     public function testDefault(): void
     {
         $request = $this->createRequest($uri = '/', $script = '/index.php');
-        $mw = $this->createMiddleware();
+        $mw = $this->createMiddleware(null, '@baseUrl');
 
         $this->process($mw, $request);
 
@@ -43,8 +43,7 @@ class SubFolderTest extends TestCase
     public function testCustomPrefix(): void
     {
         $request = $this->createRequest($uri = '/custom_public/index.php?test', $script = '/index.php');
-        $mw = $this->createMiddleware();
-        $mw->prefix = '/custom_public';
+        $mw = $this->createMiddleware('/custom_public', '@baseUrl');
 
         $this->process($mw, $request);
 
@@ -56,7 +55,7 @@ class SubFolderTest extends TestCase
     public function testAutoPrefix(): void
     {
         $request = $this->createRequest($uri = '/public/', $script = '/public/index.php');
-        $mw = $this->createMiddleware();
+        $mw = $this->createMiddleware(null, '@baseUrl');
 
         $this->process($mw, $request);
 
@@ -71,7 +70,7 @@ class SubFolderTest extends TestCase
         $uri = "{$prefix}/";
         $script = "{$prefix}/index.php";
         $request = $this->createRequest($uri, $script);
-        $mw = $this->createMiddleware();
+        $mw = $this->createMiddleware(null, '@baseUrl');
 
         $this->process($mw, $request);
 
@@ -83,7 +82,7 @@ class SubFolderTest extends TestCase
     public function testAutoPrefixAndUriWithoutTrailingSlash(): void
     {
         $request = $this->createRequest($uri = '/public', $script = '/public/index.php');
-        $mw = $this->createMiddleware();
+        $mw = $this->createMiddleware(null, '@baseUrl');
 
         $this->process($mw, $request);
 
@@ -95,7 +94,7 @@ class SubFolderTest extends TestCase
     public function testAutoPrefixFullUrl(): void
     {
         $request = $this->createRequest($uri = '/public/index.php?test', $script = '/public/index.php');
-        $mw = $this->createMiddleware();
+        $mw = $this->createMiddleware(null, '@baseUrl');
 
         $this->process($mw, $request);
 
@@ -107,7 +106,7 @@ class SubFolderTest extends TestCase
     public function testFailedAutoPrefix(): void
     {
         $request = $this->createRequest($uri = '/web/index.php', $script = '/public/index.php');
-        $mw = $this->createMiddleware();
+        $mw = $this->createMiddleware(null, '@baseUrl');
 
         $this->process($mw, $request);
 
@@ -119,8 +118,7 @@ class SubFolderTest extends TestCase
     public function testCustomPrefixWithTrailingSlash(): void
     {
         $request = $this->createRequest($uri = '/web/', $script = '/public/index.php');
-        $mw = $this->createMiddleware();
-        $mw->prefix = '/web/';
+        $mw = $this->createMiddleware('/web/', '@baseUrl');
 
         $this->expectException(BadUriPrefixException::class);
         $this->expectExceptionMessage('Wrong URI prefix value');
@@ -131,8 +129,7 @@ class SubFolderTest extends TestCase
     public function testCustomPrefixFromMiddleOfUri(): void
     {
         $request = $this->createRequest($uri = '/web/middle/public', $script = '/public/index.php');
-        $mw = $this->createMiddleware();
-        $mw->prefix = '/middle';
+        $mw = $this->createMiddleware('/middle', '@baseUrl');
 
         $this->expectException(BadUriPrefixException::class);
         $this->expectExceptionMessage('URI prefix does not match');
@@ -143,8 +140,7 @@ class SubFolderTest extends TestCase
     public function testCustomPrefixDoesNotMatch(): void
     {
         $request = $this->createRequest($uri = '/web/', $script = '/public/index.php');
-        $mw = $this->createMiddleware();
-        $mw->prefix = '/other_prefix';
+        $mw = $this->createMiddleware('/other_prefix', '@baseUrl');
 
         $this->expectException(BadUriPrefixException::class);
         $this->expectExceptionMessage('URI prefix does not match');
@@ -155,8 +151,7 @@ class SubFolderTest extends TestCase
     public function testCustomPrefixDoesNotMatchCompletely(): void
     {
         $request = $this->createRequest($uri = '/project1/web/', $script = '/public/index.php');
-        $mw = $this->createMiddleware();
-        $mw->prefix = '/project1/we';
+        $mw = $this->createMiddleware('/project1/we', '@baseUrl');
 
         $this->expectException(BadUriPrefixException::class);
         $this->expectExceptionMessage('URI prefix does not match completely');
@@ -167,7 +162,7 @@ class SubFolderTest extends TestCase
     public function testAutoPrefixDoesNotMatchCompletely(): void
     {
         $request = $this->createRequest($uri = '/public/web/', $script = '/pub/index.php');
-        $mw = $this->createMiddleware();
+        $mw = $this->createMiddleware(null, '@baseUrl');
 
         $this->process($mw, $request);
 
@@ -196,7 +191,7 @@ class SubFolderTest extends TestCase
         return $this->lastRequest->getUri()->getPath();
     }
 
-    private function createMiddleware(): SubFolder
+    private function createMiddleware(?string $prefix = null, ?string $alias = null): SubFolder
     {
         $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
         $urlGenerator->method('setUriPrefix')->willReturnCallback(function ($prefix) {
@@ -204,7 +199,7 @@ class SubFolderTest extends TestCase
         });
         $urlGenerator->method('getUriPrefix')->willReturnReference($this->urlGeneratorUriPrefix);
 
-        return new SubFolder($urlGenerator, $this->aliases);
+        return new SubFolder($urlGenerator, $this->aliases, $prefix, $alias);
     }
 
     private function createRequest(string $uri = '/', string $scriptPath = '/'): ServerRequestInterface
