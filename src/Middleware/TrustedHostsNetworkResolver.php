@@ -9,9 +9,9 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Yiisoft\Http\HeaderValueHelper;
 use Yiisoft\NetworkUtilities\IpHelper;
 use Yiisoft\Validator\Rule\Ip;
-use Yiisoft\Yii\Web\Helper\HeaderHelper;
 
 /**
  * Trusted hosts network resolver
@@ -455,7 +455,7 @@ class TrustedHostsNetworkResolver implements MiddlewareInterface
     {
         $list = [];
         foreach ($forwards as $forward) {
-            $data = HeaderHelper::getParameters($forward);
+            $data = HeaderValueHelper::getParameters($forward);
             if (!isset($data['for'])) {
                 // Invalid item, the following items will be dropped
                 break;
